@@ -73,6 +73,7 @@
   },
   "packageManager": "bun@1.4.2",
   "dependencies": {
-    "@ankhorage/contracts": "^26.7.0"
+    "@ankhorage/contracts": "^26.7.0",
+    "@modelcontextprotocol/sdk": "^1.32.2"
   }
 }
