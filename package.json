@@ -1,0 +1,75 @@
+{
+  "name": "@ankhorage/flow",
+  "version": "0.1.0",
+  "description": "Standalone workflow engine foundation for Ankhorage.",
+  "keywords": [
+    "ankhorage",
+    "flow",
+    "workflow",
+    "automation"
+  ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./ai": {
+      "types": "./dist/ai.d.ts",
+      "default": "./dist/ai.js"
+    },
+    "./mcp": {
+      "types": "./dist/mcp.d.ts",
+      "default": "./dist/mcp.js"
+    },
+    "./social": {
+      "types": "./dist/social.d.ts",
+      "default": "./dist/social.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "package.json",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ankhorage/flow.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ankhorage/flow/issues"
+  },
+  "homepage": "https://github.com/ankhorage/flow#readme",
+  "license": "MIT",
+  "scripts": {
+    "build": "rm -rf dist tsconfig.tsbuildinfo && bun x tsc -p tsconfig.json",
+    "changeset": "ankhorage-changeset",
+    "changeset:status": "ankhorage-changeset status --since=origin/main",
+    "docs": "paradox",
+    "lint": "ankhorage-eslint . --max-warnings=0",
+    "lint:fix": "ankhorage-eslint . --fix --max-warnings=0",
+    "format": "ankhorage-prettier --write .",
+    "format:check": "ankhorage-prettier --check .",
+    "knip:check": "ankhorage-knip",
+    "test": "bun test src test",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.node-esm.json",
+    "version-packages": "ankhorage-changeset version"
+  },
+  "devDependencies": {
+    "@ankhorage/devtools": "^2.4.3",
+    "@ankhorage/paradox": "^0.3.6",
+    "@types/bun": "^1.4.2",
+    "@types/node": "^26.6.6",
+    "typescript": "^6.0.3"
+  },
+  "packageManager": "bun@1.4.2"
+}
