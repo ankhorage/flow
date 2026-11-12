@@ -14,7 +14,7 @@
     {
       "id": "npm",
       "label": "npm",
-      "value": "v0.1.0",
+      "value": "v0.2.0",
       "color": "cb3837"
     },
     {
@@ -79,10 +79,72 @@
       "exports": []
     },
     {
+      "path": "src/features/execution/application/executeFlowAsync.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/execution/domain/assertFlowGraphSchemasSupported.ts",
+        "src/features/execution/domain/validateFlowDataSchema.ts",
+        "src/types/execution.ts"
+      ],
+      "exports": [
+        "executeFlowAsync"
+      ]
+    },
+    {
+      "path": "src/features/execution/domain/assertFlowGraphSchemasSupported.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/execution/domain/validateFlowDataSchema.ts"
+      ],
+      "exports": [
+        "assertFlowGraphSchemasSupported"
+      ]
+    },
+    {
+      "path": "src/features/execution/domain/compileFlowGraph.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/types/execution.ts"
+      ],
+      "exports": [
+        "compileFlowGraph"
+      ]
+    },
+    {
+      "path": "src/features/execution/domain/createDefaultNodeRegistry.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/types/execution.ts"
+      ],
+      "exports": [
+        "createDefaultNodeRegistry"
+      ]
+    },
+    {
+      "path": "src/features/execution/domain/validateFlowDataSchema.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": [
+        "assertFlowDataSchemaSupported",
+        "validateFlowDataSchema"
+      ]
+    },
+    {
       "path": "src/index.ts",
       "isEntrypoint": true,
       "dependencies": [],
-      "exports": []
+      "exports": [
+        "compileFlowGraph",
+        "createDefaultNodeRegistry",
+        "executeFlowAsync",
+        "FlowClock",
+        "FlowCompiledGraph",
+        "FlowExecutionResult",
+        "FlowNodeOperation",
+        "FlowNodeOperationResult",
+        "FlowNodeRegistry",
+        "FlowRunRequest"
+      ]
     },
     {
       "path": "src/mcp.ts",
@@ -95,16 +157,1538 @@
       "isEntrypoint": false,
       "dependencies": [],
       "exports": []
+    },
+    {
+      "path": "src/types/execution.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": [
+        "FlowClock",
+        "FlowCompiledGraph",
+        "FlowExecutionResult",
+        "FlowNodeOperation",
+        "FlowNodeOperationResult",
+        "FlowNodeRegistry",
+        "FlowRunRequest"
+      ]
     }
   ],
-  "exports": [],
+  "exports": [
+    {
+      "name": "compileFlowGraph",
+      "title": null,
+      "description": "Compile a valid acyclic graph into deterministic execution order.",
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "value",
+      "modulePath": "src/features/execution/domain/compileFlowGraph.ts",
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/compileFlowGraph.ts",
+        "line": 6,
+        "column": 14
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [
+        "FlowCompiledGraph",
+        "FlowNodeOperation"
+      ],
+      "signatures": [
+        {
+          "label": "(definition: FlowDefinition, registry: Readonly<Record<string, import(\"../../../index.js\").FlowNodeOperation>>) => FlowCompiledGraph",
+          "parameters": [
+            {
+              "name": "definition",
+              "type": "FlowDefinition",
+              "required": true,
+              "description": null
+            },
+            {
+              "name": "registry",
+              "type": "Readonly<Record<string, import(\"../../../index.js\").FlowNodeOperation>>",
+              "required": true,
+              "description": null
+            }
+          ],
+          "returnType": "FlowCompiledGraph",
+          "returnDescription": null
+        }
+      ],
+      "members": [],
+      "structuredRows": []
+    },
+    {
+      "name": "createDefaultNodeRegistry",
+      "title": null,
+      "description": "Create the built-in operations that have no provider or host dependency.",
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "value",
+      "modulePath": "src/features/execution/domain/createDefaultNodeRegistry.ts",
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/createDefaultNodeRegistry.ts",
+        "line": 6,
+        "column": 14
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [
+        "FlowNodeOperation"
+      ],
+      "signatures": [
+        {
+          "label": "() => Readonly<Record<string, FlowNodeOperation>>",
+          "parameters": [],
+          "returnType": "Readonly<Record<string, FlowNodeOperation>>",
+          "returnDescription": null
+        }
+      ],
+      "members": [],
+      "structuredRows": []
+    },
+    {
+      "name": "executeFlowAsync",
+      "title": null,
+      "description": "Execute a compiled graph in deterministic order within one process.",
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "value",
+      "modulePath": "src/features/execution/application/executeFlowAsync.ts",
+      "sourceLocation": {
+        "filePath": "src/features/execution/application/executeFlowAsync.ts",
+        "line": 23,
+        "column": 14
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [
+        "FlowClock",
+        "FlowCompiledGraph",
+        "FlowExecutionResult",
+        "FlowNodeOperation",
+        "FlowRunRequest"
+      ],
+      "signatures": [
+        {
+          "label": "(graph: FlowCompiledGraph, registry: Readonly<Record<string, import(\"../../../index.js\").FlowNodeOperation>>, request: FlowRunRequest, clock?: FlowClock) => Promise<FlowExecutionResult>",
+          "parameters": [
+            {
+              "name": "clock",
+              "type": "FlowClock",
+              "required": false,
+              "description": null
+            },
+            {
+              "name": "graph",
+              "type": "FlowCompiledGraph",
+              "required": true,
+              "description": null
+            },
+            {
+              "name": "registry",
+              "type": "Readonly<Record<string, import(\"../../../index.js\").FlowNodeOperation>>",
+              "required": true,
+              "description": null
+            },
+            {
+              "name": "request",
+              "type": "FlowRunRequest",
+              "required": true,
+              "description": null
+            }
+          ],
+          "returnType": "Promise<FlowExecutionResult>",
+          "returnDescription": null
+        }
+      ],
+      "members": [],
+      "structuredRows": []
+    },
+    {
+      "name": "FlowClock",
+      "title": null,
+      "description": null,
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "type",
+      "modulePath": "src/types/execution.ts",
+      "sourceLocation": {
+        "filePath": "src/types/execution.ts",
+        "line": 12,
+        "column": 1
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [],
+      "signatures": [],
+      "members": [
+        {
+          "name": "now",
+          "kind": "property",
+          "type": "() => Date",
+          "required": true,
+          "description": null
+        }
+      ],
+      "structuredRows": []
+    },
+    {
+      "name": "FlowCompiledGraph",
+      "title": null,
+      "description": null,
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "type",
+      "modulePath": "src/types/execution.ts",
+      "sourceLocation": {
+        "filePath": "src/types/execution.ts",
+        "line": 27,
+        "column": 1
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [],
+      "signatures": [],
+      "members": [
+        {
+          "name": "definition",
+          "kind": "property",
+          "type": "FlowDefinition",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "edgesBySourceNodeId",
+          "kind": "property",
+          "type": "Readonly<Record<string, readonly FlowEdge[]>>",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "topologicalNodeIds",
+          "kind": "property",
+          "type": "readonly string[]",
+          "required": true,
+          "description": null
+        }
+      ],
+      "structuredRows": []
+    },
+    {
+      "name": "FlowExecutionResult",
+      "title": null,
+      "description": null,
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "type",
+      "modulePath": "src/types/execution.ts",
+      "sourceLocation": {
+        "filePath": "src/types/execution.ts",
+        "line": 39,
+        "column": 1
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [],
+      "signatures": [],
+      "members": [
+        {
+          "name": "run",
+          "kind": "property",
+          "type": "FlowRunSnapshot",
+          "required": true,
+          "description": null
+        }
+      ],
+      "structuredRows": []
+    },
+    {
+      "name": "FlowNodeOperation",
+      "title": null,
+      "description": null,
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "type",
+      "modulePath": "src/types/execution.ts",
+      "sourceLocation": {
+        "filePath": "src/types/execution.ts",
+        "line": 18,
+        "column": 1
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [
+        "FlowNodeOperationResult"
+      ],
+      "signatures": [],
+      "members": [
+        {
+          "name": "executeAsync",
+          "kind": "property",
+          "type": "(input: { readonly config: FlowNodeConfig | undefined; readonly input: Readonly<Record<FlowPortId, FlowDataRef>>; readonly node: FlowNode; readonly signal: AbortSignal; }) => Promise<FlowNodeOperationResult>",
+          "required": true,
+          "description": null
+        }
+      ],
+      "structuredRows": []
+    },
+    {
+      "name": "FlowNodeOperationResult",
+      "title": null,
+      "description": null,
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "type",
+      "modulePath": "src/types/execution.ts",
+      "sourceLocation": {
+        "filePath": "src/types/execution.ts",
+        "line": 15,
+        "column": 1
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [],
+      "signatures": [],
+      "members": [
+        {
+          "name": "output",
+          "kind": "property",
+          "type": "Readonly<Record<string, FlowDataRef>> | undefined",
+          "required": false,
+          "description": null
+        }
+      ],
+      "structuredRows": []
+    },
+    {
+      "name": "FlowNodeRegistry",
+      "title": null,
+      "description": null,
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "unknown",
+      "modulePath": "src/types/execution.ts",
+      "sourceLocation": {
+        "filePath": "src/types/execution.ts",
+        "line": 26,
+        "column": 1
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [],
+      "signatures": [],
+      "members": [],
+      "structuredRows": []
+    },
+    {
+      "name": "FlowRunRequest",
+      "title": null,
+      "description": null,
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "type",
+      "modulePath": "src/types/execution.ts",
+      "sourceLocation": {
+        "filePath": "src/types/execution.ts",
+        "line": 32,
+        "column": 1
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [],
+      "signatures": [],
+      "members": [
+        {
+          "name": "input",
+          "kind": "property",
+          "type": "Readonly<Record<string, FlowDataRef>> | undefined",
+          "required": false,
+          "description": null
+        },
+        {
+          "name": "runId",
+          "kind": "property",
+          "type": "string",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "schemaRegistry",
+          "kind": "property",
+          "type": "Readonly<Record<string, import(\"@ankhorage/contracts/data\").DataSchema>> | undefined",
+          "required": false,
+          "description": null
+        },
+        {
+          "name": "signal",
+          "kind": "property",
+          "type": "AbortSignal | undefined",
+          "required": false,
+          "description": null
+        },
+        {
+          "name": "triggerId",
+          "kind": "property",
+          "type": "string",
+          "required": true,
+          "description": null
+        }
+      ],
+      "structuredRows": []
+    }
+  ],
   "components": [],
-  "sourceFunctions": [],
-  "sequenceScenarios": [],
+  "sourceFunctions": [
+    {
+      "name": "executeFlowAsync",
+      "description": "Execute a compiled graph in deterministic order within one process.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/application/executeFlowAsync.ts",
+        "line": 23,
+        "column": 14
+      }
+    },
+    {
+      "name": "executeNodesAsync",
+      "description": "Iterate compiled nodes in deterministic order until completion or cancellation.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/application/executeFlowAsync.ts",
+        "line": 48,
+        "column": 7
+      }
+    },
+    {
+      "name": "executeAvailableNodeAsync",
+      "description": "Execute one node only when all of its required inputs were propagated.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/application/executeFlowAsync.ts",
+        "line": 91,
+        "column": 7
+      }
+    },
+    {
+      "name": "hasRequiredInput",
+      "description": "Determine whether every required input port has a propagated value.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/application/executeFlowAsync.ts",
+        "line": 108,
+        "column": 7
+      }
+    },
+    {
+      "name": "executeNodeAsync",
+      "description": "Execute one node and convert failures to redaction-safe contract errors.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/application/executeFlowAsync.ts",
+        "line": 117,
+        "column": 7
+      }
+    },
+    {
+      "name": "createSucceededStep",
+      "description": "Create an immutable successful step snapshot.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/application/executeFlowAsync.ts",
+        "line": 167,
+        "column": 7
+      }
+    },
+    {
+      "name": "createCancelledStep",
+      "description": "Create a terminal snapshot when cancellation occurs during asynchronous node execution.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/application/executeFlowAsync.ts",
+        "line": 185,
+        "column": 7
+      }
+    },
+    {
+      "name": "assertOutputPorts",
+      "description": "Reject operation outputs that do not correspond to declared output ports.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/application/executeFlowAsync.ts",
+        "line": 201,
+        "column": 7
+      }
+    },
+    {
+      "name": "assertPortSchemas",
+      "description": "Validate inline port values against their declared portable schemas.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/application/executeFlowAsync.ts",
+        "line": 217,
+        "column": 7
+      }
+    },
+    {
+      "name": "propagateOutput",
+      "description": "Propagate outputs only over edges whose declared condition matches the output value.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/application/executeFlowAsync.ts",
+        "line": 233,
+        "column": 7
+      }
+    },
+    {
+      "name": "matchesEdge",
+      "description": "Evaluate an edge condition without executing arbitrary expressions.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/application/executeFlowAsync.ts",
+        "line": 252,
+        "column": 7
+      }
+    },
+    {
+      "name": "resolvePointer",
+      "description": "Resolve an RFC 6901 pointer against serializable inline data.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/application/executeFlowAsync.ts",
+        "line": 266,
+        "column": 7
+      }
+    },
+    {
+      "name": "structurallyEqual",
+      "description": "Compare JSON-compatible values with object-key-order independence.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/application/executeFlowAsync.ts",
+        "line": 287,
+        "column": 7
+      }
+    },
+    {
+      "name": "normalizeValue",
+      "description": "Canonicalize object member ordering for structural equality.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/application/executeFlowAsync.ts",
+        "line": 291,
+        "column": 7
+      }
+    },
+    {
+      "name": "isDataRecord",
+      "description": "Narrow a serializable non-array object to an indexable data record.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/application/executeFlowAsync.ts",
+        "line": 303,
+        "column": 7
+      }
+    },
+    {
+      "name": "isDataArray",
+      "description": "Narrow a serializable array without losing its element type.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/application/executeFlowAsync.ts",
+        "line": 307,
+        "column": 7
+      }
+    },
+    {
+      "name": "asFlowError",
+      "description": "Translate host failures to structured contract errors without exposing arbitrary objects.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/application/executeFlowAsync.ts",
+        "line": 310,
+        "column": 7
+      }
+    },
+    {
+      "name": "createRun",
+      "description": "Build the immutable run result emitted by the single-process executor.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/application/executeFlowAsync.ts",
+        "line": 320,
+        "column": 7
+      }
+    },
+    {
+      "name": "assertFlowGraphSchemasSupported",
+      "description": "Validate every declared graph port schema before any operation can perform a side effect.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/assertFlowGraphSchemasSupported.ts",
+        "line": 7,
+        "column": 14
+      }
+    },
+    {
+      "name": "compileFlowGraph",
+      "description": "Compile a valid acyclic graph into deterministic execution order.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/compileFlowGraph.ts",
+        "line": 6,
+        "column": 14
+      }
+    },
+    {
+      "name": "indexNodes",
+      "description": "Index nodes while rejecting duplicate graph identifiers.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/compileFlowGraph.ts",
+        "line": 24,
+        "column": 7
+      }
+    },
+    {
+      "name": "indexEdges",
+      "description": "Validate and group graph edges by their producing node.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/compileFlowGraph.ts",
+        "line": 32,
+        "column": 7
+      }
+    },
+    {
+      "name": "assertPort",
+      "description": "Ensure a graph port exists exactly once with the expected direction.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/compileFlowGraph.ts",
+        "line": 55,
+        "column": 7
+      }
+    },
+    {
+      "name": "assertNodeIsExecutable",
+      "description": "Reject unknown operations and code capabilities before execution can begin.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/compileFlowGraph.ts",
+        "line": 66,
+        "column": 7
+      }
+    },
+    {
+      "name": "orderNodes",
+      "description": "Produce stable topological order and reject cycles without an explicit bounded-loop contract.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/compileFlowGraph.ts",
+        "line": 79,
+        "column": 7
+      }
+    },
+    {
+      "name": "createDefaultNodeRegistry",
+      "description": "Create the built-in operations that have no provider or host dependency.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/createDefaultNodeRegistry.ts",
+        "line": 6,
+        "column": 14
+      }
+    },
+    {
+      "name": "transformAsync",
+      "description": "Copy configured inline or artifact values to matching output ports without evaluating code.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/createDefaultNodeRegistry.ts",
+        "line": 13,
+        "column": 7
+      }
+    },
+    {
+      "name": "isDataRef",
+      "description": "Narrow a configuration value to data that may safely leave a node.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/createDefaultNodeRegistry.ts",
+        "line": 26,
+        "column": 7
+      }
+    },
+    {
+      "name": "validateFlowDataSchema",
+      "description": "Validate serializable data against the supported portable schema vocabulary.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/validateFlowDataSchema.ts",
+        "line": 6,
+        "column": 14
+      }
+    },
+    {
+      "name": "assertFlowDataSchemaSupported",
+      "description": "Reject unsupported, unresolved, cyclic, or excessively nested portable schemas before use.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/validateFlowDataSchema.ts",
+        "line": 16,
+        "column": 14
+      }
+    },
+    {
+      "name": "resolveSchema",
+      "description": "Resolve a schema reference only from the explicit execution registry.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/validateFlowDataSchema.ts",
+        "line": 22,
+        "column": 7
+      }
+    },
+    {
+      "name": "matchesSchema",
+      "description": "Apply portable schema constraints without coercing a JSON-compatible value.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/validateFlowDataSchema.ts",
+        "line": 36,
+        "column": 7
+      }
+    },
+    {
+      "name": "assertSupportedSchema",
+      "description": "Reject portable annotations that require a validator capability this engine does not own.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/validateFlowDataSchema.ts",
+        "line": 53,
+        "column": 7
+      }
+    },
+    {
+      "name": "visitChildSchemas",
+      "description": "Visit every schema child so unsupported declarations fail before value matching begins.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/validateFlowDataSchema.ts",
+        "line": 70,
+        "column": 7
+      }
+    },
+    {
+      "name": "matchesTypes",
+      "description": "Match the declared primitive type union and explicit nullability.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/validateFlowDataSchema.ts",
+        "line": 87,
+        "column": 7
+      }
+    },
+    {
+      "name": "matchesType",
+      "description": "Match one JSON primitive category without coercion.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/validateFlowDataSchema.ts",
+        "line": 95,
+        "column": 7
+      }
+    },
+    {
+      "name": "matchesValues",
+      "description": "Apply constant and enumeration constraints using structural JSON equality.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/validateFlowDataSchema.ts",
+        "line": 104,
+        "column": 7
+      }
+    },
+    {
+      "name": "matchesComposition",
+      "description": "Apply logical schema composition with its standard cardinality semantics.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/validateFlowDataSchema.ts",
+        "line": 109,
+        "column": 7
+      }
+    },
+    {
+      "name": "matchesStructure",
+      "description": "Recursively apply object and array member constraints.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/validateFlowDataSchema.ts",
+        "line": 124,
+        "column": 7
+      }
+    },
+    {
+      "name": "matchesItems",
+      "description": "Validate array elements only when an item schema is declared.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/validateFlowDataSchema.ts",
+        "line": 134,
+        "column": 7
+      }
+    },
+    {
+      "name": "matchesProperties",
+      "description": "Validate required object members and declared or additional property schemas.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/validateFlowDataSchema.ts",
+        "line": 145,
+        "column": 7
+      }
+    },
+    {
+      "name": "createTraversalState",
+      "description": "Start bounded schema traversal without retaining mutable validation state.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/validateFlowDataSchema.ts",
+        "line": 173,
+        "column": 7
+      }
+    },
+    {
+      "name": "advanceTraversalState",
+      "description": "Advance a schema traversal while rejecting direct cycles and excessive nesting deterministically.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/validateFlowDataSchema.ts",
+        "line": 180,
+        "column": 7
+      }
+    },
+    {
+      "name": "structurallyEqual",
+      "description": "Compare JSON-compatible values independently of object key order.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/validateFlowDataSchema.ts",
+        "line": 195,
+        "column": 7
+      }
+    },
+    {
+      "name": "normalizeValue",
+      "description": "Canonicalize object member ordering for structural comparison.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/validateFlowDataSchema.ts",
+        "line": 199,
+        "column": 7
+      }
+    },
+    {
+      "name": "isDataRecord",
+      "description": "Narrow a JSON-compatible object to a non-array member record.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/validateFlowDataSchema.ts",
+        "line": 211,
+        "column": 7
+      }
+    },
+    {
+      "name": "isDataArray",
+      "description": "Narrow a JSON-compatible array without losing its serializable member type.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/validateFlowDataSchema.ts",
+        "line": 217,
+        "column": 7
+      }
+    }
+  ],
+  "sequenceScenarios": [
+    {
+      "kind": "export",
+      "name": "compileFlowGraph",
+      "sourcePath": "src/features/execution/domain/compileFlowGraph.ts",
+      "symbolName": "compileFlowGraph",
+      "description": "Compile a valid acyclic graph into deterministic execution order.",
+      "isReadme": false
+    },
+    {
+      "kind": "export",
+      "name": "createDefaultNodeRegistry",
+      "sourcePath": "src/features/execution/domain/createDefaultNodeRegistry.ts",
+      "symbolName": "createDefaultNodeRegistry",
+      "description": "Create the built-in operations that have no provider or host dependency.",
+      "isReadme": false
+    },
+    {
+      "kind": "export",
+      "name": "executeFlowAsync",
+      "sourcePath": "src/features/execution/application/executeFlowAsync.ts",
+      "symbolName": "executeFlowAsync",
+      "description": "Execute a compiled graph in deterministic order within one process.",
+      "isReadme": false
+    }
+  ],
   "graphs": {
-    "imports": [],
-    "calls": [],
-    "typeReferences": [],
+    "imports": [
+      {
+        "fromPath": "src/index.ts",
+        "toPath": "src/features/execution/application/executeFlowAsync.ts",
+        "sourcePath": "src/index.ts"
+      },
+      {
+        "fromPath": "src/index.ts",
+        "toPath": "src/features/execution/domain/compileFlowGraph.ts",
+        "sourcePath": "src/index.ts"
+      },
+      {
+        "fromPath": "src/index.ts",
+        "toPath": "src/features/execution/domain/createDefaultNodeRegistry.ts",
+        "sourcePath": "src/index.ts"
+      },
+      {
+        "fromPath": "src/index.ts",
+        "toPath": "src/types/execution.ts",
+        "sourcePath": "src/index.ts"
+      },
+      {
+        "fromPath": "src/features/execution/application/executeFlowAsync.ts",
+        "toPath": "src/types/execution.ts",
+        "sourcePath": "src/features/execution/application/executeFlowAsync.ts"
+      },
+      {
+        "fromPath": "src/features/execution/application/executeFlowAsync.ts",
+        "toPath": "src/features/execution/domain/assertFlowGraphSchemasSupported.ts",
+        "sourcePath": "src/features/execution/application/executeFlowAsync.ts"
+      },
+      {
+        "fromPath": "src/features/execution/application/executeFlowAsync.ts",
+        "toPath": "src/features/execution/domain/validateFlowDataSchema.ts",
+        "sourcePath": "src/features/execution/application/executeFlowAsync.ts"
+      },
+      {
+        "fromPath": "src/features/execution/domain/assertFlowGraphSchemasSupported.ts",
+        "toPath": "src/features/execution/domain/validateFlowDataSchema.ts",
+        "sourcePath": "src/features/execution/domain/assertFlowGraphSchemasSupported.ts"
+      },
+      {
+        "fromPath": "src/features/execution/domain/compileFlowGraph.ts",
+        "toPath": "src/types/execution.ts",
+        "sourcePath": "src/features/execution/domain/compileFlowGraph.ts"
+      },
+      {
+        "fromPath": "src/features/execution/domain/createDefaultNodeRegistry.ts",
+        "toPath": "src/types/execution.ts",
+        "sourcePath": "src/features/execution/domain/createDefaultNodeRegistry.ts"
+      }
+    ],
+    "calls": [
+      {
+        "fromSymbol": "executeFlowAsync",
+        "toSymbol": "assertFlowGraphSchemasSupported",
+        "callExpression": "assertFlowGraphSchemasSupported",
+        "sourcePath": "src/features/execution/application/executeFlowAsync.ts"
+      },
+      {
+        "fromSymbol": "executeFlowAsync",
+        "toSymbol": "now",
+        "callExpression": "clock.now",
+        "sourcePath": "src/features/execution/application/executeFlowAsync.ts"
+      },
+      {
+        "fromSymbol": "executeFlowAsync",
+        "toSymbol": "executeNodesAsync",
+        "callExpression": "executeNodesAsync",
+        "sourcePath": "src/features/execution/application/executeFlowAsync.ts"
+      },
+      {
+        "fromSymbol": "executeFlowAsync",
+        "toSymbol": "createRun",
+        "callExpression": "createRun",
+        "sourcePath": "src/features/execution/application/executeFlowAsync.ts"
+      },
+      {
+        "fromSymbol": "executeNodesAsync",
+        "toSymbol": "executeAvailableNodeAsync",
+        "callExpression": "executeAvailableNodeAsync",
+        "sourcePath": "src/features/execution/application/executeFlowAsync.ts"
+      },
+      {
+        "fromSymbol": "executeNodesAsync",
+        "toSymbol": "propagateOutput",
+        "callExpression": "propagateOutput",
+        "sourcePath": "src/features/execution/application/executeFlowAsync.ts"
+      },
+      {
+        "fromSymbol": "executeAvailableNodeAsync",
+        "toSymbol": "hasRequiredInput",
+        "callExpression": "hasRequiredInput",
+        "sourcePath": "src/features/execution/application/executeFlowAsync.ts"
+      },
+      {
+        "fromSymbol": "executeAvailableNodeAsync",
+        "toSymbol": "executeNodeAsync",
+        "callExpression": "executeNodeAsync",
+        "sourcePath": "src/features/execution/application/executeFlowAsync.ts"
+      },
+      {
+        "fromSymbol": "executeNodeAsync",
+        "toSymbol": "now",
+        "callExpression": "clock.now",
+        "sourcePath": "src/features/execution/application/executeFlowAsync.ts"
+      },
+      {
+        "fromSymbol": "executeNodeAsync",
+        "toSymbol": "assertPortSchemas",
+        "callExpression": "assertPortSchemas",
+        "sourcePath": "src/features/execution/application/executeFlowAsync.ts"
+      },
+      {
+        "fromSymbol": "executeNodeAsync",
+        "toSymbol": "executeAsync",
+        "callExpression": "operation.executeAsync",
+        "sourcePath": "src/features/execution/application/executeFlowAsync.ts"
+      },
+      {
+        "fromSymbol": "executeNodeAsync",
+        "toSymbol": "createCancelledStep",
+        "callExpression": "createCancelledStep",
+        "sourcePath": "src/features/execution/application/executeFlowAsync.ts"
+      },
+      {
+        "fromSymbol": "executeNodeAsync",
+        "toSymbol": "assertOutputPorts",
+        "callExpression": "assertOutputPorts",
+        "sourcePath": "src/features/execution/application/executeFlowAsync.ts"
+      },
+      {
+        "fromSymbol": "executeNodeAsync",
+        "toSymbol": "createSucceededStep",
+        "callExpression": "createSucceededStep",
+        "sourcePath": "src/features/execution/application/executeFlowAsync.ts"
+      },
+      {
+        "fromSymbol": "executeNodeAsync",
+        "toSymbol": "asFlowError",
+        "callExpression": "asFlowError",
+        "sourcePath": "src/features/execution/application/executeFlowAsync.ts"
+      },
+      {
+        "fromSymbol": "createSucceededStep",
+        "toSymbol": "now",
+        "callExpression": "clock.now",
+        "sourcePath": "src/features/execution/application/executeFlowAsync.ts"
+      },
+      {
+        "fromSymbol": "createCancelledStep",
+        "toSymbol": "now",
+        "callExpression": "clock.now",
+        "sourcePath": "src/features/execution/application/executeFlowAsync.ts"
+      },
+      {
+        "fromSymbol": "assertPortSchemas",
+        "toSymbol": "validateFlowDataSchema",
+        "callExpression": "validateFlowDataSchema",
+        "sourcePath": "src/features/execution/application/executeFlowAsync.ts"
+      },
+      {
+        "fromSymbol": "propagateOutput",
+        "toSymbol": "matchesEdge",
+        "callExpression": "matchesEdge",
+        "sourcePath": "src/features/execution/application/executeFlowAsync.ts"
+      },
+      {
+        "fromSymbol": "matchesEdge",
+        "toSymbol": "resolvePointer",
+        "callExpression": "resolvePointer",
+        "sourcePath": "src/features/execution/application/executeFlowAsync.ts"
+      },
+      {
+        "fromSymbol": "matchesEdge",
+        "toSymbol": "structurallyEqual",
+        "callExpression": "structurallyEqual",
+        "sourcePath": "src/features/execution/application/executeFlowAsync.ts"
+      },
+      {
+        "fromSymbol": "src/features/execution/application/executeFlowAsync.ts",
+        "toSymbol": "isDataArray",
+        "callExpression": "isDataArray",
+        "sourcePath": "src/features/execution/application/executeFlowAsync.ts"
+      },
+      {
+        "fromSymbol": "src/features/execution/application/executeFlowAsync.ts",
+        "toSymbol": "isDataRecord",
+        "callExpression": "isDataRecord",
+        "sourcePath": "src/features/execution/application/executeFlowAsync.ts"
+      },
+      {
+        "fromSymbol": "structurallyEqual",
+        "toSymbol": "normalizeValue",
+        "callExpression": "normalizeValue",
+        "sourcePath": "src/features/execution/application/executeFlowAsync.ts"
+      },
+      {
+        "fromSymbol": "src/features/execution/application/executeFlowAsync.ts",
+        "toSymbol": "normalizeValue",
+        "callExpression": "normalizeValue",
+        "sourcePath": "src/features/execution/application/executeFlowAsync.ts"
+      },
+      {
+        "fromSymbol": "assertFlowGraphSchemasSupported",
+        "toSymbol": "assertFlowDataSchemaSupported",
+        "callExpression": "assertFlowDataSchemaSupported",
+        "sourcePath": "src/features/execution/domain/assertFlowGraphSchemasSupported.ts"
+      },
+      {
+        "fromSymbol": "compileFlowGraph",
+        "toSymbol": "indexNodes",
+        "callExpression": "indexNodes",
+        "sourcePath": "src/features/execution/domain/compileFlowGraph.ts"
+      },
+      {
+        "fromSymbol": "compileFlowGraph",
+        "toSymbol": "indexEdges",
+        "callExpression": "indexEdges",
+        "sourcePath": "src/features/execution/domain/compileFlowGraph.ts"
+      },
+      {
+        "fromSymbol": "compileFlowGraph",
+        "toSymbol": "assertNodeIsExecutable",
+        "callExpression": "assertNodeIsExecutable",
+        "sourcePath": "src/features/execution/domain/compileFlowGraph.ts"
+      },
+      {
+        "fromSymbol": "compileFlowGraph",
+        "toSymbol": "orderNodes",
+        "callExpression": "orderNodes",
+        "sourcePath": "src/features/execution/domain/compileFlowGraph.ts"
+      },
+      {
+        "fromSymbol": "indexEdges",
+        "toSymbol": "assertPort",
+        "callExpression": "assertPort",
+        "sourcePath": "src/features/execution/domain/compileFlowGraph.ts"
+      },
+      {
+        "fromSymbol": "src/features/execution/domain/createDefaultNodeRegistry.ts",
+        "toSymbol": "isDataRef",
+        "callExpression": "isDataRef",
+        "sourcePath": "src/features/execution/domain/createDefaultNodeRegistry.ts"
+      },
+      {
+        "fromSymbol": "validateFlowDataSchema",
+        "toSymbol": "assertFlowDataSchemaSupported",
+        "callExpression": "assertFlowDataSchemaSupported",
+        "sourcePath": "src/features/execution/domain/validateFlowDataSchema.ts"
+      },
+      {
+        "fromSymbol": "validateFlowDataSchema",
+        "toSymbol": "matchesSchema",
+        "callExpression": "matchesSchema",
+        "sourcePath": "src/features/execution/domain/validateFlowDataSchema.ts"
+      },
+      {
+        "fromSymbol": "validateFlowDataSchema",
+        "toSymbol": "createTraversalState",
+        "callExpression": "createTraversalState",
+        "sourcePath": "src/features/execution/domain/validateFlowDataSchema.ts"
+      },
+      {
+        "fromSymbol": "assertFlowDataSchemaSupported",
+        "toSymbol": "assertSupportedSchema",
+        "callExpression": "assertSupportedSchema",
+        "sourcePath": "src/features/execution/domain/validateFlowDataSchema.ts"
+      },
+      {
+        "fromSymbol": "assertFlowDataSchemaSupported",
+        "toSymbol": "createTraversalState",
+        "callExpression": "createTraversalState",
+        "sourcePath": "src/features/execution/domain/validateFlowDataSchema.ts"
+      },
+      {
+        "fromSymbol": "matchesSchema",
+        "toSymbol": "resolveSchema",
+        "callExpression": "resolveSchema",
+        "sourcePath": "src/features/execution/domain/validateFlowDataSchema.ts"
+      },
+      {
+        "fromSymbol": "matchesSchema",
+        "toSymbol": "advanceTraversalState",
+        "callExpression": "advanceTraversalState",
+        "sourcePath": "src/features/execution/domain/validateFlowDataSchema.ts"
+      },
+      {
+        "fromSymbol": "matchesSchema",
+        "toSymbol": "matchesTypes",
+        "callExpression": "matchesTypes",
+        "sourcePath": "src/features/execution/domain/validateFlowDataSchema.ts"
+      },
+      {
+        "fromSymbol": "matchesSchema",
+        "toSymbol": "matchesValues",
+        "callExpression": "matchesValues",
+        "sourcePath": "src/features/execution/domain/validateFlowDataSchema.ts"
+      },
+      {
+        "fromSymbol": "matchesSchema",
+        "toSymbol": "matchesComposition",
+        "callExpression": "matchesComposition",
+        "sourcePath": "src/features/execution/domain/validateFlowDataSchema.ts"
+      },
+      {
+        "fromSymbol": "matchesSchema",
+        "toSymbol": "matchesStructure",
+        "callExpression": "matchesStructure",
+        "sourcePath": "src/features/execution/domain/validateFlowDataSchema.ts"
+      },
+      {
+        "fromSymbol": "assertSupportedSchema",
+        "toSymbol": "advanceTraversalState",
+        "callExpression": "advanceTraversalState",
+        "sourcePath": "src/features/execution/domain/validateFlowDataSchema.ts"
+      },
+      {
+        "fromSymbol": "assertSupportedSchema",
+        "toSymbol": "visitChildSchemas",
+        "callExpression": "visitChildSchemas",
+        "sourcePath": "src/features/execution/domain/validateFlowDataSchema.ts"
+      },
+      {
+        "fromSymbol": "assertSupportedSchema",
+        "toSymbol": "resolveSchema",
+        "callExpression": "resolveSchema",
+        "sourcePath": "src/features/execution/domain/validateFlowDataSchema.ts"
+      },
+      {
+        "fromSymbol": "assertSupportedSchema",
+        "toSymbol": "assertSupportedSchema",
+        "callExpression": "assertSupportedSchema",
+        "sourcePath": "src/features/execution/domain/validateFlowDataSchema.ts"
+      },
+      {
+        "fromSymbol": "visitChildSchemas",
+        "toSymbol": "assertSupportedSchema",
+        "callExpression": "assertSupportedSchema",
+        "sourcePath": "src/features/execution/domain/validateFlowDataSchema.ts"
+      },
+      {
+        "fromSymbol": "matchesTypes",
+        "toSymbol": "matchesType",
+        "callExpression": "matchesType",
+        "sourcePath": "src/features/execution/domain/validateFlowDataSchema.ts"
+      },
+      {
+        "fromSymbol": "src/features/execution/domain/validateFlowDataSchema.ts",
+        "toSymbol": "matchesType",
+        "callExpression": "matchesType",
+        "sourcePath": "src/features/execution/domain/validateFlowDataSchema.ts"
+      },
+      {
+        "fromSymbol": "matchesType",
+        "toSymbol": "isDataArray",
+        "callExpression": "isDataArray",
+        "sourcePath": "src/features/execution/domain/validateFlowDataSchema.ts"
+      },
+      {
+        "fromSymbol": "matchesType",
+        "toSymbol": "isDataRecord",
+        "callExpression": "isDataRecord",
+        "sourcePath": "src/features/execution/domain/validateFlowDataSchema.ts"
+      },
+      {
+        "fromSymbol": "matchesValues",
+        "toSymbol": "structurallyEqual",
+        "callExpression": "structurallyEqual",
+        "sourcePath": "src/features/execution/domain/validateFlowDataSchema.ts"
+      },
+      {
+        "fromSymbol": "src/features/execution/domain/validateFlowDataSchema.ts",
+        "toSymbol": "structurallyEqual",
+        "callExpression": "structurallyEqual",
+        "sourcePath": "src/features/execution/domain/validateFlowDataSchema.ts"
+      },
+      {
+        "fromSymbol": "src/features/execution/domain/validateFlowDataSchema.ts",
+        "toSymbol": "matchesSchema",
+        "callExpression": "matchesSchema",
+        "sourcePath": "src/features/execution/domain/validateFlowDataSchema.ts"
+      },
+      {
+        "fromSymbol": "matchesStructure",
+        "toSymbol": "matchesItems",
+        "callExpression": "matchesItems",
+        "sourcePath": "src/features/execution/domain/validateFlowDataSchema.ts"
+      },
+      {
+        "fromSymbol": "matchesStructure",
+        "toSymbol": "isDataRecord",
+        "callExpression": "isDataRecord",
+        "sourcePath": "src/features/execution/domain/validateFlowDataSchema.ts"
+      },
+      {
+        "fromSymbol": "matchesStructure",
+        "toSymbol": "matchesProperties",
+        "callExpression": "matchesProperties",
+        "sourcePath": "src/features/execution/domain/validateFlowDataSchema.ts"
+      },
+      {
+        "fromSymbol": "matchesItems",
+        "toSymbol": "isDataArray",
+        "callExpression": "isDataArray",
+        "sourcePath": "src/features/execution/domain/validateFlowDataSchema.ts"
+      },
+      {
+        "fromSymbol": "structurallyEqual",
+        "toSymbol": "normalizeValue",
+        "callExpression": "normalizeValue",
+        "sourcePath": "src/features/execution/domain/validateFlowDataSchema.ts"
+      },
+      {
+        "fromSymbol": "normalizeValue",
+        "toSymbol": "isDataArray",
+        "callExpression": "isDataArray",
+        "sourcePath": "src/features/execution/domain/validateFlowDataSchema.ts"
+      },
+      {
+        "fromSymbol": "normalizeValue",
+        "toSymbol": "isDataRecord",
+        "callExpression": "isDataRecord",
+        "sourcePath": "src/features/execution/domain/validateFlowDataSchema.ts"
+      },
+      {
+        "fromSymbol": "src/features/execution/domain/validateFlowDataSchema.ts",
+        "toSymbol": "normalizeValue",
+        "callExpression": "normalizeValue",
+        "sourcePath": "src/features/execution/domain/validateFlowDataSchema.ts"
+      },
+      {
+        "fromSymbol": "isDataRecord",
+        "toSymbol": "isDataArray",
+        "callExpression": "isDataArray",
+        "sourcePath": "src/features/execution/domain/validateFlowDataSchema.ts"
+      }
+    ],
+    "typeReferences": [
+      {
+        "fromSymbol": "executeFlowAsync",
+        "toType": "FlowClock",
+        "sourcePath": "src/features/execution/application/executeFlowAsync.ts"
+      },
+      {
+        "fromSymbol": "executeFlowAsync",
+        "toType": "FlowCompiledGraph",
+        "sourcePath": "src/features/execution/application/executeFlowAsync.ts"
+      },
+      {
+        "fromSymbol": "executeFlowAsync",
+        "toType": "FlowExecutionResult",
+        "sourcePath": "src/features/execution/application/executeFlowAsync.ts"
+      },
+      {
+        "fromSymbol": "executeFlowAsync",
+        "toType": "FlowNodeOperation",
+        "sourcePath": "src/features/execution/application/executeFlowAsync.ts"
+      },
+      {
+        "fromSymbol": "executeFlowAsync",
+        "toType": "FlowRunRequest",
+        "sourcePath": "src/features/execution/application/executeFlowAsync.ts"
+      },
+      {
+        "fromSymbol": "executeFlowAsync",
+        "toType": "Readonly",
+        "sourcePath": "src/features/execution/application/executeFlowAsync.ts"
+      },
+      {
+        "fromSymbol": "compileFlowGraph",
+        "toType": "FlowCompiledGraph",
+        "sourcePath": "src/features/execution/domain/compileFlowGraph.ts"
+      },
+      {
+        "fromSymbol": "compileFlowGraph",
+        "toType": "FlowDefinition",
+        "sourcePath": "src/features/execution/domain/compileFlowGraph.ts"
+      },
+      {
+        "fromSymbol": "compileFlowGraph",
+        "toType": "FlowNodeOperation",
+        "sourcePath": "src/features/execution/domain/compileFlowGraph.ts"
+      },
+      {
+        "fromSymbol": "compileFlowGraph",
+        "toType": "Readonly",
+        "sourcePath": "src/features/execution/domain/compileFlowGraph.ts"
+      },
+      {
+        "fromSymbol": "createDefaultNodeRegistry",
+        "toType": "FlowNodeOperation",
+        "sourcePath": "src/features/execution/domain/createDefaultNodeRegistry.ts"
+      },
+      {
+        "fromSymbol": "createDefaultNodeRegistry",
+        "toType": "Readonly",
+        "sourcePath": "src/features/execution/domain/createDefaultNodeRegistry.ts"
+      },
+      {
+        "fromSymbol": "FlowCompiledGraph",
+        "toType": "FlowDefinition",
+        "sourcePath": "src/types/execution.ts"
+      },
+      {
+        "fromSymbol": "FlowCompiledGraph",
+        "toType": "FlowEdge",
+        "sourcePath": "src/types/execution.ts"
+      },
+      {
+        "fromSymbol": "FlowCompiledGraph",
+        "toType": "Readonly",
+        "sourcePath": "src/types/execution.ts"
+      },
+      {
+        "fromSymbol": "FlowExecutionResult",
+        "toType": "FlowRunSnapshot",
+        "sourcePath": "src/types/execution.ts"
+      },
+      {
+        "fromSymbol": "FlowNodeOperation",
+        "toType": "AbortSignal",
+        "sourcePath": "src/types/execution.ts"
+      },
+      {
+        "fromSymbol": "FlowNodeOperation",
+        "toType": "FlowDataRef",
+        "sourcePath": "src/types/execution.ts"
+      },
+      {
+        "fromSymbol": "FlowNodeOperation",
+        "toType": "FlowNode",
+        "sourcePath": "src/types/execution.ts"
+      },
+      {
+        "fromSymbol": "FlowNodeOperation",
+        "toType": "FlowNodeConfig",
+        "sourcePath": "src/types/execution.ts"
+      },
+      {
+        "fromSymbol": "FlowNodeOperation",
+        "toType": "FlowNodeOperationResult",
+        "sourcePath": "src/types/execution.ts"
+      },
+      {
+        "fromSymbol": "FlowNodeOperation",
+        "toType": "FlowPortId",
+        "sourcePath": "src/types/execution.ts"
+      },
+      {
+        "fromSymbol": "FlowNodeOperation",
+        "toType": "Readonly",
+        "sourcePath": "src/types/execution.ts"
+      },
+      {
+        "fromSymbol": "FlowNodeOperationResult",
+        "toType": "FlowDataRef",
+        "sourcePath": "src/types/execution.ts"
+      },
+      {
+        "fromSymbol": "FlowNodeOperationResult",
+        "toType": "Readonly",
+        "sourcePath": "src/types/execution.ts"
+      },
+      {
+        "fromSymbol": "FlowRunRequest",
+        "toType": "AbortSignal",
+        "sourcePath": "src/types/execution.ts"
+      },
+      {
+        "fromSymbol": "FlowRunRequest",
+        "toType": "DataSchema",
+        "sourcePath": "src/types/execution.ts"
+      },
+      {
+        "fromSymbol": "FlowRunRequest",
+        "toType": "FlowDataRef",
+        "sourcePath": "src/types/execution.ts"
+      },
+      {
+        "fromSymbol": "FlowRunRequest",
+        "toType": "Readonly",
+        "sourcePath": "src/types/execution.ts"
+      }
+    ],
     "componentComposition": []
   }
 }

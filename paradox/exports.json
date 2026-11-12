@@ -1,1 +1,384 @@
-[]
+[
+  {
+    "name": "compileFlowGraph",
+    "title": null,
+    "description": "Compile a valid acyclic graph into deterministic execution order.",
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "value",
+    "modulePath": "src/features/execution/domain/compileFlowGraph.ts",
+    "sourceLocation": {
+      "filePath": "src/features/execution/domain/compileFlowGraph.ts",
+      "line": 6,
+      "column": 14
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [
+      "FlowCompiledGraph",
+      "FlowNodeOperation"
+    ],
+    "signatures": [
+      {
+        "label": "(definition: FlowDefinition, registry: Readonly<Record<string, import(\"../../../index.js\").FlowNodeOperation>>) => FlowCompiledGraph",
+        "parameters": [
+          {
+            "name": "definition",
+            "type": "FlowDefinition",
+            "required": true,
+            "description": null
+          },
+          {
+            "name": "registry",
+            "type": "Readonly<Record<string, import(\"../../../index.js\").FlowNodeOperation>>",
+            "required": true,
+            "description": null
+          }
+        ],
+        "returnType": "FlowCompiledGraph",
+        "returnDescription": null
+      }
+    ],
+    "members": [],
+    "structuredRows": []
+  },
+  {
+    "name": "createDefaultNodeRegistry",
+    "title": null,
+    "description": "Create the built-in operations that have no provider or host dependency.",
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "value",
+    "modulePath": "src/features/execution/domain/createDefaultNodeRegistry.ts",
+    "sourceLocation": {
+      "filePath": "src/features/execution/domain/createDefaultNodeRegistry.ts",
+      "line": 6,
+      "column": 14
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [
+      "FlowNodeOperation"
+    ],
+    "signatures": [
+      {
+        "label": "() => Readonly<Record<string, FlowNodeOperation>>",
+        "parameters": [],
+        "returnType": "Readonly<Record<string, FlowNodeOperation>>",
+        "returnDescription": null
+      }
+    ],
+    "members": [],
+    "structuredRows": []
+  },
+  {
+    "name": "executeFlowAsync",
+    "title": null,
+    "description": "Execute a compiled graph in deterministic order within one process.",
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "value",
+    "modulePath": "src/features/execution/application/executeFlowAsync.ts",
+    "sourceLocation": {
+      "filePath": "src/features/execution/application/executeFlowAsync.ts",
+      "line": 23,
+      "column": 14
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [
+      "FlowClock",
+      "FlowCompiledGraph",
+      "FlowExecutionResult",
+      "FlowNodeOperation",
+      "FlowRunRequest"
+    ],
+    "signatures": [
+      {
+        "label": "(graph: FlowCompiledGraph, registry: Readonly<Record<string, import(\"../../../index.js\").FlowNodeOperation>>, request: FlowRunRequest, clock?: FlowClock) => Promise<FlowExecutionResult>",
+        "parameters": [
+          {
+            "name": "clock",
+            "type": "FlowClock",
+            "required": false,
+            "description": null
+          },
+          {
+            "name": "graph",
+            "type": "FlowCompiledGraph",
+            "required": true,
+            "description": null
+          },
+          {
+            "name": "registry",
+            "type": "Readonly<Record<string, import(\"../../../index.js\").FlowNodeOperation>>",
+            "required": true,
+            "description": null
+          },
+          {
+            "name": "request",
+            "type": "FlowRunRequest",
+            "required": true,
+            "description": null
+          }
+        ],
+        "returnType": "Promise<FlowExecutionResult>",
+        "returnDescription": null
+      }
+    ],
+    "members": [],
+    "structuredRows": []
+  },
+  {
+    "name": "FlowClock",
+    "title": null,
+    "description": null,
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "type",
+    "modulePath": "src/types/execution.ts",
+    "sourceLocation": {
+      "filePath": "src/types/execution.ts",
+      "line": 12,
+      "column": 1
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [],
+    "signatures": [],
+    "members": [
+      {
+        "name": "now",
+        "kind": "property",
+        "type": "() => Date",
+        "required": true,
+        "description": null
+      }
+    ],
+    "structuredRows": []
+  },
+  {
+    "name": "FlowCompiledGraph",
+    "title": null,
+    "description": null,
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "type",
+    "modulePath": "src/types/execution.ts",
+    "sourceLocation": {
+      "filePath": "src/types/execution.ts",
+      "line": 27,
+      "column": 1
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [],
+    "signatures": [],
+    "members": [
+      {
+        "name": "definition",
+        "kind": "property",
+        "type": "FlowDefinition",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "edgesBySourceNodeId",
+        "kind": "property",
+        "type": "Readonly<Record<string, readonly FlowEdge[]>>",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "topologicalNodeIds",
+        "kind": "property",
+        "type": "readonly string[]",
+        "required": true,
+        "description": null
+      }
+    ],
+    "structuredRows": []
+  },
+  {
+    "name": "FlowExecutionResult",
+    "title": null,
+    "description": null,
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "type",
+    "modulePath": "src/types/execution.ts",
+    "sourceLocation": {
+      "filePath": "src/types/execution.ts",
+      "line": 39,
+      "column": 1
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [],
+    "signatures": [],
+    "members": [
+      {
+        "name": "run",
+        "kind": "property",
+        "type": "FlowRunSnapshot",
+        "required": true,
+        "description": null
+      }
+    ],
+    "structuredRows": []
+  },
+  {
+    "name": "FlowNodeOperation",
+    "title": null,
+    "description": null,
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "type",
+    "modulePath": "src/types/execution.ts",
+    "sourceLocation": {
+      "filePath": "src/types/execution.ts",
+      "line": 18,
+      "column": 1
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [
+      "FlowNodeOperationResult"
+    ],
+    "signatures": [],
+    "members": [
+      {
+        "name": "executeAsync",
+        "kind": "property",
+        "type": "(input: { readonly config: FlowNodeConfig | undefined; readonly input: Readonly<Record<FlowPortId, FlowDataRef>>; readonly node: FlowNode; readonly signal: AbortSignal; }) => Promise<FlowNodeOperationResult>",
+        "required": true,
+        "description": null
+      }
+    ],
+    "structuredRows": []
+  },
+  {
+    "name": "FlowNodeOperationResult",
+    "title": null,
+    "description": null,
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "type",
+    "modulePath": "src/types/execution.ts",
+    "sourceLocation": {
+      "filePath": "src/types/execution.ts",
+      "line": 15,
+      "column": 1
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [],
+    "signatures": [],
+    "members": [
+      {
+        "name": "output",
+        "kind": "property",
+        "type": "Readonly<Record<string, FlowDataRef>> | undefined",
+        "required": false,
+        "description": null
+      }
+    ],
+    "structuredRows": []
+  },
+  {
+    "name": "FlowNodeRegistry",
+    "title": null,
+    "description": null,
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "unknown",
+    "modulePath": "src/types/execution.ts",
+    "sourceLocation": {
+      "filePath": "src/types/execution.ts",
+      "line": 26,
+      "column": 1
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [],
+    "signatures": [],
+    "members": [],
+    "structuredRows": []
+  },
+  {
+    "name": "FlowRunRequest",
+    "title": null,
+    "description": null,
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "type",
+    "modulePath": "src/types/execution.ts",
+    "sourceLocation": {
+      "filePath": "src/types/execution.ts",
+      "line": 32,
+      "column": 1
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [],
+    "signatures": [],
+    "members": [
+      {
+        "name": "input",
+        "kind": "property",
+        "type": "Readonly<Record<string, FlowDataRef>> | undefined",
+        "required": false,
+        "description": null
+      },
+      {
+        "name": "runId",
+        "kind": "property",
+        "type": "string",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "schemaRegistry",
+        "kind": "property",
+        "type": "Readonly<Record<string, import(\"@ankhorage/contracts/data\").DataSchema>> | undefined",
+        "required": false,
+        "description": null
+      },
+      {
+        "name": "signal",
+        "kind": "property",
+        "type": "AbortSignal | undefined",
+        "required": false,
+        "description": null
+      },
+      {
+        "name": "triggerId",
+        "kind": "property",
+        "type": "string",
+        "required": true,
+        "description": null
+      }
+    ],
+    "structuredRows": []
+  }
+]

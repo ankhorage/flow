@@ -1,5 +1,40 @@
 graph LR
   module_src_ai_ts["src/ai.ts"]
+  module_src_features_execution_application_executeFlowAsync_ts["src/features/execution/application/executeFlowAsync.ts"]
+  module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts["src/features/execution/domain/assertFlowGraphSchemasSupported.ts"]
+  module_src_features_execution_domain_compileFlowGraph_ts["src/features/execution/domain/compileFlowGraph.ts"]
+  module_src_features_execution_domain_createDefaultNodeRegistry_ts["src/features/execution/domain/createDefaultNodeRegistry.ts"]
+  module_src_features_execution_domain_validateFlowDataSchema_ts["src/features/execution/domain/validateFlowDataSchema.ts"]
   module_src_index_ts["src/index.ts"]
   module_src_mcp_ts["src/mcp.ts"]
   module_src_social_ts["src/social.ts"]
+  module_src_types_execution_ts["src/types/execution.ts"]
+  export_compileFlowGraph["compileFlowGraph"]
+  module_src_features_execution_domain_compileFlowGraph_ts --> export_compileFlowGraph
+  export_compileFlowGraph -.-> export_FlowCompiledGraph
+  export_compileFlowGraph -.-> export_FlowNodeOperation
+  export_createDefaultNodeRegistry["createDefaultNodeRegistry"]
+  module_src_features_execution_domain_createDefaultNodeRegistry_ts --> export_createDefaultNodeRegistry
+  export_createDefaultNodeRegistry -.-> export_FlowNodeOperation
+  export_executeFlowAsync["executeFlowAsync"]
+  module_src_features_execution_application_executeFlowAsync_ts --> export_executeFlowAsync
+  export_executeFlowAsync -.-> export_FlowClock
+  export_executeFlowAsync -.-> export_FlowCompiledGraph
+  export_executeFlowAsync -.-> export_FlowExecutionResult
+  export_executeFlowAsync -.-> export_FlowNodeOperation
+  export_executeFlowAsync -.-> export_FlowRunRequest
+  export_FlowClock["FlowClock"]
+  module_src_types_execution_ts --> export_FlowClock
+  export_FlowCompiledGraph["FlowCompiledGraph"]
+  module_src_types_execution_ts --> export_FlowCompiledGraph
+  export_FlowExecutionResult["FlowExecutionResult"]
+  module_src_types_execution_ts --> export_FlowExecutionResult
+  export_FlowNodeOperation["FlowNodeOperation"]
+  module_src_types_execution_ts --> export_FlowNodeOperation
+  export_FlowNodeOperation -.-> export_FlowNodeOperationResult
+  export_FlowNodeOperationResult["FlowNodeOperationResult"]
+  module_src_types_execution_ts --> export_FlowNodeOperationResult
+  export_FlowNodeRegistry["FlowNodeRegistry"]
+  module_src_types_execution_ts --> export_FlowNodeRegistry
+  export_FlowRunRequest["FlowRunRequest"]
+  module_src_types_execution_ts --> export_FlowRunRequest

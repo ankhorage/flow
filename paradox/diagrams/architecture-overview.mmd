@@ -4,8 +4,26 @@ graph TD
   package__ankhorage_flow --> entrypoint_src_index_ts
   module_src_ai_ts["src/ai.ts"]
   package__ankhorage_flow -.-> module_src_ai_ts
+  module_src_features_execution_application_executeFlowAsync_ts["src/features/execution/application/executeFlowAsync.ts"]
+  package__ankhorage_flow -.-> module_src_features_execution_application_executeFlowAsync_ts
+  module_src_features_execution_application_executeFlowAsync_ts --> module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts
+  module_src_features_execution_application_executeFlowAsync_ts --> module_src_features_execution_domain_validateFlowDataSchema_ts
+  module_src_features_execution_application_executeFlowAsync_ts --> module_src_types_execution_ts
+  module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts["src/features/execution/domain/assertFlowGraphSchemasSupported.ts"]
+  package__ankhorage_flow -.-> module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts
+  module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts --> module_src_features_execution_domain_validateFlowDataSchema_ts
+  module_src_features_execution_domain_compileFlowGraph_ts["src/features/execution/domain/compileFlowGraph.ts"]
+  package__ankhorage_flow -.-> module_src_features_execution_domain_compileFlowGraph_ts
+  module_src_features_execution_domain_compileFlowGraph_ts --> module_src_types_execution_ts
+  module_src_features_execution_domain_createDefaultNodeRegistry_ts["src/features/execution/domain/createDefaultNodeRegistry.ts"]
+  package__ankhorage_flow -.-> module_src_features_execution_domain_createDefaultNodeRegistry_ts
+  module_src_features_execution_domain_createDefaultNodeRegistry_ts --> module_src_types_execution_ts
+  module_src_features_execution_domain_validateFlowDataSchema_ts["src/features/execution/domain/validateFlowDataSchema.ts"]
+  package__ankhorage_flow -.-> module_src_features_execution_domain_validateFlowDataSchema_ts
   module_src_index_ts["src/index.ts"]
   module_src_mcp_ts["src/mcp.ts"]
   package__ankhorage_flow -.-> module_src_mcp_ts
   module_src_social_ts["src/social.ts"]
   package__ankhorage_flow -.-> module_src_social_ts
+  module_src_types_execution_ts["src/types/execution.ts"]
+  package__ankhorage_flow -.-> module_src_types_execution_ts

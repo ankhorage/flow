@@ -126,7 +126,32 @@
                 <small>Overview, CLI, public API, diagrams</small>
               </button>
             </li>
-            
+            <li>
+    <button class="nav-button" type="button" data-target="src/features/execution/application/executeFlowAsync.ts">
+      src/features/execution/application/executeFlowAsync.ts
+      <small>18 functions</small>
+    </button>
+  </li><li>
+    <button class="nav-button" type="button" data-target="src/features/execution/domain/assertFlowGraphSchemasSupported.ts">
+      src/features/execution/domain/assertFlowGraphSchemasSupported.ts
+      <small>1 function</small>
+    </button>
+  </li><li>
+    <button class="nav-button" type="button" data-target="src/features/execution/domain/compileFlowGraph.ts">
+      src/features/execution/domain/compileFlowGraph.ts
+      <small>6 functions</small>
+    </button>
+  </li><li>
+    <button class="nav-button" type="button" data-target="src/features/execution/domain/createDefaultNodeRegistry.ts">
+      src/features/execution/domain/createDefaultNodeRegistry.ts
+      <small>3 functions</small>
+    </button>
+  </li><li>
+    <button class="nav-button" type="button" data-target="src/features/execution/domain/validateFlowDataSchema.ts">
+      src/features/execution/domain/validateFlowDataSchema.ts
+      <small>19 functions</small>
+    </button>
+  </li>
           </ul>
         </nav>
       </aside>
@@ -136,9 +161,9 @@
     <section class="panel">
       <h2>Package overview</h2>
       <div class="summary">
-        <div><strong>0</strong><span class="muted">public exports</span></div>
+        <div><strong>10</strong><span class="muted">public exports</span></div>
         <div><strong>0</strong><span class="muted">components</span></div>
-        <div><strong>4</strong><span class="muted">modules</span></div>
+        <div><strong>10</strong><span class="muted">modules</span></div>
         <div><strong>1</strong><span class="muted">entrypoints</span></div>
       </div>
       <h3>Entrypoints</h3>
@@ -155,11 +180,36 @@
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
     <p><strong>Exports:</strong> <span class="empty">None</span></p>
-  </article><article class="item" data-search="src/index.ts">
+  </article><article class="item" data-search="src/features/execution/application/executeFlowAsync.ts src/features/execution/domain/assertFlowGraphSchemasSupported.ts src/features/execution/domain/validateFlowDataSchema.ts src/types/execution.ts executeFlowAsync">
+    <h3>src/features/execution/application/executeFlowAsync.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/features/execution/domain/assertFlowGraphSchemasSupported.ts</code>, <code>src/features/execution/domain/validateFlowDataSchema.ts</code>, <code>src/types/execution.ts</code></p>
+    <p><strong>Exports:</strong> <code>executeFlowAsync</code></p>
+  </article><article class="item" data-search="src/features/execution/domain/assertFlowGraphSchemasSupported.ts src/features/execution/domain/validateFlowDataSchema.ts assertFlowGraphSchemasSupported">
+    <h3>src/features/execution/domain/assertFlowGraphSchemasSupported.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/features/execution/domain/validateFlowDataSchema.ts</code></p>
+    <p><strong>Exports:</strong> <code>assertFlowGraphSchemasSupported</code></p>
+  </article><article class="item" data-search="src/features/execution/domain/compileFlowGraph.ts src/types/execution.ts compileFlowGraph">
+    <h3>src/features/execution/domain/compileFlowGraph.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/types/execution.ts</code></p>
+    <p><strong>Exports:</strong> <code>compileFlowGraph</code></p>
+  </article><article class="item" data-search="src/features/execution/domain/createDefaultNodeRegistry.ts src/types/execution.ts createDefaultNodeRegistry">
+    <h3>src/features/execution/domain/createDefaultNodeRegistry.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/types/execution.ts</code></p>
+    <p><strong>Exports:</strong> <code>createDefaultNodeRegistry</code></p>
+  </article><article class="item" data-search="src/features/execution/domain/validateFlowDataSchema.ts assertFlowDataSchemaSupported validateFlowDataSchema">
+    <h3>src/features/execution/domain/validateFlowDataSchema.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
+    <p><strong>Exports:</strong> <code>assertFlowDataSchemaSupported</code>, <code>validateFlowDataSchema</code></p>
+  </article><article class="item" data-search="src/index.ts compileFlowGraph createDefaultNodeRegistry executeFlowAsync FlowClock FlowCompiledGraph FlowExecutionResult FlowNodeOperation FlowNodeOperationResult FlowNodeRegistry FlowRunRequest">
     <h3>src/index.ts</h3>
     <p class="muted">Configured entrypoint</p>
     <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
-    <p><strong>Exports:</strong> <span class="empty">None</span></p>
+    <p><strong>Exports:</strong> <code>compileFlowGraph</code>, <code>createDefaultNodeRegistry</code>, <code>executeFlowAsync</code>, <code>FlowClock</code>, <code>FlowCompiledGraph</code>, <code>FlowExecutionResult</code>, <code>FlowNodeOperation</code>, <code>FlowNodeOperationResult</code>, <code>FlowNodeRegistry</code>, <code>FlowRunRequest</code></p>
   </article><article class="item" data-search="src/mcp.ts">
     <h3>src/mcp.ts</h3>
     <p class="muted">Referenced module</p>
@@ -170,11 +220,289 @@
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
     <p><strong>Exports:</strong> <span class="empty">None</span></p>
+  </article><article class="item" data-search="src/types/execution.ts FlowClock FlowCompiledGraph FlowExecutionResult FlowNodeOperation FlowNodeOperationResult FlowNodeRegistry FlowRunRequest">
+    <h3>src/types/execution.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
+    <p><strong>Exports:</strong> <code>FlowClock</code>, <code>FlowCompiledGraph</code>, <code>FlowExecutionResult</code>, <code>FlowNodeOperation</code>, <code>FlowNodeOperationResult</code>, <code>FlowNodeRegistry</code>, <code>FlowRunRequest</code></p>
   </article>
     </section>
     <section class="panel">
       <h2>Public API</h2>
       
+            <section>
+              <h3>src/features/execution/application/executeFlowAsync.ts</h3>
+              <article class="item" id="symbol-executeflowasync" data-search="executeFlowAsync  value src/features/execution/application/executeFlowAsync.ts Execute a compiled graph in deterministic order within one process. FlowClock FlowCompiledGraph FlowExecutionResult FlowNodeOperation FlowRunRequest (graph: FlowCompiledGraph, registry: Readonly&lt;Record&lt;string, import(&quot;../../../index.js&quot;).FlowNodeOperation&gt;&gt;, request: FlowRunRequest, clock?: FlowClock) =&gt; Promise&lt;FlowExecutionResult&gt;">
+    <h4>executeFlowAsync</h4>
+    
+    <p class="muted">value • <code>src/features/execution/application/executeFlowAsync.ts:23:14</code></p>
+    <p>Execute a compiled graph in deterministic order within one process.</p>
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <ul class="chips"><li class="chip">FlowClock</li><li class="chip">FlowCompiledGraph</li><li class="chip">FlowExecutionResult</li><li class="chip">FlowNodeOperation</li><li class="chip">FlowRunRequest</li></ul></div>
+    <div>
+        <h5>Signature</h5>
+        <pre>(graph: FlowCompiledGraph, registry: Readonly&lt;Record&lt;string, import(&quot;../../../index.js&quot;).FlowNodeOperation&gt;&gt;, request: FlowRunRequest, clock?: FlowClock) =&gt; Promise&lt;FlowExecutionResult&gt;</pre>
+        <table>
+                <thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+                <tbody>
+                  <tr>
+                        <td><code>clock</code></td>
+                        <td><code>FlowClock</code></td>
+                        <td>no</td>
+                        <td></td>
+                      </tr><tr>
+                        <td><code>graph</code></td>
+                        <td><code>FlowCompiledGraph</code></td>
+                        <td>yes</td>
+                        <td></td>
+                      </tr><tr>
+                        <td><code>registry</code></td>
+                        <td><code>Readonly&lt;Record&lt;string, import(&quot;../../../index.js&quot;).FlowNodeOperation&gt;&gt;</code></td>
+                        <td>yes</td>
+                        <td></td>
+                      </tr><tr>
+                        <td><code>request</code></td>
+                        <td><code>FlowRunRequest</code></td>
+                        <td>yes</td>
+                        <td></td>
+                      </tr>
+                </tbody>
+              </table>
+        <p><strong>Returns:</strong> <code>Promise&lt;FlowExecutionResult&gt;</code></p>
+      </div>
+    
+  </article>
+            </section>
+            <section>
+              <h3>src/features/execution/domain/compileFlowGraph.ts</h3>
+              <article class="item" id="symbol-compileflowgraph" data-search="compileFlowGraph  value src/features/execution/domain/compileFlowGraph.ts Compile a valid acyclic graph into deterministic execution order. FlowCompiledGraph FlowNodeOperation (definition: FlowDefinition, registry: Readonly&lt;Record&lt;string, import(&quot;../../../index.js&quot;).FlowNodeOperation&gt;&gt;) =&gt; FlowCompiledGraph">
+    <h4>compileFlowGraph</h4>
+    
+    <p class="muted">value • <code>src/features/execution/domain/compileFlowGraph.ts:6:14</code></p>
+    <p>Compile a valid acyclic graph into deterministic execution order.</p>
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <ul class="chips"><li class="chip">FlowCompiledGraph</li><li class="chip">FlowNodeOperation</li></ul></div>
+    <div>
+        <h5>Signature</h5>
+        <pre>(definition: FlowDefinition, registry: Readonly&lt;Record&lt;string, import(&quot;../../../index.js&quot;).FlowNodeOperation&gt;&gt;) =&gt; FlowCompiledGraph</pre>
+        <table>
+                <thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+                <tbody>
+                  <tr>
+                        <td><code>definition</code></td>
+                        <td><code>FlowDefinition</code></td>
+                        <td>yes</td>
+                        <td></td>
+                      </tr><tr>
+                        <td><code>registry</code></td>
+                        <td><code>Readonly&lt;Record&lt;string, import(&quot;../../../index.js&quot;).FlowNodeOperation&gt;&gt;</code></td>
+                        <td>yes</td>
+                        <td></td>
+                      </tr>
+                </tbody>
+              </table>
+        <p><strong>Returns:</strong> <code>FlowCompiledGraph</code></p>
+      </div>
+    
+  </article>
+            </section>
+            <section>
+              <h3>src/features/execution/domain/createDefaultNodeRegistry.ts</h3>
+              <article class="item" id="symbol-createdefaultnoderegistry" data-search="createDefaultNodeRegistry  value src/features/execution/domain/createDefaultNodeRegistry.ts Create the built-in operations that have no provider or host dependency. FlowNodeOperation () =&gt; Readonly&lt;Record&lt;string, FlowNodeOperation&gt;&gt;">
+    <h4>createDefaultNodeRegistry</h4>
+    
+    <p class="muted">value • <code>src/features/execution/domain/createDefaultNodeRegistry.ts:6:14</code></p>
+    <p>Create the built-in operations that have no provider or host dependency.</p>
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <ul class="chips"><li class="chip">FlowNodeOperation</li></ul></div>
+    <div>
+        <h5>Signature</h5>
+        <pre>() =&gt; Readonly&lt;Record&lt;string, FlowNodeOperation&gt;&gt;</pre>
+        
+        <p><strong>Returns:</strong> <code>Readonly&lt;Record&lt;string, FlowNodeOperation&gt;&gt;</code></p>
+      </div>
+    
+  </article>
+            </section>
+            <section>
+              <h3>src/types/execution.ts</h3>
+              <article class="item" id="symbol-flowclock" data-search="FlowClock  type src/types/execution.ts ">
+    <h4>FlowClock</h4>
+    
+    <p class="muted">type • <code>src/types/execution.ts:12:1</code></p>
+    
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <span class="empty">None</span></div>
+    
+    <table>
+    <thead><tr><th>Member</th><th>Kind</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr>
+            <td><code>now</code></td>
+            <td>property</td>
+            <td><code>() =&gt; Date</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr>
+    </tbody>
+  </table>
+  </article><article class="item" id="symbol-flowcompiledgraph" data-search="FlowCompiledGraph  type src/types/execution.ts ">
+    <h4>FlowCompiledGraph</h4>
+    
+    <p class="muted">type • <code>src/types/execution.ts:27:1</code></p>
+    
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <span class="empty">None</span></div>
+    
+    <table>
+    <thead><tr><th>Member</th><th>Kind</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr>
+            <td><code>definition</code></td>
+            <td>property</td>
+            <td><code>FlowDefinition</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>edgesBySourceNodeId</code></td>
+            <td>property</td>
+            <td><code>Readonly&lt;Record&lt;string, readonly FlowEdge[]&gt;&gt;</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>topologicalNodeIds</code></td>
+            <td>property</td>
+            <td><code>readonly string[]</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr>
+    </tbody>
+  </table>
+  </article><article class="item" id="symbol-flowexecutionresult" data-search="FlowExecutionResult  type src/types/execution.ts ">
+    <h4>FlowExecutionResult</h4>
+    
+    <p class="muted">type • <code>src/types/execution.ts:39:1</code></p>
+    
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <span class="empty">None</span></div>
+    
+    <table>
+    <thead><tr><th>Member</th><th>Kind</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr>
+            <td><code>run</code></td>
+            <td>property</td>
+            <td><code>FlowRunSnapshot</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr>
+    </tbody>
+  </table>
+  </article><article class="item" id="symbol-flownodeoperation" data-search="FlowNodeOperation  type src/types/execution.ts  FlowNodeOperationResult">
+    <h4>FlowNodeOperation</h4>
+    
+    <p class="muted">type • <code>src/types/execution.ts:18:1</code></p>
+    
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <ul class="chips"><li class="chip">FlowNodeOperationResult</li></ul></div>
+    
+    <table>
+    <thead><tr><th>Member</th><th>Kind</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr>
+            <td><code>executeAsync</code></td>
+            <td>property</td>
+            <td><code>(input: { readonly config: FlowNodeConfig | undefined; readonly input: Readonly&lt;Record&lt;FlowPortId, FlowDataRef&gt;&gt;; readonly node: FlowNode; readonly signal: AbortSignal; }) =&gt; Promise&lt;FlowNodeOperationResult&gt;</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr>
+    </tbody>
+  </table>
+  </article><article class="item" id="symbol-flownodeoperationresult" data-search="FlowNodeOperationResult  type src/types/execution.ts ">
+    <h4>FlowNodeOperationResult</h4>
+    
+    <p class="muted">type • <code>src/types/execution.ts:15:1</code></p>
+    
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <span class="empty">None</span></div>
+    
+    <table>
+    <thead><tr><th>Member</th><th>Kind</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr>
+            <td><code>output</code></td>
+            <td>property</td>
+            <td><code>Readonly&lt;Record&lt;string, FlowDataRef&gt;&gt; | undefined</code></td>
+            <td>no</td>
+            <td></td>
+          </tr>
+    </tbody>
+  </table>
+  </article><article class="item" id="symbol-flownoderegistry" data-search="FlowNodeRegistry  unknown src/types/execution.ts ">
+    <h4>FlowNodeRegistry</h4>
+    
+    <p class="muted">unknown • <code>src/types/execution.ts:26:1</code></p>
+    
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <span class="empty">None</span></div>
+    
+    
+  </article><article class="item" id="symbol-flowrunrequest" data-search="FlowRunRequest  type src/types/execution.ts ">
+    <h4>FlowRunRequest</h4>
+    
+    <p class="muted">type • <code>src/types/execution.ts:32:1</code></p>
+    
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <span class="empty">None</span></div>
+    
+    <table>
+    <thead><tr><th>Member</th><th>Kind</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr>
+            <td><code>input</code></td>
+            <td>property</td>
+            <td><code>Readonly&lt;Record&lt;string, FlowDataRef&gt;&gt; | undefined</code></td>
+            <td>no</td>
+            <td></td>
+          </tr><tr>
+            <td><code>runId</code></td>
+            <td>property</td>
+            <td><code>string</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>schemaRegistry</code></td>
+            <td>property</td>
+            <td><code>Readonly&lt;Record&lt;string, import(&quot;@ankhorage/contracts/data&quot;).DataSchema&gt;&gt; | undefined</code></td>
+            <td>no</td>
+            <td></td>
+          </tr><tr>
+            <td><code>signal</code></td>
+            <td>property</td>
+            <td><code>AbortSignal | undefined</code></td>
+            <td>no</td>
+            <td></td>
+          </tr><tr>
+            <td><code>triggerId</code></td>
+            <td>property</td>
+            <td><code>string</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr>
+    </tbody>
+  </table>
+  </article>
+            </section>
     </section>
     <section class="panel">
       <h2>Component registry</h2>
@@ -191,11 +519,29 @@
   package__ankhorage_flow --&gt; entrypoint_src_index_ts
   module_src_ai_ts[&quot;src/ai.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_ai_ts
+  module_src_features_execution_application_executeFlowAsync_ts[&quot;src/features/execution/application/executeFlowAsync.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_execution_application_executeFlowAsync_ts
+  module_src_features_execution_application_executeFlowAsync_ts --&gt; module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts
+  module_src_features_execution_application_executeFlowAsync_ts --&gt; module_src_features_execution_domain_validateFlowDataSchema_ts
+  module_src_features_execution_application_executeFlowAsync_ts --&gt; module_src_types_execution_ts
+  module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts[&quot;src/features/execution/domain/assertFlowGraphSchemasSupported.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts
+  module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts --&gt; module_src_features_execution_domain_validateFlowDataSchema_ts
+  module_src_features_execution_domain_compileFlowGraph_ts[&quot;src/features/execution/domain/compileFlowGraph.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_execution_domain_compileFlowGraph_ts
+  module_src_features_execution_domain_compileFlowGraph_ts --&gt; module_src_types_execution_ts
+  module_src_features_execution_domain_createDefaultNodeRegistry_ts[&quot;src/features/execution/domain/createDefaultNodeRegistry.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_execution_domain_createDefaultNodeRegistry_ts
+  module_src_features_execution_domain_createDefaultNodeRegistry_ts --&gt; module_src_types_execution_ts
+  module_src_features_execution_domain_validateFlowDataSchema_ts[&quot;src/features/execution/domain/validateFlowDataSchema.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_execution_domain_validateFlowDataSchema_ts
   module_src_index_ts[&quot;src/index.ts&quot;]
   module_src_mcp_ts[&quot;src/mcp.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_mcp_ts
   module_src_social_ts[&quot;src/social.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_social_ts
+  module_src_types_execution_ts[&quot;src/types/execution.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_types_execution_ts
 </div>
     <details>
       <summary>View Mermaid source</summary>
@@ -205,11 +551,29 @@
   package__ankhorage_flow --&gt; entrypoint_src_index_ts
   module_src_ai_ts[&quot;src/ai.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_ai_ts
+  module_src_features_execution_application_executeFlowAsync_ts[&quot;src/features/execution/application/executeFlowAsync.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_execution_application_executeFlowAsync_ts
+  module_src_features_execution_application_executeFlowAsync_ts --&gt; module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts
+  module_src_features_execution_application_executeFlowAsync_ts --&gt; module_src_features_execution_domain_validateFlowDataSchema_ts
+  module_src_features_execution_application_executeFlowAsync_ts --&gt; module_src_types_execution_ts
+  module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts[&quot;src/features/execution/domain/assertFlowGraphSchemasSupported.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts
+  module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts --&gt; module_src_features_execution_domain_validateFlowDataSchema_ts
+  module_src_features_execution_domain_compileFlowGraph_ts[&quot;src/features/execution/domain/compileFlowGraph.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_execution_domain_compileFlowGraph_ts
+  module_src_features_execution_domain_compileFlowGraph_ts --&gt; module_src_types_execution_ts
+  module_src_features_execution_domain_createDefaultNodeRegistry_ts[&quot;src/features/execution/domain/createDefaultNodeRegistry.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_execution_domain_createDefaultNodeRegistry_ts
+  module_src_features_execution_domain_createDefaultNodeRegistry_ts --&gt; module_src_types_execution_ts
+  module_src_features_execution_domain_validateFlowDataSchema_ts[&quot;src/features/execution/domain/validateFlowDataSchema.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_execution_domain_validateFlowDataSchema_ts
   module_src_index_ts[&quot;src/index.ts&quot;]
   module_src_mcp_ts[&quot;src/mcp.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_mcp_ts
   module_src_social_ts[&quot;src/social.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_social_ts
+  module_src_types_execution_ts[&quot;src/types/execution.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_types_execution_ts
 </pre>
     </details>
   </article><article class="item" data-search="Module relationships diagrams/module-relationships.mmd">
@@ -217,23 +581,41 @@
     <p class="muted"><code>diagrams/module-relationships.mmd</code></p>
     <div class="mermaid">graph LR
   module_src_ai_ts[&quot;src/ai.ts&quot;]
+  module_src_features_execution_application_executeFlowAsync_ts[&quot;src/features/execution/application/executeFlowAsync.ts&quot;]
+  module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts[&quot;src/features/execution/domain/assertFlowGraphSchemasSupported.ts&quot;]
+  module_src_features_execution_domain_compileFlowGraph_ts[&quot;src/features/execution/domain/compileFlowGraph.ts&quot;]
+  module_src_features_execution_domain_createDefaultNodeRegistry_ts[&quot;src/features/execution/domain/createDefaultNodeRegistry.ts&quot;]
+  module_src_features_execution_domain_validateFlowDataSchema_ts[&quot;src/features/execution/domain/validateFlowDataSchema.ts&quot;]
   module_src_index_ts[&quot;src/index.ts&quot;]
   module_src_mcp_ts[&quot;src/mcp.ts&quot;]
   module_src_social_ts[&quot;src/social.ts&quot;]
-  module_src_ai_ts -.-&gt; module_src_index_ts
-  module_src_index_ts -.-&gt; module_src_mcp_ts
-  module_src_mcp_ts -.-&gt; module_src_social_ts
+  module_src_types_execution_ts[&quot;src/types/execution.ts&quot;]
+  module_src_features_execution_application_executeFlowAsync_ts --&gt; module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts
+  module_src_features_execution_application_executeFlowAsync_ts --&gt; module_src_features_execution_domain_validateFlowDataSchema_ts
+  module_src_features_execution_application_executeFlowAsync_ts --&gt; module_src_types_execution_ts
+  module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts --&gt; module_src_features_execution_domain_validateFlowDataSchema_ts
+  module_src_features_execution_domain_compileFlowGraph_ts --&gt; module_src_types_execution_ts
+  module_src_features_execution_domain_createDefaultNodeRegistry_ts --&gt; module_src_types_execution_ts
 </div>
     <details>
       <summary>View Mermaid source</summary>
       <pre>graph LR
   module_src_ai_ts[&quot;src/ai.ts&quot;]
+  module_src_features_execution_application_executeFlowAsync_ts[&quot;src/features/execution/application/executeFlowAsync.ts&quot;]
+  module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts[&quot;src/features/execution/domain/assertFlowGraphSchemasSupported.ts&quot;]
+  module_src_features_execution_domain_compileFlowGraph_ts[&quot;src/features/execution/domain/compileFlowGraph.ts&quot;]
+  module_src_features_execution_domain_createDefaultNodeRegistry_ts[&quot;src/features/execution/domain/createDefaultNodeRegistry.ts&quot;]
+  module_src_features_execution_domain_validateFlowDataSchema_ts[&quot;src/features/execution/domain/validateFlowDataSchema.ts&quot;]
   module_src_index_ts[&quot;src/index.ts&quot;]
   module_src_mcp_ts[&quot;src/mcp.ts&quot;]
   module_src_social_ts[&quot;src/social.ts&quot;]
-  module_src_ai_ts -.-&gt; module_src_index_ts
-  module_src_index_ts -.-&gt; module_src_mcp_ts
-  module_src_mcp_ts -.-&gt; module_src_social_ts
+  module_src_types_execution_ts[&quot;src/types/execution.ts&quot;]
+  module_src_features_execution_application_executeFlowAsync_ts --&gt; module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts
+  module_src_features_execution_application_executeFlowAsync_ts --&gt; module_src_features_execution_domain_validateFlowDataSchema_ts
+  module_src_features_execution_application_executeFlowAsync_ts --&gt; module_src_types_execution_ts
+  module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts --&gt; module_src_features_execution_domain_validateFlowDataSchema_ts
+  module_src_features_execution_domain_compileFlowGraph_ts --&gt; module_src_types_execution_ts
+  module_src_features_execution_domain_createDefaultNodeRegistry_ts --&gt; module_src_types_execution_ts
 </pre>
     </details>
   </article><article class="item" data-search="Export graph diagrams/export-graph.mmd">
@@ -241,23 +623,395 @@
     <p class="muted"><code>diagrams/export-graph.mmd</code></p>
     <div class="mermaid">graph LR
   module_src_ai_ts[&quot;src/ai.ts&quot;]
+  module_src_features_execution_application_executeFlowAsync_ts[&quot;src/features/execution/application/executeFlowAsync.ts&quot;]
+  module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts[&quot;src/features/execution/domain/assertFlowGraphSchemasSupported.ts&quot;]
+  module_src_features_execution_domain_compileFlowGraph_ts[&quot;src/features/execution/domain/compileFlowGraph.ts&quot;]
+  module_src_features_execution_domain_createDefaultNodeRegistry_ts[&quot;src/features/execution/domain/createDefaultNodeRegistry.ts&quot;]
+  module_src_features_execution_domain_validateFlowDataSchema_ts[&quot;src/features/execution/domain/validateFlowDataSchema.ts&quot;]
   module_src_index_ts[&quot;src/index.ts&quot;]
   module_src_mcp_ts[&quot;src/mcp.ts&quot;]
   module_src_social_ts[&quot;src/social.ts&quot;]
+  module_src_types_execution_ts[&quot;src/types/execution.ts&quot;]
+  export_compileFlowGraph[&quot;compileFlowGraph&quot;]
+  module_src_features_execution_domain_compileFlowGraph_ts --&gt; export_compileFlowGraph
+  export_compileFlowGraph -.-&gt; export_FlowCompiledGraph
+  export_compileFlowGraph -.-&gt; export_FlowNodeOperation
+  export_createDefaultNodeRegistry[&quot;createDefaultNodeRegistry&quot;]
+  module_src_features_execution_domain_createDefaultNodeRegistry_ts --&gt; export_createDefaultNodeRegistry
+  export_createDefaultNodeRegistry -.-&gt; export_FlowNodeOperation
+  export_executeFlowAsync[&quot;executeFlowAsync&quot;]
+  module_src_features_execution_application_executeFlowAsync_ts --&gt; export_executeFlowAsync
+  export_executeFlowAsync -.-&gt; export_FlowClock
+  export_executeFlowAsync -.-&gt; export_FlowCompiledGraph
+  export_executeFlowAsync -.-&gt; export_FlowExecutionResult
+  export_executeFlowAsync -.-&gt; export_FlowNodeOperation
+  export_executeFlowAsync -.-&gt; export_FlowRunRequest
+  export_FlowClock[&quot;FlowClock&quot;]
+  module_src_types_execution_ts --&gt; export_FlowClock
+  export_FlowCompiledGraph[&quot;FlowCompiledGraph&quot;]
+  module_src_types_execution_ts --&gt; export_FlowCompiledGraph
+  export_FlowExecutionResult[&quot;FlowExecutionResult&quot;]
+  module_src_types_execution_ts --&gt; export_FlowExecutionResult
+  export_FlowNodeOperation[&quot;FlowNodeOperation&quot;]
+  module_src_types_execution_ts --&gt; export_FlowNodeOperation
+  export_FlowNodeOperation -.-&gt; export_FlowNodeOperationResult
+  export_FlowNodeOperationResult[&quot;FlowNodeOperationResult&quot;]
+  module_src_types_execution_ts --&gt; export_FlowNodeOperationResult
+  export_FlowNodeRegistry[&quot;FlowNodeRegistry&quot;]
+  module_src_types_execution_ts --&gt; export_FlowNodeRegistry
+  export_FlowRunRequest[&quot;FlowRunRequest&quot;]
+  module_src_types_execution_ts --&gt; export_FlowRunRequest
 </div>
     <details>
       <summary>View Mermaid source</summary>
       <pre>graph LR
   module_src_ai_ts[&quot;src/ai.ts&quot;]
+  module_src_features_execution_application_executeFlowAsync_ts[&quot;src/features/execution/application/executeFlowAsync.ts&quot;]
+  module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts[&quot;src/features/execution/domain/assertFlowGraphSchemasSupported.ts&quot;]
+  module_src_features_execution_domain_compileFlowGraph_ts[&quot;src/features/execution/domain/compileFlowGraph.ts&quot;]
+  module_src_features_execution_domain_createDefaultNodeRegistry_ts[&quot;src/features/execution/domain/createDefaultNodeRegistry.ts&quot;]
+  module_src_features_execution_domain_validateFlowDataSchema_ts[&quot;src/features/execution/domain/validateFlowDataSchema.ts&quot;]
   module_src_index_ts[&quot;src/index.ts&quot;]
   module_src_mcp_ts[&quot;src/mcp.ts&quot;]
   module_src_social_ts[&quot;src/social.ts&quot;]
+  module_src_types_execution_ts[&quot;src/types/execution.ts&quot;]
+  export_compileFlowGraph[&quot;compileFlowGraph&quot;]
+  module_src_features_execution_domain_compileFlowGraph_ts --&gt; export_compileFlowGraph
+  export_compileFlowGraph -.-&gt; export_FlowCompiledGraph
+  export_compileFlowGraph -.-&gt; export_FlowNodeOperation
+  export_createDefaultNodeRegistry[&quot;createDefaultNodeRegistry&quot;]
+  module_src_features_execution_domain_createDefaultNodeRegistry_ts --&gt; export_createDefaultNodeRegistry
+  export_createDefaultNodeRegistry -.-&gt; export_FlowNodeOperation
+  export_executeFlowAsync[&quot;executeFlowAsync&quot;]
+  module_src_features_execution_application_executeFlowAsync_ts --&gt; export_executeFlowAsync
+  export_executeFlowAsync -.-&gt; export_FlowClock
+  export_executeFlowAsync -.-&gt; export_FlowCompiledGraph
+  export_executeFlowAsync -.-&gt; export_FlowExecutionResult
+  export_executeFlowAsync -.-&gt; export_FlowNodeOperation
+  export_executeFlowAsync -.-&gt; export_FlowRunRequest
+  export_FlowClock[&quot;FlowClock&quot;]
+  module_src_types_execution_ts --&gt; export_FlowClock
+  export_FlowCompiledGraph[&quot;FlowCompiledGraph&quot;]
+  module_src_types_execution_ts --&gt; export_FlowCompiledGraph
+  export_FlowExecutionResult[&quot;FlowExecutionResult&quot;]
+  module_src_types_execution_ts --&gt; export_FlowExecutionResult
+  export_FlowNodeOperation[&quot;FlowNodeOperation&quot;]
+  module_src_types_execution_ts --&gt; export_FlowNodeOperation
+  export_FlowNodeOperation -.-&gt; export_FlowNodeOperationResult
+  export_FlowNodeOperationResult[&quot;FlowNodeOperationResult&quot;]
+  module_src_types_execution_ts --&gt; export_FlowNodeOperationResult
+  export_FlowNodeRegistry[&quot;FlowNodeRegistry&quot;]
+  module_src_types_execution_ts --&gt; export_FlowNodeRegistry
+  export_FlowRunRequest[&quot;FlowRunRequest&quot;]
+  module_src_types_execution_ts --&gt; export_FlowRunRequest
+</pre>
+    </details>
+  </article><article class="item" data-search="compileFlowGraph sequence diagrams/sequences/compile-flow-graph.mmd">
+    <h3>compileFlowGraph sequence</h3>
+    <p class="muted"><code>diagrams/sequences/compile-flow-graph.mmd</code></p>
+    <div class="mermaid">sequenceDiagram
+  participant participant_assertNodeIsExecutable as assertNodeIsExecutable
+  participant participant_assertPort as assertPort
+  participant participant_compileFlowGraph as compileFlowGraph
+  participant participant_indexEdges as indexEdges
+  participant participant_indexNodes as indexNodes
+  participant participant_orderNodes as orderNodes
+  participant_compileFlowGraph-&gt;&gt;participant_indexNodes: indexNodes()
+  participant_indexNodes--&gt;&gt;participant_compileFlowGraph: return
+  participant_compileFlowGraph-&gt;&gt;participant_indexEdges: indexEdges()
+  participant_indexEdges-&gt;&gt;participant_assertPort: assertPort()
+  participant_assertPort--&gt;&gt;participant_indexEdges: return
+  participant_indexEdges--&gt;&gt;participant_compileFlowGraph: return
+  participant_compileFlowGraph-&gt;&gt;participant_assertNodeIsExecutable: assertNodeIsExecutable()
+  participant_assertNodeIsExecutable--&gt;&gt;participant_compileFlowGraph: return
+  participant_compileFlowGraph-&gt;&gt;participant_orderNodes: orderNodes()
+  participant_orderNodes--&gt;&gt;participant_compileFlowGraph: return
+</div>
+    <details>
+      <summary>View Mermaid source</summary>
+      <pre>sequenceDiagram
+  participant participant_assertNodeIsExecutable as assertNodeIsExecutable
+  participant participant_assertPort as assertPort
+  participant participant_compileFlowGraph as compileFlowGraph
+  participant participant_indexEdges as indexEdges
+  participant participant_indexNodes as indexNodes
+  participant participant_orderNodes as orderNodes
+  participant_compileFlowGraph-&gt;&gt;participant_indexNodes: indexNodes()
+  participant_indexNodes--&gt;&gt;participant_compileFlowGraph: return
+  participant_compileFlowGraph-&gt;&gt;participant_indexEdges: indexEdges()
+  participant_indexEdges-&gt;&gt;participant_assertPort: assertPort()
+  participant_assertPort--&gt;&gt;participant_indexEdges: return
+  participant_indexEdges--&gt;&gt;participant_compileFlowGraph: return
+  participant_compileFlowGraph-&gt;&gt;participant_assertNodeIsExecutable: assertNodeIsExecutable()
+  participant_assertNodeIsExecutable--&gt;&gt;participant_compileFlowGraph: return
+  participant_compileFlowGraph-&gt;&gt;participant_orderNodes: orderNodes()
+  participant_orderNodes--&gt;&gt;participant_compileFlowGraph: return
 </pre>
     </details>
   </article>
     </section>
         </section>
-        
+        <section id="view-src-features-execution-application-executeflowasync-ts" class="view" data-view="src/features/execution/application/executeFlowAsync.ts" hidden>
+    <section class="panel">
+      <h2>src/features/execution/application/executeFlowAsync.ts</h2>
+      <article class="item" data-search="executeFlowAsync src/features/execution/application/executeFlowAsync.ts Execute a compiled graph in deterministic order within one process.">
+    <h3>executeFlowAsync</h3>
+    <p class="muted"><code>src/features/execution/application/executeFlowAsync.ts:23:14</code></p>
+    <p>Execute a compiled graph in deterministic order within one process.</p>
+    
+  </article><article class="item" data-search="executeNodesAsync src/features/execution/application/executeFlowAsync.ts Iterate compiled nodes in deterministic order until completion or cancellation.">
+    <h3>executeNodesAsync</h3>
+    <p class="muted"><code>src/features/execution/application/executeFlowAsync.ts:48:7</code></p>
+    <p>Iterate compiled nodes in deterministic order until completion or cancellation.</p>
+    
+  </article><article class="item" data-search="executeAvailableNodeAsync src/features/execution/application/executeFlowAsync.ts Execute one node only when all of its required inputs were propagated.">
+    <h3>executeAvailableNodeAsync</h3>
+    <p class="muted"><code>src/features/execution/application/executeFlowAsync.ts:91:7</code></p>
+    <p>Execute one node only when all of its required inputs were propagated.</p>
+    
+  </article><article class="item" data-search="hasRequiredInput src/features/execution/application/executeFlowAsync.ts Determine whether every required input port has a propagated value.">
+    <h3>hasRequiredInput</h3>
+    <p class="muted"><code>src/features/execution/application/executeFlowAsync.ts:108:7</code></p>
+    <p>Determine whether every required input port has a propagated value.</p>
+    
+  </article><article class="item" data-search="executeNodeAsync src/features/execution/application/executeFlowAsync.ts Execute one node and convert failures to redaction-safe contract errors.">
+    <h3>executeNodeAsync</h3>
+    <p class="muted"><code>src/features/execution/application/executeFlowAsync.ts:117:7</code></p>
+    <p>Execute one node and convert failures to redaction-safe contract errors.</p>
+    
+  </article><article class="item" data-search="createSucceededStep src/features/execution/application/executeFlowAsync.ts Create an immutable successful step snapshot.">
+    <h3>createSucceededStep</h3>
+    <p class="muted"><code>src/features/execution/application/executeFlowAsync.ts:167:7</code></p>
+    <p>Create an immutable successful step snapshot.</p>
+    
+  </article><article class="item" data-search="createCancelledStep src/features/execution/application/executeFlowAsync.ts Create a terminal snapshot when cancellation occurs during asynchronous node execution.">
+    <h3>createCancelledStep</h3>
+    <p class="muted"><code>src/features/execution/application/executeFlowAsync.ts:185:7</code></p>
+    <p>Create a terminal snapshot when cancellation occurs during asynchronous node execution.</p>
+    
+  </article><article class="item" data-search="assertOutputPorts src/features/execution/application/executeFlowAsync.ts Reject operation outputs that do not correspond to declared output ports.">
+    <h3>assertOutputPorts</h3>
+    <p class="muted"><code>src/features/execution/application/executeFlowAsync.ts:201:7</code></p>
+    <p>Reject operation outputs that do not correspond to declared output ports.</p>
+    
+  </article><article class="item" data-search="assertPortSchemas src/features/execution/application/executeFlowAsync.ts Validate inline port values against their declared portable schemas.">
+    <h3>assertPortSchemas</h3>
+    <p class="muted"><code>src/features/execution/application/executeFlowAsync.ts:217:7</code></p>
+    <p>Validate inline port values against their declared portable schemas.</p>
+    
+  </article><article class="item" data-search="propagateOutput src/features/execution/application/executeFlowAsync.ts Propagate outputs only over edges whose declared condition matches the output value.">
+    <h3>propagateOutput</h3>
+    <p class="muted"><code>src/features/execution/application/executeFlowAsync.ts:233:7</code></p>
+    <p>Propagate outputs only over edges whose declared condition matches the output value.</p>
+    
+  </article><article class="item" data-search="matchesEdge src/features/execution/application/executeFlowAsync.ts Evaluate an edge condition without executing arbitrary expressions.">
+    <h3>matchesEdge</h3>
+    <p class="muted"><code>src/features/execution/application/executeFlowAsync.ts:252:7</code></p>
+    <p>Evaluate an edge condition without executing arbitrary expressions.</p>
+    
+  </article><article class="item" data-search="resolvePointer src/features/execution/application/executeFlowAsync.ts Resolve an RFC 6901 pointer against serializable inline data.">
+    <h3>resolvePointer</h3>
+    <p class="muted"><code>src/features/execution/application/executeFlowAsync.ts:266:7</code></p>
+    <p>Resolve an RFC 6901 pointer against serializable inline data.</p>
+    
+  </article><article class="item" data-search="structurallyEqual src/features/execution/application/executeFlowAsync.ts Compare JSON-compatible values with object-key-order independence.">
+    <h3>structurallyEqual</h3>
+    <p class="muted"><code>src/features/execution/application/executeFlowAsync.ts:287:7</code></p>
+    <p>Compare JSON-compatible values with object-key-order independence.</p>
+    
+  </article><article class="item" data-search="normalizeValue src/features/execution/application/executeFlowAsync.ts Canonicalize object member ordering for structural equality.">
+    <h3>normalizeValue</h3>
+    <p class="muted"><code>src/features/execution/application/executeFlowAsync.ts:291:7</code></p>
+    <p>Canonicalize object member ordering for structural equality.</p>
+    
+  </article><article class="item" data-search="isDataRecord src/features/execution/application/executeFlowAsync.ts Narrow a serializable non-array object to an indexable data record.">
+    <h3>isDataRecord</h3>
+    <p class="muted"><code>src/features/execution/application/executeFlowAsync.ts:303:7</code></p>
+    <p>Narrow a serializable non-array object to an indexable data record.</p>
+    
+  </article><article class="item" data-search="isDataArray src/features/execution/application/executeFlowAsync.ts Narrow a serializable array without losing its element type.">
+    <h3>isDataArray</h3>
+    <p class="muted"><code>src/features/execution/application/executeFlowAsync.ts:307:7</code></p>
+    <p>Narrow a serializable array without losing its element type.</p>
+    
+  </article><article class="item" data-search="asFlowError src/features/execution/application/executeFlowAsync.ts Translate host failures to structured contract errors without exposing arbitrary objects.">
+    <h3>asFlowError</h3>
+    <p class="muted"><code>src/features/execution/application/executeFlowAsync.ts:310:7</code></p>
+    <p>Translate host failures to structured contract errors without exposing arbitrary objects.</p>
+    
+  </article><article class="item" data-search="createRun src/features/execution/application/executeFlowAsync.ts Build the immutable run result emitted by the single-process executor.">
+    <h3>createRun</h3>
+    <p class="muted"><code>src/features/execution/application/executeFlowAsync.ts:320:7</code></p>
+    <p>Build the immutable run result emitted by the single-process executor.</p>
+    
+  </article>
+    </section>
+  </section><section id="view-src-features-execution-domain-assertflowgraphschemassupported-ts" class="view" data-view="src/features/execution/domain/assertFlowGraphSchemasSupported.ts" hidden>
+    <section class="panel">
+      <h2>src/features/execution/domain/assertFlowGraphSchemasSupported.ts</h2>
+      <article class="item" data-search="assertFlowGraphSchemasSupported src/features/execution/domain/assertFlowGraphSchemasSupported.ts Validate every declared graph port schema before any operation can perform a side effect.">
+    <h3>assertFlowGraphSchemasSupported</h3>
+    <p class="muted"><code>src/features/execution/domain/assertFlowGraphSchemasSupported.ts:7:14</code></p>
+    <p>Validate every declared graph port schema before any operation can perform a side effect.</p>
+    
+  </article>
+    </section>
+  </section><section id="view-src-features-execution-domain-compileflowgraph-ts" class="view" data-view="src/features/execution/domain/compileFlowGraph.ts" hidden>
+    <section class="panel">
+      <h2>src/features/execution/domain/compileFlowGraph.ts</h2>
+      <article class="item" data-search="compileFlowGraph src/features/execution/domain/compileFlowGraph.ts Compile a valid acyclic graph into deterministic execution order.">
+    <h3>compileFlowGraph</h3>
+    <p class="muted"><code>src/features/execution/domain/compileFlowGraph.ts:6:14</code></p>
+    <p>Compile a valid acyclic graph into deterministic execution order.</p>
+    
+  </article><article class="item" data-search="indexNodes src/features/execution/domain/compileFlowGraph.ts Index nodes while rejecting duplicate graph identifiers.">
+    <h3>indexNodes</h3>
+    <p class="muted"><code>src/features/execution/domain/compileFlowGraph.ts:24:7</code></p>
+    <p>Index nodes while rejecting duplicate graph identifiers.</p>
+    
+  </article><article class="item" data-search="indexEdges src/features/execution/domain/compileFlowGraph.ts Validate and group graph edges by their producing node.">
+    <h3>indexEdges</h3>
+    <p class="muted"><code>src/features/execution/domain/compileFlowGraph.ts:32:7</code></p>
+    <p>Validate and group graph edges by their producing node.</p>
+    
+  </article><article class="item" data-search="assertPort src/features/execution/domain/compileFlowGraph.ts Ensure a graph port exists exactly once with the expected direction.">
+    <h3>assertPort</h3>
+    <p class="muted"><code>src/features/execution/domain/compileFlowGraph.ts:55:7</code></p>
+    <p>Ensure a graph port exists exactly once with the expected direction.</p>
+    
+  </article><article class="item" data-search="assertNodeIsExecutable src/features/execution/domain/compileFlowGraph.ts Reject unknown operations and code capabilities before execution can begin.">
+    <h3>assertNodeIsExecutable</h3>
+    <p class="muted"><code>src/features/execution/domain/compileFlowGraph.ts:66:7</code></p>
+    <p>Reject unknown operations and code capabilities before execution can begin.</p>
+    
+  </article><article class="item" data-search="orderNodes src/features/execution/domain/compileFlowGraph.ts Produce stable topological order and reject cycles without an explicit bounded-loop contract.">
+    <h3>orderNodes</h3>
+    <p class="muted"><code>src/features/execution/domain/compileFlowGraph.ts:79:7</code></p>
+    <p>Produce stable topological order and reject cycles without an explicit bounded-loop contract.</p>
+    
+  </article>
+    </section>
+  </section><section id="view-src-features-execution-domain-createdefaultnoderegistry-ts" class="view" data-view="src/features/execution/domain/createDefaultNodeRegistry.ts" hidden>
+    <section class="panel">
+      <h2>src/features/execution/domain/createDefaultNodeRegistry.ts</h2>
+      <article class="item" data-search="createDefaultNodeRegistry src/features/execution/domain/createDefaultNodeRegistry.ts Create the built-in operations that have no provider or host dependency.">
+    <h3>createDefaultNodeRegistry</h3>
+    <p class="muted"><code>src/features/execution/domain/createDefaultNodeRegistry.ts:6:14</code></p>
+    <p>Create the built-in operations that have no provider or host dependency.</p>
+    
+  </article><article class="item" data-search="transformAsync src/features/execution/domain/createDefaultNodeRegistry.ts Copy configured inline or artifact values to matching output ports without evaluating code.">
+    <h3>transformAsync</h3>
+    <p class="muted"><code>src/features/execution/domain/createDefaultNodeRegistry.ts:13:7</code></p>
+    <p>Copy configured inline or artifact values to matching output ports without evaluating code.</p>
+    
+  </article><article class="item" data-search="isDataRef src/features/execution/domain/createDefaultNodeRegistry.ts Narrow a configuration value to data that may safely leave a node.">
+    <h3>isDataRef</h3>
+    <p class="muted"><code>src/features/execution/domain/createDefaultNodeRegistry.ts:26:7</code></p>
+    <p>Narrow a configuration value to data that may safely leave a node.</p>
+    
+  </article>
+    </section>
+  </section><section id="view-src-features-execution-domain-validateflowdataschema-ts" class="view" data-view="src/features/execution/domain/validateFlowDataSchema.ts" hidden>
+    <section class="panel">
+      <h2>src/features/execution/domain/validateFlowDataSchema.ts</h2>
+      <article class="item" data-search="validateFlowDataSchema src/features/execution/domain/validateFlowDataSchema.ts Validate serializable data against the supported portable schema vocabulary.">
+    <h3>validateFlowDataSchema</h3>
+    <p class="muted"><code>src/features/execution/domain/validateFlowDataSchema.ts:6:14</code></p>
+    <p>Validate serializable data against the supported portable schema vocabulary.</p>
+    
+  </article><article class="item" data-search="assertFlowDataSchemaSupported src/features/execution/domain/validateFlowDataSchema.ts Reject unsupported, unresolved, cyclic, or excessively nested portable schemas before use.">
+    <h3>assertFlowDataSchemaSupported</h3>
+    <p class="muted"><code>src/features/execution/domain/validateFlowDataSchema.ts:16:14</code></p>
+    <p>Reject unsupported, unresolved, cyclic, or excessively nested portable schemas before use.</p>
+    
+  </article><article class="item" data-search="resolveSchema src/features/execution/domain/validateFlowDataSchema.ts Resolve a schema reference only from the explicit execution registry.">
+    <h3>resolveSchema</h3>
+    <p class="muted"><code>src/features/execution/domain/validateFlowDataSchema.ts:22:7</code></p>
+    <p>Resolve a schema reference only from the explicit execution registry.</p>
+    
+  </article><article class="item" data-search="matchesSchema src/features/execution/domain/validateFlowDataSchema.ts Apply portable schema constraints without coercing a JSON-compatible value.">
+    <h3>matchesSchema</h3>
+    <p class="muted"><code>src/features/execution/domain/validateFlowDataSchema.ts:36:7</code></p>
+    <p>Apply portable schema constraints without coercing a JSON-compatible value.</p>
+    
+  </article><article class="item" data-search="assertSupportedSchema src/features/execution/domain/validateFlowDataSchema.ts Reject portable annotations that require a validator capability this engine does not own.">
+    <h3>assertSupportedSchema</h3>
+    <p class="muted"><code>src/features/execution/domain/validateFlowDataSchema.ts:53:7</code></p>
+    <p>Reject portable annotations that require a validator capability this engine does not own.</p>
+    
+  </article><article class="item" data-search="visitChildSchemas src/features/execution/domain/validateFlowDataSchema.ts Visit every schema child so unsupported declarations fail before value matching begins.">
+    <h3>visitChildSchemas</h3>
+    <p class="muted"><code>src/features/execution/domain/validateFlowDataSchema.ts:70:7</code></p>
+    <p>Visit every schema child so unsupported declarations fail before value matching begins.</p>
+    
+  </article><article class="item" data-search="matchesTypes src/features/execution/domain/validateFlowDataSchema.ts Match the declared primitive type union and explicit nullability.">
+    <h3>matchesTypes</h3>
+    <p class="muted"><code>src/features/execution/domain/validateFlowDataSchema.ts:87:7</code></p>
+    <p>Match the declared primitive type union and explicit nullability.</p>
+    
+  </article><article class="item" data-search="matchesType src/features/execution/domain/validateFlowDataSchema.ts Match one JSON primitive category without coercion.">
+    <h3>matchesType</h3>
+    <p class="muted"><code>src/features/execution/domain/validateFlowDataSchema.ts:95:7</code></p>
+    <p>Match one JSON primitive category without coercion.</p>
+    
+  </article><article class="item" data-search="matchesValues src/features/execution/domain/validateFlowDataSchema.ts Apply constant and enumeration constraints using structural JSON equality.">
+    <h3>matchesValues</h3>
+    <p class="muted"><code>src/features/execution/domain/validateFlowDataSchema.ts:104:7</code></p>
+    <p>Apply constant and enumeration constraints using structural JSON equality.</p>
+    
+  </article><article class="item" data-search="matchesComposition src/features/execution/domain/validateFlowDataSchema.ts Apply logical schema composition with its standard cardinality semantics.">
+    <h3>matchesComposition</h3>
+    <p class="muted"><code>src/features/execution/domain/validateFlowDataSchema.ts:109:7</code></p>
+    <p>Apply logical schema composition with its standard cardinality semantics.</p>
+    
+  </article><article class="item" data-search="matchesStructure src/features/execution/domain/validateFlowDataSchema.ts Recursively apply object and array member constraints.">
+    <h3>matchesStructure</h3>
+    <p class="muted"><code>src/features/execution/domain/validateFlowDataSchema.ts:124:7</code></p>
+    <p>Recursively apply object and array member constraints.</p>
+    
+  </article><article class="item" data-search="matchesItems src/features/execution/domain/validateFlowDataSchema.ts Validate array elements only when an item schema is declared.">
+    <h3>matchesItems</h3>
+    <p class="muted"><code>src/features/execution/domain/validateFlowDataSchema.ts:134:7</code></p>
+    <p>Validate array elements only when an item schema is declared.</p>
+    
+  </article><article class="item" data-search="matchesProperties src/features/execution/domain/validateFlowDataSchema.ts Validate required object members and declared or additional property schemas.">
+    <h3>matchesProperties</h3>
+    <p class="muted"><code>src/features/execution/domain/validateFlowDataSchema.ts:145:7</code></p>
+    <p>Validate required object members and declared or additional property schemas.</p>
+    
+  </article><article class="item" data-search="createTraversalState src/features/execution/domain/validateFlowDataSchema.ts Start bounded schema traversal without retaining mutable validation state.">
+    <h3>createTraversalState</h3>
+    <p class="muted"><code>src/features/execution/domain/validateFlowDataSchema.ts:173:7</code></p>
+    <p>Start bounded schema traversal without retaining mutable validation state.</p>
+    
+  </article><article class="item" data-search="advanceTraversalState src/features/execution/domain/validateFlowDataSchema.ts Advance a schema traversal while rejecting direct cycles and excessive nesting deterministically.">
+    <h3>advanceTraversalState</h3>
+    <p class="muted"><code>src/features/execution/domain/validateFlowDataSchema.ts:180:7</code></p>
+    <p>Advance a schema traversal while rejecting direct cycles and excessive nesting deterministically.</p>
+    
+  </article><article class="item" data-search="structurallyEqual src/features/execution/domain/validateFlowDataSchema.ts Compare JSON-compatible values independently of object key order.">
+    <h3>structurallyEqual</h3>
+    <p class="muted"><code>src/features/execution/domain/validateFlowDataSchema.ts:195:7</code></p>
+    <p>Compare JSON-compatible values independently of object key order.</p>
+    
+  </article><article class="item" data-search="normalizeValue src/features/execution/domain/validateFlowDataSchema.ts Canonicalize object member ordering for structural comparison.">
+    <h3>normalizeValue</h3>
+    <p class="muted"><code>src/features/execution/domain/validateFlowDataSchema.ts:199:7</code></p>
+    <p>Canonicalize object member ordering for structural comparison.</p>
+    
+  </article><article class="item" data-search="isDataRecord src/features/execution/domain/validateFlowDataSchema.ts Narrow a JSON-compatible object to a non-array member record.">
+    <h3>isDataRecord</h3>
+    <p class="muted"><code>src/features/execution/domain/validateFlowDataSchema.ts:211:7</code></p>
+    <p>Narrow a JSON-compatible object to a non-array member record.</p>
+    
+  </article><article class="item" data-search="isDataArray src/features/execution/domain/validateFlowDataSchema.ts Narrow a JSON-compatible array without losing its serializable member type.">
+    <h3>isDataArray</h3>
+    <p class="muted"><code>src/features/execution/domain/validateFlowDataSchema.ts:217:7</code></p>
+    <p>Narrow a JSON-compatible array without losing its serializable member type.</p>
+    
+  </article>
+    </section>
+  </section>
       </main>
     </div>
     <script>

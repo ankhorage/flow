@@ -1,0 +1,17 @@
+sequenceDiagram
+  participant participant_assertNodeIsExecutable as assertNodeIsExecutable
+  participant participant_assertPort as assertPort
+  participant participant_compileFlowGraph as compileFlowGraph
+  participant participant_indexEdges as indexEdges
+  participant participant_indexNodes as indexNodes
+  participant participant_orderNodes as orderNodes
+  participant_compileFlowGraph->>participant_indexNodes: indexNodes()
+  participant_indexNodes-->>participant_compileFlowGraph: return
+  participant_compileFlowGraph->>participant_indexEdges: indexEdges()
+  participant_indexEdges->>participant_assertPort: assertPort()
+  participant_assertPort-->>participant_indexEdges: return
+  participant_indexEdges-->>participant_compileFlowGraph: return
+  participant_compileFlowGraph->>participant_assertNodeIsExecutable: assertNodeIsExecutable()
+  participant_assertNodeIsExecutable-->>participant_compileFlowGraph: return
+  participant_compileFlowGraph->>participant_orderNodes: orderNodes()
+  participant_orderNodes-->>participant_compileFlowGraph: return
