@@ -247,7 +247,7 @@ describe('single-process Flow execution', () => {
     expect(result.run.steps[0]?.error?.code).toBe('FLOW_PORT_SCHEMA_MISMATCH');
   });
 
-  test('fails closed for unresolved references and unsupported schema constraints', async () => {
+  test('rejects equivalent direct and referenced unsupported schema constraints before execution', async () => {
     const definition: FlowDefinition = {
       id: 'unsupported-schema',
       version: 1,
@@ -269,13 +269,288 @@ describe('single-process Flow execution', () => {
         }),
       },
     };
+    await expect(
+      executeFlowAsync(
+        compileFlowGraph(definition, operations),
+        operations,
+        { runId: 'unsupported', triggerId: 'manual' },
+        clock,
+      ),
+    ).rejects.toThrow('FLOW_SCHEMA_UNSUPPORTED_CONSTRAINT:format');
+    await expect(
+      executeFlowAsync(
+        compileFlowGraph(
+          {
+            ...definition,
+            nodes: [
+              {
+                ...definition.nodes[0]!,
+                ports: [{ id: 'value', direction: 'output', data: { schemaRef: { id: 'email' } } }],
+              },
+            ],
+          },
+          operations,
+        ),
+        operations,
+        {
+          runId: 'referenced-unsupported',
+          triggerId: 'manual',
+          schemaRegistry: { email: { format: 'email' } },
+        },
+        clock,
+      ),
+    ).rejects.toThrow('FLOW_SCHEMA_UNSUPPORTED_CONSTRAINT:format');
+  });
+
+  test('rejects unresolved and cyclic references before operations execute', async () => {
+    const calls: string[] = [];
+    const definition: FlowDefinition = {
+      id: 'invalid-references',
+      version: 1,
+      title: 'Invalid references',
+      edges: [],
+      triggers: [{ id: 'manual', kind: 'manual' }],
+      nodes: [
+        {
+          id: 'emit',
+          capability: { providerId: 'test', capabilityId: 'emit' },
+          ports: [{ id: 'value', direction: 'output', data: { schemaRef: { id: 'missing' } } }],
+        },
+      ],
+    };
+    const operations = {
+      'test:emit': {
+        executeAsync: async () => {
+          calls.push('emit');
+          return { output: {} };
+        },
+      },
+    };
+    await expect(compileFlowGraph(definition, operations)).toBeDefined();
+    await expect(
+      executeFlowAsync(
+        compileFlowGraph(definition, operations),
+        operations,
+        { runId: 'missing-reference', triggerId: 'manual' },
+        clock,
+      ),
+    ).rejects.toThrow('FLOW_SCHEMA_REFERENCE_UNRESOLVED:missing');
+    await expect(
+      executeFlowAsync(
+        compileFlowGraph(definition, operations),
+        operations,
+        {
+          runId: 'cyclic-reference',
+          triggerId: 'manual',
+          schemaRegistry: { missing: { ref: { id: 'missing' } } },
+        },
+        clock,
+      ),
+    ).rejects.toThrow('FLOW_SCHEMA_REFERENCE_CYCLE:missing');
+    expect(calls).toEqual([]);
+  });
+
+  test('normalizes invalid input schema failures without invoking an operation', async () => {
+    const calls: string[] = [];
+    const definition: FlowDefinition = {
+      id: 'invalid-input',
+      version: 1,
+      title: 'Invalid input',
+      edges: [],
+      triggers: [{ id: 'manual', kind: 'manual' }],
+      nodes: [
+        {
+          id: 'node',
+          capability: { providerId: 'test', capabilityId: 'input' },
+          ports: [
+            {
+              id: 'value',
+              direction: 'input',
+              required: true,
+              data: { schema: { type: 'string' } },
+            },
+          ],
+        },
+      ],
+    };
+    const operations = {
+      'test:input': {
+        executeAsync: async () => {
+          calls.push('input');
+          return { output: {} };
+        },
+      },
+    };
     const result = await executeFlowAsync(
       compileFlowGraph(definition, operations),
       operations,
-      { runId: 'unsupported', triggerId: 'manual' },
+      {
+        runId: 'invalid-input',
+        triggerId: 'manual',
+        input: { value: { kind: 'inline', value: 1 } },
+      },
       clock,
     );
-    expect(result.run.steps[0]?.error?.code).toBe('FLOW_SCHEMA_UNSUPPORTED_CONSTRAINT');
+    expect([result.run.steps[0]?.error, calls]).toEqual([
+      {
+        code: 'FLOW_PORT_SCHEMA_MISMATCH',
+        message: 'The operation failed.',
+        retryable: false,
+      },
+      [],
+    ]);
+  });
+
+  test('enforces required objects, nested properties, arrays, additions, and compositions', async () => {
+    const definition: FlowDefinition = {
+      id: 'schema-structure',
+      version: 1,
+      title: 'Schema structure',
+      edges: [],
+      triggers: [{ id: 'manual', kind: 'manual' }],
+      nodes: [
+        {
+          id: 'required',
+          capability: { providerId: 'test', capabilityId: 'required' },
+          ports: [
+            {
+              id: 'value',
+              direction: 'output',
+              data: { schema: { type: 'object', required: ['name'] } },
+            },
+          ],
+        },
+        {
+          id: 'nested',
+          capability: { providerId: 'test', capabilityId: 'nested' },
+          ports: [
+            {
+              id: 'value',
+              direction: 'output',
+              data: {
+                schema: {
+                  type: 'object',
+                  properties: { person: { type: 'object', required: ['name'] } },
+                },
+              },
+            },
+          ],
+        },
+        {
+          id: 'additional',
+          capability: { providerId: 'test', capabilityId: 'additional' },
+          ports: [
+            {
+              id: 'value',
+              direction: 'output',
+              data: { schema: { type: 'object', additionalProperties: false } },
+            },
+          ],
+        },
+        {
+          id: 'array',
+          capability: { providerId: 'test', capabilityId: 'array' },
+          ports: [
+            {
+              id: 'value',
+              direction: 'output',
+              data: { schema: { type: 'array', items: { type: 'integer' } } },
+            },
+          ],
+        },
+        {
+          id: 'composed',
+          capability: { providerId: 'test', capabilityId: 'composed' },
+          ports: [
+            {
+              id: 'value',
+              direction: 'output',
+              data: {
+                schema: {
+                  allOf: [{ type: 'string' }],
+                  oneOf: [{ enum: ['ok'] }, { enum: ['other'] }],
+                },
+              },
+            },
+          ],
+        },
+      ],
+    };
+    const operations = {
+      'test:required': {
+        executeAsync: async () => ({ output: { value: { kind: 'inline' as const, value: {} } } }),
+      },
+      'test:nested': {
+        executeAsync: async () => ({
+          output: { value: { kind: 'inline' as const, value: { person: {} } } },
+        }),
+      },
+      'test:additional': {
+        executeAsync: async () => ({
+          output: { value: { kind: 'inline' as const, value: { extra: true } } },
+        }),
+      },
+      'test:array': {
+        executeAsync: async () => ({
+          output: { value: { kind: 'inline' as const, value: [1, 'two'] } },
+        }),
+      },
+      'test:composed': {
+        executeAsync: async () => ({
+          output: { value: { kind: 'inline' as const, value: 'nope' } },
+        }),
+      },
+    };
+    const result = await executeFlowAsync(
+      compileFlowGraph(definition, operations),
+      operations,
+      { runId: 'schema-structure', triggerId: 'manual' },
+      clock,
+    );
+    expect(result.run.steps.map((step) => step.error?.code)).toEqual([
+      'FLOW_PORT_SCHEMA_MISMATCH',
+      'FLOW_PORT_SCHEMA_MISMATCH',
+      'FLOW_PORT_SCHEMA_MISMATCH',
+      'FLOW_PORT_SCHEMA_MISMATCH',
+      'FLOW_PORT_SCHEMA_MISMATCH',
+    ]);
+  });
+
+  test('preflights every declared schema before a prior operation can perform a side effect', async () => {
+    const calls: string[] = [];
+    const definition: FlowDefinition = {
+      id: 'preflight',
+      version: 1,
+      title: 'Preflight',
+      edges: [],
+      triggers: [{ id: 'manual', kind: 'manual' }],
+      nodes: [
+        { id: 'first', capability: { providerId: 'test', capabilityId: 'first' }, ports: [] },
+        {
+          id: 'invalid',
+          capability: { providerId: 'test', capabilityId: 'invalid' },
+          ports: [{ id: 'value', direction: 'output', data: { schema: { format: 'email' } } }],
+        },
+      ],
+    };
+    const operations = {
+      'test:first': {
+        executeAsync: async () => {
+          calls.push('first');
+          return { output: {} };
+        },
+      },
+      'test:invalid': { executeAsync: async () => ({ output: {} }) },
+    };
+    await expect(
+      executeFlowAsync(
+        compileFlowGraph(definition, operations),
+        operations,
+        { runId: 'preflight', triggerId: 'manual' },
+        clock,
+      ),
+    ).rejects.toThrow('FLOW_SCHEMA_UNSUPPORTED_CONSTRAINT:format');
+    expect(calls).toEqual([]);
   });
 
   test('resolves operations by provider-qualified capability', () => {

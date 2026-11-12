@@ -16,6 +16,7 @@ import type {
   FlowNodeRegistry,
   FlowRunRequest,
 } from '../../../types/execution.js';
+import { assertFlowGraphSchemasSupported } from '../domain/assertFlowGraphSchemasSupported.js';
 import { validateFlowDataSchema } from '../domain/validateFlowDataSchema.js';
 
 /*** Execute a compiled graph in deterministic order within one process. */
@@ -27,6 +28,7 @@ export const executeFlowAsync = async (
 ): Promise<FlowExecutionResult> => {
   const trigger = graph.definition.triggers.find(({ id }) => id === request.triggerId);
   if (trigger?.kind !== 'manual') throw new Error('FLOW_TRIGGER_NOT_MANUAL');
+  assertFlowGraphSchemasSupported(graph.definition.nodes, request.schemaRegistry);
   const startedAt = clock.now().toISOString();
   const state = await executeNodesAsync(graph, registry, request, clock);
   return {
@@ -99,7 +101,6 @@ const executeAvailableNodeAsync = async (
   if (!state.activatedNodeIds.has(node.id)) return undefined;
   const input = state.inputs[node.id] ?? request.input ?? {};
   if (!hasRequiredInput(node, input)) return undefined;
-  assertPortSchemas(node, input, 'input', request.schemaRegistry);
   return executeNodeAsync(node, input, registry, request.signal, clock, request.schemaRegistry);
 };
 
@@ -126,6 +127,7 @@ const executeNodeAsync = async (
 }> => {
   const startedAt = clock.now().toISOString();
   try {
+    assertPortSchemas(node, input, 'input', schemas);
     const operationId = `${node.capability.providerId}:${node.capability.capabilityId}`;
     const operation = Object.entries(registry).find(([id]) => id === operationId)?.[1];
     if (!operation) throw new Error(`FLOW_OPERATION_UNREGISTERED:${operationId}`);
