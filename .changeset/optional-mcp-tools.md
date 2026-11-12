@@ -2,4 +2,4 @@
 '@ankhorage/flow': minor
 ---
 
-Add an optional allowlist-only MCP tool discovery and invocation entrypoint.
+Add an optional, fail-closed MCP tool discovery entrypoint with explicit provider and tool scopes.

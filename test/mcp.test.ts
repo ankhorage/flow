@@ -10,93 +10,96 @@ import { createMcpToolRegistry } from '../src/mcp.js';
 const provider = {
   id: 'fixture',
   transport: 'stdio' as const,
-  command: process.execPath,
-  args: [new URL('./fixtures/mcpStdioServer.ts', import.meta.url).pathname],
-  allowedTools: ['safe_echo'],
-  scopes: ['tools:invoke'],
+  allowedTools: [{ name: 'safe_echo', grantedScopes: ['tools:invoke'] }],
+  grantedScopes: ['tools:invoke'],
   timeoutMs: 5_000,
 };
 
-test('discovers an allowlisted STDIO tool and invokes it after approval', async () => {
-  const registry = createMcpToolRegistry({ approveToolAsync: () => true, providers: [provider] });
+const trustedStdioProviders = {
+  fixture: {
+    command: process.execPath,
+    args: [new URL('./fixtures/mcpStdioServer.ts', import.meta.url).pathname],
+  },
+};
+
+test('discovers only explicitly permitted tools from a trusted STDIO host provider', async () => {
+  const registry = createMcpToolRegistry({ providers: [provider], trustedStdioProviders });
   const tools = await registry.discoverAsync();
   expect(tools).toHaveLength(1);
   expect(tools[0]).toMatchObject({ name: 'safe_echo', providerId: 'fixture', readOnly: true });
+});
 
-  const result = await registry.invokeAsync({
+test('fails closed before real tool execution until the approval boundary is released', async () => {
+  const registry = createMcpToolRegistry({ providers: [provider], trustedStdioProviders });
+  const [tool] = await registry.discoverAsync();
+  await expect(
+    registry.invokeAsync({
+      providerId: 'fixture',
+      toolName: 'safe_echo',
+      schemaFingerprint: tool?.schemaFingerprint ?? '',
+      arguments: { message: 'must not run' },
+      scopes: ['tools:invoke'],
+    }),
+  ).rejects.toThrow('security approvals');
+});
+
+test('rejects missing scopes, stale schemas, and schema-invalid arguments before authorization', async () => {
+  const registry = createMcpToolRegistry({ providers: [provider], trustedStdioProviders });
+  const [tool] = await registry.discoverAsync();
+  const invocation = {
     providerId: 'fixture',
     toolName: 'safe_echo',
-    schemaFingerprint: tools[0]?.schemaFingerprint ?? '',
+    schemaFingerprint: tool?.schemaFingerprint ?? '',
     arguments: { message: 'hello' },
-    scopes: ['tools:invoke'],
-  });
-  expect(result).toMatchObject({ content: [{ type: 'text', text: 'hello' }], isError: false });
-});
-
-test('denies tool execution before contacting the provider', async () => {
-  const registry = createMcpToolRegistry({ approveToolAsync: () => false, providers: [provider] });
-  const [tool] = await registry.discoverAsync();
+  };
+  await expect(registry.invokeAsync({ ...invocation, scopes: [] })).rejects.toThrow('scopes');
   await expect(
-    registry.invokeAsync({
-      providerId: 'fixture',
-      toolName: 'safe_echo',
-      schemaFingerprint: tool?.schemaFingerprint ?? '',
-      arguments: { message: 'blocked' },
-      scopes: ['tools:invoke'],
-    }),
-  ).rejects.toThrow('not approved');
-});
-
-test('rejects stale schemas, undeclared arguments, and unsafe remote endpoints', async () => {
-  const registry = createMcpToolRegistry({ approveToolAsync: () => true, providers: [provider] });
-  const [tool] = await registry.discoverAsync();
-  await expect(
-    registry.invokeAsync({
-      providerId: 'fixture',
-      toolName: 'safe_echo',
-      schemaFingerprint: 'stale',
-      arguments: {},
-      scopes: ['tools:invoke'],
-    }),
+    registry.invokeAsync({ ...invocation, schemaFingerprint: 'stale', scopes: ['tools:invoke'] }),
   ).rejects.toThrow('schema changed');
-
+  await expect(
+    registry.invokeAsync({ ...invocation, arguments: { message: 1 }, scopes: ['tools:invoke'] }),
+  ).rejects.toThrow('arguments do not satisfy');
   await expect(
     registry.invokeAsync({
-      providerId: 'fixture',
-      toolName: 'safe_echo',
-      schemaFingerprint: tool?.schemaFingerprint ?? '',
-      arguments: {},
+      ...invocation,
+      arguments: { message: 'x', injected: true },
       scopes: ['tools:invoke'],
     }),
   ).rejects.toThrow('arguments do not satisfy');
+});
 
-  await expect(
-    registry.invokeAsync({
-      providerId: 'fixture',
-      toolName: 'safe_echo',
-      schemaFingerprint: tool?.schemaFingerprint ?? '',
-      arguments: { message: 1 },
-      scopes: ['tools:invoke'],
+test('rejects unsafe remote endpoints and production remote access before network activity', async () => {
+  expect(() =>
+    createMcpToolRegistry({
+      providers: [
+        {
+          id: 'unsafe',
+          transport: 'remote',
+          endpoint: 'https://127.0.0.1/mcp',
+          allowedHosts: ['127.0.0.1'],
+          allowedTools: [{ name: 'tool', grantedScopes: ['tools:invoke'] }],
+          grantedScopes: ['tools:invoke'],
+        },
+      ],
     }),
-  ).rejects.toThrow('arguments do not satisfy');
+  ).toThrow('public host allowlist');
 
-  const unsafe = createMcpToolRegistry({
-    approveToolAsync: () => true,
+  const production = createMcpToolRegistry({
     providers: [
       {
-        id: 'unsafe',
+        id: 'production',
         transport: 'remote',
-        endpoint: 'http://evil.example/mcp',
-        allowedTools: ['tool'],
-        scopes: ['tools:invoke'],
+        endpoint: 'https://mcp.example.test/endpoint',
+        allowedHosts: ['mcp.example.test'],
+        allowedTools: [{ name: 'tool', grantedScopes: ['tools:invoke'] }],
+        grantedScopes: ['tools:invoke'],
       },
     ],
   });
-  await expect(unsafe.discoverAsync()).rejects.toThrow('must use HTTPS');
-  expect(tool?.name).toBe('safe_echo');
+  await expect(production.discoverAsync()).rejects.toThrow('security transport boundary');
 });
 
-test('discovers and invokes a safe tool through the loopback remote transport', async () => {
+test('permits only an explicit literal-loopback remote development fixture', async () => {
   const httpServer = createServer(async (request, response) => {
     const server = createRemoteMcpServer();
     const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
@@ -107,29 +110,134 @@ test('discovers and invokes a safe tool through the loopback remote transport', 
   const address = httpServer.address();
   if (!address || typeof address === 'string')
     throw new Error('Expected a loopback test server port.');
-
   try {
     const registry = createMcpToolRegistry({
-      approveToolAsync: () => true,
       providers: [
         {
           id: 'remote',
           transport: 'remote',
           endpoint: `http://127.0.0.1:${address.port}/mcp`,
-          allowedTools: ['remote_echo'],
-          scopes: ['tools:invoke'],
+          allowedHosts: [],
+          allowDevelopmentLoopback: true,
+          allowedTools: [{ name: 'remote_echo', grantedScopes: ['tools:invoke'] }],
+          grantedScopes: ['tools:invoke'],
         },
       ],
     });
-    const [tool] = await registry.discoverAsync();
-    const result = await registry.invokeAsync({
-      providerId: 'remote',
-      toolName: 'remote_echo',
-      schemaFingerprint: tool?.schemaFingerprint ?? '',
-      arguments: {},
-      scopes: ['tools:invoke'],
+    expect(await registry.discoverAsync()).toHaveLength(1);
+  } finally {
+    await new Promise<void>((resolve, reject) =>
+      httpServer.close((error) => (error ? reject(error) : resolve())),
+    );
+  }
+});
+
+test('rejects untrusted STDIO configuration without leaking host command details', async () => {
+  const registry = createMcpToolRegistry({ providers: [provider] });
+  await expect(registry.discoverAsync()).rejects.toThrow('trusted host command configuration');
+});
+
+test('propagates caller cancellation before provider discovery', async () => {
+  const registry = createMcpToolRegistry({ providers: [provider], trustedStdioProviders });
+  const controller = new AbortController();
+  controller.abort();
+  await expect(registry.discoverAsync(controller.signal)).rejects.toThrow('cancelled');
+});
+
+test('bounds stalled loopback discovery with the provider timeout', async () => {
+  const httpServer = createServer(() => undefined);
+  await new Promise<void>((resolve) => httpServer.listen(0, '127.0.0.1', resolve));
+  const address = httpServer.address();
+  if (!address || typeof address === 'string')
+    throw new Error('Expected a loopback test server port.');
+  try {
+    const registry = createMcpToolRegistry({
+      providers: [
+        {
+          id: 'stalled',
+          transport: 'remote',
+          endpoint: `http://127.0.0.1:${address.port}/mcp`,
+          allowedHosts: [],
+          allowDevelopmentLoopback: true,
+          allowedTools: [{ name: 'tool', grantedScopes: ['tools:invoke'] }],
+          grantedScopes: ['tools:invoke'],
+          timeoutMs: 100,
+        },
+      ],
     });
-    expect(result.content).toEqual([{ type: 'text', text: 'remote' }]);
+    await expect(registry.discoverAsync()).rejects.toThrow('timed out');
+  } finally {
+    httpServer.closeAllConnections();
+    if (httpServer.listening)
+      await new Promise<void>((resolve, reject) =>
+        httpServer.close((error) => (error ? reject(error) : resolve())),
+      );
+  }
+});
+
+test('redacts unsafe endpoint credentials from the stable error', () => {
+  try {
+    createMcpToolRegistry({
+      providers: [
+        {
+          id: 'redaction',
+          transport: 'remote',
+          endpoint: 'https://operator:super-secret@mcp.example.test/endpoint',
+          allowedHosts: ['mcp.example.test'],
+          allowedTools: [{ name: 'tool', grantedScopes: ['tools:invoke'] }],
+          grantedScopes: ['tools:invoke'],
+        },
+      ],
+    });
+    throw new Error('Expected endpoint validation to reject credentials.');
+  } catch (error) {
+    expect(error).toHaveProperty(
+      'message',
+      'Remote MCP endpoints cannot embed credentials or fragments.',
+    );
+    expect(String(error)).not.toContain('super-secret');
+  }
+});
+
+test('rejects unsupported schemas instead of accepting arbitrary tool arguments', async () => {
+  const httpServer = createServer(async (request, response) => {
+    const server = new Server(
+      { name: 'flow-invalid-schema', version: '1.0.0' },
+      { capabilities: { tools: {} } },
+    );
+    server.setRequestHandler(ListToolsRequestSchema, () => ({
+      tools: [
+        {
+          name: 'unsafe_schema',
+          inputSchema: { type: 'object', properties: {}, additionalProperties: { type: 'string' } },
+        },
+      ],
+    }));
+    const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
+    await server.connect(transport);
+    await transport.handleRequest(request, response, await readJsonBodyAsync(request));
+  });
+  await new Promise<void>((resolve) => httpServer.listen(0, '127.0.0.1', resolve));
+  const address = httpServer.address();
+  if (!address || typeof address === 'string')
+    throw new Error('Expected a loopback test server port.');
+  try {
+    const registry = createMcpToolRegistry({
+      providers: [
+        {
+          id: 'invalid-schema',
+          transport: 'remote',
+          endpoint: `http://127.0.0.1:${address.port}/mcp`,
+          allowedHosts: [],
+          allowDevelopmentLoopback: true,
+          allowedTools: [{ name: 'unsafe_schema', grantedScopes: ['tools:invoke'] }],
+          grantedScopes: ['tools:invoke'],
+        },
+      ],
+    });
+    await expect(registry.discoverAsync()).rejects.toThrow(
+      'must set additionalProperties to false',
+    );
   } finally {
     await new Promise<void>((resolve, reject) =>
       httpServer.close((error) => (error ? reject(error) : resolve())),
@@ -143,7 +251,12 @@ const createRemoteMcpServer = (): Server => {
     { capabilities: { tools: {} } },
   );
   server.setRequestHandler(ListToolsRequestSchema, () => ({
-    tools: [{ name: 'remote_echo', inputSchema: { type: 'object' } }],
+    tools: [
+      {
+        name: 'remote_echo',
+        inputSchema: { type: 'object', properties: {}, additionalProperties: false },
+      },
+    ],
   }));
   server.setRequestHandler(CallToolRequestSchema, () => ({
     content: [{ type: 'text', text: 'remote' }],

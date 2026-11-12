@@ -16,10 +16,14 @@ server.setRequestHandler(ListToolsRequestSchema, () => ({
         type: 'object',
         properties: { message: { type: 'string' } },
         required: ['message'],
+        additionalProperties: false,
       },
       annotations: { readOnlyHint: true },
     },
-    { name: 'not_allowlisted', inputSchema: { type: 'object' } },
+    {
+      name: 'not_allowlisted',
+      inputSchema: { type: 'object', properties: {}, additionalProperties: false },
+    },
   ],
 }));
 

@@ -2,10 +2,10 @@
 export { createMcpToolRegistry } from './features/mcp/createMcpToolRegistry.js';
 export type {
   McpProviderDefinition,
-  McpToolApprovalRequest,
-  McpToolApprover,
   McpToolInvocation,
   McpToolMetadata,
+  McpToolPermission,
   McpToolRegistry,
   McpToolResult,
+  McpTrustedStdioProvider,
 } from './types/mcp.js';

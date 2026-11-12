@@ -1,23 +1,35 @@
 /** Public configuration and results for the optional MCP integration. */
+export interface McpToolPermission {
+  readonly name: string;
+  readonly grantedScopes: readonly string[];
+}
+
 export type McpProviderDefinition =
   | {
       readonly id: string;
       readonly transport: 'remote';
       readonly endpoint: string;
-      readonly allowedTools: readonly string[];
-      readonly scopes: readonly string[];
+      readonly allowedHosts: readonly string[];
+      readonly allowedTools: readonly McpToolPermission[];
+      readonly grantedScopes: readonly string[];
       readonly timeoutMs?: number;
+      /** Enables only literal-loopback test and development endpoints. Never enable in production. */
+      readonly allowDevelopmentLoopback?: boolean;
     }
   | {
       readonly id: string;
       readonly transport: 'stdio';
-      readonly command: string;
-      readonly args?: readonly string[];
-      readonly environment?: Readonly<Record<string, string>>;
-      readonly allowedTools: readonly string[];
-      readonly scopes: readonly string[];
+      readonly allowedTools: readonly McpToolPermission[];
+      readonly grantedScopes: readonly string[];
       readonly timeoutMs?: number;
     };
+
+/** Host-owned command configuration. It is deliberately separate from workflow provider data. */
+export interface McpTrustedStdioProvider {
+  readonly command: string;
+  readonly args?: readonly string[];
+  readonly environment?: Readonly<Record<string, string>>;
+}
 
 export interface McpToolMetadata {
   readonly providerId: string;
@@ -44,15 +56,6 @@ export interface McpToolResult {
   readonly structuredContent?: Readonly<Record<string, unknown>>;
   readonly isError: boolean;
 }
-
-export interface McpToolApprovalRequest {
-  readonly providerId: string;
-  readonly toolName: string;
-  readonly scopes: readonly string[];
-  readonly arguments: Readonly<Record<string, unknown>>;
-}
-
-export type McpToolApprover = (request: McpToolApprovalRequest) => boolean | Promise<boolean>;
 
 export interface McpToolRegistry {
   discoverAsync(signal?: AbortSignal): Promise<readonly McpToolMetadata[]>;

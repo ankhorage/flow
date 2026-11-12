@@ -5,15 +5,21 @@
     "": {
       "dependencies": {
         "@ankhorage/contracts": "^26.7.0",
-        "@modelcontextprotocol/sdk": "^1.32.2",
       },
       "devDependencies": {
         "@ankhorage/devtools": "^2.4.3",
         "@ankhorage/paradox": "^0.3.6",
+        "@modelcontextprotocol/sdk": "^1.32.2",
         "@types/bun": "^1.4.2",
         "@types/node": "^26.6.6",
         "typescript": "^6.0.3",
       },
+      "peerDependencies": {
+        "@modelcontextprotocol/sdk": "^1.32.2",
+      },
+      "optionalPeers": [
+        "@modelcontextprotocol/sdk",
+      ],
     },
   },
   "packages": {
