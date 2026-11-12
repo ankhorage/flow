@@ -1,0 +1,110 @@
+{
+  "packageName": "@ankhorage/flow",
+  "packageId": "@ankhorage/flow",
+  "description": "Standalone workflow engine foundation for Ankhorage.",
+  "collaborators": null,
+  "donation": null,
+  "badges": [
+    {
+      "id": "license",
+      "label": "license",
+      "value": "MIT",
+      "color": "2563eb"
+    },
+    {
+      "id": "npm",
+      "label": "npm",
+      "value": "v0.1.0",
+      "color": "cb3837"
+    },
+    {
+      "id": "runtime",
+      "label": "runtime",
+      "value": "bun",
+      "color": "f59e0b"
+    },
+    {
+      "id": "typescript",
+      "label": "typescript",
+      "value": "strict",
+      "color": "2563eb"
+    },
+    {
+      "id": "eslint",
+      "label": "eslint",
+      "value": "checked",
+      "color": "0a7f3f"
+    },
+    {
+      "id": "prettier",
+      "label": "prettier",
+      "value": "checked",
+      "color": "0a7f3f"
+    },
+    {
+      "id": "build",
+      "label": "build",
+      "value": "checked",
+      "color": "0a7f3f"
+    },
+    {
+      "id": "tests",
+      "label": "tests",
+      "value": "configured",
+      "color": "6f42c1"
+    },
+    {
+      "id": "docs",
+      "label": "paradox",
+      "value": "canonical",
+      "color": "0a7f3f"
+    }
+  ],
+  "usage": {
+    "packageName": "@ankhorage/flow",
+    "command": "ankh flow --help"
+  },
+  "usageEntries": [],
+  "exampleCount": 0,
+  "findings": [],
+  "config": null,
+  "entrypoints": [
+    "src/index.ts"
+  ],
+  "modules": [
+    {
+      "path": "src/ai.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": []
+    },
+    {
+      "path": "src/index.ts",
+      "isEntrypoint": true,
+      "dependencies": [],
+      "exports": []
+    },
+    {
+      "path": "src/mcp.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": []
+    },
+    {
+      "path": "src/social.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": []
+    }
+  ],
+  "exports": [],
+  "components": [],
+  "sourceFunctions": [],
+  "sequenceScenarios": [],
+  "graphs": {
+    "imports": [],
+    "calls": [],
+    "typeReferences": [],
+    "componentComposition": []
+  }
+}
