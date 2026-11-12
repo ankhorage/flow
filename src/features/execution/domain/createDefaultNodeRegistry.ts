@@ -4,9 +4,9 @@ import type { FlowNodeOperation, FlowNodeRegistry } from '../../../types/executi
 
 /*** Create the built-in operations that have no provider or host dependency. */
 export const createDefaultNodeRegistry = (): FlowNodeRegistry => ({
-  condition: { executeAsync: () => Promise.resolve({}) },
-  noop: { executeAsync: () => Promise.resolve({}) },
-  transform: { executeAsync: transformAsync },
+  'flow:condition': { executeAsync: () => Promise.resolve({}) },
+  'flow:noop': { executeAsync: () => Promise.resolve({}) },
+  'flow:transform': { executeAsync: transformAsync },
 });
 
 /*** Copy configured inline or artifact values to matching output ports without evaluating code. */

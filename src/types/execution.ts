@@ -1,3 +1,4 @@
+import type { DataSchemaRegistry } from '@ankhorage/contracts/data';
 import type {
   FlowDataRef,
   FlowDefinition,
@@ -31,6 +32,7 @@ export interface FlowCompiledGraph {
 export interface FlowRunRequest {
   readonly input?: Readonly<Record<FlowPortId, FlowDataRef>>;
   readonly runId: string;
+  readonly schemaRegistry?: DataSchemaRegistry;
   readonly signal?: AbortSignal;
   readonly triggerId: string;
 }

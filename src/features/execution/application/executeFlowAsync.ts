@@ -1,8 +1,4 @@
-import type {
-  DataContractValue,
-  DataSchema,
-  DataSchemaPrimitiveType,
-} from '@ankhorage/contracts/data';
+import type { DataContractValue } from '@ankhorage/contracts/data';
 import type {
   FlowDataRef,
   FlowEdge,
@@ -20,6 +16,7 @@ import type {
   FlowNodeRegistry,
   FlowRunRequest,
 } from '../../../types/execution.js';
+import { validateFlowDataSchema } from '../domain/validateFlowDataSchema.js';
 
 /*** Execute a compiled graph in deterministic order within one process. */
 export const executeFlowAsync = async (
@@ -31,49 +28,80 @@ export const executeFlowAsync = async (
   const trigger = graph.definition.triggers.find(({ id }) => id === request.triggerId);
   if (trigger?.kind !== 'manual') throw new Error('FLOW_TRIGGER_NOT_MANUAL');
   const startedAt = clock.now().toISOString();
-  const state: ExecutionState = { inputs: {}, steps: [] };
-  for (const nodeId of graph.topologicalNodeIds) {
-    if (request.signal?.aborted)
-      return {
-        run: createRun(
-          graph,
-          request,
-          state.steps,
-          startedAt,
-          clock.now().toISOString(),
-          'cancelled',
-        ),
-      };
-    const node = graph.definition.nodes.find((candidate) => candidate.id === nodeId);
-    if (!node) throw new Error(`FLOW_GRAPH_UNKNOWN_NODE:${nodeId}`);
-    const input = state.inputs[node.id] ?? request.input ?? {};
-    if (!hasRequiredInput(node, input)) continue;
-    assertPortSchemas(node, input, 'input');
-    const result = await executeNodeAsync(node, input, registry, request.signal, clock);
-    state.steps.push(result.step);
-    if (result.step.status === 'failed')
-      return {
-        run: createRun(
-          graph,
-          request,
-          state.steps,
-          startedAt,
-          clock.now().toISOString(),
-          'failed',
-          result.step.error,
-        ),
-      };
-    propagateOutput(graph.edgesBySourceNodeId[node.id] ?? [], result.output, state.inputs);
-  }
+  const state = await executeNodesAsync(graph, registry, request, clock);
   return {
-    run: createRun(graph, request, state.steps, startedAt, clock.now().toISOString(), 'succeeded'),
+    run: createRun(
+      graph,
+      request,
+      state.steps,
+      startedAt,
+      clock.now().toISOString(),
+      state.status ?? 'succeeded',
+      state.error,
+    ),
   };
 };
 
+/*** Iterate compiled nodes in deterministic order until completion or cancellation. */
+const executeNodesAsync = async (
+  graph: FlowCompiledGraph,
+  registry: FlowNodeRegistry,
+  request: FlowRunRequest,
+  clock: FlowClock,
+): Promise<ExecutionState> => {
+  const state: ExecutionState = {
+    activatedNodeIds: new Set(
+      graph.topologicalNodeIds.filter(
+        (nodeId) => !graph.definition.edges.some((edge) => edge.target.nodeId === nodeId),
+      ),
+    ),
+    inputs: {},
+    steps: [],
+  };
+  for (const nodeId of graph.topologicalNodeIds) {
+    if (request.signal?.aborted) return { ...state, status: 'cancelled' };
+    const node = graph.definition.nodes.find((candidate) => candidate.id === nodeId);
+    if (!node) throw new Error(`FLOW_GRAPH_UNKNOWN_NODE:${nodeId}`);
+    const result = await executeAvailableNodeAsync(node, state, registry, request, clock);
+    if (!result) continue;
+    state.steps.push(result.step);
+    if (result.step.status === 'cancelled') return { ...state, status: 'cancelled' };
+    propagateOutput(
+      graph.edgesBySourceNodeId[node.id] ?? [],
+      result.output,
+      result.step.status === 'failed' ? 'failure' : 'success',
+      state,
+    );
+  }
+  const failedStep = state.steps.find((step) => step.status === 'failed');
+  return { ...state, status: failedStep ? 'failed' : 'succeeded', error: failedStep?.error };
+};
+
 interface ExecutionState {
+  readonly activatedNodeIds: Set<string>;
+  readonly error?: FlowError;
   readonly inputs: Record<string, Record<FlowPortId, FlowDataRef>>;
+  readonly status?: FlowRunSnapshot['status'];
   readonly steps: FlowStepSnapshot[];
 }
+
+/*** Execute one node only when all of its required inputs were propagated. */
+const executeAvailableNodeAsync = async (
+  node: FlowNode,
+  state: ExecutionState,
+  registry: FlowNodeRegistry,
+  request: FlowRunRequest,
+  clock: FlowClock,
+): Promise<
+  | { readonly output: Readonly<Record<FlowPortId, FlowDataRef>>; readonly step: FlowStepSnapshot }
+  | undefined
+> => {
+  if (!state.activatedNodeIds.has(node.id)) return undefined;
+  const input = state.inputs[node.id] ?? request.input ?? {};
+  if (!hasRequiredInput(node, input)) return undefined;
+  assertPortSchemas(node, input, 'input', request.schemaRegistry);
+  return executeNodeAsync(node, input, registry, request.signal, clock, request.schemaRegistry);
+};
 
 /*** Determine whether every required input port has a propagated value. */
 const hasRequiredInput = (
@@ -91,16 +119,16 @@ const executeNodeAsync = async (
   registry: FlowNodeRegistry,
   signal: AbortSignal | undefined,
   clock: FlowClock,
+  schemas: FlowRunRequest['schemaRegistry'],
 ): Promise<{
   readonly output: Readonly<Record<FlowPortId, FlowDataRef>>;
   readonly step: FlowStepSnapshot;
 }> => {
   const startedAt = clock.now().toISOString();
   try {
-    const operation = Object.entries(registry).find(
-      ([capabilityId]) => capabilityId === node.capability.capabilityId,
-    )?.[1];
-    if (!operation) throw new Error(`FLOW_OPERATION_UNREGISTERED:${node.capability.capabilityId}`);
+    const operationId = `${node.capability.providerId}:${node.capability.capabilityId}`;
+    const operation = Object.entries(registry).find(([id]) => id === operationId)?.[1];
+    if (!operation) throw new Error(`FLOW_OPERATION_UNREGISTERED:${operationId}`);
     const output =
       (
         await operation.executeAsync({
@@ -110,8 +138,10 @@ const executeNodeAsync = async (
           signal: signal ?? new AbortController().signal,
         })
       ).output ?? {};
+    if (signal?.aborted)
+      return { output: {}, step: createCancelledStep(node, input, startedAt, clock) };
     assertOutputPorts(node, output);
-    assertPortSchemas(node, output, 'output');
+    assertPortSchemas(node, output, 'output', schemas);
     return { output, step: createSucceededStep(node, input, output, startedAt, clock) };
   } catch (reason) {
     const error = asFlowError(reason);
@@ -149,6 +179,22 @@ const createSucceededStep = (
   output,
 });
 
+/*** Create a terminal snapshot when cancellation occurs during asynchronous node execution. */
+const createCancelledStep = (
+  node: FlowNode,
+  input: Readonly<Record<FlowPortId, FlowDataRef>>,
+  startedAt: string,
+  clock: FlowClock,
+): FlowStepSnapshot => ({
+  id: `${node.id}:1`,
+  nodeId: node.id,
+  status: 'cancelled',
+  attempt: 1,
+  startedAt,
+  completedAt: clock.now().toISOString(),
+  input,
+});
+
 /*** Reject operation outputs that do not correspond to declared output ports. */
 const assertOutputPorts = (
   node: FlowNode,
@@ -159,6 +205,10 @@ const assertOutputPorts = (
   );
   if (Object.keys(output).some((portId) => !outputIds.has(portId)))
     throw new Error(`FLOW_OUTPUT_UNDECLARED_PORT:${node.id}`);
+  const missingRequired = node.ports.some(
+    (port) => port.direction === 'output' && port.required && output[port.id] === undefined,
+  );
+  if (missingRequired) throw new Error(`FLOW_OUTPUT_REQUIRED_PORT_MISSING:${node.id}`);
 };
 
 /*** Validate inline port values against their declared portable schemas. */
@@ -166,59 +216,46 @@ const assertPortSchemas = (
   node: FlowNode,
   values: Readonly<Record<FlowPortId, FlowDataRef>>,
   direction: 'input' | 'output',
+  schemas: FlowRunRequest['schemaRegistry'],
 ): void => {
   for (const port of node.ports.filter((candidate) => candidate.direction === direction)) {
     const value = values[port.id];
-    if (
-      value?.kind === 'inline' &&
-      port.data?.schema &&
-      !matchesSchema(value.value, port.data.schema)
-    )
+    const schema =
+      port.data?.schema ?? (port.data?.schemaRef ? { ref: port.data.schemaRef } : undefined);
+    if (value?.kind === 'inline' && schema && !validateFlowDataSchema(value.value, schema, schemas))
       throw new Error(`FLOW_PORT_SCHEMA_MISMATCH:${node.id}:${port.id}`);
   }
-};
-
-/*** Match primitive portable schema types without coercing values. */
-const matchesSchema = (value: DataContractValue, schema: DataSchema): boolean => {
-  const types: readonly DataSchemaPrimitiveType[] = schema.type
-    ? Array.isArray(schema.type)
-      ? schema.type
-      : [schema.type]
-    : [];
-  if (types.length > 0 && !types.some((type) => matchesType(value, type))) return false;
-  if (schema.const !== undefined && !structurallyEqual(value, schema.const)) return false;
-  return !schema.enum || schema.enum.some((candidate) => structurallyEqual(value, candidate));
-};
-
-/*** Determine whether a value has the declared JSON primitive type. */
-const matchesType = (value: DataContractValue, type: DataSchemaPrimitiveType): boolean => {
-  if (type === 'array') return Array.isArray(value);
-  if (type === 'integer') return typeof value === 'number' && Number.isInteger(value);
-  if (type === 'null') return value === null;
-  if (type === 'object')
-    return value !== null && typeof value === 'object' && !Array.isArray(value);
-  return typeof value === type;
 };
 
 /*** Propagate outputs only over edges whose declared condition matches the output value. */
 const propagateOutput = (
   edges: readonly FlowEdge[],
   output: Readonly<Record<FlowPortId, FlowDataRef>>,
-  inputs: Record<string, Record<FlowPortId, FlowDataRef>>,
+  outcome: 'failure' | 'success',
+  state: ExecutionState,
 ): void => {
   for (const edge of edges) {
     const value = output[edge.source.portId];
-    if (value && matchesEdge(edge, value))
-      inputs[edge.target.nodeId] = { ...inputs[edge.target.nodeId], [edge.target.portId]: value };
+    if (!matchesEdge(edge, value, outcome)) continue;
+    state.activatedNodeIds.add(edge.target.nodeId);
+    if (value)
+      state.inputs[edge.target.nodeId] = {
+        ...state.inputs[edge.target.nodeId],
+        [edge.target.portId]: value,
+      };
   }
 };
 
 /*** Evaluate an edge condition without executing arbitrary expressions. */
-const matchesEdge = (edge: FlowEdge, value: FlowDataRef): boolean => {
+const matchesEdge = (
+  edge: FlowEdge,
+  value: FlowDataRef | undefined,
+  outcome: 'failure' | 'success',
+): boolean => {
   const condition = edge.condition ?? { kind: 'always' as const };
-  if (condition.kind === 'always') return true;
-  if (condition.kind === 'outcome') return condition.outcome === 'success';
-  if (value.kind !== 'inline') return false;
+  if (condition.kind === 'always') return outcome === 'success';
+  if (condition.kind === 'outcome') return condition.outcome === outcome;
+  if (value?.kind !== 'inline') return false;
   const selected = resolvePointer(value.value, condition.path);
   return selected !== undefined && structurallyEqual(selected, condition.equals);
 };
@@ -270,10 +307,10 @@ const isDataArray = (value: object): value is readonly DataContractValue[] => Ar
 /*** Translate host failures to structured contract errors without exposing arbitrary objects. */
 const asFlowError = (reason: unknown): FlowError => ({
   code:
-    reason instanceof Error
+    reason instanceof Error && /^FLOW_[A-Z0-9_]+(?::|$)/.test(reason.message)
       ? (reason.message.split(':')[0] ?? 'FLOW_OPERATION_FAILED')
       : 'FLOW_OPERATION_FAILED',
-  message: reason instanceof Error ? reason.message : 'The operation failed.',
+  message: 'The operation failed.',
   retryable: false,
 });
 

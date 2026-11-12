@@ -64,14 +64,11 @@ const assertPort = (
 
 /*** Reject unknown operations and code capabilities before execution can begin. */
 const assertNodeIsExecutable = (node: FlowNode, registry: FlowNodeRegistry): void => {
-  const { capabilityId } = node.capability;
+  const { capabilityId, providerId } = node.capability;
+  const operationId = `${providerId}:${capabilityId}`;
   if (capabilityId === 'code') throw new Error('FLOW_CODE_EXECUTION_DISABLED');
-  if (
-    !Object.entries(registry).some(
-      ([registeredCapabilityId]) => registeredCapabilityId === capabilityId,
-    )
-  )
-    throw new Error(`FLOW_OPERATION_UNREGISTERED:${capabilityId}`);
+  if (!Object.hasOwn(registry, operationId))
+    throw new Error(`FLOW_OPERATION_UNREGISTERED:${operationId}`);
   if (
     new Set(node.ports.map(({ direction, id }) => `${direction}:${id}`)).size !== node.ports.length
   )
