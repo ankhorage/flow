@@ -1,6 +1,5 @@
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
-import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 
 import type {
   McpProviderDefinition,
@@ -11,7 +10,8 @@ import type {
   McpToolResult,
   McpTrustedStdioProvider,
 } from '../../types/mcp.js';
-import type { FlowSecurityPort } from '../../types/security.js';
+import type { FlowOutboundTransportPort, FlowSecurityPort } from '../../types/security.js';
+import { createMcpRemoteTransport } from './createMcpRemoteTransport.js';
 import { McpToolError } from './McpToolError.js';
 import { prepareMcpProviders } from './prepareMcpProviders.js';
 import { validateMcpSchema } from './validateMcpSchema.js';
@@ -23,6 +23,7 @@ const DEFAULT_TIMEOUT_MS = 10_000;
 /*** Creates a snapshotting, allowlist-only MCP registry. Real invocation fails closed until Issue #4 releases its approval boundary. */
 export const createMcpToolRegistry = (input: {
   readonly providers: readonly McpProviderDefinition[];
+  readonly outboundTransport?: FlowOutboundTransportPort;
   readonly security?: FlowSecurityPort;
   readonly trustedStdioProviders?: Readonly<Record<string, McpTrustedStdioProvider>>;
 }): McpToolRegistry => {
@@ -40,7 +41,9 @@ export const createMcpToolRegistry = (input: {
   return {
     discoverAsync: async (signal) => {
       const groups = await Promise.all(
-        [...providers.values()].map((provider) => discoverAsync(provider, trusted, signal)),
+        [...providers.values()].map((provider) =>
+          discoverAsync(provider, trusted, input.outboundTransport, signal),
+        ),
       );
       const tools = groups.flat();
       const entries = tools.map((tool) => [key(tool.providerId, tool.name), tool] as const);
@@ -54,7 +57,14 @@ export const createMcpToolRegistry = (input: {
       return tools;
     },
     invokeAsync: (invocation) =>
-      invokeAsync(providers, trusted, snapshot, input.security, invocation),
+      invokeAsync(
+        providers,
+        trusted,
+        snapshot,
+        input.security,
+        input.outboundTransport,
+        invocation,
+      ),
   };
 };
 
@@ -62,9 +72,10 @@ export const createMcpToolRegistry = (input: {
 const discoverAsync = async (
   provider: McpProviderDefinition,
   trusted: ReadonlyMap<string, McpTrustedStdioProvider>,
+  outboundTransport: FlowOutboundTransportPort | undefined,
   signal?: AbortSignal,
 ): Promise<readonly McpToolMetadata[]> => {
-  const connection = await connectAsync(provider, trusted, signal);
+  const connection = await connectAsync(provider, trusted, outboundTransport, signal);
   try {
     const tools = await listToolsAsync(connection.client, timeoutOf(provider), signal);
     return tools
@@ -81,6 +92,7 @@ const invokeAsync = async (
   trusted: ReadonlyMap<string, McpTrustedStdioProvider>,
   snapshot: ReadonlyMap<string, McpToolMetadata>,
   security: FlowSecurityPort | undefined,
+  outboundTransport: FlowOutboundTransportPort | undefined,
   invocation: McpToolInvocation,
 ): Promise<McpToolResult> => {
   const provider = providers.get(invocation.providerId);
@@ -111,18 +123,23 @@ const invokeAsync = async (
   const permit = await security.authorizeAsync({
     ...invocation.security,
     capability: `mcp:${provider.id}:${tool.name}`,
-    ...(provider.transport === 'remote' ? { targetUrl: provider.endpoint } : {}),
+    ...(provider.transport === 'remote'
+      ? { target: { allowedHosts: provider.allowedHosts, url: provider.endpoint } }
+      : {}),
   });
-  return permit.executeAsync(async () => callToolAsync(provider, trusted, invocation));
+  return permit.executeAsync(async () =>
+    callToolAsync(provider, trusted, outboundTransport, invocation),
+  );
 };
 
 /*** Opens a bounded provider connection only after the approval permit was issued. */
 const callToolAsync = async (
   provider: McpProviderDefinition,
   trusted: ReadonlyMap<string, McpTrustedStdioProvider>,
+  outboundTransport: FlowOutboundTransportPort | undefined,
   invocation: McpToolInvocation,
 ): Promise<McpToolResult> => {
-  const connection = await connectAsync(provider, trusted, invocation.signal);
+  const connection = await connectAsync(provider, trusted, outboundTransport, invocation.signal);
   try {
     const result = await boundedAsync(
       (signal) =>
@@ -167,11 +184,14 @@ interface Connection {
 const connectAsync = async (
   provider: McpProviderDefinition,
   trusted: ReadonlyMap<string, McpTrustedStdioProvider>,
+  outboundTransport: FlowOutboundTransportPort | undefined,
   signal?: AbortSignal,
 ): Promise<Connection> => {
   const client = new Client({ name: '@ankhorage/flow', version: '0.1.0' });
   const transport =
-    provider.transport === 'stdio' ? stdioTransport(provider, trusted) : remoteTransport(provider);
+    provider.transport === 'stdio'
+      ? stdioTransport(provider, trusted)
+      : createMcpRemoteTransport(provider, outboundTransport);
   await boundedAsync(
     (timeoutSignal) =>
       client.connect(transport, { signal: timeoutSignal, timeout: timeoutOf(provider) }),
@@ -196,27 +216,6 @@ const stdioTransport = (
     command: host.command,
     args: host.args ? [...host.args] : undefined,
     stderr: 'pipe',
-  });
-};
-
-/*** Allows a remote connection only to the separately documented literal-loopback development exception. */
-const remoteTransport = (
-  provider: Extract<McpProviderDefinition, { readonly transport: 'remote' }>,
-): StreamableHTTPClientTransport => {
-  const url = new URL(provider.endpoint);
-  if (!provider.allowDevelopmentLoopback)
-    throw new McpToolError(
-      'remote_security_boundary_unavailable',
-      'Production remote MCP discovery requires the Flow security transport boundary.',
-    );
-  return new StreamableHTTPClientTransport(url, {
-    redirectPolicy: 'same-origin',
-    reconnectionOptions: {
-      initialReconnectionDelay: 100,
-      maxReconnectionDelay: 1_000,
-      reconnectionDelayGrowFactor: 1,
-      maxRetries: 0,
-    },
   });
 };
 

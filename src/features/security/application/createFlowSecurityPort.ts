@@ -2,6 +2,7 @@ import type { SecretRef, SecretStoreAdapter } from '@ankhorage/contracts/secrets
 
 import type {
   FlowApprovalStorePort,
+  FlowOperationStorePort,
   FlowRateLimitPort,
   FlowResolvedSecrets,
   FlowSecurityActor,
@@ -9,44 +10,51 @@ import type {
   FlowSecurityAuditPort,
   FlowSecurityGrant,
   FlowSecurityOperation,
+  FlowSecurityOperationIdentity,
   FlowSecurityPermit,
   FlowSecurityPort,
+  FlowSecurityTarget,
 } from '../../../types/security.js';
+import { validateFlowSecurityTarget } from '../domain/validateFlowSecurityTarget.js';
 import { FlowSecurityError } from '../FlowSecurityError.js';
+
+const METADATA_CAPABILITY = 'secrets:metadata';
 
 /*** Creates the provider-neutral server-side authorization, approval, audit, and secret boundary. */
 export const createFlowSecurityPort = (input: {
   readonly approvalStore: FlowApprovalStorePort;
   readonly audit: FlowSecurityAuditPort;
   readonly grants: readonly FlowSecurityGrant[];
+  readonly operationStore: FlowOperationStorePort;
   readonly rateLimit: FlowRateLimitPort;
   readonly secretStore: SecretStoreAdapter;
-}): FlowSecurityPort => {
-  const completed = new Map<string, string>();
-  return {
-    authorizeAsync: async (operation) => authorizeAsync(input, completed, operation),
-    getSecretMetadataAsync: async ({ actor, ref }) => getSecretMetadataAsync(input, actor, ref),
-  };
-};
+}): FlowSecurityPort => ({
+  authorizeAsync: async (operation) => authorizeAsync(input, operation),
+  getSecretMetadataAsync: async ({ actor, ref }) => getSecretMetadataAsync(input, actor, ref),
+});
 
-/*** Authorizes one exact operation before resolving any secret material. */
+/*** Authorizes and durably claims one exact operation before resolving any secret material. */
 const authorizeAsync = async (
   input: Parameters<typeof createFlowSecurityPort>[0],
-  completed: Map<string, string>,
   operation: FlowSecurityOperation,
 ): Promise<FlowSecurityPermit> => {
-  const targetHost = validateTarget(operation.targetUrl);
-  const secretRefs = unique(operation.secretRefs ?? []);
+  const identity = identityOf(operation);
+  const targetHost = validateFlowSecurityTarget(identity.target);
   if (!isGranted(input.grants, operation.actor, operation.capability))
-    return denyAsync(input.audit, operation, secretRefs, targetHost, 'permission_denied');
-  const prior = completed.get(operation.idempotencyKey);
-  if (prior && prior !== operation.operationId)
-    return denyAsync(input.audit, operation, secretRefs, targetHost, 'idempotency_conflict');
-  const approval = await input.approvalStore.getAsync(operation.operationId);
+    return denyAsync(input.audit, operation, identity.secretRefs, targetHost, 'permission_denied');
+  const approval = await input.approvalStore.getAsync(identity);
   if (!approval || approval.status === 'pending')
-    return denyAsync(input.audit, operation, secretRefs, targetHost, 'approval_pending');
-  if (approval.status !== 'approved')
-    return denyAsync(input.audit, operation, secretRefs, targetHost, 'approval_rejected');
+    return denyAsync(input.audit, operation, identity.secretRefs, targetHost, 'approval_pending');
+  if (approval.status !== 'approved' || !sameIdentity(approval.operation, identity))
+    return denyAsync(input.audit, operation, identity.secretRefs, targetHost, 'approval_rejected');
+  if (!(await input.operationStore.claimAsync(identity)))
+    return denyAsync(
+      input.audit,
+      operation,
+      identity.secretRefs,
+      targetHost,
+      'idempotency_conflict',
+    );
   if (
     !(await input.rateLimit.acquireAsync({
       actor: operation.actor,
@@ -54,63 +62,62 @@ const authorizeAsync = async (
       operationId: operation.operationId,
     }))
   )
-    return denyAsync(input.audit, operation, secretRefs, targetHost, 'rate_limited');
-  completed.set(operation.idempotencyKey, operation.operationId);
+    return denyAsync(input.audit, operation, identity.secretRefs, targetHost, 'rate_limited');
   await writeAuditAsync(
     input.audit,
     operation,
-    secretRefs,
+    identity.secretRefs,
     targetHost,
     'permitted',
     'permission_denied',
   );
-  return createPermit(input, operation, secretRefs);
+  return createPermit(input, operation, identity);
 };
 
-/*** Creates a single-use permit so a successful approval cannot replay a side effect. */
+/*** Creates a one-use permit that atomically consumes the durable operation claim before side effects. */
 const createPermit = (
   input: Parameters<typeof createFlowSecurityPort>[0],
   operation: FlowSecurityOperation,
-  secretRefs: readonly SecretRef[],
-): FlowSecurityPermit => {
-  let executed = false;
-  return {
-    operation,
-    executeAsync: async (callback) => {
-      if (executed)
-        throw new FlowSecurityError(
-          'idempotency_conflict',
-          'The operation permit has already been consumed.',
-        );
-      executed = true;
-      return resolveAndExecuteAsync(input, operation, secretRefs, callback);
-    },
-  };
-};
+  identity: FlowSecurityOperationIdentity,
+): FlowSecurityPermit => ({
+  operation,
+  executeAsync: async (callback) => {
+    if (!(await input.operationStore.consumeAsync(identity)))
+      throw new FlowSecurityError(
+        'idempotency_conflict',
+        'The operation permit has already been consumed.',
+      );
+    return resolveAndExecuteAsync(input, operation.actor, identity.secretRefs, callback);
+  },
+});
 
-/*** Returns metadata only after enforcing the same project and environment boundary. */
+/*** Returns metadata only after an explicit actor, tenant, project, and environment grant. */
 const getSecretMetadataAsync = async (
   input: Parameters<typeof createFlowSecurityPort>[0],
   actor: FlowSecurityActor,
   ref: SecretRef,
 ) => {
+  if (!isGranted(input.grants, actor, METADATA_CAPABILITY))
+    throw new FlowSecurityError(
+      'permission_denied',
+      'The actor is not permitted to inspect secrets.',
+    );
   const result = await input.secretStore.getMetadata({ scope: scopeOf(actor), ref });
   if (!result.ok)
     throw new FlowSecurityError('secret_unavailable', 'The requested secret is unavailable.');
   return result.data;
 };
 
-/*** Resolves secrets only in the server-side callback after a permit exists. */
+/*** Resolves secrets only in the server-side callback after durable consumption succeeds. */
 const resolveAndExecuteAsync = async <T>(
   input: Parameters<typeof createFlowSecurityPort>[0],
-  operation: FlowSecurityOperation,
+  actor: FlowSecurityActor,
   secretRefs: readonly SecretRef[],
   callback: (secrets: FlowResolvedSecrets) => Promise<T>,
 ): Promise<T> => {
   const resolved = await Promise.all(
     secretRefs.map(
-      async (ref) =>
-        [ref, await resolveSecretAsync(input.secretStore, operation.actor, ref)] as const,
+      async (ref) => [ref, await resolveSecretAsync(input.secretStore, actor, ref)] as const,
     ),
   );
   return callback(Object.fromEntries(resolved));
@@ -128,39 +135,46 @@ const resolveSecretAsync = async (
   return result.data;
 };
 
-/*** Rejects external targets that do not have an explicit public HTTPS authority. */
-const validateTarget = (targetUrl: string | undefined): string | undefined => {
-  if (!targetUrl) return undefined;
-  let target: URL;
-  try {
-    target = new URL(targetUrl);
-  } catch {
-    throw new FlowSecurityError('invalid_target', 'External targets must be absolute HTTPS URLs.');
-  }
-  if (
-    target.protocol !== 'https:' ||
-    target.username ||
-    target.password ||
-    target.hash ||
-    isPrivateHost(target.hostname)
-  )
-    throw new FlowSecurityError(
-      'invalid_target',
-      'External targets must use a public HTTPS host without credentials or fragments.',
-    );
-  return target.hostname;
-};
+/*** Creates a deterministic complete identity from untrusted operation input. */
+const identityOf = (operation: FlowSecurityOperation): FlowSecurityOperationIdentity => ({
+  actor: { ...operation.actor },
+  capability: operation.capability,
+  idempotencyKey: operation.idempotencyKey,
+  operationId: operation.operationId,
+  secretRefs: unique(operation.secretRefs ?? []),
+  ...(operation.target
+    ? { target: { allowedHosts: [...operation.target.allowedHosts], url: operation.target.url } }
+    : {}),
+});
 
-/*** Recognizes DNS-independent private and local host forms before network access. */
-const isPrivateHost = (host: string): boolean =>
-  host === 'localhost' ||
-  host.endsWith('.localhost') ||
-  host === '::1' ||
-  host.startsWith('127.') ||
-  host.startsWith('10.') ||
-  host.startsWith('192.168.') ||
-  host.startsWith('169.254.') ||
-  /^172\.(1[6-9]|2\d|3[01])\./.test(host);
+/*** Compares every authorization-relevant operation field without relying on object identity. */
+const sameIdentity = (
+  left: FlowSecurityOperationIdentity,
+  right: FlowSecurityOperationIdentity,
+): boolean =>
+  left.actor.id === right.actor.id &&
+  left.actor.tenantId === right.actor.tenantId &&
+  left.actor.projectId === right.actor.projectId &&
+  left.actor.environment === right.actor.environment &&
+  left.capability === right.capability &&
+  left.idempotencyKey === right.idempotencyKey &&
+  left.operationId === right.operationId &&
+  sameStrings(left.secretRefs, right.secretRefs) &&
+  sameTarget(left.target, right.target);
+
+/*** Compares target authority exactly so approvals cannot move an operation to another host. */
+const sameTarget = (
+  left: FlowSecurityTarget | undefined,
+  right: FlowSecurityTarget | undefined,
+): boolean =>
+  left === undefined || right === undefined
+    ? left === right
+    : left.url === right.url && sameStrings(left.allowedHosts, right.allowedHosts);
+
+/*** Matches two ordered identity arrays exactly. */
+const sameStrings = (left: readonly string[], right: readonly string[]): boolean =>
+  JSON.stringify(left) === JSON.stringify(right);
+
 /*** Matches a grant only when all actor isolation dimensions are equal. */
 const isGranted = (
   grants: readonly FlowSecurityGrant[],

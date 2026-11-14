@@ -17,8 +17,6 @@ export type McpProviderDefinition =
       readonly allowedTools: readonly McpToolPermission[];
       readonly grantedScopes: readonly string[];
       readonly timeoutMs?: number;
-      /** Enables only literal-loopback test and development endpoints. Never enable in production. */
-      readonly allowDevelopmentLoopback?: boolean;
     }
   | {
       readonly id: string;

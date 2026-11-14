@@ -17,7 +17,32 @@ const operation = {
   idempotencyKey: 'key-1',
   operationId: 'operation-1',
   secretRefs: ['providers/fixture'],
-  targetUrl: 'https://api.example.test/publish',
+  target: { allowedHosts: ['api.example.test'], url: 'https://api.example.test/publish' },
+};
+
+const createOperationStore = () => {
+  const claimed = new Map<string, string>();
+  const consumed = new Set<string>();
+  const keyOf = (value: { readonly idempotencyKey: string }) => value.idempotencyKey;
+  const identityOf = (value: unknown) => JSON.stringify(value);
+  return {
+    claimAsync: async (
+      identity: Parameters<import('../src/index.js').FlowOperationStorePort['claimAsync']>[0],
+    ) => {
+      const key = keyOf(identity);
+      if (claimed.has(key)) return false;
+      claimed.set(key, identityOf(identity));
+      return true;
+    },
+    consumeAsync: async (
+      identity: Parameters<import('../src/index.js').FlowOperationStorePort['consumeAsync']>[0],
+    ) => {
+      const key = keyOf(identity);
+      if (claimed.get(key) !== identityOf(identity) || consumed.has(key)) return false;
+      consumed.add(key);
+      return true;
+    },
+  };
 };
 
 const createSecurity = (
@@ -31,6 +56,8 @@ const createSecurity = (
       readonly environment: string;
     }[];
     readonly secretResult?: { readonly ok: boolean };
+    readonly operationStore?: import('../src/index.js').FlowOperationStorePort;
+    readonly approvalStore?: import('../src/index.js').FlowApprovalStorePort;
   } = {},
 ) => {
   const events: unknown[] = [];
@@ -41,8 +68,11 @@ const createSecurity = (
   return {
     events,
     port: createFlowSecurityPort({
-      approvalStore: {
-        getAsync: async (operationId) => ({ operationId, status: input.approval ?? 'approved' }),
+      approvalStore: input.approvalStore ?? {
+        getAsync: async (approved) => ({
+          operation: approved,
+          status: input.approval ?? 'approved',
+        }),
       },
       audit: {
         writeAsync: async (event) => {
@@ -50,6 +80,7 @@ const createSecurity = (
         },
       },
       grants: input.grants ?? [{ ...actor, actorId: actor.id, capability: operation.capability }],
+      operationStore: input.operationStore ?? createOperationStore(),
       rateLimit: { acquireAsync: async () => true },
       secretStore: {
         create: async () => ({ ok: false, error: { code: 'unavailable', message: 'unused' } }),
@@ -106,12 +137,88 @@ test('rejects scope mismatches, unsafe targets, and idempotency collisions', asy
   await expect(port.authorizeAsync(operation)).rejects.toMatchObject({ code: 'permission_denied' });
   const allowed = createSecurity().port;
   await expect(
-    allowed.authorizeAsync({ ...operation, targetUrl: 'http://127.0.0.1/admin' }),
+    allowed.authorizeAsync({
+      ...operation,
+      target: { allowedHosts: ['127.0.0.1'], url: 'http://127.0.0.1/admin' },
+    }),
+  ).rejects.toMatchObject({ code: 'invalid_target' });
+  await expect(
+    createSecurity().port.authorizeAsync({
+      ...operation,
+      target: { allowedHosts: ['127.0.0.1'], url: 'https://2130706433/admin' },
+    }),
+  ).rejects.toMatchObject({ code: 'invalid_target' });
+  await expect(
+    createSecurity().port.authorizeAsync({
+      ...operation,
+      target: { allowedHosts: ['::ffff:7f00:1'], url: 'https://[::ffff:7f00:1]/admin' },
+    }),
   ).rejects.toMatchObject({ code: 'invalid_target' });
   await allowed.authorizeAsync(operation);
   await expect(
     allowed.authorizeAsync({ ...operation, operationId: 'operation-2' }),
   ).rejects.toMatchObject({ code: 'idempotency_conflict' });
+});
+
+test('allows only one concurrent authorization and blocks replay after a security-port restart', async () => {
+  const operationStore = createOperationStore();
+  const first = createSecurity({ operationStore }).port;
+  const second = createSecurity({ operationStore }).port;
+  const results = await Promise.allSettled([
+    first.authorizeAsync(operation),
+    second.authorizeAsync(operation),
+  ]);
+  const permits = results.filter(
+    (result): result is PromiseFulfilledResult<Awaited<ReturnType<typeof first.authorizeAsync>>> =>
+      result.status === 'fulfilled',
+  );
+  expect(permits).toHaveLength(1);
+  let effects = 0;
+  await permits[0]?.value.executeAsync(async () => {
+    effects += 1;
+    return undefined;
+  });
+  await expect(
+    createSecurity({ operationStore }).port.authorizeAsync(operation),
+  ).rejects.toMatchObject({
+    code: 'idempotency_conflict',
+  });
+  expect(effects).toBe(1);
+});
+
+test('denies cross-tenant metadata reads and approval reuse by another actor or capability', async () => {
+  const { port } = createSecurity({
+    grants: [{ ...actor, actorId: actor.id, capability: 'secrets:metadata' }],
+  });
+  await expect(
+    port.getSecretMetadataAsync({
+      actor: { ...actor, tenantId: 'tenant-b' },
+      ref: 'providers/fixture',
+    }),
+  ).rejects.toMatchObject({ code: 'permission_denied' });
+  const rejected = createSecurity({
+    approvalStore: {
+      getAsync: async () => ({
+        operation: {
+          ...operation,
+          actor: { ...actor },
+          secretRefs: ['providers/fixture'],
+          target: { allowedHosts: ['api.example.test'], url: 'https://api.example.test/publish' },
+        },
+        status: 'approved',
+      }),
+    },
+    grants: [{ ...actor, actorId: 'operator-b', capability: 'mcp:fixture:read' }],
+  });
+  await expect(
+    rejected.port.authorizeAsync({
+      ...operation,
+      actor: { ...actor, id: 'operator-b' },
+      capability: 'mcp:fixture:read',
+    }),
+  ).rejects.toMatchObject({
+    code: 'approval_rejected',
+  });
 });
 
 test('consumes each approval permit once', async () => {

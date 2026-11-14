@@ -34,7 +34,6 @@ const cloneProvider = (provider: McpProviderDefinition): McpProviderDefinition =
         transport: 'remote',
         endpoint: provider.endpoint,
         allowedHosts: [...provider.allowedHosts],
-        ...(provider.allowDevelopmentLoopback ? { allowDevelopmentLoopback: true } : {}),
       };
 };
 
@@ -68,7 +67,7 @@ const validateProvider = (provider: McpProviderDefinition): void => {
   if (provider.transport === 'remote') validateRemote(provider);
 };
 
-/*** Rejects credentials, redirects, private addresses, and non-allowlisted production endpoints. */
+/*** Rejects credentials, private literals, and endpoints outside their explicit host allowlist. */
 const validateRemote = (
   provider: Extract<McpProviderDefinition, { readonly transport: 'remote' }>,
 ): void => {
@@ -79,31 +78,38 @@ const validateRemote = (
     throw new McpToolError('unsafe_endpoint', 'Remote MCP endpoint must be an absolute URL.');
   }
   const host = url.hostname.replace(/^\[|\]$/g, '').toLowerCase();
-  const loopback = host === '127.0.0.1' || host === '::1';
   if (url.username || url.password || url.hash)
     throw new McpToolError(
       'unsafe_endpoint',
       'Remote MCP endpoints cannot embed credentials or fragments.',
     );
-  if (provider.allowDevelopmentLoopback) {
-    if (!loopback || url.protocol !== 'http:' || provider.allowedHosts.length)
-      throw new McpToolError(
-        'unsafe_endpoint',
-        'Development MCP endpoints must be literal HTTP loopback addresses with no host allowlist.',
-      );
-    return;
-  }
   if (
     url.protocol !== 'https:' ||
-    loopback ||
     privateIpv4(host) ||
+    privateIpv6(host) ||
     !uniqueStrings(provider.allowedHosts) ||
     !provider.allowedHosts.includes(host)
   )
     throw new McpToolError(
       'unsafe_endpoint',
-      'Production MCP endpoints require HTTPS, a public host allowlist, and no private address.',
+      'Remote MCP endpoints require HTTPS, a public host allowlist, and no private address.',
     );
+};
+
+/*** Detects loopback, link-local, unique-local, and unspecified IPv6 literals. */
+const privateIpv6 = (host: string): boolean => {
+  const normalized = host.replace(/^\[|\]$/g, '').toLowerCase();
+  return (
+    normalized === '::' ||
+    normalized === '::1' ||
+    normalized.startsWith('fc') ||
+    normalized.startsWith('fd') ||
+    normalized.startsWith('fe8') ||
+    normalized.startsWith('fe9') ||
+    normalized.startsWith('fea') ||
+    normalized.startsWith('feb') ||
+    normalized.startsWith('::ffff:')
+  );
 };
 
 /*** Detects private, reserved, and local IPv4 literals. */

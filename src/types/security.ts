@@ -24,19 +24,53 @@ export interface FlowSecurityOperation {
   readonly idempotencyKey: string;
   readonly operationId: string;
   readonly secretRefs?: readonly SecretRef[];
-  readonly targetUrl?: string;
+  readonly target?: FlowSecurityTarget;
 }
 
-/** A durable human decision supplied by the host's approval persistence adapter. */
-export interface FlowSecurityApproval {
-  readonly approvedBy?: string;
+/** An outbound destination and its exact host authority. */
+export interface FlowSecurityTarget {
+  readonly allowedHosts: readonly string[];
+  readonly url: string;
+}
+
+/** The complete immutable identity that grants, claims, and consumes one operation. */
+export interface FlowSecurityOperationIdentity {
+  readonly actor: FlowSecurityActor;
+  readonly capability: string;
+  readonly idempotencyKey: string;
   readonly operationId: string;
+  readonly secretRefs: readonly SecretRef[];
+  readonly target?: FlowSecurityTarget;
+}
+
+/** A durable human decision bound to exactly one complete operation identity. */
+export interface FlowSecurityApproval {
+  readonly operation: FlowSecurityOperationIdentity;
   readonly status: 'approved' | 'pending' | 'rejected';
 }
 
 /** Host-owned persistence boundary for approval-gate state. */
 export interface FlowApprovalStorePort {
-  getAsync(operationId: string): Promise<FlowSecurityApproval | undefined>;
+  getAsync(operation: FlowSecurityOperationIdentity): Promise<FlowSecurityApproval | undefined>;
+}
+
+/** Host-owned durable exactly-once boundary. Both methods must be atomic across workers and restarts. */
+export interface FlowOperationStorePort {
+  claimAsync(operation: FlowSecurityOperationIdentity): Promise<boolean>;
+  consumeAsync(operation: FlowSecurityOperationIdentity): Promise<boolean>;
+}
+
+/**
+ * Host-owned network boundary that verifies every actual peer before opening a connection.
+ * It must enforce the supplied host allowlist, resolve immediately before every connection,
+ * reject private or special-use resolved addresses, and reapply that policy to redirects.
+ */
+export interface FlowOutboundTransportPort {
+  fetchAsync(input: {
+    readonly allowedHosts: readonly string[];
+    readonly init?: RequestInit;
+    readonly url: string;
+  }): Promise<Response>;
 }
 
 /** Host-owned rate limiter. A denied acquisition must have no external side effect. */

@@ -15,6 +15,8 @@ export type {
 } from './types/execution.js';
 export type {
   FlowApprovalStorePort,
+  FlowOperationStorePort,
+  FlowOutboundTransportPort,
   FlowRateLimitPort,
   FlowResolvedSecrets,
   FlowSecretMetadata,
@@ -24,6 +26,8 @@ export type {
   FlowSecurityAuditPort,
   FlowSecurityGrant,
   FlowSecurityOperation,
+  FlowSecurityOperationIdentity,
   FlowSecurityPermit,
   FlowSecurityPort,
+  FlowSecurityTarget,
 } from './types/security.js';
