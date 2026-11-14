@@ -6,8 +6,10 @@ import type { FlowDefinition } from '@ankhorage/contracts/flow';
 import { describe, expect, it } from 'bun:test';
 
 import {
+  FileFlowPersistenceAdapter,
   FileFlowRuntimeStore,
   InMemoryFlowObservability,
+  InMemoryFlowPersistenceAdapter,
   InMemoryFlowRuntimeStore,
   createDefaultNodeRegistry,
   createFlowRuntime,
@@ -25,30 +27,34 @@ const definition: FlowDefinition = {
   ],
   version: 1,
 };
+const scope = { projectId: 'project', tenantId: 'tenant' };
 
 /*** Exercise version pinning, idempotent webhook delivery, worker independence, and redacted HTTP state. */
 describe('headless Flow runtime', () => {
   it('publishes immutable revisions and executes one idempotent webhook run after the client returns', async () => {
     const runtime = createFlowRuntime({
       nodeRegistry: createDefaultNodeRegistry(),
+      persistence: InMemoryFlowPersistenceAdapter(),
       store: InMemoryFlowRuntimeStore(),
     });
-    await runtime.createDraftAsync(definition);
-    await runtime.publishAsync('demo', 1);
+    await runtime.createDraftAsync(scope, definition);
+    await runtime.publishAsync(scope, 'demo', 1);
     const first = await runtime.triggerAsync({
       flowId: 'demo',
       idempotencyKey: 'same-request',
+      scope,
       triggerId: 'hook',
     });
     const duplicate = await runtime.triggerAsync({
       flowId: 'demo',
       idempotencyKey: 'same-request',
+      scope,
       triggerId: 'hook',
     });
     expect(duplicate.id).toBe(first.id);
     expect(await runtime.runWorkerTickAsync()).toEqual([first.id]);
-    expect((await runtime.getRunAsync(first.id))?.status).toBe('succeeded');
-    expect((await runtime.readEventsAsync(0, first.id)).map((event) => event.type)).toEqual([
+    expect((await runtime.getRunAsync(scope, first.id))?.status).toBe('succeeded');
+    expect((await runtime.readEventsAsync(scope, 0, first.id)).map((event) => event.type)).toEqual([
       'run_queued',
       'run_started',
       'run_completed',
@@ -58,6 +64,7 @@ describe('headless Flow runtime', () => {
   it('enforces HTTP auth, stable rate-limit errors, and redacted run data', async () => {
     const runtime = createFlowRuntime({
       nodeRegistry: createDefaultNodeRegistry(),
+      persistence: InMemoryFlowPersistenceAdapter(),
       store: InMemoryFlowRuntimeStore(),
     });
     const handler = createFlowHttpHandler({
@@ -129,20 +136,23 @@ describe('headless Flow runtime', () => {
     try {
       const first = createFlowRuntime({
         nodeRegistry: createDefaultNodeRegistry(),
+        persistence: FileFlowPersistenceAdapter(`${path}.durable`),
         store: FileFlowRuntimeStore(path),
       });
-      await first.createDraftAsync(definition);
-      await first.publishAsync('demo', 1);
+      await first.createDraftAsync(scope, definition);
+      await first.publishAsync(scope, 'demo', 1);
       const queued = await first.triggerAsync({
         flowId: 'demo',
         idempotencyKey: 'persistent',
+        scope,
         triggerId: 'manual',
       });
       const second = createFlowRuntime({
         nodeRegistry: createDefaultNodeRegistry(),
+        persistence: FileFlowPersistenceAdapter(`${path}.durable`),
         store: FileFlowRuntimeStore(path),
       });
-      expect((await second.getRunAsync(queued.id))?.status).toBe('pending');
+      expect((await second.getRunAsync(scope, queued.id))?.status).toBe('pending');
       expect(await second.runWorkerTickAsync()).toEqual([queued.id]);
     } finally {
       await rm(directory, { force: true, recursive: true });
@@ -153,14 +163,16 @@ describe('headless Flow runtime', () => {
     const observability = InMemoryFlowObservability(1);
     const runtime = createFlowRuntime({
       nodeRegistry: createDefaultNodeRegistry(),
+      persistence: InMemoryFlowPersistenceAdapter(),
       observability,
       store: InMemoryFlowRuntimeStore(),
     });
-    await runtime.createDraftAsync(definition);
-    await runtime.publishAsync('demo', 1);
+    await runtime.createDraftAsync(scope, definition);
+    await runtime.publishAsync(scope, 'demo', 1);
     const run = await runtime.triggerAsync({
       flowId: 'demo',
       idempotencyKey: 'observed',
+      scope,
       triggerId: 'manual',
     });
     await runtime.runWorkerTickAsync();
@@ -170,5 +182,29 @@ describe('headless Flow runtime', () => {
     ]);
     expect(snapshot.metrics.run_triggered).toBe(1);
     expect(JSON.stringify(snapshot)).not.toContain('observed');
+  });
+
+  it('pins triggers to the newest published revision and denies another tenant every run surface', async () => {
+    const runtime = createFlowRuntime({
+      nodeRegistry: createDefaultNodeRegistry(),
+      persistence: InMemoryFlowPersistenceAdapter(),
+      store: InMemoryFlowRuntimeStore(),
+    });
+    const otherScope = { projectId: 'other-project', tenantId: 'other-tenant' };
+    await runtime.createDraftAsync(scope, definition);
+    await runtime.publishAsync(scope, 'demo', 1);
+    await runtime.createDraftAsync(scope, { ...definition, title: 'Unpublished v2', version: 2 });
+    const run = await runtime.triggerAsync({
+      flowId: 'demo',
+      idempotencyKey: 'published-before-draft',
+      scope,
+      triggerId: 'manual',
+    });
+    expect(run.flow.version).toBe(1);
+    expect(await runtime.getRunAsync(otherScope, run.id)).toBeUndefined();
+    expect(await runtime.cancelRunAsync(otherScope, run.id)).toBeUndefined();
+    expect(await runtime.retryRunAsync(otherScope, run.id)).toBeUndefined();
+    expect(await runtime.readEventsAsync(otherScope, 0, run.id)).toEqual([]);
+    expect(await runtime.getWorkflowAsync(otherScope, 'demo', 1)).toBeUndefined();
   });
 });

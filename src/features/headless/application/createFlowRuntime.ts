@@ -3,31 +3,38 @@ import { randomUUID } from 'node:crypto';
 import type { FlowDefinition, FlowRunSnapshot } from '@ankhorage/contracts/flow';
 
 import type {
+  FlowResourceScope,
   FlowRuntime,
   FlowRuntimeDependencies,
   FlowWorkflowRevision,
 } from '../../../types/headless.js';
+import { cancelDurableRunAsync } from '../../execution/application/cancelDurableRunAsync.js';
+import { createDurableRunAsync } from '../../execution/application/createDurableRunAsync.js';
 import { executeFlowAsync } from '../../execution/application/executeFlowAsync.js';
+import { runDurableWorkerAsync } from '../../execution/application/runDurableWorkerAsync.js';
 import { compileFlowGraph } from '../../execution/domain/compileFlowGraph.js';
 
 /*** Compose the canonical versioned workflow API and client-independent worker boundary. */
 export const createFlowRuntime = (dependencies: FlowRuntimeDependencies): FlowRuntime => {
   const clock = dependencies.clock ?? { now: () => new Date() };
   return {
-    cancelRunAsync: async (runId) => cancelRunAsync(runId, dependencies, clock),
-    createDraftAsync: async (definition) => createDraftAsync(definition, dependencies),
-    getRunAsync: async (runId) => dependencies.store.getRunAsync(runId),
-    getWorkflowAsync: async (flowId, version) =>
-      dependencies.store.getWorkflowAsync(flowId, version),
-    listRunsAsync: async (flowId) => dependencies.store.listRunsAsync(flowId),
-    listWorkflowRevisionsAsync: async (flowId) =>
-      dependencies.store.listWorkflowRevisionsAsync(flowId),
-    publishAsync: async (flowId, version) =>
-      dependencies.store.publishAsync(flowId, version, clock.now().toISOString()),
-    readEventsAsync: async (afterId, runId) => dependencies.store.readEventsAsync(afterId, runId),
-    requestApprovalAsync: async ({ approval }) => dependencies.store.saveApprovalAsync(approval),
+    cancelRunAsync: async (scope, runId) => cancelRunAsync(scope, runId, dependencies, clock),
+    createDraftAsync: async (scope, definition) =>
+      createDraftAsync(scope, definition, dependencies),
+    getRunAsync: async (scope, runId) => dependencies.store.getRunAsync(scope, runId),
+    getWorkflowAsync: async (scope, flowId, version) =>
+      dependencies.store.getWorkflowAsync(scope, flowId, version),
+    listRunsAsync: async (scope, flowId) => dependencies.store.listRunsAsync(scope, flowId),
+    listWorkflowRevisionsAsync: async (scope, flowId) =>
+      dependencies.store.listWorkflowRevisionsAsync(scope, flowId),
+    publishAsync: async (scope, flowId, version) =>
+      dependencies.store.publishAsync(scope, flowId, version, clock.now().toISOString()),
+    readEventsAsync: async (scope, afterId, runId) =>
+      dependencies.store.readEventsAsync(scope, afterId, runId),
+    requestApprovalAsync: async ({ approval, scope }) =>
+      dependencies.store.saveApprovalAsync(scope, approval),
     resolveApprovalAsync: async (input) => resolveApprovalAsync(input, dependencies, clock),
-    retryRunAsync: async (runId) => retryRunAsync(runId, dependencies, clock),
+    retryRunAsync: async (scope, runId) => retryRunAsync(scope, runId, dependencies, clock),
     runWorkerTickAsync: async () => runWorkerTickAsync(dependencies, clock),
     triggerAsync: async (input) => triggerAsync(input, dependencies, clock),
   };
@@ -35,11 +42,12 @@ export const createFlowRuntime = (dependencies: FlowRuntimeDependencies): FlowRu
 
 /*** Validate graph invariants before persisting an immutable draft revision. */
 const createDraftAsync = async (
+  scope: FlowResourceScope,
   definition: FlowDefinition,
   dependencies: FlowRuntimeDependencies,
 ): Promise<FlowWorkflowRevision> => {
   compileFlowGraph(definition, dependencies.nodeRegistry);
-  return dependencies.store.createDraftAsync(definition);
+  return dependencies.store.createDraftAsync(scope, definition);
 };
 
 /*** Queue an exact published revision once per caller-provided idempotency key. */
@@ -48,7 +56,9 @@ const triggerAsync = async (
   dependencies: FlowRuntimeDependencies,
   clock: { readonly now: () => Date },
 ): Promise<FlowRunSnapshot> => {
-  const revision = await dependencies.store.getWorkflowAsync(input.flowId);
+  const revision = (await dependencies.store.listWorkflowRevisionsAsync(input.scope, input.flowId))
+    .filter((candidate) => candidate.publishedAt !== undefined)
+    .at(-1);
   if (!revision?.publishedAt)
     return rejectedTriggerAsync(dependencies, 'FLOW_WORKFLOW_NOT_PUBLISHED');
   const trigger = revision.definition.triggers.find(
@@ -67,17 +77,44 @@ const triggerAsync = async (
     trigger: { kind: trigger.kind, triggerId: trigger.id },
   };
   const saved = await dependencies.store.saveRunAsync(
+    input.scope,
     run,
     idempotencyKey(revision.definition, input),
   );
-  if (saved.id === run.id)
-    await dependencies.store.transitionRunAsync({
-      event: { id: 0, runId: saved.id, timestamp: now, type: 'run_queued' },
-      expectedStatus: 'pending',
-      run: { ...saved, status: 'pending' },
-    });
+  if (saved.id === run.id) await queueRunAsync(input.scope, saved, now, dependencies, clock);
   await observeAsync(dependencies, 'execution', 'run_triggered', now, saved.id);
   return saved;
+};
+
+/*** Mirror a newly accepted API trigger into the canonical durable worker queue. */
+const queueRunAsync = async (
+  scope: FlowResourceScope,
+  run: FlowRunSnapshot,
+  now: string,
+  dependencies: FlowRuntimeDependencies,
+  clock: { readonly now: () => Date },
+): Promise<void> => {
+  await dependencies.store.transitionRunAsync({
+    event: { id: 0, runId: run.id, timestamp: now, type: 'run_queued' },
+    expectedStatus: 'pending',
+    run: { ...run, status: 'pending' },
+    scope,
+  });
+  await createDurableRunAsync(
+    { flow: run.flow, id: run.id, scope },
+    { clock, persistence: dependencies.persistence },
+  );
+  await dependencies.persistence.enqueueWorkAsync({
+    attempt: 1,
+    dueAt: now,
+    effectKind: 'internal',
+    flow: run.flow,
+    id: `${run.id}:headless`,
+    idempotencyKey: `${run.id}:headless`,
+    runId: run.id,
+    status: 'ready',
+    stepId: 'headless',
+  });
 };
 
 /** Record a rejected request without retaining client-supplied values. */
@@ -89,56 +126,81 @@ const rejectedTriggerAsync = async (
   throw new Error(code);
 };
 
-/*** Run each pending workflow exactly once per tick; worker ownership is independent of HTTP clients. */
+/*** Delegate all headless execution, recovery, leases and checkpoints to the canonical durable worker. */
 const runWorkerTickAsync = async (
   dependencies: FlowRuntimeDependencies,
   clock: { readonly now: () => Date },
 ): Promise<readonly string[]> => {
-  const pending = (await dependencies.store.listRunsAsync()).filter(
-    (run) => run.status === 'pending',
-  );
-  const completed: string[] = [];
-  for (const run of pending) {
-    const startedAt = clock.now().toISOString();
-    const started = { ...run, startedAt, status: 'running' as const };
-    const claimed = await dependencies.store.transitionRunAsync({
-      event: { id: 0, runId: run.id, timestamp: startedAt, type: 'run_started' },
-      expectedStatus: 'pending',
-      run: started,
-    });
-    if (!claimed) continue;
-    const result = await executeRunAsync(started, dependencies, clock);
-    const completedAt = clock.now().toISOString();
-    const terminal = { ...result, completedAt };
-    const transitioned = await dependencies.store.transitionRunAsync({
-      event: {
-        id: 0,
-        runId: run.id,
-        timestamp: completedAt,
-        trace: {
-          level: terminal.status === 'succeeded' ? 'info' : 'error',
-          message: `Run ${terminal.status}.`,
-          timestamp: completedAt,
-        },
-        type: 'run_completed',
+  const result = await runDurableWorkerAsync(
+    {
+      approvalPollIntervalMs: 1_000,
+      concurrency: 1,
+      leaseDurationMs: 30_000,
+      limit: 10,
+      retry: { baseDelayMs: 1_000, maxAttempts: 3, maxDelayMs: 60_000 },
+      workerId: `headless-${randomUUID()}`,
+    },
+    {
+      clock,
+      effects: {
+        executeAsync: (input) => executeDurableHeadlessRunAsync(input.run, dependencies, clock),
       },
-      expectedStatus: 'running',
-      run: terminal,
-    });
-    if (transitioned) completed.push(run.id);
-    if (transitioned)
-      await observeAsync(dependencies, 'execution', `run_${terminal.status}`, completedAt, run.id);
-  }
-  return completed;
+      persistence: dependencies.persistence,
+    },
+  );
+  return result.outcomes
+    .filter((outcome) => outcome.status === 'succeeded' || outcome.status === 'already_completed')
+    .map((outcome) => outcome.workId.replace(/:headless$/u, ''));
+};
+
+/** Execute a claimed persisted run and expose only redacted lifecycle facts through the runtime store. */
+const executeDurableHeadlessRunAsync = async (
+  durableRun: { readonly id: string; readonly scope?: FlowResourceScope },
+  dependencies: FlowRuntimeDependencies,
+  clock: { readonly now: () => Date },
+): Promise<void> => {
+  if (durableRun.scope === undefined) throw new Error('FLOW_DURABLE_SCOPE_MISSING');
+  const run = await dependencies.store.getRunAsync(durableRun.scope, durableRun.id);
+  if (run === undefined) throw new Error('FLOW_RUN_MISSING');
+  const startedAt = clock.now().toISOString();
+  const started = { ...run, startedAt, status: 'running' as const };
+  await dependencies.store.transitionRunAsync({
+    event: { id: 0, runId: run.id, timestamp: startedAt, type: 'run_started' },
+    expectedStatus: 'pending',
+    run: started,
+    scope: durableRun.scope,
+  });
+  const result = await executeRunAsync(started, durableRun.scope, dependencies, clock);
+  const completedAt = clock.now().toISOString();
+  const terminal = { ...result, completedAt };
+  const transitioned = await dependencies.store.transitionRunAsync({
+    event: {
+      id: 0,
+      runId: run.id,
+      timestamp: completedAt,
+      trace: {
+        level: terminal.status === 'succeeded' ? 'info' : 'error',
+        message: `Run ${terminal.status}.`,
+        timestamp: completedAt,
+      },
+      type: 'run_completed',
+    },
+    expectedStatus: 'running',
+    run: terminal,
+    scope: durableRun.scope,
+  });
+  if (transitioned)
+    await observeAsync(dependencies, 'execution', `run_${terminal.status}`, completedAt, run.id);
 };
 
 /*** Execute the immutable graph revision and retain only redaction-safe contract snapshots. */
 const executeRunAsync = async (
   run: FlowRunSnapshot,
+  scope: FlowResourceScope,
   dependencies: FlowRuntimeDependencies,
   clock: { readonly now: () => Date },
 ): Promise<FlowRunSnapshot> => {
-  const revision = await dependencies.store.getWorkflowAsync(run.flow.id, run.flow.version);
+  const revision = await dependencies.store.getWorkflowAsync(scope, run.flow.id, run.flow.version);
   if (!revision) return failedRun(run, 'FLOW_WORKFLOW_VERSION_MISSING');
   try {
     const result = await executeFlowAsync(
@@ -161,11 +223,12 @@ const executeRunAsync = async (
 
 /*** Cancel only work that has not entered a terminal state. */
 const cancelRunAsync = async (
+  scope: FlowResourceScope,
   runId: string,
   dependencies: FlowRuntimeDependencies,
   clock: { readonly now: () => Date },
 ): Promise<FlowRunSnapshot | undefined> => {
-  const run = await dependencies.store.getRunAsync(runId);
+  const run = await dependencies.store.getRunAsync(scope, runId);
   if (!run || isTerminal(run)) return undefined;
   const cancelled = {
     ...run,
@@ -176,19 +239,23 @@ const cancelRunAsync = async (
     event: { id: 0, runId, timestamp: cancelled.completedAt, type: 'run_cancelled' },
     expectedStatus: run.status,
     run: cancelled,
+    scope,
   });
   if (transitioned)
     await observeAsync(dependencies, 'execution', 'run_cancelled', cancelled.completedAt, runId);
+  if (transitioned)
+    await cancelDurableRunAsync(runId, { clock, persistence: dependencies.persistence });
   return transitioned ? cancelled : undefined;
 };
 
 /*** Retry by preserving the original immutable workflow version and trigger identity. */
 const retryRunAsync = async (
+  scope: FlowResourceScope,
   runId: string,
   dependencies: FlowRuntimeDependencies,
   clock: { readonly now: () => Date },
 ): Promise<FlowRunSnapshot | undefined> => {
-  const previous = await dependencies.store.getRunAsync(runId);
+  const previous = await dependencies.store.getRunAsync(scope, runId);
   if (!previous || !isTerminal(previous)) return undefined;
   const now = clock.now().toISOString();
   const retry: FlowRunSnapshot = {
@@ -200,11 +267,27 @@ const retryRunAsync = async (
     steps: [],
     trigger: previous.trigger,
   };
-  const saved = await dependencies.store.saveRunAsync(retry);
+  const saved = await dependencies.store.saveRunAsync(scope, retry);
   await dependencies.store.transitionRunAsync({
     event: { id: 0, runId: saved.id, timestamp: now, type: 'run_queued' },
     expectedStatus: 'pending',
     run: saved,
+    scope,
+  });
+  await createDurableRunAsync(
+    { flow: saved.flow, id: saved.id, scope },
+    { clock, persistence: dependencies.persistence },
+  );
+  await dependencies.persistence.enqueueWorkAsync({
+    attempt: 1,
+    dueAt: now,
+    effectKind: 'internal',
+    flow: saved.flow,
+    id: `${saved.id}:headless`,
+    idempotencyKey: `${saved.id}:headless`,
+    runId: saved.id,
+    status: 'ready',
+    stepId: 'headless',
   });
   return saved;
 };

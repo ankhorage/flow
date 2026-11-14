@@ -7,13 +7,21 @@ import type {
   FlowTraceEvent,
 } from '@ankhorage/contracts/flow';
 
+import type { FlowPersistencePort } from '../features/execution/ports/FlowPersistencePort.js';
 import type { FlowClock, FlowNodeRegistry } from './execution.js';
 import type { FlowSecurityActor } from './security.js';
+
+/** A trusted tenant/project boundary derived by the embedding authenticator. */
+export interface FlowResourceScope {
+  readonly projectId: string;
+  readonly tenantId: string;
+}
 
 /** A persisted, immutable workflow revision with its publication state. */
 export interface FlowWorkflowRevision {
   readonly definition: FlowDefinition;
   readonly publishedAt?: string;
+  readonly scope: FlowResourceScope;
 }
 
 /** A redaction-safe event emitted whenever a run changes state. */
@@ -28,29 +36,50 @@ export interface FlowRunEvent {
 
 /** Durable ownership boundary for headless Flow definitions, runs, approvals, and events. */
 export interface FlowRuntimeStorePort {
-  createDraftAsync(definition: FlowDefinition): Promise<FlowWorkflowRevision>;
-  getRunAsync(runId: string): Promise<FlowRunSnapshot | undefined>;
-  getWorkflowAsync(flowId: string, version?: number): Promise<FlowWorkflowRevision | undefined>;
-  listRunsAsync(flowId?: string): Promise<readonly FlowRunSnapshot[]>;
-  listWorkflowRevisionsAsync(flowId: string): Promise<readonly FlowWorkflowRevision[]>;
+  createDraftAsync(
+    scope: FlowResourceScope,
+    definition: FlowDefinition,
+  ): Promise<FlowWorkflowRevision>;
+  getRunAsync(scope: FlowResourceScope, runId: string): Promise<FlowRunSnapshot | undefined>;
+  getWorkflowAsync(
+    scope: FlowResourceScope,
+    flowId: string,
+    version?: number,
+  ): Promise<FlowWorkflowRevision | undefined>;
+  listRunsAsync(scope: FlowResourceScope, flowId?: string): Promise<readonly FlowRunSnapshot[]>;
+  listWorkflowRevisionsAsync(
+    scope: FlowResourceScope,
+    flowId: string,
+  ): Promise<readonly FlowWorkflowRevision[]>;
   publishAsync(
+    scope: FlowResourceScope,
     flowId: string,
     version: number,
     publishedAt: string,
   ): Promise<FlowWorkflowRevision | undefined>;
-  readEventsAsync(afterId: number, runId?: string): Promise<readonly FlowRunEvent[]>;
+  readEventsAsync(
+    scope: FlowResourceScope,
+    afterId: number,
+    runId?: string,
+  ): Promise<readonly FlowRunEvent[]>;
   resolveApprovalAsync(input: {
     readonly approvalId: string;
     readonly actorId: string;
     readonly approved: boolean;
     readonly now: string;
+    readonly scope: FlowResourceScope;
   }): Promise<FlowApprovalRequest | undefined>;
-  saveApprovalAsync(approval: FlowApprovalRequest): Promise<void>;
-  saveRunAsync(run: FlowRunSnapshot, idempotencyKey?: string): Promise<FlowRunSnapshot>;
+  saveApprovalAsync(scope: FlowResourceScope, approval: FlowApprovalRequest): Promise<void>;
+  saveRunAsync(
+    scope: FlowResourceScope,
+    run: FlowRunSnapshot,
+    idempotencyKey?: string,
+  ): Promise<FlowRunSnapshot>;
   transitionRunAsync(input: {
     readonly expectedStatus: FlowExecutionStatus;
     readonly run: FlowRunSnapshot;
     readonly event: FlowRunEvent;
+    readonly scope: FlowResourceScope;
   }): Promise<boolean>;
 }
 
@@ -76,6 +105,7 @@ export interface FlowRuntimeDependencies {
   readonly clock?: FlowClock;
   readonly nodeRegistry: FlowNodeRegistry;
   readonly observability?: FlowObservabilityPort;
+  readonly persistence: FlowPersistencePort;
   readonly store: FlowRuntimeStorePort;
 }
 
@@ -98,21 +128,43 @@ export interface FlowObservabilityPort {
 
 /** Headless workflow command boundary shared by HTTP, CLI, and generated applications. */
 export interface FlowRuntime {
-  cancelRunAsync(runId: string): Promise<FlowRunSnapshot | undefined>;
-  createDraftAsync(definition: FlowDefinition): Promise<FlowWorkflowRevision>;
-  getRunAsync(runId: string): Promise<FlowRunSnapshot | undefined>;
-  getWorkflowAsync(flowId: string, version?: number): Promise<FlowWorkflowRevision | undefined>;
-  listRunsAsync(flowId?: string): Promise<readonly FlowRunSnapshot[]>;
-  listWorkflowRevisionsAsync(flowId: string): Promise<readonly FlowWorkflowRevision[]>;
-  publishAsync(flowId: string, version: number): Promise<FlowWorkflowRevision | undefined>;
-  readEventsAsync(afterId: number, runId?: string): Promise<readonly FlowRunEvent[]>;
-  requestApprovalAsync(input: { readonly approval: FlowApprovalRequest }): Promise<void>;
+  cancelRunAsync(scope: FlowResourceScope, runId: string): Promise<FlowRunSnapshot | undefined>;
+  createDraftAsync(
+    scope: FlowResourceScope,
+    definition: FlowDefinition,
+  ): Promise<FlowWorkflowRevision>;
+  getRunAsync(scope: FlowResourceScope, runId: string): Promise<FlowRunSnapshot | undefined>;
+  getWorkflowAsync(
+    scope: FlowResourceScope,
+    flowId: string,
+    version?: number,
+  ): Promise<FlowWorkflowRevision | undefined>;
+  listRunsAsync(scope: FlowResourceScope, flowId?: string): Promise<readonly FlowRunSnapshot[]>;
+  listWorkflowRevisionsAsync(
+    scope: FlowResourceScope,
+    flowId: string,
+  ): Promise<readonly FlowWorkflowRevision[]>;
+  publishAsync(
+    scope: FlowResourceScope,
+    flowId: string,
+    version: number,
+  ): Promise<FlowWorkflowRevision | undefined>;
+  readEventsAsync(
+    scope: FlowResourceScope,
+    afterId: number,
+    runId?: string,
+  ): Promise<readonly FlowRunEvent[]>;
+  requestApprovalAsync(input: {
+    readonly approval: FlowApprovalRequest;
+    readonly scope: FlowResourceScope;
+  }): Promise<void>;
   resolveApprovalAsync(input: {
     readonly actorId: string;
     readonly approvalId: string;
     readonly approved: boolean;
+    readonly scope: FlowResourceScope;
   }): Promise<FlowApprovalRequest | undefined>;
-  retryRunAsync(runId: string): Promise<FlowRunSnapshot | undefined>;
+  retryRunAsync(scope: FlowResourceScope, runId: string): Promise<FlowRunSnapshot | undefined>;
   runWorkerTickAsync(): Promise<readonly string[]>;
   triggerAsync(input: {
     readonly flowId: string;
@@ -120,6 +172,7 @@ export interface FlowRuntime {
     readonly input?: Readonly<
       Record<string, { readonly kind: 'inline'; readonly value: DataContractValue }>
     >;
+    readonly scope: FlowResourceScope;
     readonly triggerId: string;
   }): Promise<FlowRunSnapshot>;
 }

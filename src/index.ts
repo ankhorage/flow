@@ -1,4 +1,6 @@
 /*** Headless graph compilation and deterministic single-process execution. */
+export { FileFlowPersistenceAdapter } from './features/execution/adapters/FileFlowPersistenceAdapter.js';
+export { InMemoryFlowPersistenceAdapter } from './features/execution/adapters/InMemoryFlowPersistenceAdapter.js';
 export { createDurableRunAsync } from './features/execution/application/createDurableRunAsync.js';
 export { executeFlowAsync } from './features/execution/application/executeFlowAsync.js';
 export { calculateRetryDueAt } from './features/execution/domain/calculateRetryDueAt.js';

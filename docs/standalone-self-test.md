@@ -1,6 +1,9 @@
 # Standalone self-test
 
-This package has no mandatory external backend. The standalone adapter persists state in `FLOW_STATE_PATH` and runs its worker independently from HTTP clients.
+This package has no mandatory external backend. The standalone adapter persists runtime state in
+`FLOW_STATE_PATH` and canonical durable worker state beside it, then runs the worker independently
+from HTTP clients. `startFlowServerAsync` is fail-closed: a network server needs an explicit
+authenticator and access policy. The CLI below supplies its token-authenticated loopback composition.
 
 Start the server from the package checkout with Bun 1.4.2:
 
@@ -26,3 +29,14 @@ curl -N -H 'authorization: Bearer local-flow-token' 'http://127.0.0.1:4318/v1/ev
 ```
 
 The run becomes `succeeded`; the SSE response contains `run_queued`, `run_started`, and `run_completed`. HTTP responses omit run and node input/output payloads. Repeating the trigger with `demo-001` returns the original run. `POST /v1/runs/RUN_ID/cancel` and `POST /v1/runs/RUN_ID/retry` expose the cancellation and retry command boundaries.
+
+To reproduce cleanly, stop the process, remove both state files, and repeat the start command:
+
+```sh
+rm -f /tmp/flow-runtime.json /tmp/flow-runtime.json.durable
+FLOW_API_TOKEN=local-flow-token FLOW_PORT=4318 FLOW_STATE_PATH=/tmp/flow-runtime.json bun run serve
+```
+
+The worker leases durable work, persists an outbox identity before an effect, and recovers expired
+leases after restart. HTTP, SSE, and audit projections redact payloads and arbitrary provider error
+or trace messages; only stable public status and error codes are exposed.
