@@ -8,6 +8,10 @@ export { createDurableRun } from './features/execution/domain/createDurableRun.j
 export { createRetryWork } from './features/execution/domain/createRetryWork.js';
 export { isCronDueAt } from './features/execution/domain/isCronDueAt.js';
 export type { FlowPersistencePort } from './features/execution/ports/FlowPersistencePort.js';
+export { FileFlowRuntimeStore } from './features/headless/adapters/FileFlowRuntimeStore.js';
+export { InMemoryFlowObservability } from './features/headless/adapters/InMemoryFlowObservability.js';
+export { InMemoryFlowRuntimeStore } from './features/headless/adapters/InMemoryFlowRuntimeStore.js';
+export { createFlowRuntime } from './features/headless/application/createFlowRuntime.js';
 export { createFlowSecurityPort } from './features/security/application/createFlowSecurityPort.js';
 export { FlowSecurityError } from './features/security/FlowSecurityError.js';
 export type {
@@ -27,6 +31,17 @@ export type {
   FlowNodeRegistry,
   FlowRunRequest,
 } from './types/execution.js';
+export type {
+  FlowAuditRecord,
+  FlowHttpAccessPort,
+  FlowHttpAuthenticatorPort,
+  FlowObservabilityPort,
+  FlowRunEvent,
+  FlowRuntime,
+  FlowRuntimeDependencies,
+  FlowRuntimeStorePort,
+  FlowWorkflowRevision,
+} from './types/headless.js';
 export type {
   FlowApprovalStorePort,
   FlowOperationStorePort,
