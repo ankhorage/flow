@@ -12,7 +12,10 @@ import { createMcpAgentToolAdapter, createMcpToolRegistry } from '../src/mcp.js'
 const provider = {
   id: 'fixture',
   transport: 'stdio' as const,
-  allowedTools: [{ name: 'safe_echo', grantedScopes: ['tools:invoke'] }],
+  allowedTools: [
+    { name: 'safe_echo', grantedScopes: ['tools:invoke'] },
+    { name: 'sum_numbers', grantedScopes: ['tools:invoke'] },
+  ],
   grantedScopes: ['tools:invoke'],
   timeoutMs: 5_000,
 };
@@ -35,22 +38,43 @@ const securityInvocation = (operationId: string) => ({
   operationId,
 });
 
-const permittingSecurity = () =>
-  createFlowSecurityPort({
-    approvalStore: { getAsync: async (operation) => ({ operation, status: 'approved' }) },
-    audit: { writeAsync: async () => undefined },
-    grants: [
-      {
-        ...securityInvocation('unused').actor,
-        actorId: 'operator',
-        capability: 'mcp:fixture:safe_echo',
-      },
-    ],
-    operationStore: {
-      claimAsync: async () => true,
-      consumeAsync: async () => true,
-      releaseAsync: async () => undefined,
+const persistentOperationStore = () => {
+  const claimed = new Set<string>();
+  const consumed = new Set<string>();
+  const keyOf = (operation: { readonly idempotencyKey: string }) => operation.idempotencyKey;
+  return {
+    claimAsync: async (operation: { readonly idempotencyKey: string }) => {
+      const key = keyOf(operation);
+      if (claimed.has(key)) return false;
+      claimed.add(key);
+      return true;
     },
+    consumeAsync: async (operation: { readonly idempotencyKey: string }) => {
+      const key = keyOf(operation);
+      if (!claimed.has(key) || consumed.has(key)) return false;
+      consumed.add(key);
+      return true;
+    },
+    releaseAsync: async (operation: { readonly idempotencyKey: string }) => {
+      const key = keyOf(operation);
+      if (!consumed.has(key)) claimed.delete(key);
+    },
+  };
+};
+
+const permittingSecurity = (
+  capabilities = ['mcp:fixture:safe_echo', 'mcp:fixture:sum_numbers'],
+  approvalStatus: 'approved' | 'rejected' = 'approved',
+) =>
+  createFlowSecurityPort({
+    approvalStore: { getAsync: async (operation) => ({ operation, status: approvalStatus }) },
+    audit: { writeAsync: async () => undefined },
+    grants: capabilities.map((capability) => ({
+      ...securityInvocation('unused').actor,
+      actorId: 'operator',
+      capability,
+    })),
+    operationStore: persistentOperationStore(),
     rateLimit: { acquireAsync: async () => true },
     secretStore: {
       create: async () => ({ ok: false, error: { code: 'unavailable', message: 'unused' } }),
@@ -65,8 +89,13 @@ const permittingSecurity = () =>
 test('discovers only explicitly permitted tools from a trusted STDIO host provider', async () => {
   const registry = createMcpToolRegistry({ providers: [provider], trustedStdioProviders });
   const tools = await registry.discoverAsync();
-  expect(tools).toHaveLength(1);
-  expect(tools[0]).toMatchObject({ name: 'safe_echo', providerId: 'fixture', readOnly: true });
+  expect(tools).toHaveLength(2);
+  expect(tools).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({ name: 'safe_echo', providerId: 'fixture', readOnly: true }),
+      expect.objectContaining({ name: 'sum_numbers', providerId: 'fixture', readOnly: true }),
+    ]),
+  );
 });
 
 test('fails closed before real tool execution until the approval boundary is released', async () => {
@@ -84,10 +113,41 @@ test('fails closed before real tool execution until the approval boundary is rel
   ).rejects.toThrow('security approvals');
 });
 
-test('executes only after a scoped Flow security permit is approved', async () => {
+test('executes distinct STDIO tools only after a scoped Flow security permit is approved', async () => {
   const registry = createMcpToolRegistry({
     providers: [provider],
     security: permittingSecurity(),
+    trustedStdioProviders,
+  });
+  const tools = await registry.discoverAsync();
+  const echo = tools.find((tool) => tool.name === 'safe_echo');
+  const sum = tools.find((tool) => tool.name === 'sum_numbers');
+  await expect(
+    registry.invokeAsync({
+      providerId: 'fixture',
+      toolName: 'safe_echo',
+      schemaFingerprint: echo?.schemaFingerprint ?? '',
+      arguments: { message: 'permitted' },
+      scopes: ['tools:invoke'],
+      security: securityInvocation('approved'),
+    }),
+  ).resolves.toMatchObject({ content: [{ text: 'permitted' }] });
+  await expect(
+    registry.invokeAsync({
+      providerId: 'fixture',
+      toolName: 'sum_numbers',
+      schemaFingerprint: sum?.schemaFingerprint ?? '',
+      arguments: { values: [2, 3] },
+      scopes: ['tools:invoke'],
+      security: securityInvocation('approved-sum'),
+    }),
+  ).resolves.toMatchObject({ content: [{ text: '5' }] });
+});
+
+test('rejects an MCP invocation when the canonical approval boundary rejects its exact operation', async () => {
+  const registry = createMcpToolRegistry({
+    providers: [provider],
+    security: permittingSecurity(['mcp:fixture:safe_echo'], 'rejected'),
     trustedStdioProviders,
   });
   const [tool] = await registry.discoverAsync();
@@ -96,18 +156,15 @@ test('executes only after a scoped Flow security permit is approved', async () =
       providerId: 'fixture',
       toolName: 'safe_echo',
       schemaFingerprint: tool?.schemaFingerprint ?? '',
-      arguments: { message: 'permitted' },
+      arguments: { message: 'must not run' },
       scopes: ['tools:invoke'],
-      security: securityInvocation('approved'),
+      security: securityInvocation('rejected-approval'),
     }),
-  ).resolves.toMatchObject({ content: [{ text: 'permitted' }] });
+  ).rejects.toThrow('approval gate rejected');
 });
 
 test('binds every AI-to-MCP tool call to a unique step identity through the canonical security port', async () => {
   const authorized: string[] = [];
-  const claimed = new Set<string>();
-  const consumed = new Set<string>();
-  const operationKey = (operation: { readonly idempotencyKey: string }) => operation.idempotencyKey;
   const security = createFlowSecurityPort({
     approvalStore: {
       getAsync: async (operation) => {
@@ -128,24 +185,7 @@ test('binds every AI-to-MCP tool call to a unique step identity through the cano
         capability: 'mcp:fixture:safe_echo',
       },
     ],
-    operationStore: {
-      claimAsync: async (operation) => {
-        const key = operationKey(operation);
-        if (claimed.has(key)) return false;
-        claimed.add(key);
-        return true;
-      },
-      consumeAsync: async (operation) => {
-        const key = operationKey(operation);
-        if (!claimed.has(key) || consumed.has(key)) return false;
-        consumed.add(key);
-        return true;
-      },
-      releaseAsync: async (operation) => {
-        const key = operationKey(operation);
-        if (!consumed.has(key)) claimed.delete(key);
-      },
-    },
+    operationStore: persistentOperationStore(),
     rateLimit: { acquireAsync: async () => true },
     secretStore: {
       create: async () => ({ ok: false, error: { code: 'unavailable', message: 'unused' } }),
@@ -255,7 +295,7 @@ test('rejects unsafe remote endpoints and production remote access before networ
   await expect(production.discoverAsync()).rejects.toThrow('security transport boundary');
 });
 
-test('does not bypass a host transport that rejects an outbound peer', async () => {
+test('does not bypass a host transport that rejects an outbound peer or leak its error', async () => {
   const registry = createMcpToolRegistry({
     providers: [
       {
@@ -275,9 +315,7 @@ test('does not bypass a host transport that rejects an outbound peer', async () 
       },
     },
   });
-  await expect(registry.discoverAsync()).rejects.toThrow(
-    'host transport rejected the resolved peer',
-  );
+  await expect(registry.discoverAsync()).rejects.toThrow('MCP provider connection failed.');
 });
 
 test('routes remote discovery through the host transport boundary', async () => {
@@ -309,8 +347,20 @@ test('routes remote discovery through the host transport boundary', async () => 
           return fetch(`http://127.0.0.1:${address.port}/mcp`, init);
         },
       },
+      security: permittingSecurity(['mcp:remote:remote_echo']),
     });
-    expect(await registry.discoverAsync()).toHaveLength(1);
+    const [tool] = await registry.discoverAsync();
+    expect(tool).toMatchObject({ name: 'remote_echo', providerId: 'remote' });
+    await expect(
+      registry.invokeAsync({
+        providerId: 'remote',
+        toolName: 'remote_echo',
+        schemaFingerprint: tool?.schemaFingerprint ?? '',
+        arguments: {},
+        scopes: ['tools:invoke'],
+        security: securityInvocation('remote-approved'),
+      }),
+    ).resolves.toMatchObject({ content: [{ text: 'remote' }] });
   } finally {
     await new Promise<void>((resolve, reject) =>
       httpServer.close((error) => (error ? reject(error) : resolve())),
@@ -328,6 +378,52 @@ test('propagates caller cancellation before provider discovery', async () => {
   const controller = new AbortController();
   controller.abort();
   await expect(registry.discoverAsync(controller.signal)).rejects.toThrow('cancelled');
+});
+
+test('propagates caller cancellation before permitted tool execution', async () => {
+  const registry = createMcpToolRegistry({
+    providers: [provider],
+    security: permittingSecurity(),
+    trustedStdioProviders,
+  });
+  const [tool] = await registry.discoverAsync();
+  const controller = new AbortController();
+  controller.abort();
+  await expect(
+    registry.invokeAsync({
+      providerId: 'fixture',
+      toolName: 'safe_echo',
+      schemaFingerprint: tool?.schemaFingerprint ?? '',
+      arguments: { message: 'must not start' },
+      scopes: ['tools:invoke'],
+      security: securityInvocation('cancelled-invocation'),
+      signal: controller.signal,
+    }),
+  ).rejects.toThrow('cancelled');
+});
+
+test('bounds a permitted stalled STDIO invocation with the provider timeout', async () => {
+  const registry = createMcpToolRegistry({
+    providers: [{ ...provider, id: 'stalled-execution', timeoutMs: 1_000 }],
+    security: permittingSecurity(['mcp:stalled-execution:safe_echo']),
+    trustedStdioProviders: {
+      'stalled-execution': {
+        command: process.execPath,
+        args: [new URL('./fixtures/mcpStalledToolServer.ts', import.meta.url).pathname],
+      },
+    },
+  });
+  const [tool] = await registry.discoverAsync();
+  await expect(
+    registry.invokeAsync({
+      providerId: 'stalled-execution',
+      toolName: 'safe_echo',
+      schemaFingerprint: tool?.schemaFingerprint ?? '',
+      arguments: { message: 'must time out' },
+      scopes: ['tools:invoke'],
+      security: securityInvocation('timed-out-invocation'),
+    }),
+  ).rejects.toThrow('timed out');
 });
 
 test('bounds stalled host-transport discovery with the provider timeout', async () => {
