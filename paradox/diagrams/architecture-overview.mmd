@@ -4,22 +4,62 @@ graph TD
   package__ankhorage_flow --> entrypoint_src_index_ts
   module_src_ai_ts["src/ai.ts"]
   package__ankhorage_flow -.-> module_src_ai_ts
+  module_src_execution_ts["src/execution.ts"]
+  package__ankhorage_flow -.-> module_src_execution_ts
+  module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts["src/features/execution/adapters/FileFlowPersistenceAdapter.ts"]
+  package__ankhorage_flow -.-> module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts
+  module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts --> module_src_features_execution_ports_FlowPersistencePort_ts
+  module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts --> module_src_types_durableExecution_ts
+  module_src_features_execution_application_cancelDurableRunAsync_ts["src/features/execution/application/cancelDurableRunAsync.ts"]
+  package__ankhorage_flow -.-> module_src_features_execution_application_cancelDurableRunAsync_ts
+  module_src_features_execution_application_cancelDurableRunAsync_ts --> module_src_features_execution_ports_FlowPersistencePort_ts
+  module_src_features_execution_application_cancelDurableRunAsync_ts --> module_src_types_durableExecution_ts
+  module_src_features_execution_application_cancelDurableRunAsync_ts --> module_src_types_execution_ts
+  module_src_features_execution_application_createDurableRunAsync_ts["src/features/execution/application/createDurableRunAsync.ts"]
+  package__ankhorage_flow -.-> module_src_features_execution_application_createDurableRunAsync_ts
+  module_src_features_execution_application_createDurableRunAsync_ts --> module_src_features_execution_domain_createDurableRun_ts
+  module_src_features_execution_application_createDurableRunAsync_ts --> module_src_features_execution_ports_FlowPersistencePort_ts
+  module_src_features_execution_application_createDurableRunAsync_ts --> module_src_types_durableExecution_ts
+  module_src_features_execution_application_createDurableRunAsync_ts --> module_src_types_execution_ts
   module_src_features_execution_application_executeFlowAsync_ts["src/features/execution/application/executeFlowAsync.ts"]
   package__ankhorage_flow -.-> module_src_features_execution_application_executeFlowAsync_ts
   module_src_features_execution_application_executeFlowAsync_ts --> module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts
   module_src_features_execution_application_executeFlowAsync_ts --> module_src_features_execution_domain_validateFlowDataSchema_ts
   module_src_features_execution_application_executeFlowAsync_ts --> module_src_types_execution_ts
+  module_src_features_execution_application_runDurableWorkerAsync_ts["src/features/execution/application/runDurableWorkerAsync.ts"]
+  package__ankhorage_flow -.-> module_src_features_execution_application_runDurableWorkerAsync_ts
+  module_src_features_execution_application_runDurableWorkerAsync_ts --> module_src_features_execution_domain_createRetryWork_ts
+  module_src_features_execution_application_runDurableWorkerAsync_ts --> module_src_features_execution_ports_FlowPersistencePort_ts
+  module_src_features_execution_application_runDurableWorkerAsync_ts --> module_src_features_security_FlowSecurityError_ts
+  module_src_features_execution_application_runDurableWorkerAsync_ts --> module_src_types_durableExecution_ts
+  module_src_features_execution_application_runDurableWorkerAsync_ts --> module_src_types_execution_ts
+  module_src_features_execution_application_runDurableWorkerAsync_ts --> module_src_types_security_ts
   module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts["src/features/execution/domain/assertFlowGraphSchemasSupported.ts"]
   package__ankhorage_flow -.-> module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts
   module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts --> module_src_features_execution_domain_validateFlowDataSchema_ts
+  module_src_features_execution_domain_calculateRetryDueAt_ts["src/features/execution/domain/calculateRetryDueAt.ts"]
+  package__ankhorage_flow -.-> module_src_features_execution_domain_calculateRetryDueAt_ts
+  module_src_features_execution_domain_calculateRetryDueAt_ts --> module_src_types_durableExecution_ts
   module_src_features_execution_domain_compileFlowGraph_ts["src/features/execution/domain/compileFlowGraph.ts"]
   package__ankhorage_flow -.-> module_src_features_execution_domain_compileFlowGraph_ts
   module_src_features_execution_domain_compileFlowGraph_ts --> module_src_types_execution_ts
   module_src_features_execution_domain_createDefaultNodeRegistry_ts["src/features/execution/domain/createDefaultNodeRegistry.ts"]
   package__ankhorage_flow -.-> module_src_features_execution_domain_createDefaultNodeRegistry_ts
   module_src_features_execution_domain_createDefaultNodeRegistry_ts --> module_src_types_execution_ts
+  module_src_features_execution_domain_createDurableRun_ts["src/features/execution/domain/createDurableRun.ts"]
+  package__ankhorage_flow -.-> module_src_features_execution_domain_createDurableRun_ts
+  module_src_features_execution_domain_createDurableRun_ts --> module_src_types_durableExecution_ts
+  module_src_features_execution_domain_createRetryWork_ts["src/features/execution/domain/createRetryWork.ts"]
+  package__ankhorage_flow -.-> module_src_features_execution_domain_createRetryWork_ts
+  module_src_features_execution_domain_createRetryWork_ts --> module_src_features_execution_domain_calculateRetryDueAt_ts
+  module_src_features_execution_domain_createRetryWork_ts --> module_src_types_durableExecution_ts
+  module_src_features_execution_domain_isCronDueAt_ts["src/features/execution/domain/isCronDueAt.ts"]
+  package__ankhorage_flow -.-> module_src_features_execution_domain_isCronDueAt_ts
   module_src_features_execution_domain_validateFlowDataSchema_ts["src/features/execution/domain/validateFlowDataSchema.ts"]
   package__ankhorage_flow -.-> module_src_features_execution_domain_validateFlowDataSchema_ts
+  module_src_features_execution_ports_FlowPersistencePort_ts["src/features/execution/ports/FlowPersistencePort.ts"]
+  package__ankhorage_flow -.-> module_src_features_execution_ports_FlowPersistencePort_ts
+  module_src_features_execution_ports_FlowPersistencePort_ts --> module_src_types_durableExecution_ts
   module_src_features_mcp_createMcpRemoteTransport_ts["src/features/mcp/createMcpRemoteTransport.ts"]
   package__ankhorage_flow -.-> module_src_features_mcp_createMcpRemoteTransport_ts
   module_src_features_mcp_createMcpRemoteTransport_ts --> module_src_features_mcp_loadMcpSdkAsync_ts
@@ -63,6 +103,9 @@ graph TD
   package__ankhorage_flow -.-> module_src_mcp_ts
   module_src_social_ts["src/social.ts"]
   package__ankhorage_flow -.-> module_src_social_ts
+  module_src_types_durableExecution_ts["src/types/durableExecution.ts"]
+  package__ankhorage_flow -.-> module_src_types_durableExecution_ts
+  module_src_types_durableExecution_ts --> module_src_types_security_ts
   module_src_types_execution_ts["src/types/execution.ts"]
   package__ankhorage_flow -.-> module_src_types_execution_ts
   module_src_types_mcp_ts["src/types/mcp.ts"]

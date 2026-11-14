@@ -1,5 +1,12 @@
 # @ankhorage/flow
 
+## 0.5.0
+
+### Minor Changes
+
+- 63d8dd6: Add provider-neutral durable execution with fenced workers, retries, checkpoints, cron matching,
+  outbox idempotency, cancellation, and published-security approval waits.
+
 ## 0.4.1
 
 ### Patch Changes

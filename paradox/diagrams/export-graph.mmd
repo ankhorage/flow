@@ -1,10 +1,20 @@
 graph LR
   module_src_ai_ts["src/ai.ts"]
+  module_src_execution_ts["src/execution.ts"]
+  module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts["src/features/execution/adapters/FileFlowPersistenceAdapter.ts"]
+  module_src_features_execution_application_cancelDurableRunAsync_ts["src/features/execution/application/cancelDurableRunAsync.ts"]
+  module_src_features_execution_application_createDurableRunAsync_ts["src/features/execution/application/createDurableRunAsync.ts"]
   module_src_features_execution_application_executeFlowAsync_ts["src/features/execution/application/executeFlowAsync.ts"]
+  module_src_features_execution_application_runDurableWorkerAsync_ts["src/features/execution/application/runDurableWorkerAsync.ts"]
   module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts["src/features/execution/domain/assertFlowGraphSchemasSupported.ts"]
+  module_src_features_execution_domain_calculateRetryDueAt_ts["src/features/execution/domain/calculateRetryDueAt.ts"]
   module_src_features_execution_domain_compileFlowGraph_ts["src/features/execution/domain/compileFlowGraph.ts"]
   module_src_features_execution_domain_createDefaultNodeRegistry_ts["src/features/execution/domain/createDefaultNodeRegistry.ts"]
+  module_src_features_execution_domain_createDurableRun_ts["src/features/execution/domain/createDurableRun.ts"]
+  module_src_features_execution_domain_createRetryWork_ts["src/features/execution/domain/createRetryWork.ts"]
+  module_src_features_execution_domain_isCronDueAt_ts["src/features/execution/domain/isCronDueAt.ts"]
   module_src_features_execution_domain_validateFlowDataSchema_ts["src/features/execution/domain/validateFlowDataSchema.ts"]
+  module_src_features_execution_ports_FlowPersistencePort_ts["src/features/execution/ports/FlowPersistencePort.ts"]
   module_src_features_mcp_createMcpRemoteTransport_ts["src/features/mcp/createMcpRemoteTransport.ts"]
   module_src_features_mcp_createMcpToolRegistry_ts["src/features/mcp/createMcpToolRegistry.ts"]
   module_src_features_mcp_loadMcpSdkAsync_ts["src/features/mcp/loadMcpSdkAsync.ts"]
@@ -17,9 +27,13 @@ graph LR
   module_src_index_ts["src/index.ts"]
   module_src_mcp_ts["src/mcp.ts"]
   module_src_social_ts["src/social.ts"]
+  module_src_types_durableExecution_ts["src/types/durableExecution.ts"]
   module_src_types_execution_ts["src/types/execution.ts"]
   module_src_types_mcp_ts["src/types/mcp.ts"]
   module_src_types_security_ts["src/types/security.ts"]
+  export_calculateRetryDueAt["calculateRetryDueAt"]
+  module_src_features_execution_domain_calculateRetryDueAt_ts --> export_calculateRetryDueAt
+  export_calculateRetryDueAt -.-> export_FlowRetryPolicy
   export_compileFlowGraph["compileFlowGraph"]
   module_src_features_execution_domain_compileFlowGraph_ts --> export_compileFlowGraph
   export_compileFlowGraph -.-> export_FlowCompiledGraph
@@ -27,6 +41,16 @@ graph LR
   export_createDefaultNodeRegistry["createDefaultNodeRegistry"]
   module_src_features_execution_domain_createDefaultNodeRegistry_ts --> export_createDefaultNodeRegistry
   export_createDefaultNodeRegistry -.-> export_FlowNodeOperation
+  export_createDurableRun["createDurableRun"]
+  module_src_features_execution_domain_createDurableRun_ts --> export_createDurableRun
+  export_createDurableRun -.-> export_FlowDefinitionRef
+  export_createDurableRun -.-> export_FlowDurableRun
+  export_createDurableRunAsync["createDurableRunAsync"]
+  module_src_features_execution_application_createDurableRunAsync_ts --> export_createDurableRunAsync
+  export_createDurableRunAsync -.-> export_FlowClock
+  export_createDurableRunAsync -.-> export_FlowDefinitionRef
+  export_createDurableRunAsync -.-> export_FlowDurableRun
+  export_createDurableRunAsync -.-> export_FlowPersistencePort
   export_createFlowSecurityPort["createFlowSecurityPort"]
   module_src_features_security_application_createFlowSecurityPort_ts --> export_createFlowSecurityPort
   export_createFlowSecurityPort -.-> export_FlowApprovalStorePort
@@ -35,6 +59,10 @@ graph LR
   export_createFlowSecurityPort -.-> export_FlowSecurityAuditPort
   export_createFlowSecurityPort -.-> export_FlowSecurityGrant
   export_createFlowSecurityPort -.-> export_FlowSecurityPort
+  export_createRetryWork["createRetryWork"]
+  module_src_features_execution_domain_createRetryWork_ts --> export_createRetryWork
+  export_createRetryWork -.-> export_FlowDurableWork
+  export_createRetryWork -.-> export_FlowRetryPolicy
   export_executeFlowAsync["executeFlowAsync"]
   module_src_features_execution_application_executeFlowAsync_ts --> export_executeFlowAsync
   export_executeFlowAsync -.-> export_FlowClock
@@ -50,6 +78,16 @@ graph LR
   module_src_types_execution_ts --> export_FlowClock
   export_FlowCompiledGraph["FlowCompiledGraph"]
   module_src_types_execution_ts --> export_FlowCompiledGraph
+  export_FlowDefinitionRef["FlowDefinitionRef"]
+  module_src_types_durableExecution_ts --> export_FlowDefinitionRef
+  export_FlowDurableRun["FlowDurableRun"]
+  module_src_types_durableExecution_ts --> export_FlowDurableRun
+  export_FlowDurableRun -.-> export_FlowDefinitionRef
+  export_FlowDurableRun -.-> export_FlowRunCheckpoint
+  export_FlowDurableWork["FlowDurableWork"]
+  module_src_types_durableExecution_ts --> export_FlowDurableWork
+  export_FlowDurableWork -.-> export_FlowDefinitionRef
+  export_FlowDurableWork -.-> export_FlowSecurityOperation
   export_FlowExecutionResult["FlowExecutionResult"]
   module_src_types_execution_ts --> export_FlowExecutionResult
   export_FlowNodeOperation["FlowNodeOperation"]
@@ -64,11 +102,22 @@ graph LR
   export_FlowOperationStorePort -.-> export_FlowSecurityOperationIdentity
   export_FlowOutboundTransportPort["FlowOutboundTransportPort"]
   module_src_types_security_ts --> export_FlowOutboundTransportPort
+  export_FlowOutboxRecord["FlowOutboxRecord"]
+  module_src_types_durableExecution_ts --> export_FlowOutboxRecord
+  export_FlowPersistencePort["FlowPersistencePort"]
+  module_src_features_execution_ports_FlowPersistencePort_ts --> export_FlowPersistencePort
+  export_FlowPersistencePort -.-> export_FlowDurableRun
+  export_FlowPersistencePort -.-> export_FlowDurableWork
+  export_FlowPersistencePort -.-> export_FlowOutboxRecord
   export_FlowRateLimitPort["FlowRateLimitPort"]
   module_src_types_security_ts --> export_FlowRateLimitPort
   export_FlowRateLimitPort -.-> export_FlowSecurityActor
   export_FlowResolvedSecrets["FlowResolvedSecrets"]
   module_src_types_security_ts --> export_FlowResolvedSecrets
+  export_FlowRetryPolicy["FlowRetryPolicy"]
+  module_src_types_durableExecution_ts --> export_FlowRetryPolicy
+  export_FlowRunCheckpoint["FlowRunCheckpoint"]
+  module_src_types_durableExecution_ts --> export_FlowRunCheckpoint
   export_FlowRunRequest["FlowRunRequest"]
   module_src_types_execution_ts --> export_FlowRunRequest
   export_FlowSecretCreateInput["FlowSecretCreateInput"]
@@ -115,3 +164,5 @@ graph LR
   export_FlowSecurityPort -.-> export_FlowSecurityPermit
   export_FlowSecurityTarget["FlowSecurityTarget"]
   module_src_types_security_ts --> export_FlowSecurityTarget
+  export_isCronDueAt["isCronDueAt"]
+  module_src_features_execution_domain_isCronDueAt_ts --> export_isCronDueAt

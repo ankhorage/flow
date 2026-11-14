@@ -127,13 +127,38 @@
               </button>
             </li>
             <li>
+    <button class="nav-button" type="button" data-target="src/features/execution/adapters/FileFlowPersistenceAdapter.ts">
+      src/features/execution/adapters/FileFlowPersistenceAdapter.ts
+      <small>25 functions</small>
+    </button>
+  </li><li>
+    <button class="nav-button" type="button" data-target="src/features/execution/application/cancelDurableRunAsync.ts">
+      src/features/execution/application/cancelDurableRunAsync.ts
+      <small>2 functions</small>
+    </button>
+  </li><li>
+    <button class="nav-button" type="button" data-target="src/features/execution/application/createDurableRunAsync.ts">
+      src/features/execution/application/createDurableRunAsync.ts
+      <small>1 function</small>
+    </button>
+  </li><li>
     <button class="nav-button" type="button" data-target="src/features/execution/application/executeFlowAsync.ts">
       src/features/execution/application/executeFlowAsync.ts
       <small>18 functions</small>
     </button>
   </li><li>
+    <button class="nav-button" type="button" data-target="src/features/execution/application/runDurableWorkerAsync.ts">
+      src/features/execution/application/runDurableWorkerAsync.ts
+      <small>17 functions</small>
+    </button>
+  </li><li>
     <button class="nav-button" type="button" data-target="src/features/execution/domain/assertFlowGraphSchemasSupported.ts">
       src/features/execution/domain/assertFlowGraphSchemasSupported.ts
+      <small>1 function</small>
+    </button>
+  </li><li>
+    <button class="nav-button" type="button" data-target="src/features/execution/domain/calculateRetryDueAt.ts">
+      src/features/execution/domain/calculateRetryDueAt.ts
       <small>1 function</small>
     </button>
   </li><li>
@@ -145,6 +170,21 @@
     <button class="nav-button" type="button" data-target="src/features/execution/domain/createDefaultNodeRegistry.ts">
       src/features/execution/domain/createDefaultNodeRegistry.ts
       <small>3 functions</small>
+    </button>
+  </li><li>
+    <button class="nav-button" type="button" data-target="src/features/execution/domain/createDurableRun.ts">
+      src/features/execution/domain/createDurableRun.ts
+      <small>1 function</small>
+    </button>
+  </li><li>
+    <button class="nav-button" type="button" data-target="src/features/execution/domain/createRetryWork.ts">
+      src/features/execution/domain/createRetryWork.ts
+      <small>1 function</small>
+    </button>
+  </li><li>
+    <button class="nav-button" type="button" data-target="src/features/execution/domain/isCronDueAt.ts">
+      src/features/execution/domain/isCronDueAt.ts
+      <small>9 functions</small>
     </button>
   </li><li>
     <button class="nav-button" type="button" data-target="src/features/execution/domain/validateFlowDataSchema.ts">
@@ -196,9 +236,9 @@
     <section class="panel">
       <h2>Package overview</h2>
       <div class="summary">
-        <div><strong>30</strong><span class="muted">public exports</span></div>
+        <div><strong>42</strong><span class="muted">public exports</span></div>
         <div><strong>0</strong><span class="muted">components</span></div>
-        <div><strong>21</strong><span class="muted">modules</span></div>
+        <div><strong>32</strong><span class="muted">modules</span></div>
         <div><strong>1</strong><span class="muted">entrypoints</span></div>
       </div>
       <h3>Entrypoints</h3>
@@ -207,7 +247,14 @@
       </ul>
     </section>
     
-    <section class="panel"><h2>Policy</h2><p>No documentation findings.</p></section>
+    <section class="panel">
+    <h2>Policy findings</h2>
+    <article class="item" data-search="documentation.public-function.description warning Exported function isCronDueAt has no documentation description. src/features/execution/domain/isCronDueAt.ts">
+          <h3>documentation.public-function.description</h3>
+          <p><strong>warning</strong> — Exported function isCronDueAt has no documentation description.</p>
+          <p class="muted"><code>src/features/execution/domain/isCronDueAt.ts:2</code></p>
+        </article>
+  </section>
     <section class="panel">
       <h2>Modules</h2>
       <article class="item" data-search="src/ai.ts">
@@ -215,16 +262,46 @@
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
     <p><strong>Exports:</strong> <span class="empty">None</span></p>
+  </article><article class="item" data-search="src/execution.ts cancelDurableRunAsync FileFlowPersistenceAdapter FlowDurableEffectPort FlowWorkerOutcome FlowWorkerResult runDurableWorkerAsync">
+    <h3>src/execution.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
+    <p><strong>Exports:</strong> <code>cancelDurableRunAsync</code>, <code>FileFlowPersistenceAdapter</code>, <code>FlowDurableEffectPort</code>, <code>FlowWorkerOutcome</code>, <code>FlowWorkerResult</code>, <code>runDurableWorkerAsync</code></p>
+  </article><article class="item" data-search="src/features/execution/adapters/FileFlowPersistenceAdapter.ts src/features/execution/ports/FlowPersistencePort.ts src/types/durableExecution.ts FileFlowPersistenceAdapter">
+    <h3>src/features/execution/adapters/FileFlowPersistenceAdapter.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/features/execution/ports/FlowPersistencePort.ts</code>, <code>src/types/durableExecution.ts</code></p>
+    <p><strong>Exports:</strong> <code>FileFlowPersistenceAdapter</code></p>
+  </article><article class="item" data-search="src/features/execution/application/cancelDurableRunAsync.ts src/features/execution/ports/FlowPersistencePort.ts src/types/durableExecution.ts src/types/execution.ts cancelDurableRunAsync">
+    <h3>src/features/execution/application/cancelDurableRunAsync.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/features/execution/ports/FlowPersistencePort.ts</code>, <code>src/types/durableExecution.ts</code>, <code>src/types/execution.ts</code></p>
+    <p><strong>Exports:</strong> <code>cancelDurableRunAsync</code></p>
+  </article><article class="item" data-search="src/features/execution/application/createDurableRunAsync.ts src/features/execution/domain/createDurableRun.ts src/features/execution/ports/FlowPersistencePort.ts src/types/durableExecution.ts src/types/execution.ts createDurableRunAsync">
+    <h3>src/features/execution/application/createDurableRunAsync.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/features/execution/domain/createDurableRun.ts</code>, <code>src/features/execution/ports/FlowPersistencePort.ts</code>, <code>src/types/durableExecution.ts</code>, <code>src/types/execution.ts</code></p>
+    <p><strong>Exports:</strong> <code>createDurableRunAsync</code></p>
   </article><article class="item" data-search="src/features/execution/application/executeFlowAsync.ts src/features/execution/domain/assertFlowGraphSchemasSupported.ts src/features/execution/domain/validateFlowDataSchema.ts src/types/execution.ts executeFlowAsync">
     <h3>src/features/execution/application/executeFlowAsync.ts</h3>
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <code>src/features/execution/domain/assertFlowGraphSchemasSupported.ts</code>, <code>src/features/execution/domain/validateFlowDataSchema.ts</code>, <code>src/types/execution.ts</code></p>
     <p><strong>Exports:</strong> <code>executeFlowAsync</code></p>
+  </article><article class="item" data-search="src/features/execution/application/runDurableWorkerAsync.ts src/features/execution/domain/createRetryWork.ts src/features/execution/ports/FlowPersistencePort.ts src/features/security/FlowSecurityError.ts src/types/durableExecution.ts src/types/execution.ts src/types/security.ts FlowDurableEffectPort FlowWorkerOutcome FlowWorkerResult runDurableWorkerAsync">
+    <h3>src/features/execution/application/runDurableWorkerAsync.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/features/execution/domain/createRetryWork.ts</code>, <code>src/features/execution/ports/FlowPersistencePort.ts</code>, <code>src/features/security/FlowSecurityError.ts</code>, <code>src/types/durableExecution.ts</code>, <code>src/types/execution.ts</code>, <code>src/types/security.ts</code></p>
+    <p><strong>Exports:</strong> <code>FlowDurableEffectPort</code>, <code>FlowWorkerOutcome</code>, <code>FlowWorkerResult</code>, <code>runDurableWorkerAsync</code></p>
   </article><article class="item" data-search="src/features/execution/domain/assertFlowGraphSchemasSupported.ts src/features/execution/domain/validateFlowDataSchema.ts assertFlowGraphSchemasSupported">
     <h3>src/features/execution/domain/assertFlowGraphSchemasSupported.ts</h3>
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <code>src/features/execution/domain/validateFlowDataSchema.ts</code></p>
     <p><strong>Exports:</strong> <code>assertFlowGraphSchemasSupported</code></p>
+  </article><article class="item" data-search="src/features/execution/domain/calculateRetryDueAt.ts src/types/durableExecution.ts calculateRetryDueAt">
+    <h3>src/features/execution/domain/calculateRetryDueAt.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/types/durableExecution.ts</code></p>
+    <p><strong>Exports:</strong> <code>calculateRetryDueAt</code></p>
   </article><article class="item" data-search="src/features/execution/domain/compileFlowGraph.ts src/types/execution.ts compileFlowGraph">
     <h3>src/features/execution/domain/compileFlowGraph.ts</h3>
     <p class="muted">Referenced module</p>
@@ -235,11 +312,31 @@
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <code>src/types/execution.ts</code></p>
     <p><strong>Exports:</strong> <code>createDefaultNodeRegistry</code></p>
+  </article><article class="item" data-search="src/features/execution/domain/createDurableRun.ts src/types/durableExecution.ts createDurableRun">
+    <h3>src/features/execution/domain/createDurableRun.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/types/durableExecution.ts</code></p>
+    <p><strong>Exports:</strong> <code>createDurableRun</code></p>
+  </article><article class="item" data-search="src/features/execution/domain/createRetryWork.ts src/features/execution/domain/calculateRetryDueAt.ts src/types/durableExecution.ts createRetryWork">
+    <h3>src/features/execution/domain/createRetryWork.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/features/execution/domain/calculateRetryDueAt.ts</code>, <code>src/types/durableExecution.ts</code></p>
+    <p><strong>Exports:</strong> <code>createRetryWork</code></p>
+  </article><article class="item" data-search="src/features/execution/domain/isCronDueAt.ts isCronDueAt">
+    <h3>src/features/execution/domain/isCronDueAt.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
+    <p><strong>Exports:</strong> <code>isCronDueAt</code></p>
   </article><article class="item" data-search="src/features/execution/domain/validateFlowDataSchema.ts assertFlowDataSchemaSupported validateFlowDataSchema">
     <h3>src/features/execution/domain/validateFlowDataSchema.ts</h3>
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
     <p><strong>Exports:</strong> <code>assertFlowDataSchemaSupported</code>, <code>validateFlowDataSchema</code></p>
+  </article><article class="item" data-search="src/features/execution/ports/FlowPersistencePort.ts src/types/durableExecution.ts FlowPersistencePort">
+    <h3>src/features/execution/ports/FlowPersistencePort.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/types/durableExecution.ts</code></p>
+    <p><strong>Exports:</strong> <code>FlowPersistencePort</code></p>
   </article><article class="item" data-search="src/features/mcp/createMcpRemoteTransport.ts src/features/mcp/loadMcpSdkAsync.ts src/features/mcp/McpToolError.ts src/types/mcp.ts src/types/security.ts createMcpRemoteTransportAsync">
     <h3>src/features/mcp/createMcpRemoteTransport.ts</h3>
     <p class="muted">Referenced module</p>
@@ -285,11 +382,11 @@
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
     <p><strong>Exports:</strong> <code>FlowSecurityError</code></p>
-  </article><article class="item" data-search="src/index.ts compileFlowGraph createDefaultNodeRegistry createFlowSecurityPort executeFlowAsync FlowApprovalStorePort FlowClock FlowCompiledGraph FlowExecutionResult FlowNodeOperation FlowNodeOperationResult FlowNodeRegistry FlowOperationStorePort FlowOutboundTransportPort FlowRateLimitPort FlowResolvedSecrets FlowRunRequest FlowSecretCreateInput FlowSecretMetadata FlowSecretRevokeInput FlowSecurityActor FlowSecurityApproval FlowSecurityAuditEvent FlowSecurityAuditPort FlowSecurityError FlowSecurityGrant FlowSecurityOperation FlowSecurityOperationIdentity FlowSecurityPermit FlowSecurityPort FlowSecurityTarget">
+  </article><article class="item" data-search="src/index.ts calculateRetryDueAt compileFlowGraph createDefaultNodeRegistry createDurableRun createDurableRunAsync createFlowSecurityPort createRetryWork executeFlowAsync FlowApprovalStorePort FlowClock FlowCompiledGraph FlowDefinitionRef FlowDurableRun FlowDurableWork FlowExecutionResult FlowNodeOperation FlowNodeOperationResult FlowNodeRegistry FlowOperationStorePort FlowOutboundTransportPort FlowOutboxRecord FlowPersistencePort FlowRateLimitPort FlowResolvedSecrets FlowRetryPolicy FlowRunCheckpoint FlowRunRequest FlowSecretCreateInput FlowSecretMetadata FlowSecretRevokeInput FlowSecurityActor FlowSecurityApproval FlowSecurityAuditEvent FlowSecurityAuditPort FlowSecurityError FlowSecurityGrant FlowSecurityOperation FlowSecurityOperationIdentity FlowSecurityPermit FlowSecurityPort FlowSecurityTarget isCronDueAt">
     <h3>src/index.ts</h3>
     <p class="muted">Configured entrypoint</p>
     <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
-    <p><strong>Exports:</strong> <code>compileFlowGraph</code>, <code>createDefaultNodeRegistry</code>, <code>createFlowSecurityPort</code>, <code>executeFlowAsync</code>, <code>FlowApprovalStorePort</code>, <code>FlowClock</code>, <code>FlowCompiledGraph</code>, <code>FlowExecutionResult</code>, <code>FlowNodeOperation</code>, <code>FlowNodeOperationResult</code>, <code>FlowNodeRegistry</code>, <code>FlowOperationStorePort</code>, <code>FlowOutboundTransportPort</code>, <code>FlowRateLimitPort</code>, <code>FlowResolvedSecrets</code>, <code>FlowRunRequest</code>, <code>FlowSecretCreateInput</code>, <code>FlowSecretMetadata</code>, <code>FlowSecretRevokeInput</code>, <code>FlowSecurityActor</code>, <code>FlowSecurityApproval</code>, <code>FlowSecurityAuditEvent</code>, <code>FlowSecurityAuditPort</code>, <code>FlowSecurityError</code>, <code>FlowSecurityGrant</code>, <code>FlowSecurityOperation</code>, <code>FlowSecurityOperationIdentity</code>, <code>FlowSecurityPermit</code>, <code>FlowSecurityPort</code>, <code>FlowSecurityTarget</code></p>
+    <p><strong>Exports:</strong> <code>calculateRetryDueAt</code>, <code>compileFlowGraph</code>, <code>createDefaultNodeRegistry</code>, <code>createDurableRun</code>, <code>createDurableRunAsync</code>, <code>createFlowSecurityPort</code>, <code>createRetryWork</code>, <code>executeFlowAsync</code>, <code>FlowApprovalStorePort</code>, <code>FlowClock</code>, <code>FlowCompiledGraph</code>, <code>FlowDefinitionRef</code>, <code>FlowDurableRun</code>, <code>FlowDurableWork</code>, <code>FlowExecutionResult</code>, <code>FlowNodeOperation</code>, <code>FlowNodeOperationResult</code>, <code>FlowNodeRegistry</code>, <code>FlowOperationStorePort</code>, <code>FlowOutboundTransportPort</code>, <code>FlowOutboxRecord</code>, <code>FlowPersistencePort</code>, <code>FlowRateLimitPort</code>, <code>FlowResolvedSecrets</code>, <code>FlowRetryPolicy</code>, <code>FlowRunCheckpoint</code>, <code>FlowRunRequest</code>, <code>FlowSecretCreateInput</code>, <code>FlowSecretMetadata</code>, <code>FlowSecretRevokeInput</code>, <code>FlowSecurityActor</code>, <code>FlowSecurityApproval</code>, <code>FlowSecurityAuditEvent</code>, <code>FlowSecurityAuditPort</code>, <code>FlowSecurityError</code>, <code>FlowSecurityGrant</code>, <code>FlowSecurityOperation</code>, <code>FlowSecurityOperationIdentity</code>, <code>FlowSecurityPermit</code>, <code>FlowSecurityPort</code>, <code>FlowSecurityTarget</code>, <code>isCronDueAt</code></p>
   </article><article class="item" data-search="src/mcp.ts createMcpToolRegistry McpProviderDefinition McpToolInvocation McpToolMetadata McpToolPermission McpToolRegistry McpToolResult McpTrustedStdioProvider">
     <h3>src/mcp.ts</h3>
     <p class="muted">Referenced module</p>
@@ -300,6 +397,11 @@
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
     <p><strong>Exports:</strong> <span class="empty">None</span></p>
+  </article><article class="item" data-search="src/types/durableExecution.ts src/types/security.ts FlowDefinitionRef FlowDurableRun FlowDurableWork FlowOutboxRecord FlowRetryPolicy FlowRunCheckpoint">
+    <h3>src/types/durableExecution.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/types/security.ts</code></p>
+    <p><strong>Exports:</strong> <code>FlowDefinitionRef</code>, <code>FlowDurableRun</code>, <code>FlowDurableWork</code>, <code>FlowOutboxRecord</code>, <code>FlowRetryPolicy</code>, <code>FlowRunCheckpoint</code></p>
   </article><article class="item" data-search="src/types/execution.ts FlowClock FlowCompiledGraph FlowExecutionResult FlowNodeOperation FlowNodeOperationResult FlowNodeRegistry FlowRunRequest">
     <h3>src/types/execution.ts</h3>
     <p class="muted">Referenced module</p>
@@ -320,6 +422,40 @@
     <section class="panel">
       <h2>Public API</h2>
       
+            <section>
+              <h3>src/features/execution/application/createDurableRunAsync.ts</h3>
+              <article class="item" id="symbol-createdurablerunasync" data-search="createDurableRunAsync  value src/features/execution/application/createDurableRunAsync.ts Persist a new durable run without executing an operation or provider effect. FlowClock FlowDefinitionRef FlowDurableRun FlowPersistencePort (input: { readonly flow: FlowDefinitionRef; readonly id: string; }, dependencies: { readonly clock: FlowClock; readonly persistence: FlowPersistencePort; }) =&gt; Promise&lt;FlowDurableRun&gt;">
+    <h4>createDurableRunAsync</h4>
+    
+    <p class="muted">value • <code>src/features/execution/application/createDurableRunAsync.ts:7:14</code></p>
+    <p>Persist a new durable run without executing an operation or provider effect.</p>
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <ul class="chips"><li class="chip">FlowClock</li><li class="chip">FlowDefinitionRef</li><li class="chip">FlowDurableRun</li><li class="chip">FlowPersistencePort</li></ul></div>
+    <div>
+        <h5>Signature</h5>
+        <pre>(input: { readonly flow: FlowDefinitionRef; readonly id: string; }, dependencies: { readonly clock: FlowClock; readonly persistence: FlowPersistencePort; }) =&gt; Promise&lt;FlowDurableRun&gt;</pre>
+        <table>
+                <thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+                <tbody>
+                  <tr>
+                        <td><code>dependencies</code></td>
+                        <td><code>{ readonly clock: FlowClock; readonly persistence: FlowPersistencePort; }</code></td>
+                        <td>yes</td>
+                        <td></td>
+                      </tr><tr>
+                        <td><code>input</code></td>
+                        <td><code>{ readonly flow: FlowDefinitionRef; readonly id: string; }</code></td>
+                        <td>yes</td>
+                        <td></td>
+                      </tr>
+                </tbody>
+              </table>
+        <p><strong>Returns:</strong> <code>Promise&lt;FlowDurableRun&gt;</code></p>
+      </div>
+    
+  </article>
+            </section>
             <section>
               <h3>src/features/execution/application/executeFlowAsync.ts</h3>
               <article class="item" id="symbol-executeflowasync" data-search="executeFlowAsync  value src/features/execution/application/executeFlowAsync.ts Execute a compiled graph in deterministic order within one process. FlowClock FlowCompiledGraph FlowExecutionResult FlowNodeOperation FlowRunRequest (graph: FlowCompiledGraph, registry: Readonly&lt;Record&lt;string, import(&quot;../../../index.js&quot;).FlowNodeOperation&gt;&gt;, request: FlowRunRequest, clock?: FlowClock) =&gt; Promise&lt;FlowExecutionResult&gt;">
@@ -360,6 +496,45 @@
                 </tbody>
               </table>
         <p><strong>Returns:</strong> <code>Promise&lt;FlowExecutionResult&gt;</code></p>
+      </div>
+    
+  </article>
+            </section>
+            <section>
+              <h3>src/features/execution/domain/calculateRetryDueAt.ts</h3>
+              <article class="item" id="symbol-calculateretrydueat" data-search="calculateRetryDueAt  value src/features/execution/domain/calculateRetryDueAt.ts Calculate an exponential retry time from persisted attempt state without ambient time. FlowRetryPolicy (now: Date, completedAttempt: number, policy: FlowRetryPolicy) =&gt; string">
+    <h4>calculateRetryDueAt</h4>
+    
+    <p class="muted">value • <code>src/features/execution/domain/calculateRetryDueAt.ts:4:14</code></p>
+    <p>Calculate an exponential retry time from persisted attempt state without ambient time.</p>
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <ul class="chips"><li class="chip">FlowRetryPolicy</li></ul></div>
+    <div>
+        <h5>Signature</h5>
+        <pre>(now: Date, completedAttempt: number, policy: FlowRetryPolicy) =&gt; string</pre>
+        <table>
+                <thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+                <tbody>
+                  <tr>
+                        <td><code>completedAttempt</code></td>
+                        <td><code>number</code></td>
+                        <td>yes</td>
+                        <td></td>
+                      </tr><tr>
+                        <td><code>now</code></td>
+                        <td><code>Date</code></td>
+                        <td>yes</td>
+                        <td></td>
+                      </tr><tr>
+                        <td><code>policy</code></td>
+                        <td><code>FlowRetryPolicy</code></td>
+                        <td>yes</td>
+                        <td></td>
+                      </tr>
+                </tbody>
+              </table>
+        <p><strong>Returns:</strong> <code>string</code></p>
       </div>
     
   </article>
@@ -418,6 +593,199 @@
   </article>
             </section>
             <section>
+              <h3>src/features/execution/domain/createDurableRun.ts</h3>
+              <article class="item" id="symbol-createdurablerun" data-search="createDurableRun  value src/features/execution/domain/createDurableRun.ts Create a revision-zero run pinned permanently to one published flow definition. FlowDefinitionRef FlowDurableRun (input: { readonly flow: FlowDefinitionRef; readonly id: string; }, now: Date) =&gt; FlowDurableRun">
+    <h4>createDurableRun</h4>
+    
+    <p class="muted">value • <code>src/features/execution/domain/createDurableRun.ts:4:14</code></p>
+    <p>Create a revision-zero run pinned permanently to one published flow definition.</p>
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <ul class="chips"><li class="chip">FlowDefinitionRef</li><li class="chip">FlowDurableRun</li></ul></div>
+    <div>
+        <h5>Signature</h5>
+        <pre>(input: { readonly flow: FlowDefinitionRef; readonly id: string; }, now: Date) =&gt; FlowDurableRun</pre>
+        <table>
+                <thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+                <tbody>
+                  <tr>
+                        <td><code>input</code></td>
+                        <td><code>{ readonly flow: FlowDefinitionRef; readonly id: string; }</code></td>
+                        <td>yes</td>
+                        <td></td>
+                      </tr><tr>
+                        <td><code>now</code></td>
+                        <td><code>Date</code></td>
+                        <td>yes</td>
+                        <td></td>
+                      </tr>
+                </tbody>
+              </table>
+        <p><strong>Returns:</strong> <code>FlowDurableRun</code></p>
+      </div>
+    
+  </article>
+            </section>
+            <section>
+              <h3>src/features/execution/domain/createRetryWork.ts</h3>
+              <article class="item" id="symbol-createretrywork" data-search="createRetryWork  value src/features/execution/domain/createRetryWork.ts Create the next immutable work attempt from a completed attempt and controlled clock. FlowDurableWork FlowRetryPolicy (completed: FlowDurableWork, now: Date, policy: FlowRetryPolicy) =&gt; FlowDurableWork">
+    <h4>createRetryWork</h4>
+    
+    <p class="muted">value • <code>src/features/execution/domain/createRetryWork.ts:5:14</code></p>
+    <p>Create the next immutable work attempt from a completed attempt and controlled clock.</p>
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <ul class="chips"><li class="chip">FlowDurableWork</li><li class="chip">FlowRetryPolicy</li></ul></div>
+    <div>
+        <h5>Signature</h5>
+        <pre>(completed: FlowDurableWork, now: Date, policy: FlowRetryPolicy) =&gt; FlowDurableWork</pre>
+        <table>
+                <thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+                <tbody>
+                  <tr>
+                        <td><code>completed</code></td>
+                        <td><code>FlowDurableWork</code></td>
+                        <td>yes</td>
+                        <td></td>
+                      </tr><tr>
+                        <td><code>now</code></td>
+                        <td><code>Date</code></td>
+                        <td>yes</td>
+                        <td></td>
+                      </tr><tr>
+                        <td><code>policy</code></td>
+                        <td><code>FlowRetryPolicy</code></td>
+                        <td>yes</td>
+                        <td></td>
+                      </tr>
+                </tbody>
+              </table>
+        <p><strong>Returns:</strong> <code>FlowDurableWork</code></p>
+      </div>
+    
+  </article>
+            </section>
+            <section>
+              <h3>src/features/execution/domain/isCronDueAt.ts</h3>
+              <article class="item" id="symbol-iscrondueat" data-search="isCronDueAt  value src/features/execution/domain/isCronDueAt.ts  (input: { readonly cron: string; readonly now: Date; readonly timezone?: string; }) =&gt; boolean">
+    <h4>isCronDueAt</h4>
+    
+    <p class="muted">value • <code>src/features/execution/domain/isCronDueAt.ts:2:14</code></p>
+    
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <span class="empty">None</span></div>
+    <div>
+        <h5>Signature</h5>
+        <pre>(input: { readonly cron: string; readonly now: Date; readonly timezone?: string; }) =&gt; boolean</pre>
+        <table>
+                <thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+                <tbody>
+                  <tr>
+                        <td><code>input</code></td>
+                        <td><code>{ readonly cron: string; readonly now: Date; readonly timezone?: string; }</code></td>
+                        <td>yes</td>
+                        <td></td>
+                      </tr>
+                </tbody>
+              </table>
+        <p><strong>Returns:</strong> <code>boolean</code></p>
+      </div>
+    
+  </article>
+            </section>
+            <section>
+              <h3>src/features/execution/ports/FlowPersistencePort.ts</h3>
+              <article class="item" id="symbol-flowpersistenceport" data-search="FlowPersistencePort  type src/features/execution/ports/FlowPersistencePort.ts  FlowDurableRun FlowDurableWork FlowOutboxRecord">
+    <h4>FlowPersistencePort</h4>
+    
+    <p class="muted">type • <code>src/features/execution/ports/FlowPersistencePort.ts:7:1</code></p>
+    
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <ul class="chips"><li class="chip">FlowDurableRun</li><li class="chip">FlowDurableWork</li><li class="chip">FlowOutboxRecord</li></ul></div>
+    
+    <table>
+    <thead><tr><th>Member</th><th>Kind</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr>
+            <td><code>cancelRunWorkAsync</code></td>
+            <td>property</td>
+            <td><code>(runId: string) =&gt; Promise&lt;readonly string[]&gt;</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>claimDueWorkAsync</code></td>
+            <td>property</td>
+            <td><code>(input: { readonly leaseDurationMs: number; readonly limit: number; readonly now: Date; readonly workerId: string; }) =&gt; Promise&lt;readonly FlowDurableWork[]&gt;</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>completeWorkAsync</code></td>
+            <td>property</td>
+            <td><code>(input: { readonly id: string; readonly leaseFencingToken: number; readonly now: Date; readonly workerId: string; }) =&gt; Promise&lt;boolean&gt;</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>createOutboxAsync</code></td>
+            <td>property</td>
+            <td><code>(record: FlowOutboxRecord) =&gt; Promise&lt;void&gt;</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>createRunAsync</code></td>
+            <td>property</td>
+            <td><code>(run: FlowDurableRun) =&gt; Promise&lt;void&gt;</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>enqueueWorkAsync</code></td>
+            <td>property</td>
+            <td><code>(work: FlowDurableWork) =&gt; Promise&lt;void&gt;</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>markOutboxDeliveredAsync</code></td>
+            <td>property</td>
+            <td><code>(id: string) =&gt; Promise&lt;boolean&gt;</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>readOutboxAsync</code></td>
+            <td>property</td>
+            <td><code>(id: string) =&gt; Promise&lt;FlowOutboxRecord | undefined&gt;</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>readRunAsync</code></td>
+            <td>property</td>
+            <td><code>(id: string) =&gt; Promise&lt;FlowDurableRun | undefined&gt;</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>recoverExpiredClaimsAsync</code></td>
+            <td>property</td>
+            <td><code>(now: Date) =&gt; Promise&lt;readonly string[]&gt;</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>releaseWorkAsync</code></td>
+            <td>property</td>
+            <td><code>(input: { readonly dueAt: string; readonly id: string; readonly leaseFencingToken: number; readonly workerId: string; }) =&gt; Promise&lt;boolean&gt;</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>transitionRunAsync</code></td>
+            <td>property</td>
+            <td><code>(input: { readonly expectedRevision: number; readonly run: FlowDurableRun; }) =&gt; Promise&lt;boolean&gt;</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr>
+    </tbody>
+  </table>
+  </article>
+            </section>
+            <section>
               <h3>src/features/security/application/createFlowSecurityPort.ts</h3>
               <article class="item" id="symbol-createflowsecurityport" data-search="createFlowSecurityPort  value src/features/security/application/createFlowSecurityPort.ts Creates the provider-neutral server-side authorization, approval, audit, and secret boundary. FlowApprovalStorePort FlowOperationStorePort FlowRateLimitPort FlowSecurityAuditPort FlowSecurityGrant FlowSecurityPort (input: { readonly approvalStore: FlowApprovalStorePort; readonly audit: FlowSecurityAuditPort; readonly grants: readonly FlowSecurityGrant[]; readonly operationStore: FlowOperationStorePort; readonly rateLimit: FlowRateLimitPort; readonly secretStore: SecretStoreAdapter; }) =&gt; FlowSecurityPort">
     <h4>createFlowSecurityPort</h4>
@@ -458,6 +826,298 @@
     <div><strong>Related symbols:</strong> <span class="empty">None</span></div>
     
     
+  </article>
+            </section>
+            <section>
+              <h3>src/types/durableExecution.ts</h3>
+              <article class="item" id="symbol-flowdefinitionref" data-search="FlowDefinitionRef  type src/types/durableExecution.ts ">
+    <h4>FlowDefinitionRef</h4>
+    
+    <p class="muted">type • <code>src/types/durableExecution.ts:5:1</code></p>
+    
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <span class="empty">None</span></div>
+    
+    <table>
+    <thead><tr><th>Member</th><th>Kind</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr>
+            <td><code>id</code></td>
+            <td>property</td>
+            <td><code>string</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>version</code></td>
+            <td>property</td>
+            <td><code>number</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr>
+    </tbody>
+  </table>
+  </article><article class="item" id="symbol-flowdurablerun" data-search="FlowDurableRun  type src/types/durableExecution.ts  FlowDefinitionRef FlowRunCheckpoint">
+    <h4>FlowDurableRun</h4>
+    
+    <p class="muted">type • <code>src/types/durableExecution.ts:10:1</code></p>
+    
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <ul class="chips"><li class="chip">FlowDefinitionRef</li><li class="chip">FlowRunCheckpoint</li></ul></div>
+    
+    <table>
+    <thead><tr><th>Member</th><th>Kind</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr>
+            <td><code>checkpoint</code></td>
+            <td>property</td>
+            <td><code>FlowRunCheckpoint | undefined</code></td>
+            <td>no</td>
+            <td></td>
+          </tr><tr>
+            <td><code>createdAt</code></td>
+            <td>property</td>
+            <td><code>string</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>flow</code></td>
+            <td>property</td>
+            <td><code>FlowDefinitionRef</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>id</code></td>
+            <td>property</td>
+            <td><code>string</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>revision</code></td>
+            <td>property</td>
+            <td><code>number</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>status</code></td>
+            <td>property</td>
+            <td><code>&quot;cancelled&quot; | &quot;failed&quot; | &quot;queued&quot; | &quot;running&quot; | &quot;succeeded&quot; | &quot;waiting_approval&quot;</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>updatedAt</code></td>
+            <td>property</td>
+            <td><code>string</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr>
+    </tbody>
+  </table>
+  </article><article class="item" id="symbol-flowdurablework" data-search="FlowDurableWork  type src/types/durableExecution.ts  FlowDefinitionRef FlowSecurityOperation">
+    <h4>FlowDurableWork</h4>
+    
+    <p class="muted">type • <code>src/types/durableExecution.ts:20:1</code></p>
+    
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <ul class="chips"><li class="chip">FlowDefinitionRef</li><li class="chip">FlowSecurityOperation</li></ul></div>
+    
+    <table>
+    <thead><tr><th>Member</th><th>Kind</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr>
+            <td><code>attempt</code></td>
+            <td>property</td>
+            <td><code>number</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>dueAt</code></td>
+            <td>property</td>
+            <td><code>string</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>effectKind</code></td>
+            <td>property</td>
+            <td><code>&quot;internal&quot; | &quot;protected&quot;</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>flow</code></td>
+            <td>property</td>
+            <td><code>FlowDefinitionRef</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>id</code></td>
+            <td>property</td>
+            <td><code>string</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>idempotencyKey</code></td>
+            <td>property</td>
+            <td><code>string | undefined</code></td>
+            <td>no</td>
+            <td></td>
+          </tr><tr>
+            <td><code>lease</code></td>
+            <td>property</td>
+            <td><code>{ readonly expiresAt: string; readonly fencingToken: number; readonly workerId: string; } | undefined</code></td>
+            <td>no</td>
+            <td></td>
+          </tr><tr>
+            <td><code>runId</code></td>
+            <td>property</td>
+            <td><code>string</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>securityOperation</code></td>
+            <td>property</td>
+            <td><code>FlowSecurityOperation | undefined</code></td>
+            <td>no</td>
+            <td></td>
+          </tr><tr>
+            <td><code>status</code></td>
+            <td>property</td>
+            <td><code>&quot;cancelled&quot; | &quot;claimed&quot; | &quot;completed&quot; | &quot;ready&quot;</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>stepId</code></td>
+            <td>property</td>
+            <td><code>string | undefined</code></td>
+            <td>no</td>
+            <td></td>
+          </tr>
+    </tbody>
+  </table>
+  </article><article class="item" id="symbol-flowoutboxrecord" data-search="FlowOutboxRecord  type src/types/durableExecution.ts ">
+    <h4>FlowOutboxRecord</h4>
+    
+    <p class="muted">type • <code>src/types/durableExecution.ts:53:1</code></p>
+    
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <span class="empty">None</span></div>
+    
+    <table>
+    <thead><tr><th>Member</th><th>Kind</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr>
+            <td><code>createdAt</code></td>
+            <td>property</td>
+            <td><code>string</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>id</code></td>
+            <td>property</td>
+            <td><code>string</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>idempotencyKey</code></td>
+            <td>property</td>
+            <td><code>string</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>payload</code></td>
+            <td>property</td>
+            <td><code>import(&quot;@ankhorage/contracts/dist/serializable.js&quot;).SerializableValue | undefined</code></td>
+            <td>no</td>
+            <td></td>
+          </tr><tr>
+            <td><code>runId</code></td>
+            <td>property</td>
+            <td><code>string</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>status</code></td>
+            <td>property</td>
+            <td><code>&quot;delivered&quot; | &quot;pending&quot;</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>workId</code></td>
+            <td>property</td>
+            <td><code>string</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr>
+    </tbody>
+  </table>
+  </article><article class="item" id="symbol-flowretrypolicy" data-search="FlowRetryPolicy  type src/types/durableExecution.ts ">
+    <h4>FlowRetryPolicy</h4>
+    
+    <p class="muted">type • <code>src/types/durableExecution.ts:39:1</code></p>
+    
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <span class="empty">None</span></div>
+    
+    <table>
+    <thead><tr><th>Member</th><th>Kind</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr>
+            <td><code>baseDelayMs</code></td>
+            <td>property</td>
+            <td><code>number</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>maxAttempts</code></td>
+            <td>property</td>
+            <td><code>number</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>maxDelayMs</code></td>
+            <td>property</td>
+            <td><code>number</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr>
+    </tbody>
+  </table>
+  </article><article class="item" id="symbol-flowruncheckpoint" data-search="FlowRunCheckpoint  type src/types/durableExecution.ts ">
+    <h4>FlowRunCheckpoint</h4>
+    
+    <p class="muted">type • <code>src/types/durableExecution.ts:46:1</code></p>
+    
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <span class="empty">None</span></div>
+    
+    <table>
+    <thead><tr><th>Member</th><th>Kind</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr>
+            <td><code>completedStepIds</code></td>
+            <td>property</td>
+            <td><code>readonly string[]</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>data</code></td>
+            <td>property</td>
+            <td><code>import(&quot;@ankhorage/contracts/dist/serializable.js&quot;).SerializableValue | undefined</code></td>
+            <td>no</td>
+            <td></td>
+          </tr><tr>
+            <td><code>failedStepIds</code></td>
+            <td>property</td>
+            <td><code>readonly string[]</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr>
+    </tbody>
+  </table>
   </article>
             </section>
             <section>
@@ -886,7 +1546,7 @@
           </tr><tr>
             <td><code>status</code></td>
             <td>property</td>
-            <td><code>&quot;approved&quot; | &quot;pending&quot; | &quot;rejected&quot;</code></td>
+            <td><code>&quot;pending&quot; | &quot;approved&quot; | &quot;rejected&quot;</code></td>
             <td>yes</td>
             <td></td>
           </tr>
@@ -1228,22 +1888,62 @@
   package__ankhorage_flow --&gt; entrypoint_src_index_ts
   module_src_ai_ts[&quot;src/ai.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_ai_ts
+  module_src_execution_ts[&quot;src/execution.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_execution_ts
+  module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts[&quot;src/features/execution/adapters/FileFlowPersistenceAdapter.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts
+  module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts --&gt; module_src_features_execution_ports_FlowPersistencePort_ts
+  module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts --&gt; module_src_types_durableExecution_ts
+  module_src_features_execution_application_cancelDurableRunAsync_ts[&quot;src/features/execution/application/cancelDurableRunAsync.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_execution_application_cancelDurableRunAsync_ts
+  module_src_features_execution_application_cancelDurableRunAsync_ts --&gt; module_src_features_execution_ports_FlowPersistencePort_ts
+  module_src_features_execution_application_cancelDurableRunAsync_ts --&gt; module_src_types_durableExecution_ts
+  module_src_features_execution_application_cancelDurableRunAsync_ts --&gt; module_src_types_execution_ts
+  module_src_features_execution_application_createDurableRunAsync_ts[&quot;src/features/execution/application/createDurableRunAsync.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_execution_application_createDurableRunAsync_ts
+  module_src_features_execution_application_createDurableRunAsync_ts --&gt; module_src_features_execution_domain_createDurableRun_ts
+  module_src_features_execution_application_createDurableRunAsync_ts --&gt; module_src_features_execution_ports_FlowPersistencePort_ts
+  module_src_features_execution_application_createDurableRunAsync_ts --&gt; module_src_types_durableExecution_ts
+  module_src_features_execution_application_createDurableRunAsync_ts --&gt; module_src_types_execution_ts
   module_src_features_execution_application_executeFlowAsync_ts[&quot;src/features/execution/application/executeFlowAsync.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_features_execution_application_executeFlowAsync_ts
   module_src_features_execution_application_executeFlowAsync_ts --&gt; module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts
   module_src_features_execution_application_executeFlowAsync_ts --&gt; module_src_features_execution_domain_validateFlowDataSchema_ts
   module_src_features_execution_application_executeFlowAsync_ts --&gt; module_src_types_execution_ts
+  module_src_features_execution_application_runDurableWorkerAsync_ts[&quot;src/features/execution/application/runDurableWorkerAsync.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_execution_application_runDurableWorkerAsync_ts
+  module_src_features_execution_application_runDurableWorkerAsync_ts --&gt; module_src_features_execution_domain_createRetryWork_ts
+  module_src_features_execution_application_runDurableWorkerAsync_ts --&gt; module_src_features_execution_ports_FlowPersistencePort_ts
+  module_src_features_execution_application_runDurableWorkerAsync_ts --&gt; module_src_features_security_FlowSecurityError_ts
+  module_src_features_execution_application_runDurableWorkerAsync_ts --&gt; module_src_types_durableExecution_ts
+  module_src_features_execution_application_runDurableWorkerAsync_ts --&gt; module_src_types_execution_ts
+  module_src_features_execution_application_runDurableWorkerAsync_ts --&gt; module_src_types_security_ts
   module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts[&quot;src/features/execution/domain/assertFlowGraphSchemasSupported.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts
   module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts --&gt; module_src_features_execution_domain_validateFlowDataSchema_ts
+  module_src_features_execution_domain_calculateRetryDueAt_ts[&quot;src/features/execution/domain/calculateRetryDueAt.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_execution_domain_calculateRetryDueAt_ts
+  module_src_features_execution_domain_calculateRetryDueAt_ts --&gt; module_src_types_durableExecution_ts
   module_src_features_execution_domain_compileFlowGraph_ts[&quot;src/features/execution/domain/compileFlowGraph.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_features_execution_domain_compileFlowGraph_ts
   module_src_features_execution_domain_compileFlowGraph_ts --&gt; module_src_types_execution_ts
   module_src_features_execution_domain_createDefaultNodeRegistry_ts[&quot;src/features/execution/domain/createDefaultNodeRegistry.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_features_execution_domain_createDefaultNodeRegistry_ts
   module_src_features_execution_domain_createDefaultNodeRegistry_ts --&gt; module_src_types_execution_ts
+  module_src_features_execution_domain_createDurableRun_ts[&quot;src/features/execution/domain/createDurableRun.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_execution_domain_createDurableRun_ts
+  module_src_features_execution_domain_createDurableRun_ts --&gt; module_src_types_durableExecution_ts
+  module_src_features_execution_domain_createRetryWork_ts[&quot;src/features/execution/domain/createRetryWork.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_execution_domain_createRetryWork_ts
+  module_src_features_execution_domain_createRetryWork_ts --&gt; module_src_features_execution_domain_calculateRetryDueAt_ts
+  module_src_features_execution_domain_createRetryWork_ts --&gt; module_src_types_durableExecution_ts
+  module_src_features_execution_domain_isCronDueAt_ts[&quot;src/features/execution/domain/isCronDueAt.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_execution_domain_isCronDueAt_ts
   module_src_features_execution_domain_validateFlowDataSchema_ts[&quot;src/features/execution/domain/validateFlowDataSchema.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_features_execution_domain_validateFlowDataSchema_ts
+  module_src_features_execution_ports_FlowPersistencePort_ts[&quot;src/features/execution/ports/FlowPersistencePort.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_execution_ports_FlowPersistencePort_ts
+  module_src_features_execution_ports_FlowPersistencePort_ts --&gt; module_src_types_durableExecution_ts
   module_src_features_mcp_createMcpRemoteTransport_ts[&quot;src/features/mcp/createMcpRemoteTransport.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_features_mcp_createMcpRemoteTransport_ts
   module_src_features_mcp_createMcpRemoteTransport_ts --&gt; module_src_features_mcp_loadMcpSdkAsync_ts
@@ -1287,6 +1987,9 @@
   package__ankhorage_flow -.-&gt; module_src_mcp_ts
   module_src_social_ts[&quot;src/social.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_social_ts
+  module_src_types_durableExecution_ts[&quot;src/types/durableExecution.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_types_durableExecution_ts
+  module_src_types_durableExecution_ts --&gt; module_src_types_security_ts
   module_src_types_execution_ts[&quot;src/types/execution.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_types_execution_ts
   module_src_types_mcp_ts[&quot;src/types/mcp.ts&quot;]
@@ -1303,22 +2006,62 @@
   package__ankhorage_flow --&gt; entrypoint_src_index_ts
   module_src_ai_ts[&quot;src/ai.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_ai_ts
+  module_src_execution_ts[&quot;src/execution.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_execution_ts
+  module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts[&quot;src/features/execution/adapters/FileFlowPersistenceAdapter.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts
+  module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts --&gt; module_src_features_execution_ports_FlowPersistencePort_ts
+  module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts --&gt; module_src_types_durableExecution_ts
+  module_src_features_execution_application_cancelDurableRunAsync_ts[&quot;src/features/execution/application/cancelDurableRunAsync.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_execution_application_cancelDurableRunAsync_ts
+  module_src_features_execution_application_cancelDurableRunAsync_ts --&gt; module_src_features_execution_ports_FlowPersistencePort_ts
+  module_src_features_execution_application_cancelDurableRunAsync_ts --&gt; module_src_types_durableExecution_ts
+  module_src_features_execution_application_cancelDurableRunAsync_ts --&gt; module_src_types_execution_ts
+  module_src_features_execution_application_createDurableRunAsync_ts[&quot;src/features/execution/application/createDurableRunAsync.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_execution_application_createDurableRunAsync_ts
+  module_src_features_execution_application_createDurableRunAsync_ts --&gt; module_src_features_execution_domain_createDurableRun_ts
+  module_src_features_execution_application_createDurableRunAsync_ts --&gt; module_src_features_execution_ports_FlowPersistencePort_ts
+  module_src_features_execution_application_createDurableRunAsync_ts --&gt; module_src_types_durableExecution_ts
+  module_src_features_execution_application_createDurableRunAsync_ts --&gt; module_src_types_execution_ts
   module_src_features_execution_application_executeFlowAsync_ts[&quot;src/features/execution/application/executeFlowAsync.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_features_execution_application_executeFlowAsync_ts
   module_src_features_execution_application_executeFlowAsync_ts --&gt; module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts
   module_src_features_execution_application_executeFlowAsync_ts --&gt; module_src_features_execution_domain_validateFlowDataSchema_ts
   module_src_features_execution_application_executeFlowAsync_ts --&gt; module_src_types_execution_ts
+  module_src_features_execution_application_runDurableWorkerAsync_ts[&quot;src/features/execution/application/runDurableWorkerAsync.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_execution_application_runDurableWorkerAsync_ts
+  module_src_features_execution_application_runDurableWorkerAsync_ts --&gt; module_src_features_execution_domain_createRetryWork_ts
+  module_src_features_execution_application_runDurableWorkerAsync_ts --&gt; module_src_features_execution_ports_FlowPersistencePort_ts
+  module_src_features_execution_application_runDurableWorkerAsync_ts --&gt; module_src_features_security_FlowSecurityError_ts
+  module_src_features_execution_application_runDurableWorkerAsync_ts --&gt; module_src_types_durableExecution_ts
+  module_src_features_execution_application_runDurableWorkerAsync_ts --&gt; module_src_types_execution_ts
+  module_src_features_execution_application_runDurableWorkerAsync_ts --&gt; module_src_types_security_ts
   module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts[&quot;src/features/execution/domain/assertFlowGraphSchemasSupported.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts
   module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts --&gt; module_src_features_execution_domain_validateFlowDataSchema_ts
+  module_src_features_execution_domain_calculateRetryDueAt_ts[&quot;src/features/execution/domain/calculateRetryDueAt.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_execution_domain_calculateRetryDueAt_ts
+  module_src_features_execution_domain_calculateRetryDueAt_ts --&gt; module_src_types_durableExecution_ts
   module_src_features_execution_domain_compileFlowGraph_ts[&quot;src/features/execution/domain/compileFlowGraph.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_features_execution_domain_compileFlowGraph_ts
   module_src_features_execution_domain_compileFlowGraph_ts --&gt; module_src_types_execution_ts
   module_src_features_execution_domain_createDefaultNodeRegistry_ts[&quot;src/features/execution/domain/createDefaultNodeRegistry.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_features_execution_domain_createDefaultNodeRegistry_ts
   module_src_features_execution_domain_createDefaultNodeRegistry_ts --&gt; module_src_types_execution_ts
+  module_src_features_execution_domain_createDurableRun_ts[&quot;src/features/execution/domain/createDurableRun.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_execution_domain_createDurableRun_ts
+  module_src_features_execution_domain_createDurableRun_ts --&gt; module_src_types_durableExecution_ts
+  module_src_features_execution_domain_createRetryWork_ts[&quot;src/features/execution/domain/createRetryWork.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_execution_domain_createRetryWork_ts
+  module_src_features_execution_domain_createRetryWork_ts --&gt; module_src_features_execution_domain_calculateRetryDueAt_ts
+  module_src_features_execution_domain_createRetryWork_ts --&gt; module_src_types_durableExecution_ts
+  module_src_features_execution_domain_isCronDueAt_ts[&quot;src/features/execution/domain/isCronDueAt.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_execution_domain_isCronDueAt_ts
   module_src_features_execution_domain_validateFlowDataSchema_ts[&quot;src/features/execution/domain/validateFlowDataSchema.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_features_execution_domain_validateFlowDataSchema_ts
+  module_src_features_execution_ports_FlowPersistencePort_ts[&quot;src/features/execution/ports/FlowPersistencePort.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_execution_ports_FlowPersistencePort_ts
+  module_src_features_execution_ports_FlowPersistencePort_ts --&gt; module_src_types_durableExecution_ts
   module_src_features_mcp_createMcpRemoteTransport_ts[&quot;src/features/mcp/createMcpRemoteTransport.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_features_mcp_createMcpRemoteTransport_ts
   module_src_features_mcp_createMcpRemoteTransport_ts --&gt; module_src_features_mcp_loadMcpSdkAsync_ts
@@ -1362,6 +2105,9 @@
   package__ankhorage_flow -.-&gt; module_src_mcp_ts
   module_src_social_ts[&quot;src/social.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_social_ts
+  module_src_types_durableExecution_ts[&quot;src/types/durableExecution.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_types_durableExecution_ts
+  module_src_types_durableExecution_ts --&gt; module_src_types_security_ts
   module_src_types_execution_ts[&quot;src/types/execution.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_types_execution_ts
   module_src_types_mcp_ts[&quot;src/types/mcp.ts&quot;]
@@ -1376,11 +2122,21 @@
     <p class="muted"><code>diagrams/module-relationships.mmd</code></p>
     <div class="mermaid">graph LR
   module_src_ai_ts[&quot;src/ai.ts&quot;]
+  module_src_execution_ts[&quot;src/execution.ts&quot;]
+  module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts[&quot;src/features/execution/adapters/FileFlowPersistenceAdapter.ts&quot;]
+  module_src_features_execution_application_cancelDurableRunAsync_ts[&quot;src/features/execution/application/cancelDurableRunAsync.ts&quot;]
+  module_src_features_execution_application_createDurableRunAsync_ts[&quot;src/features/execution/application/createDurableRunAsync.ts&quot;]
   module_src_features_execution_application_executeFlowAsync_ts[&quot;src/features/execution/application/executeFlowAsync.ts&quot;]
+  module_src_features_execution_application_runDurableWorkerAsync_ts[&quot;src/features/execution/application/runDurableWorkerAsync.ts&quot;]
   module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts[&quot;src/features/execution/domain/assertFlowGraphSchemasSupported.ts&quot;]
+  module_src_features_execution_domain_calculateRetryDueAt_ts[&quot;src/features/execution/domain/calculateRetryDueAt.ts&quot;]
   module_src_features_execution_domain_compileFlowGraph_ts[&quot;src/features/execution/domain/compileFlowGraph.ts&quot;]
   module_src_features_execution_domain_createDefaultNodeRegistry_ts[&quot;src/features/execution/domain/createDefaultNodeRegistry.ts&quot;]
+  module_src_features_execution_domain_createDurableRun_ts[&quot;src/features/execution/domain/createDurableRun.ts&quot;]
+  module_src_features_execution_domain_createRetryWork_ts[&quot;src/features/execution/domain/createRetryWork.ts&quot;]
+  module_src_features_execution_domain_isCronDueAt_ts[&quot;src/features/execution/domain/isCronDueAt.ts&quot;]
   module_src_features_execution_domain_validateFlowDataSchema_ts[&quot;src/features/execution/domain/validateFlowDataSchema.ts&quot;]
+  module_src_features_execution_ports_FlowPersistencePort_ts[&quot;src/features/execution/ports/FlowPersistencePort.ts&quot;]
   module_src_features_mcp_createMcpRemoteTransport_ts[&quot;src/features/mcp/createMcpRemoteTransport.ts&quot;]
   module_src_features_mcp_createMcpToolRegistry_ts[&quot;src/features/mcp/createMcpToolRegistry.ts&quot;]
   module_src_features_mcp_loadMcpSdkAsync_ts[&quot;src/features/mcp/loadMcpSdkAsync.ts&quot;]
@@ -1393,15 +2149,36 @@
   module_src_index_ts[&quot;src/index.ts&quot;]
   module_src_mcp_ts[&quot;src/mcp.ts&quot;]
   module_src_social_ts[&quot;src/social.ts&quot;]
+  module_src_types_durableExecution_ts[&quot;src/types/durableExecution.ts&quot;]
   module_src_types_execution_ts[&quot;src/types/execution.ts&quot;]
   module_src_types_mcp_ts[&quot;src/types/mcp.ts&quot;]
   module_src_types_security_ts[&quot;src/types/security.ts&quot;]
+  module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts --&gt; module_src_features_execution_ports_FlowPersistencePort_ts
+  module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts --&gt; module_src_types_durableExecution_ts
+  module_src_features_execution_application_cancelDurableRunAsync_ts --&gt; module_src_features_execution_ports_FlowPersistencePort_ts
+  module_src_features_execution_application_cancelDurableRunAsync_ts --&gt; module_src_types_durableExecution_ts
+  module_src_features_execution_application_cancelDurableRunAsync_ts --&gt; module_src_types_execution_ts
+  module_src_features_execution_application_createDurableRunAsync_ts --&gt; module_src_features_execution_domain_createDurableRun_ts
+  module_src_features_execution_application_createDurableRunAsync_ts --&gt; module_src_features_execution_ports_FlowPersistencePort_ts
+  module_src_features_execution_application_createDurableRunAsync_ts --&gt; module_src_types_durableExecution_ts
+  module_src_features_execution_application_createDurableRunAsync_ts --&gt; module_src_types_execution_ts
   module_src_features_execution_application_executeFlowAsync_ts --&gt; module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts
   module_src_features_execution_application_executeFlowAsync_ts --&gt; module_src_features_execution_domain_validateFlowDataSchema_ts
   module_src_features_execution_application_executeFlowAsync_ts --&gt; module_src_types_execution_ts
+  module_src_features_execution_application_runDurableWorkerAsync_ts --&gt; module_src_features_execution_domain_createRetryWork_ts
+  module_src_features_execution_application_runDurableWorkerAsync_ts --&gt; module_src_features_execution_ports_FlowPersistencePort_ts
+  module_src_features_execution_application_runDurableWorkerAsync_ts --&gt; module_src_features_security_FlowSecurityError_ts
+  module_src_features_execution_application_runDurableWorkerAsync_ts --&gt; module_src_types_durableExecution_ts
+  module_src_features_execution_application_runDurableWorkerAsync_ts --&gt; module_src_types_execution_ts
+  module_src_features_execution_application_runDurableWorkerAsync_ts --&gt; module_src_types_security_ts
   module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts --&gt; module_src_features_execution_domain_validateFlowDataSchema_ts
+  module_src_features_execution_domain_calculateRetryDueAt_ts --&gt; module_src_types_durableExecution_ts
   module_src_features_execution_domain_compileFlowGraph_ts --&gt; module_src_types_execution_ts
   module_src_features_execution_domain_createDefaultNodeRegistry_ts --&gt; module_src_types_execution_ts
+  module_src_features_execution_domain_createDurableRun_ts --&gt; module_src_types_durableExecution_ts
+  module_src_features_execution_domain_createRetryWork_ts --&gt; module_src_features_execution_domain_calculateRetryDueAt_ts
+  module_src_features_execution_domain_createRetryWork_ts --&gt; module_src_types_durableExecution_ts
+  module_src_features_execution_ports_FlowPersistencePort_ts --&gt; module_src_types_durableExecution_ts
   module_src_features_mcp_createMcpRemoteTransport_ts --&gt; module_src_features_mcp_loadMcpSdkAsync_ts
   module_src_features_mcp_createMcpRemoteTransport_ts --&gt; module_src_features_mcp_McpToolError_ts
   module_src_features_mcp_createMcpRemoteTransport_ts --&gt; module_src_types_mcp_ts
@@ -1422,17 +2199,28 @@
   module_src_features_security_application_createFlowSecurityPort_ts --&gt; module_src_types_security_ts
   module_src_features_security_domain_validateFlowSecurityTarget_ts --&gt; module_src_features_security_FlowSecurityError_ts
   module_src_features_security_domain_validateFlowSecurityTarget_ts --&gt; module_src_types_security_ts
+  module_src_types_durableExecution_ts --&gt; module_src_types_security_ts
   module_src_types_mcp_ts --&gt; module_src_types_security_ts
 </div>
     <details>
       <summary>View Mermaid source</summary>
       <pre>graph LR
   module_src_ai_ts[&quot;src/ai.ts&quot;]
+  module_src_execution_ts[&quot;src/execution.ts&quot;]
+  module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts[&quot;src/features/execution/adapters/FileFlowPersistenceAdapter.ts&quot;]
+  module_src_features_execution_application_cancelDurableRunAsync_ts[&quot;src/features/execution/application/cancelDurableRunAsync.ts&quot;]
+  module_src_features_execution_application_createDurableRunAsync_ts[&quot;src/features/execution/application/createDurableRunAsync.ts&quot;]
   module_src_features_execution_application_executeFlowAsync_ts[&quot;src/features/execution/application/executeFlowAsync.ts&quot;]
+  module_src_features_execution_application_runDurableWorkerAsync_ts[&quot;src/features/execution/application/runDurableWorkerAsync.ts&quot;]
   module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts[&quot;src/features/execution/domain/assertFlowGraphSchemasSupported.ts&quot;]
+  module_src_features_execution_domain_calculateRetryDueAt_ts[&quot;src/features/execution/domain/calculateRetryDueAt.ts&quot;]
   module_src_features_execution_domain_compileFlowGraph_ts[&quot;src/features/execution/domain/compileFlowGraph.ts&quot;]
   module_src_features_execution_domain_createDefaultNodeRegistry_ts[&quot;src/features/execution/domain/createDefaultNodeRegistry.ts&quot;]
+  module_src_features_execution_domain_createDurableRun_ts[&quot;src/features/execution/domain/createDurableRun.ts&quot;]
+  module_src_features_execution_domain_createRetryWork_ts[&quot;src/features/execution/domain/createRetryWork.ts&quot;]
+  module_src_features_execution_domain_isCronDueAt_ts[&quot;src/features/execution/domain/isCronDueAt.ts&quot;]
   module_src_features_execution_domain_validateFlowDataSchema_ts[&quot;src/features/execution/domain/validateFlowDataSchema.ts&quot;]
+  module_src_features_execution_ports_FlowPersistencePort_ts[&quot;src/features/execution/ports/FlowPersistencePort.ts&quot;]
   module_src_features_mcp_createMcpRemoteTransport_ts[&quot;src/features/mcp/createMcpRemoteTransport.ts&quot;]
   module_src_features_mcp_createMcpToolRegistry_ts[&quot;src/features/mcp/createMcpToolRegistry.ts&quot;]
   module_src_features_mcp_loadMcpSdkAsync_ts[&quot;src/features/mcp/loadMcpSdkAsync.ts&quot;]
@@ -1445,15 +2233,36 @@
   module_src_index_ts[&quot;src/index.ts&quot;]
   module_src_mcp_ts[&quot;src/mcp.ts&quot;]
   module_src_social_ts[&quot;src/social.ts&quot;]
+  module_src_types_durableExecution_ts[&quot;src/types/durableExecution.ts&quot;]
   module_src_types_execution_ts[&quot;src/types/execution.ts&quot;]
   module_src_types_mcp_ts[&quot;src/types/mcp.ts&quot;]
   module_src_types_security_ts[&quot;src/types/security.ts&quot;]
+  module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts --&gt; module_src_features_execution_ports_FlowPersistencePort_ts
+  module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts --&gt; module_src_types_durableExecution_ts
+  module_src_features_execution_application_cancelDurableRunAsync_ts --&gt; module_src_features_execution_ports_FlowPersistencePort_ts
+  module_src_features_execution_application_cancelDurableRunAsync_ts --&gt; module_src_types_durableExecution_ts
+  module_src_features_execution_application_cancelDurableRunAsync_ts --&gt; module_src_types_execution_ts
+  module_src_features_execution_application_createDurableRunAsync_ts --&gt; module_src_features_execution_domain_createDurableRun_ts
+  module_src_features_execution_application_createDurableRunAsync_ts --&gt; module_src_features_execution_ports_FlowPersistencePort_ts
+  module_src_features_execution_application_createDurableRunAsync_ts --&gt; module_src_types_durableExecution_ts
+  module_src_features_execution_application_createDurableRunAsync_ts --&gt; module_src_types_execution_ts
   module_src_features_execution_application_executeFlowAsync_ts --&gt; module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts
   module_src_features_execution_application_executeFlowAsync_ts --&gt; module_src_features_execution_domain_validateFlowDataSchema_ts
   module_src_features_execution_application_executeFlowAsync_ts --&gt; module_src_types_execution_ts
+  module_src_features_execution_application_runDurableWorkerAsync_ts --&gt; module_src_features_execution_domain_createRetryWork_ts
+  module_src_features_execution_application_runDurableWorkerAsync_ts --&gt; module_src_features_execution_ports_FlowPersistencePort_ts
+  module_src_features_execution_application_runDurableWorkerAsync_ts --&gt; module_src_features_security_FlowSecurityError_ts
+  module_src_features_execution_application_runDurableWorkerAsync_ts --&gt; module_src_types_durableExecution_ts
+  module_src_features_execution_application_runDurableWorkerAsync_ts --&gt; module_src_types_execution_ts
+  module_src_features_execution_application_runDurableWorkerAsync_ts --&gt; module_src_types_security_ts
   module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts --&gt; module_src_features_execution_domain_validateFlowDataSchema_ts
+  module_src_features_execution_domain_calculateRetryDueAt_ts --&gt; module_src_types_durableExecution_ts
   module_src_features_execution_domain_compileFlowGraph_ts --&gt; module_src_types_execution_ts
   module_src_features_execution_domain_createDefaultNodeRegistry_ts --&gt; module_src_types_execution_ts
+  module_src_features_execution_domain_createDurableRun_ts --&gt; module_src_types_durableExecution_ts
+  module_src_features_execution_domain_createRetryWork_ts --&gt; module_src_features_execution_domain_calculateRetryDueAt_ts
+  module_src_features_execution_domain_createRetryWork_ts --&gt; module_src_types_durableExecution_ts
+  module_src_features_execution_ports_FlowPersistencePort_ts --&gt; module_src_types_durableExecution_ts
   module_src_features_mcp_createMcpRemoteTransport_ts --&gt; module_src_features_mcp_loadMcpSdkAsync_ts
   module_src_features_mcp_createMcpRemoteTransport_ts --&gt; module_src_features_mcp_McpToolError_ts
   module_src_features_mcp_createMcpRemoteTransport_ts --&gt; module_src_types_mcp_ts
@@ -1474,6 +2283,7 @@
   module_src_features_security_application_createFlowSecurityPort_ts --&gt; module_src_types_security_ts
   module_src_features_security_domain_validateFlowSecurityTarget_ts --&gt; module_src_features_security_FlowSecurityError_ts
   module_src_features_security_domain_validateFlowSecurityTarget_ts --&gt; module_src_types_security_ts
+  module_src_types_durableExecution_ts --&gt; module_src_types_security_ts
   module_src_types_mcp_ts --&gt; module_src_types_security_ts
 </pre>
     </details>
@@ -1482,11 +2292,21 @@
     <p class="muted"><code>diagrams/export-graph.mmd</code></p>
     <div class="mermaid">graph LR
   module_src_ai_ts[&quot;src/ai.ts&quot;]
+  module_src_execution_ts[&quot;src/execution.ts&quot;]
+  module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts[&quot;src/features/execution/adapters/FileFlowPersistenceAdapter.ts&quot;]
+  module_src_features_execution_application_cancelDurableRunAsync_ts[&quot;src/features/execution/application/cancelDurableRunAsync.ts&quot;]
+  module_src_features_execution_application_createDurableRunAsync_ts[&quot;src/features/execution/application/createDurableRunAsync.ts&quot;]
   module_src_features_execution_application_executeFlowAsync_ts[&quot;src/features/execution/application/executeFlowAsync.ts&quot;]
+  module_src_features_execution_application_runDurableWorkerAsync_ts[&quot;src/features/execution/application/runDurableWorkerAsync.ts&quot;]
   module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts[&quot;src/features/execution/domain/assertFlowGraphSchemasSupported.ts&quot;]
+  module_src_features_execution_domain_calculateRetryDueAt_ts[&quot;src/features/execution/domain/calculateRetryDueAt.ts&quot;]
   module_src_features_execution_domain_compileFlowGraph_ts[&quot;src/features/execution/domain/compileFlowGraph.ts&quot;]
   module_src_features_execution_domain_createDefaultNodeRegistry_ts[&quot;src/features/execution/domain/createDefaultNodeRegistry.ts&quot;]
+  module_src_features_execution_domain_createDurableRun_ts[&quot;src/features/execution/domain/createDurableRun.ts&quot;]
+  module_src_features_execution_domain_createRetryWork_ts[&quot;src/features/execution/domain/createRetryWork.ts&quot;]
+  module_src_features_execution_domain_isCronDueAt_ts[&quot;src/features/execution/domain/isCronDueAt.ts&quot;]
   module_src_features_execution_domain_validateFlowDataSchema_ts[&quot;src/features/execution/domain/validateFlowDataSchema.ts&quot;]
+  module_src_features_execution_ports_FlowPersistencePort_ts[&quot;src/features/execution/ports/FlowPersistencePort.ts&quot;]
   module_src_features_mcp_createMcpRemoteTransport_ts[&quot;src/features/mcp/createMcpRemoteTransport.ts&quot;]
   module_src_features_mcp_createMcpToolRegistry_ts[&quot;src/features/mcp/createMcpToolRegistry.ts&quot;]
   module_src_features_mcp_loadMcpSdkAsync_ts[&quot;src/features/mcp/loadMcpSdkAsync.ts&quot;]
@@ -1499,9 +2319,13 @@
   module_src_index_ts[&quot;src/index.ts&quot;]
   module_src_mcp_ts[&quot;src/mcp.ts&quot;]
   module_src_social_ts[&quot;src/social.ts&quot;]
+  module_src_types_durableExecution_ts[&quot;src/types/durableExecution.ts&quot;]
   module_src_types_execution_ts[&quot;src/types/execution.ts&quot;]
   module_src_types_mcp_ts[&quot;src/types/mcp.ts&quot;]
   module_src_types_security_ts[&quot;src/types/security.ts&quot;]
+  export_calculateRetryDueAt[&quot;calculateRetryDueAt&quot;]
+  module_src_features_execution_domain_calculateRetryDueAt_ts --&gt; export_calculateRetryDueAt
+  export_calculateRetryDueAt -.-&gt; export_FlowRetryPolicy
   export_compileFlowGraph[&quot;compileFlowGraph&quot;]
   module_src_features_execution_domain_compileFlowGraph_ts --&gt; export_compileFlowGraph
   export_compileFlowGraph -.-&gt; export_FlowCompiledGraph
@@ -1509,6 +2333,16 @@
   export_createDefaultNodeRegistry[&quot;createDefaultNodeRegistry&quot;]
   module_src_features_execution_domain_createDefaultNodeRegistry_ts --&gt; export_createDefaultNodeRegistry
   export_createDefaultNodeRegistry -.-&gt; export_FlowNodeOperation
+  export_createDurableRun[&quot;createDurableRun&quot;]
+  module_src_features_execution_domain_createDurableRun_ts --&gt; export_createDurableRun
+  export_createDurableRun -.-&gt; export_FlowDefinitionRef
+  export_createDurableRun -.-&gt; export_FlowDurableRun
+  export_createDurableRunAsync[&quot;createDurableRunAsync&quot;]
+  module_src_features_execution_application_createDurableRunAsync_ts --&gt; export_createDurableRunAsync
+  export_createDurableRunAsync -.-&gt; export_FlowClock
+  export_createDurableRunAsync -.-&gt; export_FlowDefinitionRef
+  export_createDurableRunAsync -.-&gt; export_FlowDurableRun
+  export_createDurableRunAsync -.-&gt; export_FlowPersistencePort
   export_createFlowSecurityPort[&quot;createFlowSecurityPort&quot;]
   module_src_features_security_application_createFlowSecurityPort_ts --&gt; export_createFlowSecurityPort
   export_createFlowSecurityPort -.-&gt; export_FlowApprovalStorePort
@@ -1517,6 +2351,10 @@
   export_createFlowSecurityPort -.-&gt; export_FlowSecurityAuditPort
   export_createFlowSecurityPort -.-&gt; export_FlowSecurityGrant
   export_createFlowSecurityPort -.-&gt; export_FlowSecurityPort
+  export_createRetryWork[&quot;createRetryWork&quot;]
+  module_src_features_execution_domain_createRetryWork_ts --&gt; export_createRetryWork
+  export_createRetryWork -.-&gt; export_FlowDurableWork
+  export_createRetryWork -.-&gt; export_FlowRetryPolicy
   export_executeFlowAsync[&quot;executeFlowAsync&quot;]
   module_src_features_execution_application_executeFlowAsync_ts --&gt; export_executeFlowAsync
   export_executeFlowAsync -.-&gt; export_FlowClock
@@ -1532,6 +2370,16 @@
   module_src_types_execution_ts --&gt; export_FlowClock
   export_FlowCompiledGraph[&quot;FlowCompiledGraph&quot;]
   module_src_types_execution_ts --&gt; export_FlowCompiledGraph
+  export_FlowDefinitionRef[&quot;FlowDefinitionRef&quot;]
+  module_src_types_durableExecution_ts --&gt; export_FlowDefinitionRef
+  export_FlowDurableRun[&quot;FlowDurableRun&quot;]
+  module_src_types_durableExecution_ts --&gt; export_FlowDurableRun
+  export_FlowDurableRun -.-&gt; export_FlowDefinitionRef
+  export_FlowDurableRun -.-&gt; export_FlowRunCheckpoint
+  export_FlowDurableWork[&quot;FlowDurableWork&quot;]
+  module_src_types_durableExecution_ts --&gt; export_FlowDurableWork
+  export_FlowDurableWork -.-&gt; export_FlowDefinitionRef
+  export_FlowDurableWork -.-&gt; export_FlowSecurityOperation
   export_FlowExecutionResult[&quot;FlowExecutionResult&quot;]
   module_src_types_execution_ts --&gt; export_FlowExecutionResult
   export_FlowNodeOperation[&quot;FlowNodeOperation&quot;]
@@ -1546,11 +2394,22 @@
   export_FlowOperationStorePort -.-&gt; export_FlowSecurityOperationIdentity
   export_FlowOutboundTransportPort[&quot;FlowOutboundTransportPort&quot;]
   module_src_types_security_ts --&gt; export_FlowOutboundTransportPort
+  export_FlowOutboxRecord[&quot;FlowOutboxRecord&quot;]
+  module_src_types_durableExecution_ts --&gt; export_FlowOutboxRecord
+  export_FlowPersistencePort[&quot;FlowPersistencePort&quot;]
+  module_src_features_execution_ports_FlowPersistencePort_ts --&gt; export_FlowPersistencePort
+  export_FlowPersistencePort -.-&gt; export_FlowDurableRun
+  export_FlowPersistencePort -.-&gt; export_FlowDurableWork
+  export_FlowPersistencePort -.-&gt; export_FlowOutboxRecord
   export_FlowRateLimitPort[&quot;FlowRateLimitPort&quot;]
   module_src_types_security_ts --&gt; export_FlowRateLimitPort
   export_FlowRateLimitPort -.-&gt; export_FlowSecurityActor
   export_FlowResolvedSecrets[&quot;FlowResolvedSecrets&quot;]
   module_src_types_security_ts --&gt; export_FlowResolvedSecrets
+  export_FlowRetryPolicy[&quot;FlowRetryPolicy&quot;]
+  module_src_types_durableExecution_ts --&gt; export_FlowRetryPolicy
+  export_FlowRunCheckpoint[&quot;FlowRunCheckpoint&quot;]
+  module_src_types_durableExecution_ts --&gt; export_FlowRunCheckpoint
   export_FlowRunRequest[&quot;FlowRunRequest&quot;]
   module_src_types_execution_ts --&gt; export_FlowRunRequest
   export_FlowSecretCreateInput[&quot;FlowSecretCreateInput&quot;]
@@ -1597,16 +2456,28 @@
   export_FlowSecurityPort -.-&gt; export_FlowSecurityPermit
   export_FlowSecurityTarget[&quot;FlowSecurityTarget&quot;]
   module_src_types_security_ts --&gt; export_FlowSecurityTarget
+  export_isCronDueAt[&quot;isCronDueAt&quot;]
+  module_src_features_execution_domain_isCronDueAt_ts --&gt; export_isCronDueAt
 </div>
     <details>
       <summary>View Mermaid source</summary>
       <pre>graph LR
   module_src_ai_ts[&quot;src/ai.ts&quot;]
+  module_src_execution_ts[&quot;src/execution.ts&quot;]
+  module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts[&quot;src/features/execution/adapters/FileFlowPersistenceAdapter.ts&quot;]
+  module_src_features_execution_application_cancelDurableRunAsync_ts[&quot;src/features/execution/application/cancelDurableRunAsync.ts&quot;]
+  module_src_features_execution_application_createDurableRunAsync_ts[&quot;src/features/execution/application/createDurableRunAsync.ts&quot;]
   module_src_features_execution_application_executeFlowAsync_ts[&quot;src/features/execution/application/executeFlowAsync.ts&quot;]
+  module_src_features_execution_application_runDurableWorkerAsync_ts[&quot;src/features/execution/application/runDurableWorkerAsync.ts&quot;]
   module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts[&quot;src/features/execution/domain/assertFlowGraphSchemasSupported.ts&quot;]
+  module_src_features_execution_domain_calculateRetryDueAt_ts[&quot;src/features/execution/domain/calculateRetryDueAt.ts&quot;]
   module_src_features_execution_domain_compileFlowGraph_ts[&quot;src/features/execution/domain/compileFlowGraph.ts&quot;]
   module_src_features_execution_domain_createDefaultNodeRegistry_ts[&quot;src/features/execution/domain/createDefaultNodeRegistry.ts&quot;]
+  module_src_features_execution_domain_createDurableRun_ts[&quot;src/features/execution/domain/createDurableRun.ts&quot;]
+  module_src_features_execution_domain_createRetryWork_ts[&quot;src/features/execution/domain/createRetryWork.ts&quot;]
+  module_src_features_execution_domain_isCronDueAt_ts[&quot;src/features/execution/domain/isCronDueAt.ts&quot;]
   module_src_features_execution_domain_validateFlowDataSchema_ts[&quot;src/features/execution/domain/validateFlowDataSchema.ts&quot;]
+  module_src_features_execution_ports_FlowPersistencePort_ts[&quot;src/features/execution/ports/FlowPersistencePort.ts&quot;]
   module_src_features_mcp_createMcpRemoteTransport_ts[&quot;src/features/mcp/createMcpRemoteTransport.ts&quot;]
   module_src_features_mcp_createMcpToolRegistry_ts[&quot;src/features/mcp/createMcpToolRegistry.ts&quot;]
   module_src_features_mcp_loadMcpSdkAsync_ts[&quot;src/features/mcp/loadMcpSdkAsync.ts&quot;]
@@ -1619,9 +2490,13 @@
   module_src_index_ts[&quot;src/index.ts&quot;]
   module_src_mcp_ts[&quot;src/mcp.ts&quot;]
   module_src_social_ts[&quot;src/social.ts&quot;]
+  module_src_types_durableExecution_ts[&quot;src/types/durableExecution.ts&quot;]
   module_src_types_execution_ts[&quot;src/types/execution.ts&quot;]
   module_src_types_mcp_ts[&quot;src/types/mcp.ts&quot;]
   module_src_types_security_ts[&quot;src/types/security.ts&quot;]
+  export_calculateRetryDueAt[&quot;calculateRetryDueAt&quot;]
+  module_src_features_execution_domain_calculateRetryDueAt_ts --&gt; export_calculateRetryDueAt
+  export_calculateRetryDueAt -.-&gt; export_FlowRetryPolicy
   export_compileFlowGraph[&quot;compileFlowGraph&quot;]
   module_src_features_execution_domain_compileFlowGraph_ts --&gt; export_compileFlowGraph
   export_compileFlowGraph -.-&gt; export_FlowCompiledGraph
@@ -1629,6 +2504,16 @@
   export_createDefaultNodeRegistry[&quot;createDefaultNodeRegistry&quot;]
   module_src_features_execution_domain_createDefaultNodeRegistry_ts --&gt; export_createDefaultNodeRegistry
   export_createDefaultNodeRegistry -.-&gt; export_FlowNodeOperation
+  export_createDurableRun[&quot;createDurableRun&quot;]
+  module_src_features_execution_domain_createDurableRun_ts --&gt; export_createDurableRun
+  export_createDurableRun -.-&gt; export_FlowDefinitionRef
+  export_createDurableRun -.-&gt; export_FlowDurableRun
+  export_createDurableRunAsync[&quot;createDurableRunAsync&quot;]
+  module_src_features_execution_application_createDurableRunAsync_ts --&gt; export_createDurableRunAsync
+  export_createDurableRunAsync -.-&gt; export_FlowClock
+  export_createDurableRunAsync -.-&gt; export_FlowDefinitionRef
+  export_createDurableRunAsync -.-&gt; export_FlowDurableRun
+  export_createDurableRunAsync -.-&gt; export_FlowPersistencePort
   export_createFlowSecurityPort[&quot;createFlowSecurityPort&quot;]
   module_src_features_security_application_createFlowSecurityPort_ts --&gt; export_createFlowSecurityPort
   export_createFlowSecurityPort -.-&gt; export_FlowApprovalStorePort
@@ -1637,6 +2522,10 @@
   export_createFlowSecurityPort -.-&gt; export_FlowSecurityAuditPort
   export_createFlowSecurityPort -.-&gt; export_FlowSecurityGrant
   export_createFlowSecurityPort -.-&gt; export_FlowSecurityPort
+  export_createRetryWork[&quot;createRetryWork&quot;]
+  module_src_features_execution_domain_createRetryWork_ts --&gt; export_createRetryWork
+  export_createRetryWork -.-&gt; export_FlowDurableWork
+  export_createRetryWork -.-&gt; export_FlowRetryPolicy
   export_executeFlowAsync[&quot;executeFlowAsync&quot;]
   module_src_features_execution_application_executeFlowAsync_ts --&gt; export_executeFlowAsync
   export_executeFlowAsync -.-&gt; export_FlowClock
@@ -1652,6 +2541,16 @@
   module_src_types_execution_ts --&gt; export_FlowClock
   export_FlowCompiledGraph[&quot;FlowCompiledGraph&quot;]
   module_src_types_execution_ts --&gt; export_FlowCompiledGraph
+  export_FlowDefinitionRef[&quot;FlowDefinitionRef&quot;]
+  module_src_types_durableExecution_ts --&gt; export_FlowDefinitionRef
+  export_FlowDurableRun[&quot;FlowDurableRun&quot;]
+  module_src_types_durableExecution_ts --&gt; export_FlowDurableRun
+  export_FlowDurableRun -.-&gt; export_FlowDefinitionRef
+  export_FlowDurableRun -.-&gt; export_FlowRunCheckpoint
+  export_FlowDurableWork[&quot;FlowDurableWork&quot;]
+  module_src_types_durableExecution_ts --&gt; export_FlowDurableWork
+  export_FlowDurableWork -.-&gt; export_FlowDefinitionRef
+  export_FlowDurableWork -.-&gt; export_FlowSecurityOperation
   export_FlowExecutionResult[&quot;FlowExecutionResult&quot;]
   module_src_types_execution_ts --&gt; export_FlowExecutionResult
   export_FlowNodeOperation[&quot;FlowNodeOperation&quot;]
@@ -1666,11 +2565,22 @@
   export_FlowOperationStorePort -.-&gt; export_FlowSecurityOperationIdentity
   export_FlowOutboundTransportPort[&quot;FlowOutboundTransportPort&quot;]
   module_src_types_security_ts --&gt; export_FlowOutboundTransportPort
+  export_FlowOutboxRecord[&quot;FlowOutboxRecord&quot;]
+  module_src_types_durableExecution_ts --&gt; export_FlowOutboxRecord
+  export_FlowPersistencePort[&quot;FlowPersistencePort&quot;]
+  module_src_features_execution_ports_FlowPersistencePort_ts --&gt; export_FlowPersistencePort
+  export_FlowPersistencePort -.-&gt; export_FlowDurableRun
+  export_FlowPersistencePort -.-&gt; export_FlowDurableWork
+  export_FlowPersistencePort -.-&gt; export_FlowOutboxRecord
   export_FlowRateLimitPort[&quot;FlowRateLimitPort&quot;]
   module_src_types_security_ts --&gt; export_FlowRateLimitPort
   export_FlowRateLimitPort -.-&gt; export_FlowSecurityActor
   export_FlowResolvedSecrets[&quot;FlowResolvedSecrets&quot;]
   module_src_types_security_ts --&gt; export_FlowResolvedSecrets
+  export_FlowRetryPolicy[&quot;FlowRetryPolicy&quot;]
+  module_src_types_durableExecution_ts --&gt; export_FlowRetryPolicy
+  export_FlowRunCheckpoint[&quot;FlowRunCheckpoint&quot;]
+  module_src_types_durableExecution_ts --&gt; export_FlowRunCheckpoint
   export_FlowRunRequest[&quot;FlowRunRequest&quot;]
   module_src_types_execution_ts --&gt; export_FlowRunRequest
   export_FlowSecretCreateInput[&quot;FlowSecretCreateInput&quot;]
@@ -1717,6 +2627,8 @@
   export_FlowSecurityPort -.-&gt; export_FlowSecurityPermit
   export_FlowSecurityTarget[&quot;FlowSecurityTarget&quot;]
   module_src_types_security_ts --&gt; export_FlowSecurityTarget
+  export_isCronDueAt[&quot;isCronDueAt&quot;]
+  module_src_features_execution_domain_isCronDueAt_ts --&gt; export_isCronDueAt
 </pre>
     </details>
   </article><article class="item" data-search="compileFlowGraph sequence diagrams/sequences/compile-flow-graph.mmd">
@@ -1761,10 +2673,229 @@
   participant_orderNodes--&gt;&gt;participant_compileFlowGraph: return
 </pre>
     </details>
+  </article><article class="item" data-search="createRetryWork sequence diagrams/sequences/create-retry-work.mmd">
+    <h3>createRetryWork sequence</h3>
+    <p class="muted"><code>diagrams/sequences/create-retry-work.mmd</code></p>
+    <div class="mermaid">sequenceDiagram
+  participant participant_calculateRetryDueAt as calculateRetryDueAt
+  participant participant_createRetryWork as createRetryWork
+  participant_createRetryWork-&gt;&gt;participant_calculateRetryDueAt: calculateRetryDueAt()
+  participant_calculateRetryDueAt--&gt;&gt;participant_createRetryWork: return
+</div>
+    <details>
+      <summary>View Mermaid source</summary>
+      <pre>sequenceDiagram
+  participant participant_calculateRetryDueAt as calculateRetryDueAt
+  participant participant_createRetryWork as createRetryWork
+  participant_createRetryWork-&gt;&gt;participant_calculateRetryDueAt: calculateRetryDueAt()
+  participant_calculateRetryDueAt--&gt;&gt;participant_createRetryWork: return
+</pre>
+    </details>
+  </article><article class="item" data-search="isCronDueAt sequence diagrams/sequences/is-cron-due-at.mmd">
+    <h3>isCronDueAt sequence</h3>
+    <p class="muted"><code>diagrams/sequences/is-cron-due-at.mmd</code></p>
+    <div class="mermaid">sequenceDiagram
+  participant participant_invalidTimezone as invalidTimezone
+  participant participant_isCronDueAt as isCronDueAt
+  participant participant_localParts as localParts
+  participant participant_matchesField as matchesField
+  participant participant_read as read
+  participant participant_weekday as weekday
+  participant_isCronDueAt-&gt;&gt;participant_localParts: localParts()
+  participant_localParts-&gt;&gt;participant_read: read()
+  participant_read-&gt;&gt;participant_invalidTimezone: invalidTimezone()
+  participant_invalidTimezone--&gt;&gt;participant_read: return
+  participant_read--&gt;&gt;participant_localParts: return
+  participant_localParts-&gt;&gt;participant_weekday: weekday()
+  participant_weekday-&gt;&gt;participant_invalidTimezone: invalidTimezone()
+  participant_invalidTimezone--&gt;&gt;participant_weekday: return
+  participant_weekday--&gt;&gt;participant_localParts: return
+  participant_localParts--&gt;&gt;participant_isCronDueAt: return
+  participant_isCronDueAt-&gt;&gt;participant_matchesField: matchesField()
+  participant_matchesField--&gt;&gt;participant_isCronDueAt: return
+</div>
+    <details>
+      <summary>View Mermaid source</summary>
+      <pre>sequenceDiagram
+  participant participant_invalidTimezone as invalidTimezone
+  participant participant_isCronDueAt as isCronDueAt
+  participant participant_localParts as localParts
+  participant participant_matchesField as matchesField
+  participant participant_read as read
+  participant participant_weekday as weekday
+  participant_isCronDueAt-&gt;&gt;participant_localParts: localParts()
+  participant_localParts-&gt;&gt;participant_read: read()
+  participant_read-&gt;&gt;participant_invalidTimezone: invalidTimezone()
+  participant_invalidTimezone--&gt;&gt;participant_read: return
+  participant_read--&gt;&gt;participant_localParts: return
+  participant_localParts-&gt;&gt;participant_weekday: weekday()
+  participant_weekday-&gt;&gt;participant_invalidTimezone: invalidTimezone()
+  participant_invalidTimezone--&gt;&gt;participant_weekday: return
+  participant_weekday--&gt;&gt;participant_localParts: return
+  participant_localParts--&gt;&gt;participant_isCronDueAt: return
+  participant_isCronDueAt-&gt;&gt;participant_matchesField: matchesField()
+  participant_matchesField--&gt;&gt;participant_isCronDueAt: return
+</pre>
+    </details>
   </article>
     </section>
         </section>
-        <section id="view-src-features-execution-application-executeflowasync-ts" class="view" data-view="src/features/execution/application/executeFlowAsync.ts" hidden>
+        <section id="view-src-features-execution-adapters-fileflowpersistenceadapter-ts" class="view" data-view="src/features/execution/adapters/FileFlowPersistenceAdapter.ts" hidden>
+    <section class="panel">
+      <h2>src/features/execution/adapters/FileFlowPersistenceAdapter.ts</h2>
+      <article class="item" data-search="FileFlowPersistenceAdapter src/features/execution/adapters/FileFlowPersistenceAdapter.ts Create a self-hostable, single-process JSON persistence adapter for durable Flow state.">
+    <h3>FileFlowPersistenceAdapter</h3>
+    <p class="muted"><code>src/features/execution/adapters/FileFlowPersistenceAdapter.ts:13:14</code></p>
+    <p>Create a self-hostable, single-process JSON persistence adapter for durable Flow state.</p>
+    
+  </article><article class="item" data-search="cancelRunWorkAsync src/features/execution/adapters/FileFlowPersistenceAdapter.ts ">
+    <h3>cancelRunWorkAsync</h3>
+    <p class="muted"><code>src/features/execution/adapters/FileFlowPersistenceAdapter.ts:42:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="createOutboxAsync src/features/execution/adapters/FileFlowPersistenceAdapter.ts ">
+    <h3>createOutboxAsync</h3>
+    <p class="muted"><code>src/features/execution/adapters/FileFlowPersistenceAdapter.ts:63:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="getSerializedCall src/features/execution/adapters/FileFlowPersistenceAdapter.ts Share serialization for every adapter instance targeting one normalized persistence path.">
+    <h3>getSerializedCall</h3>
+    <p class="muted"><code>src/features/execution/adapters/FileFlowPersistenceAdapter.ts:81:7</code></p>
+    <p>Share serialization for every adapter instance targeting one normalized persistence path.</p>
+    
+  </article><article class="item" data-search="createSerializedCall src/features/execution/adapters/FileFlowPersistenceAdapter.ts Serialize one file path so concurrent callbacks cannot claim or overwrite the same state.">
+    <h3>createSerializedCall</h3>
+    <p class="muted"><code>src/features/execution/adapters/FileFlowPersistenceAdapter.ts:90:7</code></p>
+    <p>Serialize one file path so concurrent callbacks cannot claim or overwrite the same state.</p>
+    
+  </article><article class="item" data-search="claimDueWorkAsync src/features/execution/adapters/FileFlowPersistenceAdapter.ts Claim due work in stable order and record a lease before it is returned to a worker.">
+    <h3>claimDueWorkAsync</h3>
+    <p class="muted"><code>src/features/execution/adapters/FileFlowPersistenceAdapter.ts:105:7</code></p>
+    <p>Claim due work in stable order and record a lease before it is returned to a worker.</p>
+    
+  </article><article class="item" data-search="completeWorkAsync src/features/execution/adapters/FileFlowPersistenceAdapter.ts Complete only the unexpired fenced lease returned by the successful claim.">
+    <h3>completeWorkAsync</h3>
+    <p class="muted"><code>src/features/execution/adapters/FileFlowPersistenceAdapter.ts:128:7</code></p>
+    <p>Complete only the unexpired fenced lease returned by the successful claim.</p>
+    
+  </article><article class="item" data-search="createRunAsync src/features/execution/adapters/FileFlowPersistenceAdapter.ts Persist a new run once, rejecting a duplicate durable identity.">
+    <h3>createRunAsync</h3>
+    <p class="muted"><code>src/features/execution/adapters/FileFlowPersistenceAdapter.ts:148:7</code></p>
+    <p>Persist a new run once, rejecting a duplicate durable identity.</p>
+    
+  </article><article class="item" data-search="enqueueWorkAsync src/features/execution/adapters/FileFlowPersistenceAdapter.ts Persist one immutable work identity once, rejecting duplicate delivery records.">
+    <h3>enqueueWorkAsync</h3>
+    <p class="muted"><code>src/features/execution/adapters/FileFlowPersistenceAdapter.ts:156:7</code></p>
+    <p>Persist one immutable work identity once, rejecting duplicate delivery records.</p>
+    
+  </article><article class="item" data-search="markOutboxDeliveredAsync src/features/execution/adapters/FileFlowPersistenceAdapter.ts ">
+    <h3>markOutboxDeliveredAsync</h3>
+    <p class="muted"><code>src/features/execution/adapters/FileFlowPersistenceAdapter.ts:164:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="readOutboxAsync src/features/execution/adapters/FileFlowPersistenceAdapter.ts ">
+    <h3>readOutboxAsync</h3>
+    <p class="muted"><code>src/features/execution/adapters/FileFlowPersistenceAdapter.ts:178:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="readRunAsync src/features/execution/adapters/FileFlowPersistenceAdapter.ts Read a copied run snapshot so callers cannot mutate persisted state in-place.">
+    <h3>readRunAsync</h3>
+    <p class="muted"><code>src/features/execution/adapters/FileFlowPersistenceAdapter.ts:182:7</code></p>
+    <p>Read a copied run snapshot so callers cannot mutate persisted state in-place.</p>
+    
+  </article><article class="item" data-search="recoverExpiredClaimsAsync src/features/execution/adapters/FileFlowPersistenceAdapter.ts Make expired claims available for recovery after a worker crash or stop.">
+    <h3>recoverExpiredClaimsAsync</h3>
+    <p class="muted"><code>src/features/execution/adapters/FileFlowPersistenceAdapter.ts:186:7</code></p>
+    <p>Make expired claims available for recovery after a worker crash or stop.</p>
+    
+  </article><article class="item" data-search="releaseWorkAsync src/features/execution/adapters/FileFlowPersistenceAdapter.ts ">
+    <h3>releaseWorkAsync</h3>
+    <p class="muted"><code>src/features/execution/adapters/FileFlowPersistenceAdapter.ts:203:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="transitionRunAsync src/features/execution/adapters/FileFlowPersistenceAdapter.ts Store a revision-checked run transition while preserving its immutable flow reference.">
+    <h3>transitionRunAsync</h3>
+    <p class="muted"><code>src/features/execution/adapters/FileFlowPersistenceAdapter.ts:227:7</code></p>
+    <p>Store a revision-checked run transition while preserving its immutable flow reference.</p>
+    
+  </article><article class="item" data-search="claimWork src/features/execution/adapters/FileFlowPersistenceAdapter.ts Build a claimed work record with an explicit bounded lease.">
+    <h3>claimWork</h3>
+    <p class="muted"><code>src/features/execution/adapters/FileFlowPersistenceAdapter.ts:240:7</code></p>
+    <p>Build a claimed work record with an explicit bounded lease.</p>
+    
+  </article><article class="item" data-search="replaceWork src/features/execution/adapters/FileFlowPersistenceAdapter.ts Replace changed work entries by identity without exposing a mutable adapter collection.">
+    <h3>replaceWork</h3>
+    <p class="muted"><code>src/features/execution/adapters/FileFlowPersistenceAdapter.ts:255:7</code></p>
+    <p>Replace changed work entries by identity without exposing a mutable adapter collection.</p>
+    
+  </article><article class="item" data-search="replaceRuns src/features/execution/adapters/FileFlowPersistenceAdapter.ts Replace changed run entries by identity without exposing a mutable adapter collection.">
+    <h3>replaceRuns</h3>
+    <p class="muted"><code>src/features/execution/adapters/FileFlowPersistenceAdapter.ts:264:7</code></p>
+    <p>Replace changed run entries by identity without exposing a mutable adapter collection.</p>
+    
+  </article><article class="item" data-search="replaceOutbox src/features/execution/adapters/FileFlowPersistenceAdapter.ts ">
+    <h3>replaceOutbox</h3>
+    <p class="muted"><code>src/features/execution/adapters/FileFlowPersistenceAdapter.ts:273:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="readStoreAsync src/features/execution/adapters/FileFlowPersistenceAdapter.ts Read persisted state or initialize an empty store when it has not yet been created.">
+    <h3>readStoreAsync</h3>
+    <p class="muted"><code>src/features/execution/adapters/FileFlowPersistenceAdapter.ts:282:7</code></p>
+    <p>Read persisted state or initialize an empty store when it has not yet been created.</p>
+    
+  </article><article class="item" data-search="readFileStore src/features/execution/adapters/FileFlowPersistenceAdapter.ts Validate the adapter-owned persistence envelope before using its fencing counter.">
+    <h3>readFileStore</h3>
+    <p class="muted"><code>src/features/execution/adapters/FileFlowPersistenceAdapter.ts:292:7</code></p>
+    <p>Validate the adapter-owned persistence envelope before using its fencing counter.</p>
+    
+  </article><article class="item" data-search="updateStoreAsync src/features/execution/adapters/FileFlowPersistenceAdapter.ts Apply one single-process transaction and atomically replace the persisted JSON snapshot.">
+    <h3>updateStoreAsync</h3>
+    <p class="muted"><code>src/features/execution/adapters/FileFlowPersistenceAdapter.ts:312:7</code></p>
+    <p>Apply one single-process transaction and atomically replace the persisted JSON snapshot.</p>
+    
+  </article><article class="item" data-search="copy src/features/execution/adapters/FileFlowPersistenceAdapter.ts Preserve adapter encapsulation by returning data that callers cannot mutate in-place.">
+    <h3>copy</h3>
+    <p class="muted"><code>src/features/execution/adapters/FileFlowPersistenceAdapter.ts:325:7</code></p>
+    <p>Preserve adapter encapsulation by returning data that callers cannot mutate in-place.</p>
+    
+  </article><article class="item" data-search="isMissingFile src/features/execution/adapters/FileFlowPersistenceAdapter.ts Distinguish an absent first-run store from real filesystem or JSON errors.">
+    <h3>isMissingFile</h3>
+    <p class="muted"><code>src/features/execution/adapters/FileFlowPersistenceAdapter.ts:328:7</code></p>
+    <p>Distinguish an absent first-run store from real filesystem or JSON errors.</p>
+    
+  </article><article class="item" data-search="sameFlow src/features/execution/adapters/FileFlowPersistenceAdapter.ts Reject a transition that attempts to repoint a run at another immutable flow revision.">
+    <h3>sameFlow</h3>
+    <p class="muted"><code>src/features/execution/adapters/FileFlowPersistenceAdapter.ts:332:7</code></p>
+    <p>Reject a transition that attempts to repoint a run at another immutable flow revision.</p>
+    
+  </article>
+    </section>
+  </section><section id="view-src-features-execution-application-canceldurablerunasync-ts" class="view" data-view="src/features/execution/application/cancelDurableRunAsync.ts" hidden>
+    <section class="panel">
+      <h2>src/features/execution/application/cancelDurableRunAsync.ts</h2>
+      <article class="item" data-search="cancelDurableRunAsync src/features/execution/application/cancelDurableRunAsync.ts ">
+    <h3>cancelDurableRunAsync</h3>
+    <p class="muted"><code>src/features/execution/application/cancelDurableRunAsync.ts:6:14</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="isTerminal src/features/execution/application/cancelDurableRunAsync.ts ">
+    <h3>isTerminal</h3>
+    <p class="muted"><code>src/features/execution/application/cancelDurableRunAsync.ts:27:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article>
+    </section>
+  </section><section id="view-src-features-execution-application-createdurablerunasync-ts" class="view" data-view="src/features/execution/application/createDurableRunAsync.ts" hidden>
+    <section class="panel">
+      <h2>src/features/execution/application/createDurableRunAsync.ts</h2>
+      <article class="item" data-search="createDurableRunAsync src/features/execution/application/createDurableRunAsync.ts Persist a new durable run without executing an operation or provider effect.">
+    <h3>createDurableRunAsync</h3>
+    <p class="muted"><code>src/features/execution/application/createDurableRunAsync.ts:7:14</code></p>
+    <p>Persist a new durable run without executing an operation or provider effect.</p>
+    
+  </article>
+    </section>
+  </section><section id="view-src-features-execution-application-executeflowasync-ts" class="view" data-view="src/features/execution/application/executeFlowAsync.ts" hidden>
     <section class="panel">
       <h2>src/features/execution/application/executeFlowAsync.ts</h2>
       <article class="item" data-search="executeFlowAsync src/features/execution/application/executeFlowAsync.ts Execute a compiled graph in deterministic order within one process.">
@@ -1859,6 +2990,96 @@
     
   </article>
     </section>
+  </section><section id="view-src-features-execution-application-rundurableworkerasync-ts" class="view" data-view="src/features/execution/application/runDurableWorkerAsync.ts" hidden>
+    <section class="panel">
+      <h2>src/features/execution/application/runDurableWorkerAsync.ts</h2>
+      <article class="item" data-search="runDurableWorkerAsync src/features/execution/application/runDurableWorkerAsync.ts ">
+    <h3>runDurableWorkerAsync</h3>
+    <p class="muted"><code>src/features/execution/application/runDurableWorkerAsync.ts:14:14</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="processWorkAsync src/features/execution/application/runDurableWorkerAsync.ts ">
+    <h3>processWorkAsync</h3>
+    <p class="muted"><code>src/features/execution/application/runDurableWorkerAsync.ts:46:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="prepareOutboxAsync src/features/execution/application/runDurableWorkerAsync.ts ">
+    <h3>prepareOutboxAsync</h3>
+    <p class="muted"><code>src/features/execution/application/runDurableWorkerAsync.ts:95:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="executeEffectAsync src/features/execution/application/runDurableWorkerAsync.ts ">
+    <h3>executeEffectAsync</h3>
+    <p class="muted"><code>src/features/execution/application/runDurableWorkerAsync.ts:116:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="execute src/features/execution/application/runDurableWorkerAsync.ts ">
+    <h3>execute</h3>
+    <p class="muted"><code>src/features/execution/application/runDurableWorkerAsync.ts:121:9</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="waitForApprovalAsync src/features/execution/application/runDurableWorkerAsync.ts ">
+    <h3>waitForApprovalAsync</h3>
+    <p class="muted"><code>src/features/execution/application/runDurableWorkerAsync.ts:152:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="retryOrFailAsync src/features/execution/application/runDurableWorkerAsync.ts ">
+    <h3>retryOrFailAsync</h3>
+    <p class="muted"><code>src/features/execution/application/runDurableWorkerAsync.ts:171:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="transitionAsync src/features/execution/application/runDurableWorkerAsync.ts ">
+    <h3>transitionAsync</h3>
+    <p class="muted"><code>src/features/execution/application/runDurableWorkerAsync.ts:205:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="completeAsync src/features/execution/application/runDurableWorkerAsync.ts ">
+    <h3>completeAsync</h3>
+    <p class="muted"><code>src/features/execution/application/runDurableWorkerAsync.ts:223:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="claimFencingToken src/features/execution/application/runDurableWorkerAsync.ts ">
+    <h3>claimFencingToken</h3>
+    <p class="muted"><code>src/features/execution/application/runDurableWorkerAsync.ts:236:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="completedCheckpoint src/features/execution/application/runDurableWorkerAsync.ts ">
+    <h3>completedCheckpoint</h3>
+    <p class="muted"><code>src/features/execution/application/runDurableWorkerAsync.ts:242:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="failedCheckpoint src/features/execution/application/runDurableWorkerAsync.ts ">
+    <h3>failedCheckpoint</h3>
+    <p class="muted"><code>src/features/execution/application/runDurableWorkerAsync.ts:255:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="isCompleted src/features/execution/application/runDurableWorkerAsync.ts ">
+    <h3>isCompleted</h3>
+    <p class="muted"><code>src/features/execution/application/runDurableWorkerAsync.ts:268:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="assertWorkerInput src/features/execution/application/runDurableWorkerAsync.ts ">
+    <h3>assertWorkerInput</h3>
+    <p class="muted"><code>src/features/execution/application/runDurableWorkerAsync.ts:274:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="isApprovalPending src/features/execution/application/runDurableWorkerAsync.ts ">
+    <h3>isApprovalPending</h3>
+    <p class="muted"><code>src/features/execution/application/runDurableWorkerAsync.ts:286:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="errorMessage src/features/execution/application/runDurableWorkerAsync.ts ">
+    <h3>errorMessage</h3>
+    <p class="muted"><code>src/features/execution/application/runDurableWorkerAsync.ts:290:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="unique src/features/execution/application/runDurableWorkerAsync.ts ">
+    <h3>unique</h3>
+    <p class="muted"><code>src/features/execution/application/runDurableWorkerAsync.ts:294:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article>
+    </section>
   </section><section id="view-src-features-execution-domain-assertflowgraphschemassupported-ts" class="view" data-view="src/features/execution/domain/assertFlowGraphSchemasSupported.ts" hidden>
     <section class="panel">
       <h2>src/features/execution/domain/assertFlowGraphSchemasSupported.ts</h2>
@@ -1866,6 +3087,16 @@
     <h3>assertFlowGraphSchemasSupported</h3>
     <p class="muted"><code>src/features/execution/domain/assertFlowGraphSchemasSupported.ts:7:14</code></p>
     <p>Validate every declared graph port schema before any operation can perform a side effect.</p>
+    
+  </article>
+    </section>
+  </section><section id="view-src-features-execution-domain-calculateretrydueat-ts" class="view" data-view="src/features/execution/domain/calculateRetryDueAt.ts" hidden>
+    <section class="panel">
+      <h2>src/features/execution/domain/calculateRetryDueAt.ts</h2>
+      <article class="item" data-search="calculateRetryDueAt src/features/execution/domain/calculateRetryDueAt.ts Calculate an exponential retry time from persisted attempt state without ambient time.">
+    <h3>calculateRetryDueAt</h3>
+    <p class="muted"><code>src/features/execution/domain/calculateRetryDueAt.ts:4:14</code></p>
+    <p>Calculate an exponential retry time from persisted attempt state without ambient time.</p>
     
   </article>
     </section>
@@ -1921,6 +3152,76 @@
     <h3>isDataRef</h3>
     <p class="muted"><code>src/features/execution/domain/createDefaultNodeRegistry.ts:26:7</code></p>
     <p>Narrow a configuration value to data that may safely leave a node.</p>
+    
+  </article>
+    </section>
+  </section><section id="view-src-features-execution-domain-createdurablerun-ts" class="view" data-view="src/features/execution/domain/createDurableRun.ts" hidden>
+    <section class="panel">
+      <h2>src/features/execution/domain/createDurableRun.ts</h2>
+      <article class="item" data-search="createDurableRun src/features/execution/domain/createDurableRun.ts Create a revision-zero run pinned permanently to one published flow definition.">
+    <h3>createDurableRun</h3>
+    <p class="muted"><code>src/features/execution/domain/createDurableRun.ts:4:14</code></p>
+    <p>Create a revision-zero run pinned permanently to one published flow definition.</p>
+    
+  </article>
+    </section>
+  </section><section id="view-src-features-execution-domain-createretrywork-ts" class="view" data-view="src/features/execution/domain/createRetryWork.ts" hidden>
+    <section class="panel">
+      <h2>src/features/execution/domain/createRetryWork.ts</h2>
+      <article class="item" data-search="createRetryWork src/features/execution/domain/createRetryWork.ts Create the next immutable work attempt from a completed attempt and controlled clock.">
+    <h3>createRetryWork</h3>
+    <p class="muted"><code>src/features/execution/domain/createRetryWork.ts:5:14</code></p>
+    <p>Create the next immutable work attempt from a completed attempt and controlled clock.</p>
+    
+  </article>
+    </section>
+  </section><section id="view-src-features-execution-domain-iscrondueat-ts" class="view" data-view="src/features/execution/domain/isCronDueAt.ts" hidden>
+    <section class="panel">
+      <h2>src/features/execution/domain/isCronDueAt.ts</h2>
+      <article class="item" data-search="isCronDueAt src/features/execution/domain/isCronDueAt.ts ">
+    <h3>isCronDueAt</h3>
+    <p class="muted"><code>src/features/execution/domain/isCronDueAt.ts:2:14</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="localParts src/features/execution/domain/isCronDueAt.ts ">
+    <h3>localParts</h3>
+    <p class="muted"><code>src/features/execution/domain/isCronDueAt.ts:32:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="read src/features/execution/domain/isCronDueAt.ts ">
+    <h3>read</h3>
+    <p class="muted"><code>src/features/execution/domain/isCronDueAt.ts:52:11</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="matchesField src/features/execution/domain/isCronDueAt.ts ">
+    <h3>matchesField</h3>
+    <p class="muted"><code>src/features/execution/domain/isCronDueAt.ts:67:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="matchesPart src/features/execution/domain/isCronDueAt.ts ">
+    <h3>matchesPart</h3>
+    <p class="muted"><code>src/features/execution/domain/isCronDueAt.ts:71:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="parseRange src/features/execution/domain/isCronDueAt.ts ">
+    <h3>parseRange</h3>
+    <p class="muted"><code>src/features/execution/domain/isCronDueAt.ts:80:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="parseValue src/features/execution/domain/isCronDueAt.ts ">
+    <h3>parseValue</h3>
+    <p class="muted"><code>src/features/execution/domain/isCronDueAt.ts:98:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="weekday src/features/execution/domain/isCronDueAt.ts ">
+    <h3>weekday</h3>
+    <p class="muted"><code>src/features/execution/domain/isCronDueAt.ts:107:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="invalidTimezone src/features/execution/domain/isCronDueAt.ts ">
+    <h3>invalidTimezone</h3>
+    <p class="muted"><code>src/features/execution/domain/isCronDueAt.ts:129:7</code></p>
+    <p class="empty">No description available.</p>
     
   </article>
     </section>

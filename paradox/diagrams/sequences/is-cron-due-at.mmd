@@ -1,0 +1,19 @@
+sequenceDiagram
+  participant participant_invalidTimezone as invalidTimezone
+  participant participant_isCronDueAt as isCronDueAt
+  participant participant_localParts as localParts
+  participant participant_matchesField as matchesField
+  participant participant_read as read
+  participant participant_weekday as weekday
+  participant_isCronDueAt->>participant_localParts: localParts()
+  participant_localParts->>participant_read: read()
+  participant_read->>participant_invalidTimezone: invalidTimezone()
+  participant_invalidTimezone-->>participant_read: return
+  participant_read-->>participant_localParts: return
+  participant_localParts->>participant_weekday: weekday()
+  participant_weekday->>participant_invalidTimezone: invalidTimezone()
+  participant_invalidTimezone-->>participant_weekday: return
+  participant_weekday-->>participant_localParts: return
+  participant_localParts-->>participant_isCronDueAt: return
+  participant_isCronDueAt->>participant_matchesField: matchesField()
+  participant_matchesField-->>participant_isCronDueAt: return

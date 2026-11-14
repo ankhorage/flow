@@ -1,5 +1,55 @@
 [
   {
+    "name": "calculateRetryDueAt",
+    "title": null,
+    "description": "Calculate an exponential retry time from persisted attempt state without ambient time.",
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "value",
+    "modulePath": "src/features/execution/domain/calculateRetryDueAt.ts",
+    "sourceLocation": {
+      "filePath": "src/features/execution/domain/calculateRetryDueAt.ts",
+      "line": 4,
+      "column": 14
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [
+      "FlowRetryPolicy"
+    ],
+    "signatures": [
+      {
+        "label": "(now: Date, completedAttempt: number, policy: FlowRetryPolicy) => string",
+        "parameters": [
+          {
+            "name": "completedAttempt",
+            "type": "number",
+            "required": true,
+            "description": null
+          },
+          {
+            "name": "now",
+            "type": "Date",
+            "required": true,
+            "description": null
+          },
+          {
+            "name": "policy",
+            "type": "FlowRetryPolicy",
+            "required": true,
+            "description": null
+          }
+        ],
+        "returnType": "string",
+        "returnDescription": null
+      }
+    ],
+    "members": [],
+    "structuredRows": []
+  },
+  {
     "name": "compileFlowGraph",
     "title": null,
     "description": "Compile a valid acyclic graph into deterministic execution order.",
@@ -76,6 +126,98 @@
     "structuredRows": []
   },
   {
+    "name": "createDurableRun",
+    "title": null,
+    "description": "Create a revision-zero run pinned permanently to one published flow definition.",
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "value",
+    "modulePath": "src/features/execution/domain/createDurableRun.ts",
+    "sourceLocation": {
+      "filePath": "src/features/execution/domain/createDurableRun.ts",
+      "line": 4,
+      "column": 14
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [
+      "FlowDefinitionRef",
+      "FlowDurableRun"
+    ],
+    "signatures": [
+      {
+        "label": "(input: { readonly flow: FlowDefinitionRef; readonly id: string; }, now: Date) => FlowDurableRun",
+        "parameters": [
+          {
+            "name": "input",
+            "type": "{ readonly flow: FlowDefinitionRef; readonly id: string; }",
+            "required": true,
+            "description": null
+          },
+          {
+            "name": "now",
+            "type": "Date",
+            "required": true,
+            "description": null
+          }
+        ],
+        "returnType": "FlowDurableRun",
+        "returnDescription": null
+      }
+    ],
+    "members": [],
+    "structuredRows": []
+  },
+  {
+    "name": "createDurableRunAsync",
+    "title": null,
+    "description": "Persist a new durable run without executing an operation or provider effect.",
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "value",
+    "modulePath": "src/features/execution/application/createDurableRunAsync.ts",
+    "sourceLocation": {
+      "filePath": "src/features/execution/application/createDurableRunAsync.ts",
+      "line": 7,
+      "column": 14
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [
+      "FlowClock",
+      "FlowDefinitionRef",
+      "FlowDurableRun",
+      "FlowPersistencePort"
+    ],
+    "signatures": [
+      {
+        "label": "(input: { readonly flow: FlowDefinitionRef; readonly id: string; }, dependencies: { readonly clock: FlowClock; readonly persistence: FlowPersistencePort; }) => Promise<FlowDurableRun>",
+        "parameters": [
+          {
+            "name": "dependencies",
+            "type": "{ readonly clock: FlowClock; readonly persistence: FlowPersistencePort; }",
+            "required": true,
+            "description": null
+          },
+          {
+            "name": "input",
+            "type": "{ readonly flow: FlowDefinitionRef; readonly id: string; }",
+            "required": true,
+            "description": null
+          }
+        ],
+        "returnType": "Promise<FlowDurableRun>",
+        "returnDescription": null
+      }
+    ],
+    "members": [],
+    "structuredRows": []
+  },
+  {
     "name": "createFlowSecurityPort",
     "title": null,
     "description": "Creates the provider-neutral server-side authorization, approval, audit, and secret boundary.",
@@ -112,6 +254,57 @@
           }
         ],
         "returnType": "FlowSecurityPort",
+        "returnDescription": null
+      }
+    ],
+    "members": [],
+    "structuredRows": []
+  },
+  {
+    "name": "createRetryWork",
+    "title": null,
+    "description": "Create the next immutable work attempt from a completed attempt and controlled clock.",
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "value",
+    "modulePath": "src/features/execution/domain/createRetryWork.ts",
+    "sourceLocation": {
+      "filePath": "src/features/execution/domain/createRetryWork.ts",
+      "line": 5,
+      "column": 14
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [
+      "FlowDurableWork",
+      "FlowRetryPolicy"
+    ],
+    "signatures": [
+      {
+        "label": "(completed: FlowDurableWork, now: Date, policy: FlowRetryPolicy) => FlowDurableWork",
+        "parameters": [
+          {
+            "name": "completed",
+            "type": "FlowDurableWork",
+            "required": true,
+            "description": null
+          },
+          {
+            "name": "now",
+            "type": "Date",
+            "required": true,
+            "description": null
+          },
+          {
+            "name": "policy",
+            "type": "FlowRetryPolicy",
+            "required": true,
+            "description": null
+          }
+        ],
+        "returnType": "FlowDurableWork",
         "returnDescription": null
       }
     ],
@@ -280,6 +473,221 @@
         "kind": "property",
         "type": "readonly string[]",
         "required": true,
+        "description": null
+      }
+    ],
+    "structuredRows": []
+  },
+  {
+    "name": "FlowDefinitionRef",
+    "title": null,
+    "description": null,
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "type",
+    "modulePath": "src/types/durableExecution.ts",
+    "sourceLocation": {
+      "filePath": "src/types/durableExecution.ts",
+      "line": 5,
+      "column": 1
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [],
+    "signatures": [],
+    "members": [
+      {
+        "name": "id",
+        "kind": "property",
+        "type": "string",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "version",
+        "kind": "property",
+        "type": "number",
+        "required": true,
+        "description": null
+      }
+    ],
+    "structuredRows": []
+  },
+  {
+    "name": "FlowDurableRun",
+    "title": null,
+    "description": null,
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "type",
+    "modulePath": "src/types/durableExecution.ts",
+    "sourceLocation": {
+      "filePath": "src/types/durableExecution.ts",
+      "line": 10,
+      "column": 1
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [
+      "FlowDefinitionRef",
+      "FlowRunCheckpoint"
+    ],
+    "signatures": [],
+    "members": [
+      {
+        "name": "checkpoint",
+        "kind": "property",
+        "type": "FlowRunCheckpoint | undefined",
+        "required": false,
+        "description": null
+      },
+      {
+        "name": "createdAt",
+        "kind": "property",
+        "type": "string",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "flow",
+        "kind": "property",
+        "type": "FlowDefinitionRef",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "id",
+        "kind": "property",
+        "type": "string",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "revision",
+        "kind": "property",
+        "type": "number",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "status",
+        "kind": "property",
+        "type": "\"cancelled\" | \"failed\" | \"queued\" | \"running\" | \"succeeded\" | \"waiting_approval\"",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "updatedAt",
+        "kind": "property",
+        "type": "string",
+        "required": true,
+        "description": null
+      }
+    ],
+    "structuredRows": []
+  },
+  {
+    "name": "FlowDurableWork",
+    "title": null,
+    "description": null,
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "type",
+    "modulePath": "src/types/durableExecution.ts",
+    "sourceLocation": {
+      "filePath": "src/types/durableExecution.ts",
+      "line": 20,
+      "column": 1
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [
+      "FlowDefinitionRef",
+      "FlowSecurityOperation"
+    ],
+    "signatures": [],
+    "members": [
+      {
+        "name": "attempt",
+        "kind": "property",
+        "type": "number",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "dueAt",
+        "kind": "property",
+        "type": "string",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "effectKind",
+        "kind": "property",
+        "type": "\"internal\" | \"protected\"",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "flow",
+        "kind": "property",
+        "type": "FlowDefinitionRef",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "id",
+        "kind": "property",
+        "type": "string",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "idempotencyKey",
+        "kind": "property",
+        "type": "string | undefined",
+        "required": false,
+        "description": null
+      },
+      {
+        "name": "lease",
+        "kind": "property",
+        "type": "{ readonly expiresAt: string; readonly fencingToken: number; readonly workerId: string; } | undefined",
+        "required": false,
+        "description": null
+      },
+      {
+        "name": "runId",
+        "kind": "property",
+        "type": "string",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "securityOperation",
+        "kind": "property",
+        "type": "FlowSecurityOperation | undefined",
+        "required": false,
+        "description": null
+      },
+      {
+        "name": "status",
+        "kind": "property",
+        "type": "\"cancelled\" | \"claimed\" | \"completed\" | \"ready\"",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "stepId",
+        "kind": "property",
+        "type": "string | undefined",
+        "required": false,
         "description": null
       }
     ],
@@ -476,6 +884,189 @@
     "structuredRows": []
   },
   {
+    "name": "FlowOutboxRecord",
+    "title": null,
+    "description": null,
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "type",
+    "modulePath": "src/types/durableExecution.ts",
+    "sourceLocation": {
+      "filePath": "src/types/durableExecution.ts",
+      "line": 53,
+      "column": 1
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [],
+    "signatures": [],
+    "members": [
+      {
+        "name": "createdAt",
+        "kind": "property",
+        "type": "string",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "id",
+        "kind": "property",
+        "type": "string",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "idempotencyKey",
+        "kind": "property",
+        "type": "string",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "payload",
+        "kind": "property",
+        "type": "import(\"@ankhorage/contracts/dist/serializable.js\").SerializableValue | undefined",
+        "required": false,
+        "description": null
+      },
+      {
+        "name": "runId",
+        "kind": "property",
+        "type": "string",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "status",
+        "kind": "property",
+        "type": "\"delivered\" | \"pending\"",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "workId",
+        "kind": "property",
+        "type": "string",
+        "required": true,
+        "description": null
+      }
+    ],
+    "structuredRows": []
+  },
+  {
+    "name": "FlowPersistencePort",
+    "title": null,
+    "description": null,
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "type",
+    "modulePath": "src/features/execution/ports/FlowPersistencePort.ts",
+    "sourceLocation": {
+      "filePath": "src/features/execution/ports/FlowPersistencePort.ts",
+      "line": 7,
+      "column": 1
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [
+      "FlowDurableRun",
+      "FlowDurableWork",
+      "FlowOutboxRecord"
+    ],
+    "signatures": [],
+    "members": [
+      {
+        "name": "cancelRunWorkAsync",
+        "kind": "property",
+        "type": "(runId: string) => Promise<readonly string[]>",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "claimDueWorkAsync",
+        "kind": "property",
+        "type": "(input: { readonly leaseDurationMs: number; readonly limit: number; readonly now: Date; readonly workerId: string; }) => Promise<readonly FlowDurableWork[]>",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "completeWorkAsync",
+        "kind": "property",
+        "type": "(input: { readonly id: string; readonly leaseFencingToken: number; readonly now: Date; readonly workerId: string; }) => Promise<boolean>",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "createOutboxAsync",
+        "kind": "property",
+        "type": "(record: FlowOutboxRecord) => Promise<void>",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "createRunAsync",
+        "kind": "property",
+        "type": "(run: FlowDurableRun) => Promise<void>",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "enqueueWorkAsync",
+        "kind": "property",
+        "type": "(work: FlowDurableWork) => Promise<void>",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "markOutboxDeliveredAsync",
+        "kind": "property",
+        "type": "(id: string) => Promise<boolean>",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "readOutboxAsync",
+        "kind": "property",
+        "type": "(id: string) => Promise<FlowOutboxRecord | undefined>",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "readRunAsync",
+        "kind": "property",
+        "type": "(id: string) => Promise<FlowDurableRun | undefined>",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "recoverExpiredClaimsAsync",
+        "kind": "property",
+        "type": "(now: Date) => Promise<readonly string[]>",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "releaseWorkAsync",
+        "kind": "property",
+        "type": "(input: { readonly dueAt: string; readonly id: string; readonly leaseFencingToken: number; readonly workerId: string; }) => Promise<boolean>",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "transitionRunAsync",
+        "kind": "property",
+        "type": "(input: { readonly expectedRevision: number; readonly run: FlowDurableRun; }) => Promise<boolean>",
+        "required": true,
+        "description": null
+      }
+    ],
+    "structuredRows": []
+  },
+  {
     "name": "FlowRateLimitPort",
     "title": null,
     "description": null,
@@ -527,6 +1118,94 @@
     "relatedSymbols": [],
     "signatures": [],
     "members": [],
+    "structuredRows": []
+  },
+  {
+    "name": "FlowRetryPolicy",
+    "title": null,
+    "description": null,
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "type",
+    "modulePath": "src/types/durableExecution.ts",
+    "sourceLocation": {
+      "filePath": "src/types/durableExecution.ts",
+      "line": 39,
+      "column": 1
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [],
+    "signatures": [],
+    "members": [
+      {
+        "name": "baseDelayMs",
+        "kind": "property",
+        "type": "number",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "maxAttempts",
+        "kind": "property",
+        "type": "number",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "maxDelayMs",
+        "kind": "property",
+        "type": "number",
+        "required": true,
+        "description": null
+      }
+    ],
+    "structuredRows": []
+  },
+  {
+    "name": "FlowRunCheckpoint",
+    "title": null,
+    "description": null,
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "type",
+    "modulePath": "src/types/durableExecution.ts",
+    "sourceLocation": {
+      "filePath": "src/types/durableExecution.ts",
+      "line": 46,
+      "column": 1
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [],
+    "signatures": [],
+    "members": [
+      {
+        "name": "completedStepIds",
+        "kind": "property",
+        "type": "readonly string[]",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "data",
+        "kind": "property",
+        "type": "import(\"@ankhorage/contracts/dist/serializable.js\").SerializableValue | undefined",
+        "required": false,
+        "description": null
+      },
+      {
+        "name": "failedStepIds",
+        "kind": "property",
+        "type": "readonly string[]",
+        "required": true,
+        "description": null
+      }
+    ],
     "structuredRows": []
   },
   {
@@ -791,7 +1470,7 @@
       {
         "name": "status",
         "kind": "property",
-        "type": "\"approved\" | \"pending\" | \"rejected\"",
+        "type": "\"pending\" | \"approved\" | \"rejected\"",
         "required": true,
         "description": null
       }
@@ -1251,6 +1930,42 @@
         "description": null
       }
     ],
+    "structuredRows": []
+  },
+  {
+    "name": "isCronDueAt",
+    "title": null,
+    "description": null,
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "value",
+    "modulePath": "src/features/execution/domain/isCronDueAt.ts",
+    "sourceLocation": {
+      "filePath": "src/features/execution/domain/isCronDueAt.ts",
+      "line": 2,
+      "column": 14
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [],
+    "signatures": [
+      {
+        "label": "(input: { readonly cron: string; readonly now: Date; readonly timezone?: string; }) => boolean",
+        "parameters": [
+          {
+            "name": "input",
+            "type": "{ readonly cron: string; readonly now: Date; readonly timezone?: string; }",
+            "required": true,
+            "description": null
+          }
+        ],
+        "returnType": "boolean",
+        "returnDescription": null
+      }
+    ],
+    "members": [],
     "structuredRows": []
   }
 ]

@@ -1,5 +1,21 @@
 # Public API
 
+## calculateRetryDueAt
+
+Kind: `value`
+Module: `src/features/execution/domain/calculateRetryDueAt.ts`
+Source: `src/features/execution/domain/calculateRetryDueAt.ts:4:14`
+
+Calculate an exponential retry time from persisted attempt state without ambient time.
+
+### Signatures
+
+- `(now: Date, completedAttempt: number, policy: FlowRetryPolicy) => string`
+  - completedAttempt: `number`
+  - now: `Date`
+  - policy: `FlowRetryPolicy`
+  - returns: `string`
+
 ## compileFlowGraph
 
 Kind: `value`
@@ -28,6 +44,36 @@ Create the built-in operations that have no provider or host dependency.
 - `() => Readonly<Record<string, FlowNodeOperation>>`
   - returns: `Readonly<Record<string, FlowNodeOperation>>`
 
+## createDurableRun
+
+Kind: `value`
+Module: `src/features/execution/domain/createDurableRun.ts`
+Source: `src/features/execution/domain/createDurableRun.ts:4:14`
+
+Create a revision-zero run pinned permanently to one published flow definition.
+
+### Signatures
+
+- `(input: { readonly flow: FlowDefinitionRef; readonly id: string; }, now: Date) => FlowDurableRun`
+  - input: `{ readonly flow: FlowDefinitionRef; readonly id: string; }`
+  - now: `Date`
+  - returns: `FlowDurableRun`
+
+## createDurableRunAsync
+
+Kind: `value`
+Module: `src/features/execution/application/createDurableRunAsync.ts`
+Source: `src/features/execution/application/createDurableRunAsync.ts:7:14`
+
+Persist a new durable run without executing an operation or provider effect.
+
+### Signatures
+
+- `(input: { readonly flow: FlowDefinitionRef; readonly id: string; }, dependencies: { readonly clock: FlowClock; readonly persistence: FlowPersistencePort; }) => Promise<FlowDurableRun>`
+  - dependencies: `{ readonly clock: FlowClock; readonly persistence: FlowPersistencePort; }`
+  - input: `{ readonly flow: FlowDefinitionRef; readonly id: string; }`
+  - returns: `Promise<FlowDurableRun>`
+
 ## createFlowSecurityPort
 
 Kind: `value`
@@ -41,6 +87,22 @@ Creates the provider-neutral server-side authorization, approval, audit, and sec
 - `(input: { readonly approvalStore: FlowApprovalStorePort; readonly audit: FlowSecurityAuditPort; readonly grants: readonly FlowSecurityGrant[]; readonly operationStore: FlowOperationStorePort; readonly rateLimit: FlowRateLimitPort; readonly secretStore: SecretStoreAdapter; }) => FlowSecurityPort`
   - input: `{ readonly approvalStore: FlowApprovalStorePort; readonly audit: FlowSecurityAuditPort; readonly grants: readonly FlowSecurityGrant[]; readonly operationStore: FlowOperationStorePort; readonly rateLimit: FlowRateLimitPort; readonly secretStore: SecretStoreAdapter; }`
   - returns: `FlowSecurityPort`
+
+## createRetryWork
+
+Kind: `value`
+Module: `src/features/execution/domain/createRetryWork.ts`
+Source: `src/features/execution/domain/createRetryWork.ts:5:14`
+
+Create the next immutable work attempt from a completed attempt and controlled clock.
+
+### Signatures
+
+- `(completed: FlowDurableWork, now: Date, policy: FlowRetryPolicy) => FlowDurableWork`
+  - completed: `FlowDurableWork`
+  - now: `Date`
+  - policy: `FlowRetryPolicy`
+  - returns: `FlowDurableWork`
 
 ## executeFlowAsync
 
@@ -96,6 +158,59 @@ Source: `src/types/execution.ts:27:1`
 | definition | property | `FlowDefinition` | yes |  |
 | edgesBySourceNodeId | property | `Readonly<Record<string, readonly FlowEdge[]>>` | yes |  |
 | topologicalNodeIds | property | `readonly string[]` | yes |  |
+
+## FlowDefinitionRef
+
+Kind: `type`
+Module: `src/types/durableExecution.ts`
+Source: `src/types/durableExecution.ts:5:1`
+
+### Members
+
+| Name | Kind | Type | Required | Description |
+| --- | --- | --- | --- | --- |
+| id | property | `string` | yes |  |
+| version | property | `number` | yes |  |
+
+## FlowDurableRun
+
+Kind: `type`
+Module: `src/types/durableExecution.ts`
+Source: `src/types/durableExecution.ts:10:1`
+
+### Members
+
+| Name | Kind | Type | Required | Description |
+| --- | --- | --- | --- | --- |
+| checkpoint | property | `FlowRunCheckpoint \| undefined` | no |  |
+| createdAt | property | `string` | yes |  |
+| flow | property | `FlowDefinitionRef` | yes |  |
+| id | property | `string` | yes |  |
+| revision | property | `number` | yes |  |
+| status | property | `"cancelled" \| "failed" \| "queued" \| "running" \| "succeeded" \| "waiting_approval"` | yes |  |
+| updatedAt | property | `string` | yes |  |
+
+## FlowDurableWork
+
+Kind: `type`
+Module: `src/types/durableExecution.ts`
+Source: `src/types/durableExecution.ts:20:1`
+
+### Members
+
+| Name | Kind | Type | Required | Description |
+| --- | --- | --- | --- | --- |
+| attempt | property | `number` | yes |  |
+| dueAt | property | `string` | yes |  |
+| effectKind | property | `"internal" \| "protected"` | yes |  |
+| flow | property | `FlowDefinitionRef` | yes |  |
+| id | property | `string` | yes |  |
+| idempotencyKey | property | `string \| undefined` | no |  |
+| lease | property | `{ readonly expiresAt: string; readonly fencingToken: number; readonly workerId: string; } \| undefined` | no |  |
+| runId | property | `string` | yes |  |
+| securityOperation | property | `FlowSecurityOperation \| undefined` | no |  |
+| status | property | `"cancelled" \| "claimed" \| "completed" \| "ready"` | yes |  |
+| stepId | property | `string \| undefined` | no |  |
 
 ## FlowExecutionResult
 
@@ -165,6 +280,47 @@ Source: `src/types/security.ts:72:1`
 | --- | --- | --- | --- | --- |
 | fetchAsync | method | `(input: { readonly allowedHosts: readonly string[]; readonly init?: RequestInit; readonly url: string; }) => Promise<Response>` | yes |  |
 
+## FlowOutboxRecord
+
+Kind: `type`
+Module: `src/types/durableExecution.ts`
+Source: `src/types/durableExecution.ts:53:1`
+
+### Members
+
+| Name | Kind | Type | Required | Description |
+| --- | --- | --- | --- | --- |
+| createdAt | property | `string` | yes |  |
+| id | property | `string` | yes |  |
+| idempotencyKey | property | `string` | yes |  |
+| payload | property | `import("@ankhorage/contracts/dist/serializable.js").SerializableValue \| undefined` | no |  |
+| runId | property | `string` | yes |  |
+| status | property | `"delivered" \| "pending"` | yes |  |
+| workId | property | `string` | yes |  |
+
+## FlowPersistencePort
+
+Kind: `type`
+Module: `src/features/execution/ports/FlowPersistencePort.ts`
+Source: `src/features/execution/ports/FlowPersistencePort.ts:7:1`
+
+### Members
+
+| Name | Kind | Type | Required | Description |
+| --- | --- | --- | --- | --- |
+| cancelRunWorkAsync | property | `(runId: string) => Promise<readonly string[]>` | yes |  |
+| claimDueWorkAsync | property | `(input: { readonly leaseDurationMs: number; readonly limit: number; readonly now: Date; readonly workerId: string; }) => Promise<readonly FlowDurableWork[]>` | yes |  |
+| completeWorkAsync | property | `(input: { readonly id: string; readonly leaseFencingToken: number; readonly now: Date; readonly workerId: string; }) => Promise<boolean>` | yes |  |
+| createOutboxAsync | property | `(record: FlowOutboxRecord) => Promise<void>` | yes |  |
+| createRunAsync | property | `(run: FlowDurableRun) => Promise<void>` | yes |  |
+| enqueueWorkAsync | property | `(work: FlowDurableWork) => Promise<void>` | yes |  |
+| markOutboxDeliveredAsync | property | `(id: string) => Promise<boolean>` | yes |  |
+| readOutboxAsync | property | `(id: string) => Promise<FlowOutboxRecord \| undefined>` | yes |  |
+| readRunAsync | property | `(id: string) => Promise<FlowDurableRun \| undefined>` | yes |  |
+| recoverExpiredClaimsAsync | property | `(now: Date) => Promise<readonly string[]>` | yes |  |
+| releaseWorkAsync | property | `(input: { readonly dueAt: string; readonly id: string; readonly leaseFencingToken: number; readonly workerId: string; }) => Promise<boolean>` | yes |  |
+| transitionRunAsync | property | `(input: { readonly expectedRevision: number; readonly run: FlowDurableRun; }) => Promise<boolean>` | yes |  |
+
 ## FlowRateLimitPort
 
 Kind: `type`
@@ -182,6 +338,34 @@ Source: `src/types/security.ts:81:1`
 Kind: `unknown`
 Module: `src/types/security.ts`
 Source: `src/types/security.ts:116:1`
+
+## FlowRetryPolicy
+
+Kind: `type`
+Module: `src/types/durableExecution.ts`
+Source: `src/types/durableExecution.ts:39:1`
+
+### Members
+
+| Name | Kind | Type | Required | Description |
+| --- | --- | --- | --- | --- |
+| baseDelayMs | property | `number` | yes |  |
+| maxAttempts | property | `number` | yes |  |
+| maxDelayMs | property | `number` | yes |  |
+
+## FlowRunCheckpoint
+
+Kind: `type`
+Module: `src/types/durableExecution.ts`
+Source: `src/types/durableExecution.ts:46:1`
+
+### Members
+
+| Name | Kind | Type | Required | Description |
+| --- | --- | --- | --- | --- |
+| completedStepIds | property | `readonly string[]` | yes |  |
+| data | property | `import("@ankhorage/contracts/dist/serializable.js").SerializableValue \| undefined` | no |  |
+| failedStepIds | property | `readonly string[]` | yes |  |
 
 ## FlowRunRequest
 
@@ -260,7 +444,7 @@ Source: `src/types/security.ts:47:1`
 | Name | Kind | Type | Required | Description |
 | --- | --- | --- | --- | --- |
 | operation | property | `FlowSecurityOperationIdentity` | yes |  |
-| status | property | `"approved" \| "pending" \| "rejected"` | yes |  |
+| status | property | `"pending" \| "approved" \| "rejected"` | yes |  |
 
 ## FlowSecurityAuditEvent
 
@@ -390,3 +574,15 @@ Source: `src/types/security.ts:31:1`
 | --- | --- | --- | --- | --- |
 | allowedHosts | property | `readonly string[]` | yes |  |
 | url | property | `string` | yes |  |
+
+## isCronDueAt
+
+Kind: `value`
+Module: `src/features/execution/domain/isCronDueAt.ts`
+Source: `src/features/execution/domain/isCronDueAt.ts:2:14`
+
+### Signatures
+
+- `(input: { readonly cron: string; readonly now: Date; readonly timezone?: string; }) => boolean`
+  - input: `{ readonly cron: string; readonly now: Date; readonly timezone?: string; }`
+  - returns: `boolean`

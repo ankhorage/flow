@@ -1,0 +1,5 @@
+sequenceDiagram
+  participant participant_calculateRetryDueAt as calculateRetryDueAt
+  participant participant_createRetryWork as createRetryWork
+  participant_createRetryWork->>participant_calculateRetryDueAt: calculateRetryDueAt()
+  participant_calculateRetryDueAt-->>participant_createRetryWork: return

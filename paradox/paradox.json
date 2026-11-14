@@ -14,7 +14,7 @@
     {
       "id": "npm",
       "label": "npm",
-      "value": "v0.4.1",
+      "value": "v0.5.0",
       "color": "cb3837"
     },
     {
@@ -56,8 +56,8 @@
     {
       "id": "docs",
       "label": "paradox",
-      "value": "canonical",
-      "color": "0a7f3f"
+      "value": "warnings",
+      "color": "ca8a04"
     }
   ],
   "usage": {
@@ -66,7 +66,15 @@
   },
   "usageEntries": [],
   "exampleCount": 0,
-  "findings": [],
+  "findings": [
+    {
+      "ruleId": "documentation.public-function.description",
+      "severity": "warning",
+      "message": "Exported function isCronDueAt has no documentation description.",
+      "sourcePath": "src/features/execution/domain/isCronDueAt.ts",
+      "line": 2
+    }
+  ],
   "config": null,
   "entrypoints": [
     "src/index.ts"
@@ -77,6 +85,55 @@
       "isEntrypoint": false,
       "dependencies": [],
       "exports": []
+    },
+    {
+      "path": "src/execution.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": [
+        "cancelDurableRunAsync",
+        "FileFlowPersistenceAdapter",
+        "FlowDurableEffectPort",
+        "FlowWorkerOutcome",
+        "FlowWorkerResult",
+        "runDurableWorkerAsync"
+      ]
+    },
+    {
+      "path": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/execution/ports/FlowPersistencePort.ts",
+        "src/types/durableExecution.ts"
+      ],
+      "exports": [
+        "FileFlowPersistenceAdapter"
+      ]
+    },
+    {
+      "path": "src/features/execution/application/cancelDurableRunAsync.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/execution/ports/FlowPersistencePort.ts",
+        "src/types/durableExecution.ts",
+        "src/types/execution.ts"
+      ],
+      "exports": [
+        "cancelDurableRunAsync"
+      ]
+    },
+    {
+      "path": "src/features/execution/application/createDurableRunAsync.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/execution/domain/createDurableRun.ts",
+        "src/features/execution/ports/FlowPersistencePort.ts",
+        "src/types/durableExecution.ts",
+        "src/types/execution.ts"
+      ],
+      "exports": [
+        "createDurableRunAsync"
+      ]
     },
     {
       "path": "src/features/execution/application/executeFlowAsync.ts",
@@ -91,6 +148,24 @@
       ]
     },
     {
+      "path": "src/features/execution/application/runDurableWorkerAsync.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/execution/domain/createRetryWork.ts",
+        "src/features/execution/ports/FlowPersistencePort.ts",
+        "src/features/security/FlowSecurityError.ts",
+        "src/types/durableExecution.ts",
+        "src/types/execution.ts",
+        "src/types/security.ts"
+      ],
+      "exports": [
+        "FlowDurableEffectPort",
+        "FlowWorkerOutcome",
+        "FlowWorkerResult",
+        "runDurableWorkerAsync"
+      ]
+    },
+    {
       "path": "src/features/execution/domain/assertFlowGraphSchemasSupported.ts",
       "isEntrypoint": false,
       "dependencies": [
@@ -98,6 +173,16 @@
       ],
       "exports": [
         "assertFlowGraphSchemasSupported"
+      ]
+    },
+    {
+      "path": "src/features/execution/domain/calculateRetryDueAt.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/types/durableExecution.ts"
+      ],
+      "exports": [
+        "calculateRetryDueAt"
       ]
     },
     {
@@ -121,12 +206,51 @@
       ]
     },
     {
+      "path": "src/features/execution/domain/createDurableRun.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/types/durableExecution.ts"
+      ],
+      "exports": [
+        "createDurableRun"
+      ]
+    },
+    {
+      "path": "src/features/execution/domain/createRetryWork.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/execution/domain/calculateRetryDueAt.ts",
+        "src/types/durableExecution.ts"
+      ],
+      "exports": [
+        "createRetryWork"
+      ]
+    },
+    {
+      "path": "src/features/execution/domain/isCronDueAt.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": [
+        "isCronDueAt"
+      ]
+    },
+    {
       "path": "src/features/execution/domain/validateFlowDataSchema.ts",
       "isEntrypoint": false,
       "dependencies": [],
       "exports": [
         "assertFlowDataSchemaSupported",
         "validateFlowDataSchema"
+      ]
+    },
+    {
+      "path": "src/features/execution/ports/FlowPersistencePort.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/types/durableExecution.ts"
+      ],
+      "exports": [
+        "FlowPersistencePort"
       ]
     },
     {
@@ -233,21 +357,32 @@
       "isEntrypoint": true,
       "dependencies": [],
       "exports": [
+        "calculateRetryDueAt",
         "compileFlowGraph",
         "createDefaultNodeRegistry",
+        "createDurableRun",
+        "createDurableRunAsync",
         "createFlowSecurityPort",
+        "createRetryWork",
         "executeFlowAsync",
         "FlowApprovalStorePort",
         "FlowClock",
         "FlowCompiledGraph",
+        "FlowDefinitionRef",
+        "FlowDurableRun",
+        "FlowDurableWork",
         "FlowExecutionResult",
         "FlowNodeOperation",
         "FlowNodeOperationResult",
         "FlowNodeRegistry",
         "FlowOperationStorePort",
         "FlowOutboundTransportPort",
+        "FlowOutboxRecord",
+        "FlowPersistencePort",
         "FlowRateLimitPort",
         "FlowResolvedSecrets",
+        "FlowRetryPolicy",
+        "FlowRunCheckpoint",
         "FlowRunRequest",
         "FlowSecretCreateInput",
         "FlowSecretMetadata",
@@ -262,7 +397,8 @@
         "FlowSecurityOperationIdentity",
         "FlowSecurityPermit",
         "FlowSecurityPort",
-        "FlowSecurityTarget"
+        "FlowSecurityTarget",
+        "isCronDueAt"
       ]
     },
     {
@@ -285,6 +421,21 @@
       "isEntrypoint": false,
       "dependencies": [],
       "exports": []
+    },
+    {
+      "path": "src/types/durableExecution.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/types/security.ts"
+      ],
+      "exports": [
+        "FlowDefinitionRef",
+        "FlowDurableRun",
+        "FlowDurableWork",
+        "FlowOutboxRecord",
+        "FlowRetryPolicy",
+        "FlowRunCheckpoint"
+      ]
     },
     {
       "path": "src/types/execution.ts",
@@ -343,6 +494,56 @@
     }
   ],
   "exports": [
+    {
+      "name": "calculateRetryDueAt",
+      "title": null,
+      "description": "Calculate an exponential retry time from persisted attempt state without ambient time.",
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "value",
+      "modulePath": "src/features/execution/domain/calculateRetryDueAt.ts",
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/calculateRetryDueAt.ts",
+        "line": 4,
+        "column": 14
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [
+        "FlowRetryPolicy"
+      ],
+      "signatures": [
+        {
+          "label": "(now: Date, completedAttempt: number, policy: FlowRetryPolicy) => string",
+          "parameters": [
+            {
+              "name": "completedAttempt",
+              "type": "number",
+              "required": true,
+              "description": null
+            },
+            {
+              "name": "now",
+              "type": "Date",
+              "required": true,
+              "description": null
+            },
+            {
+              "name": "policy",
+              "type": "FlowRetryPolicy",
+              "required": true,
+              "description": null
+            }
+          ],
+          "returnType": "string",
+          "returnDescription": null
+        }
+      ],
+      "members": [],
+      "structuredRows": []
+    },
     {
       "name": "compileFlowGraph",
       "title": null,
@@ -420,6 +621,98 @@
       "structuredRows": []
     },
     {
+      "name": "createDurableRun",
+      "title": null,
+      "description": "Create a revision-zero run pinned permanently to one published flow definition.",
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "value",
+      "modulePath": "src/features/execution/domain/createDurableRun.ts",
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/createDurableRun.ts",
+        "line": 4,
+        "column": 14
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [
+        "FlowDefinitionRef",
+        "FlowDurableRun"
+      ],
+      "signatures": [
+        {
+          "label": "(input: { readonly flow: FlowDefinitionRef; readonly id: string; }, now: Date) => FlowDurableRun",
+          "parameters": [
+            {
+              "name": "input",
+              "type": "{ readonly flow: FlowDefinitionRef; readonly id: string; }",
+              "required": true,
+              "description": null
+            },
+            {
+              "name": "now",
+              "type": "Date",
+              "required": true,
+              "description": null
+            }
+          ],
+          "returnType": "FlowDurableRun",
+          "returnDescription": null
+        }
+      ],
+      "members": [],
+      "structuredRows": []
+    },
+    {
+      "name": "createDurableRunAsync",
+      "title": null,
+      "description": "Persist a new durable run without executing an operation or provider effect.",
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "value",
+      "modulePath": "src/features/execution/application/createDurableRunAsync.ts",
+      "sourceLocation": {
+        "filePath": "src/features/execution/application/createDurableRunAsync.ts",
+        "line": 7,
+        "column": 14
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [
+        "FlowClock",
+        "FlowDefinitionRef",
+        "FlowDurableRun",
+        "FlowPersistencePort"
+      ],
+      "signatures": [
+        {
+          "label": "(input: { readonly flow: FlowDefinitionRef; readonly id: string; }, dependencies: { readonly clock: FlowClock; readonly persistence: FlowPersistencePort; }) => Promise<FlowDurableRun>",
+          "parameters": [
+            {
+              "name": "dependencies",
+              "type": "{ readonly clock: FlowClock; readonly persistence: FlowPersistencePort; }",
+              "required": true,
+              "description": null
+            },
+            {
+              "name": "input",
+              "type": "{ readonly flow: FlowDefinitionRef; readonly id: string; }",
+              "required": true,
+              "description": null
+            }
+          ],
+          "returnType": "Promise<FlowDurableRun>",
+          "returnDescription": null
+        }
+      ],
+      "members": [],
+      "structuredRows": []
+    },
+    {
       "name": "createFlowSecurityPort",
       "title": null,
       "description": "Creates the provider-neutral server-side authorization, approval, audit, and secret boundary.",
@@ -456,6 +749,57 @@
             }
           ],
           "returnType": "FlowSecurityPort",
+          "returnDescription": null
+        }
+      ],
+      "members": [],
+      "structuredRows": []
+    },
+    {
+      "name": "createRetryWork",
+      "title": null,
+      "description": "Create the next immutable work attempt from a completed attempt and controlled clock.",
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "value",
+      "modulePath": "src/features/execution/domain/createRetryWork.ts",
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/createRetryWork.ts",
+        "line": 5,
+        "column": 14
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [
+        "FlowDurableWork",
+        "FlowRetryPolicy"
+      ],
+      "signatures": [
+        {
+          "label": "(completed: FlowDurableWork, now: Date, policy: FlowRetryPolicy) => FlowDurableWork",
+          "parameters": [
+            {
+              "name": "completed",
+              "type": "FlowDurableWork",
+              "required": true,
+              "description": null
+            },
+            {
+              "name": "now",
+              "type": "Date",
+              "required": true,
+              "description": null
+            },
+            {
+              "name": "policy",
+              "type": "FlowRetryPolicy",
+              "required": true,
+              "description": null
+            }
+          ],
+          "returnType": "FlowDurableWork",
           "returnDescription": null
         }
       ],
@@ -624,6 +968,221 @@
           "kind": "property",
           "type": "readonly string[]",
           "required": true,
+          "description": null
+        }
+      ],
+      "structuredRows": []
+    },
+    {
+      "name": "FlowDefinitionRef",
+      "title": null,
+      "description": null,
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "type",
+      "modulePath": "src/types/durableExecution.ts",
+      "sourceLocation": {
+        "filePath": "src/types/durableExecution.ts",
+        "line": 5,
+        "column": 1
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [],
+      "signatures": [],
+      "members": [
+        {
+          "name": "id",
+          "kind": "property",
+          "type": "string",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "version",
+          "kind": "property",
+          "type": "number",
+          "required": true,
+          "description": null
+        }
+      ],
+      "structuredRows": []
+    },
+    {
+      "name": "FlowDurableRun",
+      "title": null,
+      "description": null,
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "type",
+      "modulePath": "src/types/durableExecution.ts",
+      "sourceLocation": {
+        "filePath": "src/types/durableExecution.ts",
+        "line": 10,
+        "column": 1
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [
+        "FlowDefinitionRef",
+        "FlowRunCheckpoint"
+      ],
+      "signatures": [],
+      "members": [
+        {
+          "name": "checkpoint",
+          "kind": "property",
+          "type": "FlowRunCheckpoint | undefined",
+          "required": false,
+          "description": null
+        },
+        {
+          "name": "createdAt",
+          "kind": "property",
+          "type": "string",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "flow",
+          "kind": "property",
+          "type": "FlowDefinitionRef",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "id",
+          "kind": "property",
+          "type": "string",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "revision",
+          "kind": "property",
+          "type": "number",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "status",
+          "kind": "property",
+          "type": "\"cancelled\" | \"failed\" | \"queued\" | \"running\" | \"succeeded\" | \"waiting_approval\"",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "updatedAt",
+          "kind": "property",
+          "type": "string",
+          "required": true,
+          "description": null
+        }
+      ],
+      "structuredRows": []
+    },
+    {
+      "name": "FlowDurableWork",
+      "title": null,
+      "description": null,
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "type",
+      "modulePath": "src/types/durableExecution.ts",
+      "sourceLocation": {
+        "filePath": "src/types/durableExecution.ts",
+        "line": 20,
+        "column": 1
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [
+        "FlowDefinitionRef",
+        "FlowSecurityOperation"
+      ],
+      "signatures": [],
+      "members": [
+        {
+          "name": "attempt",
+          "kind": "property",
+          "type": "number",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "dueAt",
+          "kind": "property",
+          "type": "string",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "effectKind",
+          "kind": "property",
+          "type": "\"internal\" | \"protected\"",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "flow",
+          "kind": "property",
+          "type": "FlowDefinitionRef",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "id",
+          "kind": "property",
+          "type": "string",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "idempotencyKey",
+          "kind": "property",
+          "type": "string | undefined",
+          "required": false,
+          "description": null
+        },
+        {
+          "name": "lease",
+          "kind": "property",
+          "type": "{ readonly expiresAt: string; readonly fencingToken: number; readonly workerId: string; } | undefined",
+          "required": false,
+          "description": null
+        },
+        {
+          "name": "runId",
+          "kind": "property",
+          "type": "string",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "securityOperation",
+          "kind": "property",
+          "type": "FlowSecurityOperation | undefined",
+          "required": false,
+          "description": null
+        },
+        {
+          "name": "status",
+          "kind": "property",
+          "type": "\"cancelled\" | \"claimed\" | \"completed\" | \"ready\"",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "stepId",
+          "kind": "property",
+          "type": "string | undefined",
+          "required": false,
           "description": null
         }
       ],
@@ -820,6 +1379,189 @@
       "structuredRows": []
     },
     {
+      "name": "FlowOutboxRecord",
+      "title": null,
+      "description": null,
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "type",
+      "modulePath": "src/types/durableExecution.ts",
+      "sourceLocation": {
+        "filePath": "src/types/durableExecution.ts",
+        "line": 53,
+        "column": 1
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [],
+      "signatures": [],
+      "members": [
+        {
+          "name": "createdAt",
+          "kind": "property",
+          "type": "string",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "id",
+          "kind": "property",
+          "type": "string",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "idempotencyKey",
+          "kind": "property",
+          "type": "string",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "payload",
+          "kind": "property",
+          "type": "import(\"@ankhorage/contracts/dist/serializable.js\").SerializableValue | undefined",
+          "required": false,
+          "description": null
+        },
+        {
+          "name": "runId",
+          "kind": "property",
+          "type": "string",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "status",
+          "kind": "property",
+          "type": "\"delivered\" | \"pending\"",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "workId",
+          "kind": "property",
+          "type": "string",
+          "required": true,
+          "description": null
+        }
+      ],
+      "structuredRows": []
+    },
+    {
+      "name": "FlowPersistencePort",
+      "title": null,
+      "description": null,
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "type",
+      "modulePath": "src/features/execution/ports/FlowPersistencePort.ts",
+      "sourceLocation": {
+        "filePath": "src/features/execution/ports/FlowPersistencePort.ts",
+        "line": 7,
+        "column": 1
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [
+        "FlowDurableRun",
+        "FlowDurableWork",
+        "FlowOutboxRecord"
+      ],
+      "signatures": [],
+      "members": [
+        {
+          "name": "cancelRunWorkAsync",
+          "kind": "property",
+          "type": "(runId: string) => Promise<readonly string[]>",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "claimDueWorkAsync",
+          "kind": "property",
+          "type": "(input: { readonly leaseDurationMs: number; readonly limit: number; readonly now: Date; readonly workerId: string; }) => Promise<readonly FlowDurableWork[]>",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "completeWorkAsync",
+          "kind": "property",
+          "type": "(input: { readonly id: string; readonly leaseFencingToken: number; readonly now: Date; readonly workerId: string; }) => Promise<boolean>",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "createOutboxAsync",
+          "kind": "property",
+          "type": "(record: FlowOutboxRecord) => Promise<void>",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "createRunAsync",
+          "kind": "property",
+          "type": "(run: FlowDurableRun) => Promise<void>",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "enqueueWorkAsync",
+          "kind": "property",
+          "type": "(work: FlowDurableWork) => Promise<void>",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "markOutboxDeliveredAsync",
+          "kind": "property",
+          "type": "(id: string) => Promise<boolean>",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "readOutboxAsync",
+          "kind": "property",
+          "type": "(id: string) => Promise<FlowOutboxRecord | undefined>",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "readRunAsync",
+          "kind": "property",
+          "type": "(id: string) => Promise<FlowDurableRun | undefined>",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "recoverExpiredClaimsAsync",
+          "kind": "property",
+          "type": "(now: Date) => Promise<readonly string[]>",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "releaseWorkAsync",
+          "kind": "property",
+          "type": "(input: { readonly dueAt: string; readonly id: string; readonly leaseFencingToken: number; readonly workerId: string; }) => Promise<boolean>",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "transitionRunAsync",
+          "kind": "property",
+          "type": "(input: { readonly expectedRevision: number; readonly run: FlowDurableRun; }) => Promise<boolean>",
+          "required": true,
+          "description": null
+        }
+      ],
+      "structuredRows": []
+    },
+    {
       "name": "FlowRateLimitPort",
       "title": null,
       "description": null,
@@ -871,6 +1613,94 @@
       "relatedSymbols": [],
       "signatures": [],
       "members": [],
+      "structuredRows": []
+    },
+    {
+      "name": "FlowRetryPolicy",
+      "title": null,
+      "description": null,
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "type",
+      "modulePath": "src/types/durableExecution.ts",
+      "sourceLocation": {
+        "filePath": "src/types/durableExecution.ts",
+        "line": 39,
+        "column": 1
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [],
+      "signatures": [],
+      "members": [
+        {
+          "name": "baseDelayMs",
+          "kind": "property",
+          "type": "number",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "maxAttempts",
+          "kind": "property",
+          "type": "number",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "maxDelayMs",
+          "kind": "property",
+          "type": "number",
+          "required": true,
+          "description": null
+        }
+      ],
+      "structuredRows": []
+    },
+    {
+      "name": "FlowRunCheckpoint",
+      "title": null,
+      "description": null,
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "type",
+      "modulePath": "src/types/durableExecution.ts",
+      "sourceLocation": {
+        "filePath": "src/types/durableExecution.ts",
+        "line": 46,
+        "column": 1
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [],
+      "signatures": [],
+      "members": [
+        {
+          "name": "completedStepIds",
+          "kind": "property",
+          "type": "readonly string[]",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "data",
+          "kind": "property",
+          "type": "import(\"@ankhorage/contracts/dist/serializable.js\").SerializableValue | undefined",
+          "required": false,
+          "description": null
+        },
+        {
+          "name": "failedStepIds",
+          "kind": "property",
+          "type": "readonly string[]",
+          "required": true,
+          "description": null
+        }
+      ],
       "structuredRows": []
     },
     {
@@ -1135,7 +1965,7 @@
         {
           "name": "status",
           "kind": "property",
-          "type": "\"approved\" | \"pending\" | \"rejected\"",
+          "type": "\"pending\" | \"approved\" | \"rejected\"",
           "required": true,
           "description": null
         }
@@ -1596,10 +2426,354 @@
         }
       ],
       "structuredRows": []
+    },
+    {
+      "name": "isCronDueAt",
+      "title": null,
+      "description": null,
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "value",
+      "modulePath": "src/features/execution/domain/isCronDueAt.ts",
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/isCronDueAt.ts",
+        "line": 2,
+        "column": 14
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [],
+      "signatures": [
+        {
+          "label": "(input: { readonly cron: string; readonly now: Date; readonly timezone?: string; }) => boolean",
+          "parameters": [
+            {
+              "name": "input",
+              "type": "{ readonly cron: string; readonly now: Date; readonly timezone?: string; }",
+              "required": true,
+              "description": null
+            }
+          ],
+          "returnType": "boolean",
+          "returnDescription": null
+        }
+      ],
+      "members": [],
+      "structuredRows": []
     }
   ],
   "components": [],
   "sourceFunctions": [
+    {
+      "name": "FileFlowPersistenceAdapter",
+      "description": "Create a self-hostable, single-process JSON persistence adapter for durable Flow state.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "line": 13,
+        "column": 14
+      }
+    },
+    {
+      "name": "cancelRunWorkAsync",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "line": 42,
+        "column": 7
+      }
+    },
+    {
+      "name": "createOutboxAsync",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "line": 63,
+        "column": 7
+      }
+    },
+    {
+      "name": "getSerializedCall",
+      "description": "Share serialization for every adapter instance targeting one normalized persistence path.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "line": 81,
+        "column": 7
+      }
+    },
+    {
+      "name": "createSerializedCall",
+      "description": "Serialize one file path so concurrent callbacks cannot claim or overwrite the same state.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "line": 90,
+        "column": 7
+      }
+    },
+    {
+      "name": "claimDueWorkAsync",
+      "description": "Claim due work in stable order and record a lease before it is returned to a worker.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "line": 105,
+        "column": 7
+      }
+    },
+    {
+      "name": "completeWorkAsync",
+      "description": "Complete only the unexpired fenced lease returned by the successful claim.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "line": 128,
+        "column": 7
+      }
+    },
+    {
+      "name": "createRunAsync",
+      "description": "Persist a new run once, rejecting a duplicate durable identity.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "line": 148,
+        "column": 7
+      }
+    },
+    {
+      "name": "enqueueWorkAsync",
+      "description": "Persist one immutable work identity once, rejecting duplicate delivery records.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "line": 156,
+        "column": 7
+      }
+    },
+    {
+      "name": "markOutboxDeliveredAsync",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "line": 164,
+        "column": 7
+      }
+    },
+    {
+      "name": "readOutboxAsync",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "line": 178,
+        "column": 7
+      }
+    },
+    {
+      "name": "readRunAsync",
+      "description": "Read a copied run snapshot so callers cannot mutate persisted state in-place.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "line": 182,
+        "column": 7
+      }
+    },
+    {
+      "name": "recoverExpiredClaimsAsync",
+      "description": "Make expired claims available for recovery after a worker crash or stop.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "line": 186,
+        "column": 7
+      }
+    },
+    {
+      "name": "releaseWorkAsync",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "line": 203,
+        "column": 7
+      }
+    },
+    {
+      "name": "transitionRunAsync",
+      "description": "Store a revision-checked run transition while preserving its immutable flow reference.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "line": 227,
+        "column": 7
+      }
+    },
+    {
+      "name": "claimWork",
+      "description": "Build a claimed work record with an explicit bounded lease.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "line": 240,
+        "column": 7
+      }
+    },
+    {
+      "name": "replaceWork",
+      "description": "Replace changed work entries by identity without exposing a mutable adapter collection.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "line": 255,
+        "column": 7
+      }
+    },
+    {
+      "name": "replaceRuns",
+      "description": "Replace changed run entries by identity without exposing a mutable adapter collection.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "line": 264,
+        "column": 7
+      }
+    },
+    {
+      "name": "replaceOutbox",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "line": 273,
+        "column": 7
+      }
+    },
+    {
+      "name": "readStoreAsync",
+      "description": "Read persisted state or initialize an empty store when it has not yet been created.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "line": 282,
+        "column": 7
+      }
+    },
+    {
+      "name": "readFileStore",
+      "description": "Validate the adapter-owned persistence envelope before using its fencing counter.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "line": 292,
+        "column": 7
+      }
+    },
+    {
+      "name": "updateStoreAsync",
+      "description": "Apply one single-process transaction and atomically replace the persisted JSON snapshot.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "line": 312,
+        "column": 7
+      }
+    },
+    {
+      "name": "copy",
+      "description": "Preserve adapter encapsulation by returning data that callers cannot mutate in-place.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "line": 325,
+        "column": 7
+      }
+    },
+    {
+      "name": "isMissingFile",
+      "description": "Distinguish an absent first-run store from real filesystem or JSON errors.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "line": 328,
+        "column": 7
+      }
+    },
+    {
+      "name": "sameFlow",
+      "description": "Reject a transition that attempts to repoint a run at another immutable flow revision.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "line": 332,
+        "column": 7
+      }
+    },
+    {
+      "name": "cancelDurableRunAsync",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/application/cancelDurableRunAsync.ts",
+        "line": 6,
+        "column": 14
+      }
+    },
+    {
+      "name": "isTerminal",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/application/cancelDurableRunAsync.ts",
+        "line": 27,
+        "column": 7
+      }
+    },
+    {
+      "name": "createDurableRunAsync",
+      "description": "Persist a new durable run without executing an operation or provider effect.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/application/createDurableRunAsync.ts",
+        "line": 7,
+        "column": 14
+      }
+    },
     {
       "name": "executeFlowAsync",
       "description": "Execute a compiled graph in deterministic order within one process.",
@@ -1799,6 +2973,193 @@
       }
     },
     {
+      "name": "runDurableWorkerAsync",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/application/runDurableWorkerAsync.ts",
+        "line": 14,
+        "column": 14
+      }
+    },
+    {
+      "name": "processWorkAsync",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/application/runDurableWorkerAsync.ts",
+        "line": 46,
+        "column": 7
+      }
+    },
+    {
+      "name": "prepareOutboxAsync",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/application/runDurableWorkerAsync.ts",
+        "line": 95,
+        "column": 7
+      }
+    },
+    {
+      "name": "executeEffectAsync",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/application/runDurableWorkerAsync.ts",
+        "line": 116,
+        "column": 7
+      }
+    },
+    {
+      "name": "execute",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/application/runDurableWorkerAsync.ts",
+        "line": 121,
+        "column": 9
+      }
+    },
+    {
+      "name": "waitForApprovalAsync",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/application/runDurableWorkerAsync.ts",
+        "line": 152,
+        "column": 7
+      }
+    },
+    {
+      "name": "retryOrFailAsync",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/application/runDurableWorkerAsync.ts",
+        "line": 171,
+        "column": 7
+      }
+    },
+    {
+      "name": "transitionAsync",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/application/runDurableWorkerAsync.ts",
+        "line": 205,
+        "column": 7
+      }
+    },
+    {
+      "name": "completeAsync",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/application/runDurableWorkerAsync.ts",
+        "line": 223,
+        "column": 7
+      }
+    },
+    {
+      "name": "claimFencingToken",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/application/runDurableWorkerAsync.ts",
+        "line": 236,
+        "column": 7
+      }
+    },
+    {
+      "name": "completedCheckpoint",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/application/runDurableWorkerAsync.ts",
+        "line": 242,
+        "column": 7
+      }
+    },
+    {
+      "name": "failedCheckpoint",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/application/runDurableWorkerAsync.ts",
+        "line": 255,
+        "column": 7
+      }
+    },
+    {
+      "name": "isCompleted",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/application/runDurableWorkerAsync.ts",
+        "line": 268,
+        "column": 7
+      }
+    },
+    {
+      "name": "assertWorkerInput",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/application/runDurableWorkerAsync.ts",
+        "line": 274,
+        "column": 7
+      }
+    },
+    {
+      "name": "isApprovalPending",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/application/runDurableWorkerAsync.ts",
+        "line": 286,
+        "column": 7
+      }
+    },
+    {
+      "name": "errorMessage",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/application/runDurableWorkerAsync.ts",
+        "line": 290,
+        "column": 7
+      }
+    },
+    {
+      "name": "unique",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/application/runDurableWorkerAsync.ts",
+        "line": 294,
+        "column": 7
+      }
+    },
+    {
       "name": "assertFlowGraphSchemasSupported",
       "description": "Validate every declared graph port schema before any operation can perform a side effect.",
       "see": [],
@@ -1806,6 +3167,17 @@
       "sourceLocation": {
         "filePath": "src/features/execution/domain/assertFlowGraphSchemasSupported.ts",
         "line": 7,
+        "column": 14
+      }
+    },
+    {
+      "name": "calculateRetryDueAt",
+      "description": "Calculate an exponential retry time from persisted attempt state without ambient time.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/calculateRetryDueAt.ts",
+        "line": 4,
         "column": 14
       }
     },
@@ -1905,6 +3277,127 @@
       "sourceLocation": {
         "filePath": "src/features/execution/domain/createDefaultNodeRegistry.ts",
         "line": 26,
+        "column": 7
+      }
+    },
+    {
+      "name": "createDurableRun",
+      "description": "Create a revision-zero run pinned permanently to one published flow definition.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/createDurableRun.ts",
+        "line": 4,
+        "column": 14
+      }
+    },
+    {
+      "name": "createRetryWork",
+      "description": "Create the next immutable work attempt from a completed attempt and controlled clock.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/createRetryWork.ts",
+        "line": 5,
+        "column": 14
+      }
+    },
+    {
+      "name": "isCronDueAt",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/isCronDueAt.ts",
+        "line": 2,
+        "column": 14
+      }
+    },
+    {
+      "name": "localParts",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/isCronDueAt.ts",
+        "line": 32,
+        "column": 7
+      }
+    },
+    {
+      "name": "read",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/isCronDueAt.ts",
+        "line": 52,
+        "column": 11
+      }
+    },
+    {
+      "name": "matchesField",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/isCronDueAt.ts",
+        "line": 67,
+        "column": 7
+      }
+    },
+    {
+      "name": "matchesPart",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/isCronDueAt.ts",
+        "line": 71,
+        "column": 7
+      }
+    },
+    {
+      "name": "parseRange",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/isCronDueAt.ts",
+        "line": 80,
+        "column": 7
+      }
+    },
+    {
+      "name": "parseValue",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/isCronDueAt.ts",
+        "line": 98,
+        "column": 7
+      }
+    },
+    {
+      "name": "weekday",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/isCronDueAt.ts",
+        "line": 107,
+        "column": 7
+      }
+    },
+    {
+      "name": "invalidTimezone",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/execution/domain/isCronDueAt.ts",
+        "line": 129,
         "column": 7
       }
     },
@@ -2891,6 +4384,14 @@
   "sequenceScenarios": [
     {
       "kind": "export",
+      "name": "calculateRetryDueAt",
+      "sourcePath": "src/features/execution/domain/calculateRetryDueAt.ts",
+      "symbolName": "calculateRetryDueAt",
+      "description": "Calculate an exponential retry time from persisted attempt state without ambient time.",
+      "isReadme": false
+    },
+    {
+      "kind": "export",
       "name": "compileFlowGraph",
       "sourcePath": "src/features/execution/domain/compileFlowGraph.ts",
       "symbolName": "compileFlowGraph",
@@ -2907,10 +4408,34 @@
     },
     {
       "kind": "export",
+      "name": "createDurableRun",
+      "sourcePath": "src/features/execution/domain/createDurableRun.ts",
+      "symbolName": "createDurableRun",
+      "description": "Create a revision-zero run pinned permanently to one published flow definition.",
+      "isReadme": false
+    },
+    {
+      "kind": "export",
+      "name": "createDurableRunAsync",
+      "sourcePath": "src/features/execution/application/createDurableRunAsync.ts",
+      "symbolName": "createDurableRunAsync",
+      "description": "Persist a new durable run without executing an operation or provider effect.",
+      "isReadme": false
+    },
+    {
+      "kind": "export",
       "name": "createFlowSecurityPort",
       "sourcePath": "src/features/security/application/createFlowSecurityPort.ts",
       "symbolName": "createFlowSecurityPort",
       "description": "Creates the provider-neutral server-side authorization, approval, audit, and secret boundary.",
+      "isReadme": false
+    },
+    {
+      "kind": "export",
+      "name": "createRetryWork",
+      "sourcePath": "src/features/execution/domain/createRetryWork.ts",
+      "symbolName": "createRetryWork",
+      "description": "Create the next immutable work attempt from a completed attempt and controlled clock.",
       "isReadme": false
     },
     {
@@ -2920,13 +4445,46 @@
       "symbolName": "executeFlowAsync",
       "description": "Execute a compiled graph in deterministic order within one process.",
       "isReadme": false
+    },
+    {
+      "kind": "export",
+      "name": "isCronDueAt",
+      "sourcePath": "src/features/execution/domain/isCronDueAt.ts",
+      "symbolName": "isCronDueAt",
+      "description": null,
+      "isReadme": false
     }
   ],
   "graphs": {
     "imports": [
       {
+        "fromPath": "src/execution.ts",
+        "toPath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "sourcePath": "src/execution.ts"
+      },
+      {
+        "fromPath": "src/execution.ts",
+        "toPath": "src/features/execution/application/cancelDurableRunAsync.ts",
+        "sourcePath": "src/execution.ts"
+      },
+      {
+        "fromPath": "src/execution.ts",
+        "toPath": "src/features/execution/application/runDurableWorkerAsync.ts",
+        "sourcePath": "src/execution.ts"
+      },
+      {
+        "fromPath": "src/index.ts",
+        "toPath": "src/features/execution/application/createDurableRunAsync.ts",
+        "sourcePath": "src/index.ts"
+      },
+      {
         "fromPath": "src/index.ts",
         "toPath": "src/features/execution/application/executeFlowAsync.ts",
+        "sourcePath": "src/index.ts"
+      },
+      {
+        "fromPath": "src/index.ts",
+        "toPath": "src/features/execution/domain/calculateRetryDueAt.ts",
         "sourcePath": "src/index.ts"
       },
       {
@@ -2941,12 +4499,37 @@
       },
       {
         "fromPath": "src/index.ts",
+        "toPath": "src/features/execution/domain/createDurableRun.ts",
+        "sourcePath": "src/index.ts"
+      },
+      {
+        "fromPath": "src/index.ts",
+        "toPath": "src/features/execution/domain/createRetryWork.ts",
+        "sourcePath": "src/index.ts"
+      },
+      {
+        "fromPath": "src/index.ts",
+        "toPath": "src/features/execution/domain/isCronDueAt.ts",
+        "sourcePath": "src/index.ts"
+      },
+      {
+        "fromPath": "src/index.ts",
+        "toPath": "src/features/execution/ports/FlowPersistencePort.ts",
+        "sourcePath": "src/index.ts"
+      },
+      {
+        "fromPath": "src/index.ts",
         "toPath": "src/features/security/application/createFlowSecurityPort.ts",
         "sourcePath": "src/index.ts"
       },
       {
         "fromPath": "src/index.ts",
         "toPath": "src/features/security/FlowSecurityError.ts",
+        "sourcePath": "src/index.ts"
+      },
+      {
+        "fromPath": "src/index.ts",
+        "toPath": "src/types/durableExecution.ts",
         "sourcePath": "src/index.ts"
       },
       {
@@ -2968,6 +4551,11 @@
         "fromPath": "src/mcp.ts",
         "toPath": "src/types/mcp.ts",
         "sourcePath": "src/mcp.ts"
+      },
+      {
+        "fromPath": "src/types/durableExecution.ts",
+        "toPath": "src/types/security.ts",
+        "sourcePath": "src/types/durableExecution.ts"
       },
       {
         "fromPath": "src/types/mcp.ts",
@@ -3050,6 +4638,51 @@
         "sourcePath": "src/features/mcp/validateMcpSchema.ts"
       },
       {
+        "fromPath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "toPath": "src/types/durableExecution.ts",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromPath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "toPath": "src/features/execution/ports/FlowPersistencePort.ts",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromPath": "src/features/execution/application/cancelDurableRunAsync.ts",
+        "toPath": "src/types/durableExecution.ts",
+        "sourcePath": "src/features/execution/application/cancelDurableRunAsync.ts"
+      },
+      {
+        "fromPath": "src/features/execution/application/cancelDurableRunAsync.ts",
+        "toPath": "src/types/execution.ts",
+        "sourcePath": "src/features/execution/application/cancelDurableRunAsync.ts"
+      },
+      {
+        "fromPath": "src/features/execution/application/cancelDurableRunAsync.ts",
+        "toPath": "src/features/execution/ports/FlowPersistencePort.ts",
+        "sourcePath": "src/features/execution/application/cancelDurableRunAsync.ts"
+      },
+      {
+        "fromPath": "src/features/execution/application/createDurableRunAsync.ts",
+        "toPath": "src/types/durableExecution.ts",
+        "sourcePath": "src/features/execution/application/createDurableRunAsync.ts"
+      },
+      {
+        "fromPath": "src/features/execution/application/createDurableRunAsync.ts",
+        "toPath": "src/types/execution.ts",
+        "sourcePath": "src/features/execution/application/createDurableRunAsync.ts"
+      },
+      {
+        "fromPath": "src/features/execution/application/createDurableRunAsync.ts",
+        "toPath": "src/features/execution/domain/createDurableRun.ts",
+        "sourcePath": "src/features/execution/application/createDurableRunAsync.ts"
+      },
+      {
+        "fromPath": "src/features/execution/application/createDurableRunAsync.ts",
+        "toPath": "src/features/execution/ports/FlowPersistencePort.ts",
+        "sourcePath": "src/features/execution/application/createDurableRunAsync.ts"
+      },
+      {
         "fromPath": "src/features/execution/application/executeFlowAsync.ts",
         "toPath": "src/types/execution.ts",
         "sourcePath": "src/features/execution/application/executeFlowAsync.ts"
@@ -3065,9 +4698,44 @@
         "sourcePath": "src/features/execution/application/executeFlowAsync.ts"
       },
       {
+        "fromPath": "src/features/execution/application/runDurableWorkerAsync.ts",
+        "toPath": "src/types/durableExecution.ts",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromPath": "src/features/execution/application/runDurableWorkerAsync.ts",
+        "toPath": "src/types/execution.ts",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromPath": "src/features/execution/application/runDurableWorkerAsync.ts",
+        "toPath": "src/types/security.ts",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromPath": "src/features/execution/application/runDurableWorkerAsync.ts",
+        "toPath": "src/features/security/FlowSecurityError.ts",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromPath": "src/features/execution/application/runDurableWorkerAsync.ts",
+        "toPath": "src/features/execution/domain/createRetryWork.ts",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromPath": "src/features/execution/application/runDurableWorkerAsync.ts",
+        "toPath": "src/features/execution/ports/FlowPersistencePort.ts",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
         "fromPath": "src/features/execution/domain/assertFlowGraphSchemasSupported.ts",
         "toPath": "src/features/execution/domain/validateFlowDataSchema.ts",
         "sourcePath": "src/features/execution/domain/assertFlowGraphSchemasSupported.ts"
+      },
+      {
+        "fromPath": "src/features/execution/domain/calculateRetryDueAt.ts",
+        "toPath": "src/types/durableExecution.ts",
+        "sourcePath": "src/features/execution/domain/calculateRetryDueAt.ts"
       },
       {
         "fromPath": "src/features/execution/domain/compileFlowGraph.ts",
@@ -3078,6 +4746,26 @@
         "fromPath": "src/features/execution/domain/createDefaultNodeRegistry.ts",
         "toPath": "src/types/execution.ts",
         "sourcePath": "src/features/execution/domain/createDefaultNodeRegistry.ts"
+      },
+      {
+        "fromPath": "src/features/execution/domain/createDurableRun.ts",
+        "toPath": "src/types/durableExecution.ts",
+        "sourcePath": "src/features/execution/domain/createDurableRun.ts"
+      },
+      {
+        "fromPath": "src/features/execution/domain/createRetryWork.ts",
+        "toPath": "src/types/durableExecution.ts",
+        "sourcePath": "src/features/execution/domain/createRetryWork.ts"
+      },
+      {
+        "fromPath": "src/features/execution/domain/createRetryWork.ts",
+        "toPath": "src/features/execution/domain/calculateRetryDueAt.ts",
+        "sourcePath": "src/features/execution/domain/createRetryWork.ts"
+      },
+      {
+        "fromPath": "src/features/execution/ports/FlowPersistencePort.ts",
+        "toPath": "src/types/durableExecution.ts",
+        "sourcePath": "src/features/execution/ports/FlowPersistencePort.ts"
       },
       {
         "fromPath": "src/features/security/application/createFlowSecurityPort.ts",
@@ -3575,6 +5263,402 @@
         "sourcePath": "src/features/mcp/validateMcpSchema.ts"
       },
       {
+        "fromSymbol": "FileFlowPersistenceAdapter",
+        "toSymbol": "resolve",
+        "callExpression": "resolve",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "FileFlowPersistenceAdapter",
+        "toSymbol": "getSerializedCall",
+        "callExpression": "getSerializedCall",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "cancelRunWorkAsync",
+        "toSymbol": "runAsync",
+        "callExpression": "serializedCall.runAsync",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "toSymbol": "cancelRunWorkAsync",
+        "callExpression": "cancelRunWorkAsync",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "claimDueWorkAsync",
+        "toSymbol": "runAsync",
+        "callExpression": "serializedCall.runAsync",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "toSymbol": "claimDueWorkAsync",
+        "callExpression": "claimDueWorkAsync",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "completeWorkAsync",
+        "toSymbol": "runAsync",
+        "callExpression": "serializedCall.runAsync",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "toSymbol": "completeWorkAsync",
+        "callExpression": "completeWorkAsync",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "createOutboxAsync",
+        "toSymbol": "runAsync",
+        "callExpression": "serializedCall.runAsync",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "toSymbol": "createOutboxAsync",
+        "callExpression": "createOutboxAsync",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "createRunAsync",
+        "toSymbol": "runAsync",
+        "callExpression": "serializedCall.runAsync",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "toSymbol": "createRunAsync",
+        "callExpression": "createRunAsync",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "enqueueWorkAsync",
+        "toSymbol": "runAsync",
+        "callExpression": "serializedCall.runAsync",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "toSymbol": "enqueueWorkAsync",
+        "callExpression": "enqueueWorkAsync",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "markOutboxDeliveredAsync",
+        "toSymbol": "runAsync",
+        "callExpression": "serializedCall.runAsync",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "toSymbol": "markOutboxDeliveredAsync",
+        "callExpression": "markOutboxDeliveredAsync",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "readOutboxAsync",
+        "toSymbol": "runAsync",
+        "callExpression": "serializedCall.runAsync",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "toSymbol": "readOutboxAsync",
+        "callExpression": "readOutboxAsync",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "readRunAsync",
+        "toSymbol": "runAsync",
+        "callExpression": "serializedCall.runAsync",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "toSymbol": "readRunAsync",
+        "callExpression": "readRunAsync",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "recoverExpiredClaimsAsync",
+        "toSymbol": "runAsync",
+        "callExpression": "serializedCall.runAsync",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "toSymbol": "recoverExpiredClaimsAsync",
+        "callExpression": "recoverExpiredClaimsAsync",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "releaseWorkAsync",
+        "toSymbol": "runAsync",
+        "callExpression": "serializedCall.runAsync",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "toSymbol": "releaseWorkAsync",
+        "callExpression": "releaseWorkAsync",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "transitionRunAsync",
+        "toSymbol": "runAsync",
+        "callExpression": "serializedCall.runAsync",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "toSymbol": "transitionRunAsync",
+        "callExpression": "transitionRunAsync",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "cancelRunWorkAsync",
+        "toSymbol": "updateStoreAsync",
+        "callExpression": "updateStoreAsync",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "toSymbol": "replaceWork",
+        "callExpression": "replaceWork",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "createOutboxAsync",
+        "toSymbol": "updateStoreAsync",
+        "callExpression": "updateStoreAsync",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "toSymbol": "copy",
+        "callExpression": "copy",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "getSerializedCall",
+        "toSymbol": "createSerializedCall",
+        "callExpression": "createSerializedCall",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "claimDueWorkAsync",
+        "toSymbol": "updateStoreAsync",
+        "callExpression": "updateStoreAsync",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "toSymbol": "claimWork",
+        "callExpression": "claimWork",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "completeWorkAsync",
+        "toSymbol": "updateStoreAsync",
+        "callExpression": "updateStoreAsync",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "createRunAsync",
+        "toSymbol": "updateStoreAsync",
+        "callExpression": "updateStoreAsync",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "enqueueWorkAsync",
+        "toSymbol": "updateStoreAsync",
+        "callExpression": "updateStoreAsync",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "markOutboxDeliveredAsync",
+        "toSymbol": "updateStoreAsync",
+        "callExpression": "updateStoreAsync",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "toSymbol": "replaceOutbox",
+        "callExpression": "replaceOutbox",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "readOutboxAsync",
+        "toSymbol": "copy",
+        "callExpression": "copy",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "readOutboxAsync",
+        "toSymbol": "readStoreAsync",
+        "callExpression": "readStoreAsync",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "readRunAsync",
+        "toSymbol": "copy",
+        "callExpression": "copy",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "readRunAsync",
+        "toSymbol": "readStoreAsync",
+        "callExpression": "readStoreAsync",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "recoverExpiredClaimsAsync",
+        "toSymbol": "updateStoreAsync",
+        "callExpression": "updateStoreAsync",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "releaseWorkAsync",
+        "toSymbol": "updateStoreAsync",
+        "callExpression": "updateStoreAsync",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "transitionRunAsync",
+        "toSymbol": "updateStoreAsync",
+        "callExpression": "updateStoreAsync",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "toSymbol": "sameFlow",
+        "callExpression": "sameFlow",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
+        "toSymbol": "replaceRuns",
+        "callExpression": "replaceRuns",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "readStoreAsync",
+        "toSymbol": "readFileStore",
+        "callExpression": "readFileStore",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "readStoreAsync",
+        "toSymbol": "readFile",
+        "callExpression": "readFile",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "readStoreAsync",
+        "toSymbol": "isMissingFile",
+        "callExpression": "isMissingFile",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "updateStoreAsync",
+        "toSymbol": "update",
+        "callExpression": "update",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "updateStoreAsync",
+        "toSymbol": "readStoreAsync",
+        "callExpression": "readStoreAsync",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "updateStoreAsync",
+        "toSymbol": "mkdir",
+        "callExpression": "mkdir",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "updateStoreAsync",
+        "toSymbol": "dirname",
+        "callExpression": "dirname",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "updateStoreAsync",
+        "toSymbol": "randomUUID",
+        "callExpression": "randomUUID",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "updateStoreAsync",
+        "toSymbol": "writeFile",
+        "callExpression": "writeFile",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "updateStoreAsync",
+        "toSymbol": "rename",
+        "callExpression": "rename",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "updateStoreAsync",
+        "toSymbol": "copy",
+        "callExpression": "copy",
+        "sourcePath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts"
+      },
+      {
+        "fromSymbol": "cancelDurableRunAsync",
+        "toSymbol": "readRunAsync",
+        "callExpression": "dependencies.persistence.readRunAsync",
+        "sourcePath": "src/features/execution/application/cancelDurableRunAsync.ts"
+      },
+      {
+        "fromSymbol": "cancelDurableRunAsync",
+        "toSymbol": "isTerminal",
+        "callExpression": "isTerminal",
+        "sourcePath": "src/features/execution/application/cancelDurableRunAsync.ts"
+      },
+      {
+        "fromSymbol": "cancelDurableRunAsync",
+        "toSymbol": "transitionRunAsync",
+        "callExpression": "dependencies.persistence.transitionRunAsync",
+        "sourcePath": "src/features/execution/application/cancelDurableRunAsync.ts"
+      },
+      {
+        "fromSymbol": "cancelDurableRunAsync",
+        "toSymbol": "now",
+        "callExpression": "dependencies.clock.now",
+        "sourcePath": "src/features/execution/application/cancelDurableRunAsync.ts"
+      },
+      {
+        "fromSymbol": "cancelDurableRunAsync",
+        "toSymbol": "cancelRunWorkAsync",
+        "callExpression": "dependencies.persistence.cancelRunWorkAsync",
+        "sourcePath": "src/features/execution/application/cancelDurableRunAsync.ts"
+      },
+      {
+        "fromSymbol": "createDurableRunAsync",
+        "toSymbol": "createDurableRun",
+        "callExpression": "createDurableRun",
+        "sourcePath": "src/features/execution/application/createDurableRunAsync.ts"
+      },
+      {
+        "fromSymbol": "createDurableRunAsync",
+        "toSymbol": "now",
+        "callExpression": "dependencies.clock.now",
+        "sourcePath": "src/features/execution/application/createDurableRunAsync.ts"
+      },
+      {
+        "fromSymbol": "createDurableRunAsync",
+        "toSymbol": "createRunAsync",
+        "callExpression": "dependencies.persistence.createRunAsync",
+        "sourcePath": "src/features/execution/application/createDurableRunAsync.ts"
+      },
+      {
         "fromSymbol": "executeFlowAsync",
         "toSymbol": "assertFlowGraphSchemasSupported",
         "callExpression": "assertFlowGraphSchemasSupported",
@@ -3725,6 +5809,270 @@
         "sourcePath": "src/features/execution/application/executeFlowAsync.ts"
       },
       {
+        "fromSymbol": "runDurableWorkerAsync",
+        "toSymbol": "assertWorkerInput",
+        "callExpression": "assertWorkerInput",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "runDurableWorkerAsync",
+        "toSymbol": "now",
+        "callExpression": "dependencies.clock.now",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "runDurableWorkerAsync",
+        "toSymbol": "recoverExpiredClaimsAsync",
+        "callExpression": "dependencies.persistence.recoverExpiredClaimsAsync",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "runDurableWorkerAsync",
+        "toSymbol": "claimDueWorkAsync",
+        "callExpression": "dependencies.persistence.claimDueWorkAsync",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "src/features/execution/application/runDurableWorkerAsync.ts",
+        "toSymbol": "processWorkAsync",
+        "callExpression": "processWorkAsync",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "processWorkAsync",
+        "toSymbol": "readRunAsync",
+        "callExpression": "dependencies.persistence.readRunAsync",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "processWorkAsync",
+        "toSymbol": "completeAsync",
+        "callExpression": "completeAsync",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "processWorkAsync",
+        "toSymbol": "isCompleted",
+        "callExpression": "isCompleted",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "processWorkAsync",
+        "toSymbol": "prepareOutboxAsync",
+        "callExpression": "prepareOutboxAsync",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "processWorkAsync",
+        "toSymbol": "transitionAsync",
+        "callExpression": "transitionAsync",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "processWorkAsync",
+        "toSymbol": "completedCheckpoint",
+        "callExpression": "completedCheckpoint",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "processWorkAsync",
+        "toSymbol": "executeEffectAsync",
+        "callExpression": "executeEffectAsync",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "processWorkAsync",
+        "toSymbol": "markOutboxDeliveredAsync",
+        "callExpression": "dependencies.persistence.markOutboxDeliveredAsync",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "processWorkAsync",
+        "toSymbol": "isApprovalPending",
+        "callExpression": "isApprovalPending",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "processWorkAsync",
+        "toSymbol": "waitForApprovalAsync",
+        "callExpression": "waitForApprovalAsync",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "processWorkAsync",
+        "toSymbol": "retryOrFailAsync",
+        "callExpression": "retryOrFailAsync",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "prepareOutboxAsync",
+        "toSymbol": "readOutboxAsync",
+        "callExpression": "dependencies.persistence.readOutboxAsync",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "prepareOutboxAsync",
+        "toSymbol": "now",
+        "callExpression": "dependencies.clock.now",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "prepareOutboxAsync",
+        "toSymbol": "createOutboxAsync",
+        "callExpression": "dependencies.persistence.createOutboxAsync",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "execute",
+        "toSymbol": "executeAsync",
+        "callExpression": "dependencies.effects.executeAsync",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "executeEffectAsync",
+        "toSymbol": "execute",
+        "callExpression": "execute",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "executeEffectAsync",
+        "toSymbol": "reconcileAsync",
+        "callExpression": "dependencies.effects.reconcileAsync",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "executeEffectAsync",
+        "toSymbol": "authorizeAsync",
+        "callExpression": "dependencies.security.authorizeAsync",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "executeEffectAsync",
+        "toSymbol": "executeAsync",
+        "callExpression": "permit.executeAsync",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "src/features/execution/application/runDurableWorkerAsync.ts",
+        "toSymbol": "execute",
+        "callExpression": "execute",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "waitForApprovalAsync",
+        "toSymbol": "transitionAsync",
+        "callExpression": "transitionAsync",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "waitForApprovalAsync",
+        "toSymbol": "releaseWorkAsync",
+        "callExpression": "dependencies.persistence.releaseWorkAsync",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "waitForApprovalAsync",
+        "toSymbol": "now",
+        "callExpression": "dependencies.clock.now",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "waitForApprovalAsync",
+        "toSymbol": "claimFencingToken",
+        "callExpression": "claimFencingToken",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "retryOrFailAsync",
+        "toSymbol": "compensateAsync",
+        "callExpression": "dependencies.effects.compensateAsync",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "retryOrFailAsync",
+        "toSymbol": "transitionAsync",
+        "callExpression": "transitionAsync",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "retryOrFailAsync",
+        "toSymbol": "failedCheckpoint",
+        "callExpression": "failedCheckpoint",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "retryOrFailAsync",
+        "toSymbol": "completeAsync",
+        "callExpression": "completeAsync",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "retryOrFailAsync",
+        "toSymbol": "errorMessage",
+        "callExpression": "errorMessage",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "retryOrFailAsync",
+        "toSymbol": "enqueueWorkAsync",
+        "callExpression": "dependencies.persistence.enqueueWorkAsync",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "retryOrFailAsync",
+        "toSymbol": "createRetryWork",
+        "callExpression": "createRetryWork",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "retryOrFailAsync",
+        "toSymbol": "now",
+        "callExpression": "dependencies.clock.now",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "transitionAsync",
+        "toSymbol": "transitionRunAsync",
+        "callExpression": "dependencies.persistence.transitionRunAsync",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "transitionAsync",
+        "toSymbol": "now",
+        "callExpression": "dependencies.clock.now",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "completeAsync",
+        "toSymbol": "completeWorkAsync",
+        "callExpression": "dependencies.persistence.completeWorkAsync",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "completeAsync",
+        "toSymbol": "claimFencingToken",
+        "callExpression": "claimFencingToken",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "completeAsync",
+        "toSymbol": "now",
+        "callExpression": "dependencies.clock.now",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "completedCheckpoint",
+        "toSymbol": "unique",
+        "callExpression": "unique",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
+        "fromSymbol": "failedCheckpoint",
+        "toSymbol": "unique",
+        "callExpression": "unique",
+        "sourcePath": "src/features/execution/application/runDurableWorkerAsync.ts"
+      },
+      {
         "fromSymbol": "assertFlowGraphSchemasSupported",
         "toSymbol": "assertFlowDataSchemaSupported",
         "callExpression": "assertFlowDataSchemaSupported",
@@ -3765,6 +6113,72 @@
         "toSymbol": "isDataRef",
         "callExpression": "isDataRef",
         "sourcePath": "src/features/execution/domain/createDefaultNodeRegistry.ts"
+      },
+      {
+        "fromSymbol": "createRetryWork",
+        "toSymbol": "calculateRetryDueAt",
+        "callExpression": "calculateRetryDueAt",
+        "sourcePath": "src/features/execution/domain/createRetryWork.ts"
+      },
+      {
+        "fromSymbol": "isCronDueAt",
+        "toSymbol": "localParts",
+        "callExpression": "localParts",
+        "sourcePath": "src/features/execution/domain/isCronDueAt.ts"
+      },
+      {
+        "fromSymbol": "isCronDueAt",
+        "toSymbol": "matchesField",
+        "callExpression": "matchesField",
+        "sourcePath": "src/features/execution/domain/isCronDueAt.ts"
+      },
+      {
+        "fromSymbol": "read",
+        "toSymbol": "invalidTimezone",
+        "callExpression": "invalidTimezone",
+        "sourcePath": "src/features/execution/domain/isCronDueAt.ts"
+      },
+      {
+        "fromSymbol": "localParts",
+        "toSymbol": "read",
+        "callExpression": "read",
+        "sourcePath": "src/features/execution/domain/isCronDueAt.ts"
+      },
+      {
+        "fromSymbol": "localParts",
+        "toSymbol": "weekday",
+        "callExpression": "weekday",
+        "sourcePath": "src/features/execution/domain/isCronDueAt.ts"
+      },
+      {
+        "fromSymbol": "src/features/execution/domain/isCronDueAt.ts",
+        "toSymbol": "matchesPart",
+        "callExpression": "matchesPart",
+        "sourcePath": "src/features/execution/domain/isCronDueAt.ts"
+      },
+      {
+        "fromSymbol": "matchesPart",
+        "toSymbol": "parseValue",
+        "callExpression": "parseValue",
+        "sourcePath": "src/features/execution/domain/isCronDueAt.ts"
+      },
+      {
+        "fromSymbol": "matchesPart",
+        "toSymbol": "parseRange",
+        "callExpression": "parseRange",
+        "sourcePath": "src/features/execution/domain/isCronDueAt.ts"
+      },
+      {
+        "fromSymbol": "parseRange",
+        "toSymbol": "parseValue",
+        "callExpression": "parseValue",
+        "sourcePath": "src/features/execution/domain/isCronDueAt.ts"
+      },
+      {
+        "fromSymbol": "weekday",
+        "toSymbol": "invalidTimezone",
+        "callExpression": "invalidTimezone",
+        "sourcePath": "src/features/execution/domain/isCronDueAt.ts"
       },
       {
         "fromSymbol": "validateFlowDataSchema",
@@ -4261,6 +6675,26 @@
     ],
     "typeReferences": [
       {
+        "fromSymbol": "createDurableRunAsync",
+        "toType": "FlowClock",
+        "sourcePath": "src/features/execution/application/createDurableRunAsync.ts"
+      },
+      {
+        "fromSymbol": "createDurableRunAsync",
+        "toType": "FlowDefinitionRef",
+        "sourcePath": "src/features/execution/application/createDurableRunAsync.ts"
+      },
+      {
+        "fromSymbol": "createDurableRunAsync",
+        "toType": "FlowDurableRun",
+        "sourcePath": "src/features/execution/application/createDurableRunAsync.ts"
+      },
+      {
+        "fromSymbol": "createDurableRunAsync",
+        "toType": "FlowPersistencePort",
+        "sourcePath": "src/features/execution/application/createDurableRunAsync.ts"
+      },
+      {
         "fromSymbol": "executeFlowAsync",
         "toType": "FlowClock",
         "sourcePath": "src/features/execution/application/executeFlowAsync.ts"
@@ -4291,6 +6725,11 @@
         "sourcePath": "src/features/execution/application/executeFlowAsync.ts"
       },
       {
+        "fromSymbol": "calculateRetryDueAt",
+        "toType": "FlowRetryPolicy",
+        "sourcePath": "src/features/execution/domain/calculateRetryDueAt.ts"
+      },
+      {
         "fromSymbol": "compileFlowGraph",
         "toType": "FlowCompiledGraph",
         "sourcePath": "src/features/execution/domain/compileFlowGraph.ts"
@@ -4319,6 +6758,41 @@
         "fromSymbol": "createDefaultNodeRegistry",
         "toType": "Readonly",
         "sourcePath": "src/features/execution/domain/createDefaultNodeRegistry.ts"
+      },
+      {
+        "fromSymbol": "createDurableRun",
+        "toType": "FlowDefinitionRef",
+        "sourcePath": "src/features/execution/domain/createDurableRun.ts"
+      },
+      {
+        "fromSymbol": "createDurableRun",
+        "toType": "FlowDurableRun",
+        "sourcePath": "src/features/execution/domain/createDurableRun.ts"
+      },
+      {
+        "fromSymbol": "createRetryWork",
+        "toType": "FlowDurableWork",
+        "sourcePath": "src/features/execution/domain/createRetryWork.ts"
+      },
+      {
+        "fromSymbol": "createRetryWork",
+        "toType": "FlowRetryPolicy",
+        "sourcePath": "src/features/execution/domain/createRetryWork.ts"
+      },
+      {
+        "fromSymbol": "FlowPersistencePort",
+        "toType": "FlowDurableRun",
+        "sourcePath": "src/features/execution/ports/FlowPersistencePort.ts"
+      },
+      {
+        "fromSymbol": "FlowPersistencePort",
+        "toType": "FlowDurableWork",
+        "sourcePath": "src/features/execution/ports/FlowPersistencePort.ts"
+      },
+      {
+        "fromSymbol": "FlowPersistencePort",
+        "toType": "FlowOutboxRecord",
+        "sourcePath": "src/features/execution/ports/FlowPersistencePort.ts"
       },
       {
         "fromSymbol": "createFlowSecurityPort",
@@ -4354,6 +6828,36 @@
         "fromSymbol": "createFlowSecurityPort",
         "toType": "SecretStoreAdapter",
         "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "FlowDurableRun",
+        "toType": "FlowDefinitionRef",
+        "sourcePath": "src/types/durableExecution.ts"
+      },
+      {
+        "fromSymbol": "FlowDurableRun",
+        "toType": "FlowRunCheckpoint",
+        "sourcePath": "src/types/durableExecution.ts"
+      },
+      {
+        "fromSymbol": "FlowDurableWork",
+        "toType": "FlowDefinitionRef",
+        "sourcePath": "src/types/durableExecution.ts"
+      },
+      {
+        "fromSymbol": "FlowDurableWork",
+        "toType": "FlowSecurityOperation",
+        "sourcePath": "src/types/durableExecution.ts"
+      },
+      {
+        "fromSymbol": "FlowOutboxRecord",
+        "toType": "SerializableValue",
+        "sourcePath": "src/types/durableExecution.ts"
+      },
+      {
+        "fromSymbol": "FlowRunCheckpoint",
+        "toType": "SerializableValue",
+        "sourcePath": "src/types/durableExecution.ts"
       },
       {
         "fromSymbol": "FlowCompiledGraph",
