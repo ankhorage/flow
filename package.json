@@ -67,6 +67,7 @@
   "devDependencies": {
     "@ankhorage/devtools": "^2.4.3",
     "@ankhorage/paradox": "^0.3.6",
+    "@ankhorage/secrets-supabase-vault": "^1.0.0",
     "@modelcontextprotocol/sdk": "^1.32.2",
     "@types/bun": "^1.4.2",
     "@types/node": "^26.6.6",
