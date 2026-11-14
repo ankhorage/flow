@@ -102,7 +102,15 @@ const executeAvailableNodeAsync = async (
   if (!state.activatedNodeIds.has(node.id)) return undefined;
   const input = state.inputs[node.id] ?? request.input ?? {};
   if (!hasRequiredInput(node, input)) return undefined;
-  return executeNodeAsync(node, input, registry, request.signal, clock, request.schemaRegistry);
+  return executeNodeAsync(
+    node,
+    input,
+    registry,
+    request.effectIdentity ?? { idempotencyKey: `${request.runId}:step:${node.id}` },
+    request.signal,
+    clock,
+    request.schemaRegistry,
+  );
 };
 
 /*** Determine whether every required input port has a propagated value. */
@@ -119,6 +127,7 @@ const executeNodeAsync = async (
   node: FlowNode,
   input: Readonly<Record<FlowPortId, FlowDataRef>>,
   registry: FlowNodeRegistry,
+  effect: { readonly idempotencyKey: string },
   signal: AbortSignal | undefined,
   clock: FlowClock,
   schemas: FlowRunRequest['schemaRegistry'],
@@ -136,6 +145,7 @@ const executeNodeAsync = async (
       (
         await operation.executeAsync({
           config: node.config,
+          effect,
           input,
           node,
           signal: signal ?? new AbortController().signal,

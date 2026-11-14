@@ -10,6 +10,7 @@ import type {
 import type { FlowPersistencePort } from '../features/execution/ports/FlowPersistencePort.js';
 import type { FlowClock, FlowNodeRegistry } from './execution.js';
 import type { FlowSecurityActor } from './security.js';
+import type { FlowSecurityPort } from './security.js';
 
 /** A trusted tenant/project boundary derived by the embedding authenticator. */
 export interface FlowResourceScope {
@@ -47,6 +48,10 @@ export interface FlowRuntimeStorePort {
     version?: number,
   ): Promise<FlowWorkflowRevision | undefined>;
   listRunsAsync(scope: FlowResourceScope, flowId?: string): Promise<readonly FlowRunSnapshot[]>;
+  /** Enumerate accepted but not yet started runs so a restarted worker can repair queue handoff. */
+  listPendingRunsAsync(): Promise<
+    readonly { readonly run: FlowRunSnapshot; readonly scope: FlowResourceScope }[]
+  >;
   listWorkflowRevisionsAsync(
     scope: FlowResourceScope,
     flowId: string,
@@ -106,6 +111,7 @@ export interface FlowRuntimeDependencies {
   readonly nodeRegistry: FlowNodeRegistry;
   readonly observability?: FlowObservabilityPort;
   readonly persistence: FlowPersistencePort;
+  readonly security?: FlowSecurityPort;
   readonly store: FlowRuntimeStorePort;
 }
 

@@ -159,6 +159,45 @@ describe('headless Flow runtime', () => {
     }
   });
 
+  it('recovers a terminated headless protected delivery from an independent provider receipt without redelivery', async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'flow-headless-crash-'));
+    const fixture = new URL('./fixtures/durableHeadlessCrashWorker.ts', import.meta.url).pathname;
+    const input = {
+      durablePath: join(directory, 'durable.json'),
+      receiptPath: join(directory, 'provider-receipts.json'),
+      runtimePath: join(directory, 'runtime.json'),
+    };
+    try {
+      const crashed = Bun.spawnSync([
+        process.execPath,
+        fixture,
+        JSON.stringify({ ...input, mode: 'crash-after-provider' }),
+      ]);
+      expect(crashed.exitCode).not.toBe(0);
+      const recovered = Bun.spawnSync([
+        process.execPath,
+        fixture,
+        JSON.stringify({ ...input, mode: 'recover' }),
+      ]);
+      const output = `${recovered.stdout.toString()}${recovered.stderr.toString()}`;
+      expect(recovered.exitCode, output).toBe(0);
+      const result = JSON.parse(recovered.stdout.toString()) as {
+        readonly receipts: readonly { readonly idempotencyKey: string }[];
+        readonly run: {
+          readonly status: string;
+          readonly steps: readonly { readonly nodeId: string }[];
+        };
+      };
+      expect(result.receipts).toEqual([
+        expect.objectContaining({ idempotencyKey: expect.stringMatching(/:step:provider$/) }),
+      ]);
+      expect(result.run.status).toBe('succeeded');
+      expect(result.run.steps.map((step) => step.nodeId)).toEqual(['branch', 'provider']);
+    } finally {
+      await rm(directory, { force: true, recursive: true });
+    }
+  });
+
   it('retains bounded, redaction-safe execution audit and metric observations', async () => {
     const observability = InMemoryFlowObservability(1);
     const runtime = createFlowRuntime({

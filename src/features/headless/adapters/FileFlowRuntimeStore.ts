@@ -52,6 +52,8 @@ export const FileFlowRuntimeStore = (path: string): FlowRuntimeStorePort => {
       calls.runAsync(async () => findWorkflow(await readAsync(storePath), scope, flowId, version)),
     listRunsAsync: (scope, flowId) =>
       calls.runAsync(async () => listRuns(await readAsync(storePath), scope, flowId)),
+    listPendingRunsAsync: () =>
+      calls.runAsync(async () => listPendingRuns(await readAsync(storePath))),
     listWorkflowRevisionsAsync: (scope, flowId) =>
       calls.runAsync(
         async () => findWorkflowEntry(await readAsync(storePath), scope, flowId)?.revisions ?? [],
@@ -260,6 +262,13 @@ const listRuns = (
         sameScope(entry.scope, scope) && (flowId === undefined || entry.run.flow.id === flowId),
     )
     .map((entry) => entry.run);
+/** Return only accepted work that needs durable handoff repair after a process interruption. */
+const listPendingRuns = (
+  state: FileRuntimeState,
+): readonly { readonly run: FlowRunSnapshot; readonly scope: FlowResourceScope }[] =>
+  state.runs
+    .filter((entry) => entry.run.status === 'pending')
+    .map((entry) => ({ run: entry.run, scope: entry.scope }));
 const listEvents = (
   state: FileRuntimeState,
   scope: FlowResourceScope,

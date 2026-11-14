@@ -18,16 +18,22 @@ export { createFlowSecurityPort } from './features/security/application/createFl
 export { FlowSecurityError } from './features/security/FlowSecurityError.js';
 export type {
   FlowDefinitionRef,
+  FlowDurableEffectPort,
+  FlowDurableEffectResult,
   FlowDurableRun,
   FlowDurableWork,
   FlowOutboxRecord,
   FlowRetryPolicy,
   FlowRunCheckpoint,
+  FlowWorkerOutcome,
+  FlowWorkerResult,
 } from './types/durableExecution.js';
 export type {
   FlowClock,
   FlowCompiledGraph,
   FlowExecutionResult,
+  FlowNodeEffect,
+  FlowNodeEffectIdentity,
   FlowNodeOperation,
   FlowNodeOperationResult,
   FlowNodeRegistry,

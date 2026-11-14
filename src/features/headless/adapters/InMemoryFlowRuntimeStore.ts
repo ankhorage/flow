@@ -15,6 +15,7 @@ import type {
 export const InMemoryFlowRuntimeStore = (): FlowRuntimeStorePort => {
   const workflows = new Map<string, FlowWorkflowRevision[]>();
   const runs = new Map<string, FlowRunSnapshot>();
+  const runScopes = new Map<string, FlowResourceScope>();
   const approvals = new Map<string, FlowApprovalRequest>();
   const events = new Map<string, FlowRunEvent[]>();
   const idempotency = new Map<string, string>();
@@ -34,6 +35,7 @@ export const InMemoryFlowRuntimeStore = (): FlowRuntimeStorePort => {
           )
           .map(([, run]) => run),
       ),
+    listPendingRunsAsync: () => Promise.resolve(listPendingRuns(runs, runScopes)),
     listWorkflowRevisionsAsync: (scope, flowId) =>
       Promise.resolve(workflows.get(workflowKey(scope, flowId)) ?? []),
     publishAsync: (scope, flowId, version, publishedAt) =>
@@ -49,10 +51,23 @@ export const InMemoryFlowRuntimeStore = (): FlowRuntimeStorePort => {
       approvals.set(approvalKey(scope, approval.id), approval);
       return Promise.resolve();
     },
-    saveRunAsync: (scope, run, key) => Promise.resolve(saveRun(runs, idempotency, scope, run, key)),
+    saveRunAsync: (scope, run, key) =>
+      Promise.resolve(saveRun(runs, runScopes, idempotency, scope, run, key)),
     transitionRunAsync: (input) => Promise.resolve(transitionRun(runs, events, input)),
   };
 };
+
+/** Return accepted runs that need their durable queue handoff repaired after a restart. */
+const listPendingRuns = (
+  runs: ReadonlyMap<string, FlowRunSnapshot>,
+  runScopes: ReadonlyMap<string, FlowResourceScope>,
+): readonly { readonly run: FlowRunSnapshot; readonly scope: FlowResourceScope }[] =>
+  [...runs.entries()]
+    .filter(([, run]) => run.status === 'pending')
+    .flatMap(([key, run]) => {
+      const scope = runScopes.get(key);
+      return scope === undefined ? [] : [{ run, scope }];
+    });
 
 /*** Create exactly one immutable draft version for a workflow identifier. */
 const createDraft = (
@@ -105,6 +120,7 @@ const publish = (
 /*** Make idempotent triggers return their original run without duplicate execution. */
 const saveRun = (
   runs: Map<string, FlowRunSnapshot>,
+  runScopes: Map<string, FlowResourceScope>,
   idempotency: Map<string, string>,
   scope: FlowResourceScope,
   run: FlowRunSnapshot,
@@ -115,6 +131,7 @@ const saveRun = (
   if (existing !== undefined) return existing;
   if (runs.has(runKey(scope, run.id))) throw new Error('FLOW_RUN_EXISTS');
   runs.set(runKey(scope, run.id), run);
+  runScopes.set(runKey(scope, run.id), scope);
   if (key !== undefined) idempotency.set(idempotencyKey(scope, key), run.id);
   return run;
 };
