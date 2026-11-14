@@ -5,6 +5,9 @@ import type {
   FlowOperationStorePort,
   FlowRateLimitPort,
   FlowResolvedSecrets,
+  FlowSecretCreateInput,
+  FlowSecretMetadata,
+  FlowSecretRevokeInput,
   FlowSecurityActor,
   FlowSecurityAuditEvent,
   FlowSecurityAuditPort,
@@ -19,6 +22,12 @@ import { validateFlowSecurityTarget } from '../domain/validateFlowSecurityTarget
 import { FlowSecurityError } from '../FlowSecurityError.js';
 
 const METADATA_CAPABILITY = 'secrets:metadata';
+const CREATE_CAPABILITY = 'secrets:create';
+const REVOKE_CAPABILITY = 'secrets:revoke';
+type FlowSecurityDenialReason = Exclude<
+  FlowSecurityAuditEvent['reason'],
+  'credential_create' | 'credential_revoke'
+>;
 
 /*** Creates the provider-neutral server-side authorization, approval, audit, and secret boundary. */
 export const createFlowSecurityPort = (input: {
@@ -30,7 +39,9 @@ export const createFlowSecurityPort = (input: {
   readonly secretStore: SecretStoreAdapter;
 }): FlowSecurityPort => ({
   authorizeAsync: async (operation) => authorizeAsync(input, operation),
+  createSecretAsync: async (request) => createSecretAsync(input, request),
   getSecretMetadataAsync: async ({ actor, ref }) => getSecretMetadataAsync(input, actor, ref),
+  revokeSecretAsync: async (request) => revokeSecretAsync(input, request),
 });
 
 /*** Authorizes and durably claims one exact operation before resolving any secret material. */
@@ -40,56 +51,79 @@ const authorizeAsync = async (
 ): Promise<FlowSecurityPermit> => {
   const identity = identityOf(operation);
   const targetHost = validateFlowSecurityTarget(identity.target);
-  if (!isGranted(input.grants, operation.actor, operation.capability))
-    return denyAsync(input.audit, operation, identity.secretRefs, targetHost, 'permission_denied');
+  if (!isGranted(input.grants, identity.actor, identity.capability))
+    return denyAsync(input.audit, identity, targetHost, 'permission_denied');
   const approval = await input.approvalStore.getAsync(identity);
   if (!approval || approval.status === 'pending')
-    return denyAsync(input.audit, operation, identity.secretRefs, targetHost, 'approval_pending');
+    return denyAsync(input.audit, identity, targetHost, 'approval_pending');
   if (approval.status !== 'approved' || !sameIdentity(approval.operation, identity))
-    return denyAsync(input.audit, operation, identity.secretRefs, targetHost, 'approval_rejected');
+    return denyAsync(input.audit, identity, targetHost, 'approval_rejected');
   if (!(await input.operationStore.claimAsync(identity)))
-    return denyAsync(
-      input.audit,
-      operation,
-      identity.secretRefs,
-      targetHost,
-      'idempotency_conflict',
-    );
-  if (
-    !(await input.rateLimit.acquireAsync({
-      actor: operation.actor,
-      capability: operation.capability,
-      operationId: operation.operationId,
-    }))
-  )
-    return denyAsync(input.audit, operation, identity.secretRefs, targetHost, 'rate_limited');
-  await writeAuditAsync(
-    input.audit,
-    operation,
-    identity.secretRefs,
-    targetHost,
-    'permitted',
-    'permission_denied',
-  );
-  return createPermit(input, operation, identity);
+    return denyAsync(input.audit, identity, targetHost, 'idempotency_conflict');
+  try {
+    if (
+      !(await input.rateLimit.acquireAsync({
+        actor: identity.actor,
+        capability: identity.capability,
+        operationId: identity.operationId,
+      }))
+    )
+      return denyAfterReleaseAsync(input, identity, targetHost, 'rate_limited');
+    await writeAuditAsync(input.audit, identity, targetHost, 'permitted', 'permission_denied');
+    return createPermit(input, identity);
+  } catch (error) {
+    await input.operationStore.releaseAsync(identity);
+    throw error;
+  }
 };
 
 /*** Creates a one-use permit that atomically consumes the durable operation claim before side effects. */
 const createPermit = (
   input: Parameters<typeof createFlowSecurityPort>[0],
-  operation: FlowSecurityOperation,
   identity: FlowSecurityOperationIdentity,
 ): FlowSecurityPermit => ({
-  operation,
+  operation: identity,
   executeAsync: async (callback) => {
     if (!(await input.operationStore.consumeAsync(identity)))
       throw new FlowSecurityError(
         'idempotency_conflict',
         'The operation permit has already been consumed.',
       );
-    return resolveAndExecuteAsync(input, operation.actor, identity.secretRefs, callback);
+    return resolveAndExecuteAsync(input, identity.actor, identity.secretRefs, callback);
   },
 });
+
+/*** Releases an unconsumed claim before emitting a retryable denial. */
+const denyAfterReleaseAsync = async (
+  input: Parameters<typeof createFlowSecurityPort>[0],
+  identity: FlowSecurityOperationIdentity,
+  targetHost: string | undefined,
+  reason: FlowSecurityDenialReason,
+): Promise<never> => {
+  await input.operationStore.releaseAsync(identity);
+  return denyAsync(input.audit, identity, targetHost, reason);
+};
+
+/*** Creates a credential only after an explicit server-side scoped grant and redacted audit. */
+const createSecretAsync = async (
+  input: Parameters<typeof createFlowSecurityPort>[0],
+  request: FlowSecretCreateInput,
+): Promise<FlowSecretMetadata> => {
+  const actor = snapshotActor(request.actor);
+  if (!isGranted(input.grants, actor, CREATE_CAPABILITY))
+    return denyCredentialAsync(input.audit, actor, request.ref, CREATE_CAPABILITY);
+  await writeCredentialAuditAsync(input.audit, actor, request.ref, CREATE_CAPABILITY);
+  const result = await input.secretStore.create({
+    kind: request.kind,
+    payload: request.payload,
+    ...(request.provider === undefined ? {} : { provider: request.provider }),
+    ref: request.ref,
+    scope: scopeOf(actor),
+  });
+  if (!result.ok)
+    throw new FlowSecurityError('secret_unavailable', 'The requested secret is unavailable.');
+  return result.data;
+};
 
 /*** Returns metadata only after an explicit actor, tenant, project, and environment grant. */
 const getSecretMetadataAsync = async (
@@ -97,15 +131,30 @@ const getSecretMetadataAsync = async (
   actor: FlowSecurityActor,
   ref: SecretRef,
 ) => {
-  if (!isGranted(input.grants, actor, METADATA_CAPABILITY))
+  const identity = snapshotActor(actor);
+  if (!isGranted(input.grants, identity, METADATA_CAPABILITY))
     throw new FlowSecurityError(
       'permission_denied',
       'The actor is not permitted to inspect secrets.',
     );
-  const result = await input.secretStore.getMetadata({ scope: scopeOf(actor), ref });
+  const result = await input.secretStore.getMetadata({ scope: scopeOf(identity), ref });
   if (!result.ok)
     throw new FlowSecurityError('secret_unavailable', 'The requested secret is unavailable.');
   return result.data;
+};
+
+/*** Revokes a credential only after an explicit server-side scoped grant and redacted audit. */
+const revokeSecretAsync = async (
+  input: Parameters<typeof createFlowSecurityPort>[0],
+  request: FlowSecretRevokeInput,
+): Promise<void> => {
+  const actor = snapshotActor(request.actor);
+  if (!isGranted(input.grants, actor, REVOKE_CAPABILITY))
+    return denyCredentialAsync(input.audit, actor, request.ref, REVOKE_CAPABILITY);
+  await writeCredentialAuditAsync(input.audit, actor, request.ref, REVOKE_CAPABILITY);
+  const result = await input.secretStore.remove({ ref: request.ref, scope: scopeOf(actor) });
+  if (!result.ok)
+    throw new FlowSecurityError('secret_unavailable', 'The requested secret is unavailable.');
 };
 
 /*** Resolves secrets only in the server-side callback after durable consumption succeeds. */
@@ -136,16 +185,25 @@ const resolveSecretAsync = async (
 };
 
 /*** Creates a deterministic complete identity from untrusted operation input. */
-const identityOf = (operation: FlowSecurityOperation): FlowSecurityOperationIdentity => ({
-  actor: { ...operation.actor },
-  capability: operation.capability,
-  idempotencyKey: operation.idempotencyKey,
-  operationId: operation.operationId,
-  secretRefs: unique(operation.secretRefs ?? []),
-  ...(operation.target
-    ? { target: { allowedHosts: [...operation.target.allowedHosts], url: operation.target.url } }
-    : {}),
-});
+const identityOf = (operation: FlowSecurityOperation): FlowSecurityOperationIdentity =>
+  Object.freeze({
+    actor: snapshotActor(operation.actor),
+    capability: operation.capability,
+    idempotencyKey: operation.idempotencyKey,
+    operationId: operation.operationId,
+    secretRefs: Object.freeze(unique(operation.secretRefs ?? [])),
+    ...(operation.target
+      ? {
+          target: Object.freeze({
+            allowedHosts: Object.freeze([...operation.target.allowedHosts]),
+            url: operation.target.url,
+          }),
+        }
+      : {}),
+  });
+
+/*** Captures a runtime-immutable actor scope before any authorization boundary can await. */
+const snapshotActor = (actor: FlowSecurityActor): FlowSecurityActor => Object.freeze({ ...actor });
 
 /*** Compares every authorization-relevant operation field without relying on object identity. */
 const sameIdentity = (
@@ -199,34 +257,67 @@ const unique = (refs: readonly SecretRef[]): readonly SecretRef[] => [...new Set
 /*** Audits a redacted decision before returning a stable denial. */
 const denyAsync = async (
   audit: FlowSecurityAuditPort,
-  operation: FlowSecurityOperation,
-  secretRefs: readonly SecretRef[],
+  identity: FlowSecurityOperationIdentity,
   targetHost: string | undefined,
-  reason: FlowSecurityAuditEvent['reason'],
+  reason: FlowSecurityDenialReason,
 ): Promise<never> => {
-  await writeAuditAsync(audit, operation, secretRefs, targetHost, 'denied', reason);
+  await writeAuditAsync(audit, identity, targetHost, 'denied', reason);
   throw new FlowSecurityError(reason, denialMessage(reason));
 };
 /*** Emits only identifiers and target host metadata to the audit edge. */
 const writeAuditAsync = (
   audit: FlowSecurityAuditPort,
-  operation: FlowSecurityOperation,
-  secretRefs: readonly SecretRef[],
+  identity: FlowSecurityOperationIdentity,
   targetHost: string | undefined,
   decision: FlowSecurityAuditEvent['decision'],
   reason: FlowSecurityAuditEvent['reason'],
 ): Promise<void> =>
   audit.writeAsync({
-    actorId: operation.actor.id,
-    capability: operation.capability,
+    actorId: identity.actor.id,
+    capability: identity.capability,
     decision,
-    operationId: operation.operationId,
+    operationId: identity.operationId,
     reason,
-    secretRefs,
+    secretRefs: identity.secretRefs,
     ...(targetHost ? { targetHost } : {}),
   });
+/*** Audits a credential-management decision without accepting its payload at the audit edge. */
+const writeCredentialAuditAsync = (
+  audit: FlowSecurityAuditPort,
+  actor: FlowSecurityActor,
+  ref: SecretRef,
+  capability: typeof CREATE_CAPABILITY | typeof REVOKE_CAPABILITY,
+): Promise<void> =>
+  audit.writeAsync({
+    actorId: actor.id,
+    capability,
+    decision: 'permitted',
+    operationId: ref,
+    reason: capability === CREATE_CAPABILITY ? 'credential_create' : 'credential_revoke',
+    secretRefs: [ref],
+  });
+/*** Audits and returns a stable denial for unauthorized credential management. */
+const denyCredentialAsync = async (
+  audit: FlowSecurityAuditPort,
+  actor: FlowSecurityActor,
+  ref: SecretRef,
+  capability: typeof CREATE_CAPABILITY | typeof REVOKE_CAPABILITY,
+): Promise<never> => {
+  await audit.writeAsync({
+    actorId: actor.id,
+    capability,
+    decision: 'denied',
+    operationId: ref,
+    reason: 'permission_denied',
+    secretRefs: [ref],
+  });
+  throw new FlowSecurityError(
+    'permission_denied',
+    'The actor is not permitted to perform this operation.',
+  );
+};
 /*** Maps policy reasons to public redaction-safe error text. */
-const denialMessage = (reason: FlowSecurityAuditEvent['reason']): string => {
+const denialMessage = (reason: FlowSecurityDenialReason): string => {
   switch (reason) {
     case 'approval_pending':
       return 'The operation requires an approved Flow approval gate.';
@@ -243,4 +334,6 @@ const denialMessage = (reason: FlowSecurityAuditEvent['reason']): string => {
     case 'secret_unavailable':
       return 'A required secret is unavailable.';
   }
+  const impossible: never = reason;
+  return impossible;
 };

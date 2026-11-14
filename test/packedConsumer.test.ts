@@ -26,7 +26,7 @@ const writeConsumerFiles = (consumerDirectory: string): void => {
   writeFileSync(
     join(consumerDirectory, 'consumer.mjs'),
     [
-      "import '@ankhorage/flow';",
+      "import { createFlowSecurityPort } from '@ankhorage/flow';",
       "import '@ankhorage/flow/ai';",
       "import '@ankhorage/flow/social';",
       "import '@ankhorage/contracts/flow';",
@@ -35,13 +35,14 @@ const writeConsumerFiles = (consumerDirectory: string): void => {
   writeFileSync(
     join(consumerDirectory, 'consumer.ts'),
     [
-      "import '@ankhorage/flow';",
+      "import { createFlowSecurityPort } from '@ankhorage/flow';",
       "import '@ankhorage/flow/ai';",
       "import '@ankhorage/flow/social';",
       "import '@ankhorage/contracts/flow';",
       "import type { FlowDefinition } from '@ankhorage/contracts/flow';",
       "const definition: FlowDefinition = { id: 'consumer-flow', version: 1, title: 'Consumer flow', nodes: [], edges: [], triggers: [{ id: 'manual', kind: 'manual' }] };",
       'void definition;',
+      'void createFlowSecurityPort;',
     ].join('\n'),
   );
 };

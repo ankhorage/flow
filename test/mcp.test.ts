@@ -45,7 +45,11 @@ const permittingSecurity = () =>
         capability: 'mcp:fixture:safe_echo',
       },
     ],
-    operationStore: { claimAsync: async () => true, consumeAsync: async () => true },
+    operationStore: {
+      claimAsync: async () => true,
+      consumeAsync: async () => true,
+      releaseAsync: async () => undefined,
+    },
     rateLimit: { acquireAsync: async () => true },
     secretStore: {
       create: async () => ({ ok: false, error: { code: 'unavailable', message: 'unused' } }),

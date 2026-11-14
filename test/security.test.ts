@@ -42,6 +42,12 @@ const createOperationStore = () => {
       consumed.add(key);
       return true;
     },
+    releaseAsync: async (
+      identity: Parameters<import('../src/index.js').FlowOperationStorePort['releaseAsync']>[0],
+    ) => {
+      const key = keyOf(identity);
+      if (claimed.get(key) === identityOf(identity) && !consumed.has(key)) claimed.delete(key);
+    },
   };
 };
 
@@ -58,6 +64,9 @@ const createSecurity = (
     readonly secretResult?: { readonly ok: boolean };
     readonly operationStore?: import('../src/index.js').FlowOperationStorePort;
     readonly approvalStore?: import('../src/index.js').FlowApprovalStorePort;
+    readonly audit?: import('../src/index.js').FlowSecurityAuditPort;
+    readonly rateLimit?: import('../src/index.js').FlowRateLimitPort;
+    readonly secretStore?: import('@ankhorage/contracts/secrets').SecretStoreAdapter;
   } = {},
 ) => {
   const events: unknown[] = [];
@@ -74,15 +83,15 @@ const createSecurity = (
           status: input.approval ?? 'approved',
         }),
       },
-      audit: {
+      audit: input.audit ?? {
         writeAsync: async (event) => {
           events.push(event);
         },
       },
       grants: input.grants ?? [{ ...actor, actorId: actor.id, capability: operation.capability }],
       operationStore: input.operationStore ?? createOperationStore(),
-      rateLimit: { acquireAsync: async () => true },
-      secretStore: {
+      rateLimit: input.rateLimit ?? { acquireAsync: async () => true },
+      secretStore: input.secretStore ?? {
         create: async () => ({ ok: false, error: { code: 'unavailable', message: 'unused' } }),
         getMetadata: async ({ scope, ref }) => ({
           ok: true,
@@ -229,18 +238,144 @@ test('consumes each approval permit once', async () => {
   });
 });
 
-test('uses the released Supabase Vault adapter through the published secret-store shape', async () => {
-  const calls: readonly unknown[][] = [];
-  const adapter = createSupabaseVaultAdapter({
-    client: {
-      query: async () => ({ rows: [] }),
-      transaction: async (callback) => callback({ query: async () => ({ rows: [] }) }),
+test('uses the immutable authorized actor scope after a caller mutates the input operation', async () => {
+  const scopes: unknown[] = [];
+  const mutableOperation = {
+    ...operation,
+    actor: { ...actor },
+    target: { ...operation.target, allowedHosts: [...operation.target.allowedHosts] },
+  };
+  const { port } = createSecurity({
+    secretStore: {
+      create: async () => ({ ok: false, error: { code: 'unavailable', message: 'unused' } }),
+      getMetadata: async () => ({ ok: false, error: { code: 'not_found', message: 'unused' } }),
+      list: async () => ({ ok: true, data: [] }),
+      remove: async () => ({ ok: true }),
+      replace: async () => ({ ok: false, error: { code: 'unavailable', message: 'unused' } }),
+      resolve: async ({ scope }) => {
+        scopes.push(scope);
+        return { ok: true, data: { token: 'SENTINEL_SECRET' } };
+      },
     },
   });
-  const metadata = await adapter.getMetadata({
-    scope: { projectId: actor.projectId, environment: actor.environment },
-    ref: 'providers/fixture',
+  const permit = await port.authorizeAsync(mutableOperation);
+  mutableOperation.actor.id = 'operator-b';
+  mutableOperation.actor.projectId = 'project-b';
+  mutableOperation.actor.environment = 'development';
+  mutableOperation.target.url = 'https://attacker.example.test/publish';
+  await permit.executeAsync(async () => undefined);
+  expect(scopes).toEqual([{ projectId: 'project-a', environment: 'production' }]);
+  expect(permit.operation.actor).toEqual(actor);
+  expect(permit.operation.target).toEqual(operation.target);
+});
+
+test('releases unconsumed claims after rate-limit denial and audit failure for retry after restart', async () => {
+  const operationStore = createOperationStore();
+  let limited = true;
+  const rateLimited = createSecurity({
+    operationStore,
+    rateLimit: { acquireAsync: async () => !limited },
+  }).port;
+  await expect(rateLimited.authorizeAsync(operation)).rejects.toMatchObject({
+    code: 'rate_limited',
   });
-  expect(metadata).toMatchObject({ ok: false });
-  expect(calls).toEqual([]);
+  limited = false;
+  const permit = await createSecurity({ operationStore }).port.authorizeAsync(operation);
+  await permit.executeAsync(async () => undefined);
+
+  const retryOperation = {
+    ...operation,
+    idempotencyKey: 'audit-retry',
+    operationId: 'audit-retry',
+  };
+  let auditFails = true;
+  const failingAudit = {
+    writeAsync: async () => {
+      if (auditFails) throw new Error('audit unavailable');
+    },
+  };
+  await expect(
+    createSecurity({ audit: failingAudit, operationStore }).port.authorizeAsync(retryOperation),
+  ).rejects.toThrow('audit unavailable');
+  auditFails = false;
+  const restartedPermit = await createSecurity({
+    audit: failingAudit,
+    operationStore,
+  }).port.authorizeAsync(retryOperation);
+  let effects = 0;
+  await restartedPermit.executeAsync(async () => {
+    effects += 1;
+    return undefined;
+  });
+  expect(effects).toBe(1);
+});
+
+test('protects credential creation and revocation and resolves through the released Vault adapter', async () => {
+  const calls: unknown[][] = [];
+  const rows: (readonly Record<string, unknown>[])[] = [
+    [],
+    [{ id: '00000000-0000-0000-0000-000000000001' }],
+    [
+      {
+        project_id: actor.projectId,
+        environment: actor.environment,
+        secret_ref: 'providers/created',
+        kind: 'token',
+        provider: null,
+        configured_fields: ['token'],
+        created_at: '2026-01-01T00:00:00.000Z',
+        updated_at: '2026-01-01T00:00:00.000Z',
+      },
+    ],
+    [{ decrypted_secret: '{"token":"SENTINEL_SECRET"}' }],
+    [{ id: '00000000-0000-0000-0000-000000000001' }],
+    [],
+  ];
+  const query = async <TRow extends Record<string, unknown>>(sql: string, parameters = []) => {
+    calls.push([sql, parameters]);
+    return { rows: (rows.shift() ?? []) as readonly TRow[] };
+  };
+  const adapter = createSupabaseVaultAdapter({
+    client: {
+      query,
+      transaction: async (callback) => callback({ query }),
+    },
+  });
+  const unauthorized = createSecurity({ secretStore: adapter }).port;
+  await expect(
+    unauthorized.createSecretAsync({
+      actor,
+      kind: 'token',
+      payload: { token: 'SENTINEL_SECRET' },
+      ref: 'providers/created',
+    }),
+  ).rejects.toMatchObject({ code: 'permission_denied' });
+  const { events, port } = createSecurity({
+    grants: [
+      { ...actor, actorId: actor.id, capability: operation.capability },
+      { ...actor, actorId: actor.id, capability: 'secrets:create' },
+      { ...actor, actorId: actor.id, capability: 'secrets:revoke' },
+    ],
+    secretStore: adapter,
+  });
+  await expect(
+    port.createSecretAsync({
+      actor,
+      kind: 'token',
+      payload: { token: 'SENTINEL_SECRET' },
+      ref: 'providers/created',
+    }),
+  ).resolves.toMatchObject({
+    ref: 'providers/created',
+    scope: { projectId: 'project-a', environment: 'production' },
+  });
+  const permit = await port.authorizeAsync(operation);
+  await expect(
+    permit.executeAsync(async ({ 'providers/fixture': secret }) => secret?.token),
+  ).resolves.toBe('SENTINEL_SECRET');
+  await expect(
+    port.revokeSecretAsync({ actor, ref: 'providers/created' }),
+  ).resolves.toBeUndefined();
+  expect(JSON.stringify(events)).not.toContain('SENTINEL_SECRET');
+  expect(calls).toHaveLength(6);
 });

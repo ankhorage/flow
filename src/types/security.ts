@@ -1,4 +1,4 @@
-import type { SecretMetadata, SecretRef } from '@ankhorage/contracts/secrets';
+import type { SecretMetadata, SecretPayload, SecretRef } from '@ankhorage/contracts/secrets';
 
 /** Trusted execution identity supplied by the host authentication boundary. */
 export interface FlowSecurityActor {
@@ -54,10 +54,14 @@ export interface FlowApprovalStorePort {
   getAsync(operation: FlowSecurityOperationIdentity): Promise<FlowSecurityApproval | undefined>;
 }
 
-/** Host-owned durable exactly-once boundary. Both methods must be atomic across workers and restarts. */
+/**
+ * Host-owned durable exactly-once boundary. Every transition must be atomic across workers and
+ * restarts. `releaseAsync` may only release an unconsumed claim for this exact identity.
+ */
 export interface FlowOperationStorePort {
   claimAsync(operation: FlowSecurityOperationIdentity): Promise<boolean>;
   consumeAsync(operation: FlowSecurityOperationIdentity): Promise<boolean>;
+  releaseAsync(operation: FlowSecurityOperationIdentity): Promise<void>;
 }
 
 /**
@@ -96,6 +100,8 @@ export interface FlowSecurityAuditEvent {
   readonly reason:
     | 'approval_pending'
     | 'approval_rejected'
+    | 'credential_create'
+    | 'credential_revoke'
     | 'idempotency_conflict'
     | 'invalid_target'
     | 'permission_denied'
@@ -109,17 +115,34 @@ export interface FlowSecurityAuditEvent {
 export type FlowSecretMetadata = SecretMetadata;
 export type FlowResolvedSecrets = Readonly<Record<SecretRef, Readonly<Record<string, string>>>>;
 
+/** Protected server-side credential creation input. Its scope is always derived from the actor. */
+export interface FlowSecretCreateInput {
+  readonly actor: FlowSecurityActor;
+  readonly kind: string;
+  readonly payload: SecretPayload;
+  readonly provider?: string;
+  readonly ref: SecretRef;
+}
+
+/** Protected server-side credential revocation input. Its scope is always derived from the actor. */
+export interface FlowSecretRevokeInput {
+  readonly actor: FlowSecurityActor;
+  readonly ref: SecretRef;
+}
+
 /** One-use authorization result. Raw secrets stay private to the returned server closure. */
 export interface FlowSecurityPermit {
-  readonly operation: FlowSecurityOperation;
+  readonly operation: FlowSecurityOperationIdentity;
   executeAsync<T>(operation: (secrets: FlowResolvedSecrets) => Promise<T>): Promise<T>;
 }
 
 /** Public server-side boundary consumed by provider, AI, MCP, and social adapters. */
 export interface FlowSecurityPort {
   authorizeAsync(operation: FlowSecurityOperation): Promise<FlowSecurityPermit>;
+  createSecretAsync(input: FlowSecretCreateInput): Promise<FlowSecretMetadata>;
   getSecretMetadataAsync(input: {
     readonly actor: FlowSecurityActor;
     readonly ref: SecretRef;
   }): Promise<FlowSecretMetadata>;
+  revokeSecretAsync(input: FlowSecretRevokeInput): Promise<void>;
 }
