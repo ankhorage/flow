@@ -14,6 +14,7 @@ interface Receipt {
 }
 
 interface FixtureInput {
+  readonly deliveryPath: string;
   readonly durablePath: string;
   readonly mode: 'crash-after-provider' | 'recover';
   readonly receiptPath: string;
@@ -98,6 +99,7 @@ const runtime = createFlowRuntime({
         kind: 'protected',
       },
       executeAsync: async ({ effect }) => {
+        await recordProviderInvocationAsync(effect.idempotencyKey);
         const receipt = await saveReceiptAsync(effect.idempotencyKey);
         if (input.mode === 'crash-after-provider') process.kill(process.pid, 'SIGKILL');
         return { output: receipt.output };
@@ -144,7 +146,8 @@ if (input.mode === 'crash-after-provider') {
 await runtime.runWorkerTickAsync();
 const [run] = await runtime.listRunsAsync(scope, definition.id);
 const receipts = await readReceiptsAsync();
-console.log(JSON.stringify({ receipts, run }));
+const deliveries = await readDeliveriesAsync();
+console.log(JSON.stringify({ deliveries, receipts, run }));
 
 /** Persist one provider receipt independently from Flow's durable state using its stable key. */
 async function saveReceiptAsync(idempotencyKey: string): Promise<Receipt> {
@@ -170,6 +173,22 @@ async function readReceiptAsync(idempotencyKey: string): Promise<Receipt | undef
 async function readReceiptsAsync(): Promise<readonly Receipt[]> {
   try {
     return JSON.parse(await readFile(input.receiptPath, 'utf8')) as readonly Receipt[];
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') return [];
+    throw error;
+  }
+}
+
+/** Record every provider-boundary invocation separately so receipt deduplication cannot hide a replay. */
+async function recordProviderInvocationAsync(idempotencyKey: string): Promise<void> {
+  const deliveries = [...(await readDeliveriesAsync()), idempotencyKey];
+  await writeFile(input.deliveryPath, JSON.stringify(deliveries), 'utf8');
+}
+
+/** Load provider invocation evidence independently from its idempotent receipt store. */
+async function readDeliveriesAsync(): Promise<readonly string[]> {
+  try {
+    return JSON.parse(await readFile(input.deliveryPath, 'utf8')) as readonly string[];
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === 'ENOENT') return [];
     throw error;

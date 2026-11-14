@@ -163,6 +163,7 @@ describe('headless Flow runtime', () => {
     const directory = await mkdtemp(join(tmpdir(), 'flow-headless-crash-'));
     const fixture = new URL('./fixtures/durableHeadlessCrashWorker.ts', import.meta.url).pathname;
     const input = {
+      deliveryPath: join(directory, 'provider-deliveries.json'),
       durablePath: join(directory, 'durable.json'),
       receiptPath: join(directory, 'provider-receipts.json'),
       runtimePath: join(directory, 'runtime.json'),
@@ -182,6 +183,7 @@ describe('headless Flow runtime', () => {
       const output = `${recovered.stdout.toString()}${recovered.stderr.toString()}`;
       expect(recovered.exitCode, output).toBe(0);
       const result = JSON.parse(recovered.stdout.toString()) as {
+        readonly deliveries: readonly string[];
         readonly receipts: readonly { readonly idempotencyKey: string }[];
         readonly run: {
           readonly status: string;
@@ -191,6 +193,7 @@ describe('headless Flow runtime', () => {
       expect(result.receipts).toEqual([
         expect.objectContaining({ idempotencyKey: expect.stringMatching(/:step:provider$/) }),
       ]);
+      expect(result.deliveries).toHaveLength(1);
       expect(result.run.status).toBe('succeeded');
       expect(result.run.steps.map((step) => step.nodeId)).toEqual(['branch', 'provider']);
     } finally {

@@ -13,7 +13,7 @@ export const synchronizeHeadlessRunAsync = async (
   const [runId] = workId.split(':step:');
   if (runId === undefined) return;
   const durable = await dependencies.persistence.readRunAsync(runId);
-  if (durable?.scope === undefined || durable.checkpoint?.steps === undefined) return;
+  if (durable?.scope === undefined) return;
   const current = await dependencies.store.getRunAsync(durable.scope, durable.id);
   if (current === undefined || current.status === durable.status) return;
   const terminal = durable.status === 'failed' || durable.status === 'succeeded';
@@ -21,7 +21,7 @@ export const synchronizeHeadlessRunAsync = async (
     ...current,
     ...(terminal ? { completedAt: clock.now().toISOString() } : {}),
     status: headlessStatus(durable.status),
-    steps: durable.checkpoint.steps,
+    steps: durable.checkpoint?.steps ?? current.steps,
   };
   const transitioned = await dependencies.store.transitionRunAsync({
     event: {
