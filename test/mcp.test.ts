@@ -5,6 +5,7 @@ import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 
+import { createFlowSecurityPort } from '../src/index.js';
 import { createMcpToolRegistry } from '../src/mcp.js';
 
 const provider = {
@@ -21,6 +22,39 @@ const trustedStdioProviders = {
     args: [new URL('./fixtures/mcpStdioServer.ts', import.meta.url).pathname],
   },
 };
+
+const securityInvocation = (operationId: string) => ({
+  actor: {
+    id: 'operator',
+    tenantId: 'tenant-a',
+    projectId: 'project-a',
+    environment: 'test',
+  },
+  idempotencyKey: operationId,
+  operationId,
+});
+
+const permittingSecurity = () =>
+  createFlowSecurityPort({
+    approvalStore: { getAsync: async (operationId) => ({ operationId, status: 'approved' }) },
+    audit: { writeAsync: async () => undefined },
+    grants: [
+      {
+        ...securityInvocation('unused').actor,
+        actorId: 'operator',
+        capability: 'mcp:fixture:safe_echo',
+      },
+    ],
+    rateLimit: { acquireAsync: async () => true },
+    secretStore: {
+      create: async () => ({ ok: false, error: { code: 'unavailable', message: 'unused' } }),
+      getMetadata: async () => ({ ok: false, error: { code: 'not_found', message: 'unused' } }),
+      list: async () => ({ ok: true, data: [] }),
+      remove: async () => ({ ok: true }),
+      replace: async () => ({ ok: false, error: { code: 'unavailable', message: 'unused' } }),
+      resolve: async () => ({ ok: true, data: {} }),
+    },
+  });
 
 test('discovers only explicitly permitted tools from a trusted STDIO host provider', async () => {
   const registry = createMcpToolRegistry({ providers: [provider], trustedStdioProviders });
@@ -39,8 +73,28 @@ test('fails closed before real tool execution until the approval boundary is rel
       schemaFingerprint: tool?.schemaFingerprint ?? '',
       arguments: { message: 'must not run' },
       scopes: ['tools:invoke'],
+      security: securityInvocation('denied'),
     }),
   ).rejects.toThrow('security approvals');
+});
+
+test('executes only after a scoped Flow security permit is approved', async () => {
+  const registry = createMcpToolRegistry({
+    providers: [provider],
+    security: permittingSecurity(),
+    trustedStdioProviders,
+  });
+  const [tool] = await registry.discoverAsync();
+  await expect(
+    registry.invokeAsync({
+      providerId: 'fixture',
+      toolName: 'safe_echo',
+      schemaFingerprint: tool?.schemaFingerprint ?? '',
+      arguments: { message: 'permitted' },
+      scopes: ['tools:invoke'],
+      security: securityInvocation('approved'),
+    }),
+  ).resolves.toMatchObject({ content: [{ text: 'permitted' }] });
 });
 
 test('rejects missing scopes, stale schemas, and schema-invalid arguments before authorization', async () => {
@@ -51,6 +105,7 @@ test('rejects missing scopes, stale schemas, and schema-invalid arguments before
     toolName: 'safe_echo',
     schemaFingerprint: tool?.schemaFingerprint ?? '',
     arguments: { message: 'hello' },
+    security: securityInvocation('validation'),
   };
   await expect(registry.invokeAsync({ ...invocation, scopes: [] })).rejects.toThrow('scopes');
   await expect(

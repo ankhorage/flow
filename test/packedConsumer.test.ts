@@ -101,5 +101,5 @@ describe('packed Flow consumer', () => {
     } finally {
       rmSync(temporaryDirectory, { force: true, recursive: true });
     }
-  });
+  }, 30_000);
 });

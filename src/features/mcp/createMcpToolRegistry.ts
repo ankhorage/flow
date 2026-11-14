@@ -11,6 +11,7 @@ import type {
   McpToolResult,
   McpTrustedStdioProvider,
 } from '../../types/mcp.js';
+import type { FlowSecurityPort } from '../../types/security.js';
 import { McpToolError } from './McpToolError.js';
 import { prepareMcpProviders } from './prepareMcpProviders.js';
 import { validateMcpSchema } from './validateMcpSchema.js';
@@ -22,6 +23,7 @@ const DEFAULT_TIMEOUT_MS = 10_000;
 /*** Creates a snapshotting, allowlist-only MCP registry. Real invocation fails closed until Issue #4 releases its approval boundary. */
 export const createMcpToolRegistry = (input: {
   readonly providers: readonly McpProviderDefinition[];
+  readonly security?: FlowSecurityPort;
   readonly trustedStdioProviders?: Readonly<Record<string, McpTrustedStdioProvider>>;
 }): McpToolRegistry => {
   const providers = prepareMcpProviders(input.providers);
@@ -31,7 +33,6 @@ export const createMcpToolRegistry = (input: {
       {
         command: value.command,
         ...(value.args ? { args: [...value.args] } : {}),
-        ...(value.environment ? { environment: { ...value.environment } } : {}),
       },
     ]),
   );
@@ -53,7 +54,7 @@ export const createMcpToolRegistry = (input: {
       return tools;
     },
     invokeAsync: (invocation) =>
-      Promise.resolve().then(() => invokeAsync(providers, snapshot, invocation)),
+      invokeAsync(providers, trusted, snapshot, input.security, invocation),
   };
 };
 
@@ -74,12 +75,14 @@ const discoverAsync = async (
   }
 };
 
-/*** Validates a requested tool locally and reports the unavailable canonical approval boundary. */
-const invokeAsync = (
+/*** Validates, approves, and invokes one discovered tool through the server-only security port. */
+const invokeAsync = async (
   providers: ReadonlyMap<string, McpProviderDefinition>,
+  trusted: ReadonlyMap<string, McpTrustedStdioProvider>,
   snapshot: ReadonlyMap<string, McpToolMetadata>,
+  security: FlowSecurityPort | undefined,
   invocation: McpToolInvocation,
-): McpToolResult => {
+): Promise<McpToolResult> => {
   const provider = providers.get(invocation.providerId);
   const tool = snapshot.get(key(invocation.providerId, invocation.toolName));
   if (!provider || !tool || !permissionFor(provider, invocation.toolName))
@@ -100,10 +103,52 @@ const invokeAsync = (
       'invalid_arguments',
       'MCP tool arguments do not satisfy the discovered schema.',
     );
-  throw new McpToolError(
-    'authorization_boundary_unavailable',
-    'MCP tool execution is unavailable until Flow security approvals are installed.',
-  );
+  if (!security)
+    throw new McpToolError(
+      'authorization_boundary_unavailable',
+      'MCP tool execution is unavailable until Flow security approvals are installed.',
+    );
+  const permit = await security.authorizeAsync({
+    ...invocation.security,
+    capability: `mcp:${provider.id}:${tool.name}`,
+    ...(provider.transport === 'remote' ? { targetUrl: provider.endpoint } : {}),
+  });
+  return permit.executeAsync(async () => callToolAsync(provider, trusted, invocation));
+};
+
+/*** Opens a bounded provider connection only after the approval permit was issued. */
+const callToolAsync = async (
+  provider: McpProviderDefinition,
+  trusted: ReadonlyMap<string, McpTrustedStdioProvider>,
+  invocation: McpToolInvocation,
+): Promise<McpToolResult> => {
+  const connection = await connectAsync(provider, trusted, invocation.signal);
+  try {
+    const result = await boundedAsync(
+      (signal) =>
+        connection.client.callTool(
+          { name: invocation.toolName, arguments: invocation.arguments },
+          undefined,
+          { signal },
+        ),
+      timeoutOf(provider),
+      invocation.signal,
+    );
+    if (!Array.isArray(result.content))
+      throw new McpToolError(
+        'invalid_execution_response',
+        'The MCP provider returned an invalid tool result.',
+      );
+    return {
+      content: result.content,
+      ...(isRecord(result.structuredContent)
+        ? { structuredContent: result.structuredContent }
+        : {}),
+      isError: result.isError === true,
+    };
+  } finally {
+    await connection.closeAsync().catch(() => undefined);
+  }
 };
 
 interface ListedTool {
@@ -150,7 +195,6 @@ const stdioTransport = (
   return new StdioClientTransport({
     command: host.command,
     args: host.args ? [...host.args] : undefined,
-    env: host.environment ? { ...host.environment } : undefined,
     stderr: 'pipe',
   });
 };
