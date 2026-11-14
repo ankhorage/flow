@@ -33,6 +33,7 @@ const writeConsumerFiles = (consumerDirectory: string): void => {
     [
       "import { createFlowSecurityPort } from '@ankhorage/flow';",
       "import '@ankhorage/flow/ai';",
+      "import '@ankhorage/flow/execution';",
       "import { createMcpToolRegistry } from '@ankhorage/flow/mcp';",
       "import '@ankhorage/flow/social';",
       "import '@ankhorage/contracts/flow';",
@@ -45,6 +46,7 @@ const writeConsumerFiles = (consumerDirectory: string): void => {
     [
       "import { createFlowSecurityPort } from '@ankhorage/flow';",
       "import '@ankhorage/flow/ai';",
+      "import '@ankhorage/flow/execution';",
       "import { createMcpToolRegistry } from '@ankhorage/flow/mcp';",
       "import '@ankhorage/flow/social';",
       "import '@ankhorage/contracts/flow';",

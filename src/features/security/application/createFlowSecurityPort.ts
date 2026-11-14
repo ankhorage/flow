@@ -54,9 +54,9 @@ const authorizeAsync = async (
   if (!isGranted(input.grants, identity.actor, identity.capability))
     return denyAsync(input.audit, identity, targetHost, 'permission_denied');
   const approval = await input.approvalStore.getAsync(identity);
-  if (!approval || approval.status === 'pending')
+  if (approval?.status === 'pending')
     return denyAsync(input.audit, identity, targetHost, 'approval_pending');
-  if (approval.status !== 'approved' || !sameIdentity(approval.operation, identity))
+  if (approval?.status !== 'approved' || !sameIdentity(approval.operation, identity))
     return denyAsync(input.audit, identity, targetHost, 'approval_rejected');
   if (!(await input.operationStore.claimAsync(identity)))
     return denyAsync(input.audit, identity, targetHost, 'idempotency_conflict');
