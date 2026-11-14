@@ -1,3 +1,4 @@
+import type { DataSchemaRegistry } from '@ankhorage/contracts/data';
 import type { FlowDefinition, FlowNode, FlowStepSnapshot } from '@ankhorage/contracts/flow';
 
 import type {
@@ -7,6 +8,7 @@ import type {
 } from '../../../types/durableExecution.js';
 import type { FlowClock, FlowCompiledGraph, FlowNodeRegistry } from '../../../types/execution.js';
 import { executeFlowAsync } from '../../execution/application/executeFlowAsync.js';
+import { assertFlowGraphSchemasSupported } from '../../execution/domain/assertFlowGraphSchemasSupported.js';
 import { compileFlowGraph } from '../../execution/domain/compileFlowGraph.js';
 import { planFlowNodeInput } from '../../execution/domain/planFlowNodeInput.js';
 import { createDurableHeadlessWork } from './createDurableHeadlessWork.js';
@@ -17,11 +19,13 @@ export const executeDurableHeadlessStepAsync = async (
     readonly definition: FlowDefinition;
     readonly durableRun: FlowDurableRun;
     readonly registry: FlowNodeRegistry;
+    readonly schemaRegistry?: DataSchemaRegistry;
     readonly work: FlowDurableWork;
     readonly reconcile?: boolean;
   },
   clock: FlowClock,
 ): Promise<FlowDurableEffectResult | 'unknown'> => {
+  assertFlowGraphSchemasSupported(input.definition.nodes, input.schemaRegistry);
   const nodeId = input.work.stepId;
   if (nodeId === undefined) throw new Error('FLOW_DURABLE_STEP_ID_MISSING');
   if (nodeId === '__flow_complete__') return completedFlow(input.durableRun);
@@ -33,6 +37,7 @@ export const executeDurableHeadlessStepAsync = async (
     node,
     input.work,
     input.registry,
+    input.schemaRegistry,
     clock,
     input.reconcile === true,
   );
@@ -64,6 +69,7 @@ const executeStepAsync = async (
   node: FlowNode,
   work: FlowDurableWork,
   registry: FlowNodeRegistry,
+  schemaRegistry: DataSchemaRegistry | undefined,
   clock: FlowClock,
   reconcile: boolean,
 ): Promise<FlowStepSnapshot | 'unknown'> => {
@@ -93,6 +99,7 @@ const executeStepAsync = async (
       effectIdentity: effect,
       input: work.input,
       runId: work.runId,
+      schemaRegistry,
       triggerId: work.triggerId ?? definition.triggers[0]?.id ?? '',
     },
     clock,

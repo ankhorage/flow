@@ -62,6 +62,36 @@ describe('single-process Flow execution', () => {
     });
   });
 
+  test.each([
+    { triggerId: 'manual', kind: 'manual' },
+    { triggerId: 'hook', kind: 'webhook' },
+  ] as const)(
+    'preserves the declared $kind trigger in the exact run snapshot',
+    async ({ triggerId, kind }) => {
+      const definition: FlowDefinition = {
+        edges: [],
+        id: `trigger-${kind}`,
+        nodes: [],
+        title: `Trigger ${kind}`,
+        triggers: [
+          { id: 'manual', kind: 'manual' },
+          { id: 'hook', kind: 'webhook', path: '/hook' },
+        ],
+        version: 1,
+      };
+      const result = await executeFlowAsync(
+        compileFlowGraph(definition, {}),
+        {},
+        {
+          runId: `run-${kind}`,
+          triggerId,
+        },
+      );
+
+      expect(result.run.trigger).toEqual({ kind, triggerId });
+    },
+  );
+
   test('rejects invalid graphs before an operation can run', () => {
     const cyclic = {
       ...branchingDefinition,

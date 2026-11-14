@@ -1,4 +1,4 @@
-import type { DataContractValue } from '@ankhorage/contracts/data';
+import type { DataContractValue, DataSchemaRegistry } from '@ankhorage/contracts/data';
 import type {
   FlowApprovalRequest,
   FlowDefinition,
@@ -111,6 +111,8 @@ export interface FlowRuntimeDependencies {
   readonly nodeRegistry: FlowNodeRegistry;
   readonly observability?: FlowObservabilityPort;
   readonly persistence: FlowPersistencePort;
+  /** Canonical registry used to resolve every declared revision schema before durable delivery. */
+  readonly schemaRegistry?: DataSchemaRegistry;
   readonly security?: FlowSecurityPort;
   readonly store: FlowRuntimeStorePort;
 }

@@ -21,6 +21,7 @@ export const reconcileDurableHeadlessStepAsync = async (
       durableRun: input.run,
       reconcile: true,
       registry: dependencies.nodeRegistry,
+      schemaRegistry: dependencies.schemaRegistry,
       work: input.work,
     },
     clock,

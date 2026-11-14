@@ -12,6 +12,7 @@ import {
   InMemoryFlowObservability,
   InMemoryFlowPersistenceAdapter,
   InMemoryFlowRuntimeStore,
+  createFlowSecurityPort,
   createDefaultNodeRegistry,
   createFlowRuntime,
   compileFlowGraph,
@@ -158,6 +159,84 @@ describe('headless Flow runtime', () => {
       });
       expect((await second.getRunAsync(scope, queued.id))?.status).toBe('pending');
       expect(await second.runWorkerTickAsync()).toEqual([queued.id]);
+    } finally {
+      await rm(directory, { force: true, recursive: true });
+    }
+  });
+
+  it('persists headless approval, cancellation, retry, and recovery lifecycle transitions', async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'flow-headless-lifecycle-'));
+    const runtimePath = join(directory, 'runtime.json');
+    const clock = mutableClock(new Date('2026-11-15T10:00:00.000Z'));
+    const approval = { approved: false };
+    const deliveries: string[] = [];
+    const failures = { enabled: true };
+    const dependencies = () => ({
+      clock,
+      nodeRegistry: lifecycleRegistry(deliveries, failures),
+      persistence: FileFlowPersistenceAdapter(`${runtimePath}.durable`),
+      security: approvalSecurity(approval),
+      store: FileFlowRuntimeStore(runtimePath),
+    });
+    try {
+      const first = createFlowRuntime(dependencies());
+      await publishLifecycleFlowAsync(first, 'approval', 'protected');
+      const waiting = await first.triggerAsync({
+        flowId: 'approval',
+        idempotencyKey: 'approval',
+        scope,
+        triggerId: 'manual',
+      });
+      await first.runWorkerTickAsync();
+      expect((await first.getRunAsync(scope, waiting.id))?.status).toBe('waiting_for_approval');
+      expect(deliveries).toEqual([]);
+
+      approval.approved = true;
+      clock.advance(60_000);
+      const resumed = createFlowRuntime(dependencies());
+      await resumed.runWorkerTickAsync();
+      expect((await resumed.getRunAsync(scope, waiting.id))?.status).toBe('succeeded');
+      expect(deliveries).toEqual([`${waiting.id}:step:protected`]);
+
+      await publishLifecycleFlowAsync(resumed, 'cancel', 'protected');
+      const cancelled = await resumed.triggerAsync({
+        flowId: 'cancel',
+        idempotencyKey: 'cancel',
+        scope,
+        triggerId: 'manual',
+      });
+      expect((await resumed.cancelRunAsync(scope, cancelled.id))?.status).toBe('cancelled');
+      await resumed.runWorkerTickAsync();
+      expect(deliveries).toEqual([`${waiting.id}:step:protected`]);
+
+      await publishLifecycleFlowAsync(resumed, 'retry', 'retry');
+      const failed = await resumed.triggerAsync({
+        flowId: 'retry',
+        idempotencyKey: 'retry',
+        scope,
+        triggerId: 'manual',
+      });
+      for (const _attempt of [1, 2, 3]) {
+        await resumed.runWorkerTickAsync();
+        clock.advance(60_000);
+      }
+      expect((await resumed.getRunAsync(scope, failed.id))?.status).toBe('failed');
+      failures.enabled = false;
+      const retried = await resumed.retryRunAsync(scope, failed.id);
+      expect(retried?.status).toBe('pending');
+      await resumed.runWorkerTickAsync();
+      expect((await resumed.getRunAsync(scope, retried!.id))?.status).toBe('succeeded');
+
+      await publishLifecycleFlowAsync(resumed, 'recovery', 'retry');
+      const recovered = await resumed.triggerAsync({
+        flowId: 'recovery',
+        idempotencyKey: 'recovery',
+        scope,
+        triggerId: 'manual',
+      });
+      const restarted = createFlowRuntime(dependencies());
+      await restarted.runWorkerTickAsync();
+      expect((await restarted.getRunAsync(scope, recovered.id))?.status).toBe('succeeded');
     } finally {
       await rm(directory, { force: true, recursive: true });
     }
@@ -311,6 +390,46 @@ describe('headless Flow runtime', () => {
     expect((await runtime.getRunAsync(scope, run.id))?.status).toBe('succeeded');
     expect(deliveries).toEqual([`${run.id}:step:effect`]);
   });
+
+  it.each([
+    { path: '/v1/workflows/schema-manual/triggers/manual', triggerId: 'manual' },
+    { path: '/v1/webhooks/schema-webhook/hook', triggerId: 'hook' },
+  ])(
+    'rejects an authenticated $triggerId revision before its protected provider can execute',
+    async ({ path, triggerId }) => {
+      const deliveries: string[] = [];
+      const runtime = createFlowRuntime({
+        nodeRegistry: protectedSchemaRegistry(deliveries),
+        persistence: InMemoryFlowPersistenceAdapter(),
+        security: permittedSecurity(),
+        store: InMemoryFlowRuntimeStore(),
+      });
+      const flowId = `schema-${triggerId === 'manual' ? 'manual' : 'webhook'}`;
+      const invalid = unsupportedSchemaDefinition(flowId);
+      await runtime.createDraftAsync(scope, invalid);
+      await runtime.publishAsync(scope, flowId, 1);
+      const handler = createFlowHttpHandler({
+        access: { acquireAsync: async () => true, authorizeAsync: async () => true },
+        authenticator: {
+          authenticateAsync: async () => ({ environment: 'test', id: 'actor', ...scope }),
+        },
+        runtime,
+      });
+
+      expect(
+        (
+          await handler(
+            new Request(`http://flow${path}`, {
+              body: JSON.stringify({ idempotencyKey: `invalid-${triggerId}` }),
+              method: 'POST',
+            }),
+          )
+        ).status,
+      ).toBe(400);
+      expect(deliveries).toHaveLength(0);
+      expect(await runtime.listRunsAsync(scope, flowId)).toEqual([]);
+    },
+  );
 
   it.each(graphParityFixtures())(
     'keeps durable headless graph behavior equal to the canonical executor: $name',
@@ -480,3 +599,169 @@ const fixtureRegistry = (source: {
     executeAsync: async () => ({ output: {} }),
   },
 });
+
+/** Supply a protected first node and a later unsupported port schema for the headless preflight. */
+const unsupportedSchemaDefinition = (id: string) =>
+  ({
+    edges: [],
+    id,
+    nodes: [
+      {
+        capability: { capabilityId: 'protected', providerId: 'fixture' },
+        id: 'provider',
+        ports: [],
+      },
+      {
+        capability: { capabilityId: 'pass', providerId: 'fixture' },
+        id: 'unsupported',
+        ports: [
+          { data: { schema: { format: 'email' } }, direction: 'output' as const, id: 'value' },
+        ],
+      },
+    ],
+    title: 'Unsupported schema preflight',
+    triggers: [
+      { id: 'manual', kind: 'manual' as const },
+      { id: 'hook', kind: 'webhook' as const, path: '/hook' },
+    ],
+    version: 1,
+  }) satisfies FlowDefinition;
+
+/** Count only an actual protected provider delivery after the security boundary permits it. */
+const protectedSchemaRegistry = (deliveries: string[]): FlowNodeRegistry => ({
+  'fixture:pass': {
+    effect: { kind: 'internal' as const },
+    executeAsync: async () => ({ output: {} }),
+  },
+  'fixture:protected': {
+    effect: {
+      createSecurityOperation: ({ effect }) => ({
+        actor: { environment: 'test', id: 'actor', projectId: 'project', tenantId: 'tenant' },
+        capability: 'fixture:protected',
+        idempotencyKey: effect.idempotencyKey,
+        operationId: effect.idempotencyKey,
+      }),
+      kind: 'protected',
+    },
+    executeAsync: async ({ effect }) => {
+      deliveries.push(effect.idempotencyKey);
+      return { output: {} };
+    },
+  },
+});
+
+/** Create an approved-or-pending protected boundary for the persisted lifecycle acceptance. */
+const approvalSecurity = (state: { readonly approved: boolean }): FlowSecurityPort => {
+  const claimed = new Set<string>();
+  const consumed = new Set<string>();
+  return createFlowSecurityPort({
+    approvalStore: {
+      getAsync: async (operation) => ({
+        operation,
+        status: state.approved ? 'approved' : 'pending',
+      }),
+    },
+    audit: { writeAsync: async () => undefined },
+    grants: [
+      {
+        actorId: 'actor',
+        capability: 'fixture:protected',
+        environment: 'test',
+        projectId: 'project',
+        tenantId: 'tenant',
+      },
+    ],
+    operationStore: {
+      claimAsync: async (operation) => {
+        if (claimed.has(operation.idempotencyKey)) return false;
+        claimed.add(operation.idempotencyKey);
+        return true;
+      },
+      consumeAsync: async (operation) => {
+        if (!claimed.has(operation.idempotencyKey) || consumed.has(operation.idempotencyKey))
+          return false;
+        consumed.add(operation.idempotencyKey);
+        return true;
+      },
+      releaseAsync: async (operation) => {
+        if (!consumed.has(operation.idempotencyKey)) claimed.delete(operation.idempotencyKey);
+      },
+    },
+    rateLimit: { acquireAsync: async () => true },
+    secretStore: {
+      create: async () => ({
+        error: { code: 'unavailable', message: 'unused' },
+        ok: false as const,
+      }),
+      getMetadata: async () => ({
+        error: { code: 'unavailable', message: 'unused' },
+        ok: false as const,
+      }),
+      list: async () => ({ data: [], ok: true as const }),
+      remove: async () => ({ ok: true as const }),
+      replace: async () => ({
+        error: { code: 'unavailable', message: 'unused' },
+        ok: false as const,
+      }),
+      resolve: async () => ({ data: {}, ok: true as const }),
+    },
+  });
+};
+
+/** Compose protected and retried operations under the same production graph execution boundary. */
+const lifecycleRegistry = (
+  deliveries: string[],
+  failures: { readonly enabled: boolean },
+): FlowNodeRegistry => ({
+  'fixture:protected': {
+    effect: {
+      createSecurityOperation: ({ effect }) => ({
+        actor: { environment: 'test', id: 'actor', projectId: 'project', tenantId: 'tenant' },
+        capability: 'fixture:protected',
+        idempotencyKey: effect.idempotencyKey,
+        operationId: effect.idempotencyKey,
+      }),
+      kind: 'protected',
+    },
+    executeAsync: async ({ effect }) => {
+      deliveries.push(effect.idempotencyKey);
+      return { output: {} };
+    },
+  },
+  'fixture:retry': {
+    effect: { kind: 'internal' },
+    executeAsync: async () => {
+      if (failures.enabled) throw new Error('FLOW_TEST_RETRY');
+      return { output: {} };
+    },
+  },
+});
+
+/** Persist and publish one single-node lifecycle flow through the public headless runtime. */
+const publishLifecycleFlowAsync = async (
+  runtime: ReturnType<typeof createFlowRuntime>,
+  id: string,
+  capabilityId: 'protected' | 'retry',
+): Promise<void> => {
+  const lifecycle = {
+    edges: [],
+    id,
+    nodes: [{ capability: { capabilityId, providerId: 'fixture' }, id: capabilityId, ports: [] }],
+    title: id,
+    triggers: [{ id: 'manual', kind: 'manual' as const }],
+    version: 1,
+  } satisfies FlowDefinition;
+  await runtime.createDraftAsync(scope, lifecycle);
+  await runtime.publishAsync(scope, id, 1);
+};
+
+/** Advance the persisted worker clock without touching wall-clock time in lifecycle acceptance. */
+const mutableClock = (initial: Date) => {
+  let current = initial;
+  return {
+    advance: (milliseconds: number) => {
+      current = new Date(current.getTime() + milliseconds);
+    },
+    now: () => current,
+  };
+};

@@ -11,6 +11,7 @@ import type {
 } from '../../../types/headless.js';
 import { createDurableRunAsync } from '../../execution/application/createDurableRunAsync.js';
 import { runDurableWorkerAsync } from '../../execution/application/runDurableWorkerAsync.js';
+import { assertFlowGraphSchemasSupported } from '../../execution/domain/assertFlowGraphSchemasSupported.js';
 import { compileFlowGraph } from '../../execution/domain/compileFlowGraph.js';
 import { createDurableHeadlessWork } from './createDurableHeadlessWork.js';
 import { createHeadlessRunControl } from './createHeadlessRunControl.js';
@@ -89,6 +90,7 @@ const triggerAsync = async (
   );
   if (!trigger || (trigger.kind !== 'manual' && trigger.kind !== 'webhook'))
     return rejectedTriggerAsync(dependencies, 'FLOW_TRIGGER_NOT_SUPPORTED');
+  assertFlowGraphSchemasSupported(revision.definition.nodes, dependencies.schemaRegistry);
   const now = clock.now().toISOString();
   const run: FlowRunSnapshot = {
     createdAt: now,
@@ -141,6 +143,7 @@ const ensureQueuedRunAsync = async (
     );
   const revision = await dependencies.store.getWorkflowAsync(scope, run.flow.id, run.flow.version);
   if (revision === undefined) throw new Error('FLOW_WORKFLOW_VERSION_MISSING');
+  assertFlowGraphSchemasSupported(revision.definition.nodes, dependencies.schemaRegistry);
   const graph = compileFlowGraph(revision.definition, dependencies.nodeRegistry);
   const work = initialWork(graph, run, now, dependencies);
   await Promise.all(
@@ -262,7 +265,7 @@ const executeDurableHeadlessStepAsync = async (
       scope: input.run.scope,
     });
     if (!claimed) throw new Error('FLOW_HEADLESS_RUN_CLAIM_LOST');
-  } else if (run.status !== 'running') {
+  } else if (run.status !== 'running' && run.status !== 'waiting_for_approval') {
     throw new Error('FLOW_HEADLESS_RUN_NOT_EXECUTABLE');
   }
   const revision = await dependencies.store.getWorkflowAsync(
@@ -276,6 +279,7 @@ const executeDurableHeadlessStepAsync = async (
       definition: revision.definition,
       durableRun: input.run,
       registry: dependencies.nodeRegistry,
+      schemaRegistry: dependencies.schemaRegistry,
       work: input.work,
     },
     clock,

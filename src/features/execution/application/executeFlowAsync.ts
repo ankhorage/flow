@@ -39,6 +39,7 @@ export const executeFlowAsync = async (
       clock.now().toISOString(),
       state.status ?? 'succeeded',
       state.error,
+      trigger.kind,
     ),
   };
 };
@@ -231,12 +232,16 @@ const createRun = (
   startedAt: string,
   completedAt: string,
   status: FlowRunSnapshot['status'],
-  error?: FlowError,
+  error: FlowError | undefined,
+  triggerKind: 'manual' | 'webhook',
 ): FlowRunSnapshot => ({
   id: request.runId,
   flow: { id: graph.definition.id, version: graph.definition.version },
   status,
-  trigger: { triggerId: request.triggerId, kind: 'manual' },
+  trigger: {
+    triggerId: request.triggerId,
+    kind: triggerKind,
+  },
   createdAt: startedAt,
   startedAt,
   completedAt,
