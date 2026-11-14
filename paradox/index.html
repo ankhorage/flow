@@ -151,6 +151,21 @@
       src/features/execution/domain/validateFlowDataSchema.ts
       <small>19 functions</small>
     </button>
+  </li><li>
+    <button class="nav-button" type="button" data-target="src/features/mcp/createMcpToolRegistry.ts">
+      src/features/mcp/createMcpToolRegistry.ts
+      <small>14 functions</small>
+    </button>
+  </li><li>
+    <button class="nav-button" type="button" data-target="src/features/mcp/prepareMcpProviders.ts">
+      src/features/mcp/prepareMcpProviders.ts
+      <small>6 functions</small>
+    </button>
+  </li><li>
+    <button class="nav-button" type="button" data-target="src/features/mcp/validateMcpSchema.ts">
+      src/features/mcp/validateMcpSchema.ts
+      <small>20 functions</small>
+    </button>
   </li>
           </ul>
         </nav>
@@ -163,7 +178,7 @@
       <div class="summary">
         <div><strong>10</strong><span class="muted">public exports</span></div>
         <div><strong>0</strong><span class="muted">components</span></div>
-        <div><strong>10</strong><span class="muted">modules</span></div>
+        <div><strong>15</strong><span class="muted">modules</span></div>
         <div><strong>1</strong><span class="muted">entrypoints</span></div>
       </div>
       <h3>Entrypoints</h3>
@@ -205,16 +220,36 @@
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
     <p><strong>Exports:</strong> <code>assertFlowDataSchemaSupported</code>, <code>validateFlowDataSchema</code></p>
+  </article><article class="item" data-search="src/features/mcp/createMcpToolRegistry.ts src/features/mcp/McpToolError.ts src/features/mcp/prepareMcpProviders.ts src/features/mcp/validateMcpSchema.ts src/types/mcp.ts createMcpToolRegistry">
+    <h3>src/features/mcp/createMcpToolRegistry.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/features/mcp/McpToolError.ts</code>, <code>src/features/mcp/prepareMcpProviders.ts</code>, <code>src/features/mcp/validateMcpSchema.ts</code>, <code>src/types/mcp.ts</code></p>
+    <p><strong>Exports:</strong> <code>createMcpToolRegistry</code></p>
+  </article><article class="item" data-search="src/features/mcp/McpToolError.ts McpToolError">
+    <h3>src/features/mcp/McpToolError.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
+    <p><strong>Exports:</strong> <code>McpToolError</code></p>
+  </article><article class="item" data-search="src/features/mcp/prepareMcpProviders.ts src/features/mcp/McpToolError.ts src/types/mcp.ts prepareMcpProviders">
+    <h3>src/features/mcp/prepareMcpProviders.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/features/mcp/McpToolError.ts</code>, <code>src/types/mcp.ts</code></p>
+    <p><strong>Exports:</strong> <code>prepareMcpProviders</code></p>
+  </article><article class="item" data-search="src/features/mcp/validateMcpSchema.ts src/features/mcp/McpToolError.ts validateMcpSchema">
+    <h3>src/features/mcp/validateMcpSchema.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/features/mcp/McpToolError.ts</code></p>
+    <p><strong>Exports:</strong> <code>validateMcpSchema</code></p>
   </article><article class="item" data-search="src/index.ts compileFlowGraph createDefaultNodeRegistry executeFlowAsync FlowClock FlowCompiledGraph FlowExecutionResult FlowNodeOperation FlowNodeOperationResult FlowNodeRegistry FlowRunRequest">
     <h3>src/index.ts</h3>
     <p class="muted">Configured entrypoint</p>
     <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
     <p><strong>Exports:</strong> <code>compileFlowGraph</code>, <code>createDefaultNodeRegistry</code>, <code>executeFlowAsync</code>, <code>FlowClock</code>, <code>FlowCompiledGraph</code>, <code>FlowExecutionResult</code>, <code>FlowNodeOperation</code>, <code>FlowNodeOperationResult</code>, <code>FlowNodeRegistry</code>, <code>FlowRunRequest</code></p>
-  </article><article class="item" data-search="src/mcp.ts">
+  </article><article class="item" data-search="src/mcp.ts createMcpToolRegistry McpProviderDefinition McpToolInvocation McpToolMetadata McpToolPermission McpToolRegistry McpToolResult McpTrustedStdioProvider">
     <h3>src/mcp.ts</h3>
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
-    <p><strong>Exports:</strong> <span class="empty">None</span></p>
+    <p><strong>Exports:</strong> <code>createMcpToolRegistry</code>, <code>McpProviderDefinition</code>, <code>McpToolInvocation</code>, <code>McpToolMetadata</code>, <code>McpToolPermission</code>, <code>McpToolRegistry</code>, <code>McpToolResult</code>, <code>McpTrustedStdioProvider</code></p>
   </article><article class="item" data-search="src/social.ts">
     <h3>src/social.ts</h3>
     <p class="muted">Referenced module</p>
@@ -225,6 +260,11 @@
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
     <p><strong>Exports:</strong> <code>FlowClock</code>, <code>FlowCompiledGraph</code>, <code>FlowExecutionResult</code>, <code>FlowNodeOperation</code>, <code>FlowNodeOperationResult</code>, <code>FlowNodeRegistry</code>, <code>FlowRunRequest</code></p>
+  </article><article class="item" data-search="src/types/mcp.ts McpProviderDefinition McpToolInvocation McpToolMetadata McpToolPermission McpToolRegistry McpToolResult McpTrustedStdioProvider">
+    <h3>src/types/mcp.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
+    <p><strong>Exports:</strong> <code>McpProviderDefinition</code>, <code>McpToolInvocation</code>, <code>McpToolMetadata</code>, <code>McpToolPermission</code>, <code>McpToolRegistry</code>, <code>McpToolResult</code>, <code>McpTrustedStdioProvider</code></p>
   </article>
     </section>
     <section class="panel">
@@ -535,6 +575,21 @@
   module_src_features_execution_domain_createDefaultNodeRegistry_ts --&gt; module_src_types_execution_ts
   module_src_features_execution_domain_validateFlowDataSchema_ts[&quot;src/features/execution/domain/validateFlowDataSchema.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_features_execution_domain_validateFlowDataSchema_ts
+  module_src_features_mcp_createMcpToolRegistry_ts[&quot;src/features/mcp/createMcpToolRegistry.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_mcp_createMcpToolRegistry_ts
+  module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_McpToolError_ts
+  module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_prepareMcpProviders_ts
+  module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_validateMcpSchema_ts
+  module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_types_mcp_ts
+  module_src_features_mcp_McpToolError_ts[&quot;src/features/mcp/McpToolError.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_mcp_McpToolError_ts
+  module_src_features_mcp_prepareMcpProviders_ts[&quot;src/features/mcp/prepareMcpProviders.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_mcp_prepareMcpProviders_ts
+  module_src_features_mcp_prepareMcpProviders_ts --&gt; module_src_features_mcp_McpToolError_ts
+  module_src_features_mcp_prepareMcpProviders_ts --&gt; module_src_types_mcp_ts
+  module_src_features_mcp_validateMcpSchema_ts[&quot;src/features/mcp/validateMcpSchema.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_mcp_validateMcpSchema_ts
+  module_src_features_mcp_validateMcpSchema_ts --&gt; module_src_features_mcp_McpToolError_ts
   module_src_index_ts[&quot;src/index.ts&quot;]
   module_src_mcp_ts[&quot;src/mcp.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_mcp_ts
@@ -542,6 +597,8 @@
   package__ankhorage_flow -.-&gt; module_src_social_ts
   module_src_types_execution_ts[&quot;src/types/execution.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_types_execution_ts
+  module_src_types_mcp_ts[&quot;src/types/mcp.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_types_mcp_ts
 </div>
     <details>
       <summary>View Mermaid source</summary>
@@ -567,6 +624,21 @@
   module_src_features_execution_domain_createDefaultNodeRegistry_ts --&gt; module_src_types_execution_ts
   module_src_features_execution_domain_validateFlowDataSchema_ts[&quot;src/features/execution/domain/validateFlowDataSchema.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_features_execution_domain_validateFlowDataSchema_ts
+  module_src_features_mcp_createMcpToolRegistry_ts[&quot;src/features/mcp/createMcpToolRegistry.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_mcp_createMcpToolRegistry_ts
+  module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_McpToolError_ts
+  module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_prepareMcpProviders_ts
+  module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_validateMcpSchema_ts
+  module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_types_mcp_ts
+  module_src_features_mcp_McpToolError_ts[&quot;src/features/mcp/McpToolError.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_mcp_McpToolError_ts
+  module_src_features_mcp_prepareMcpProviders_ts[&quot;src/features/mcp/prepareMcpProviders.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_mcp_prepareMcpProviders_ts
+  module_src_features_mcp_prepareMcpProviders_ts --&gt; module_src_features_mcp_McpToolError_ts
+  module_src_features_mcp_prepareMcpProviders_ts --&gt; module_src_types_mcp_ts
+  module_src_features_mcp_validateMcpSchema_ts[&quot;src/features/mcp/validateMcpSchema.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_mcp_validateMcpSchema_ts
+  module_src_features_mcp_validateMcpSchema_ts --&gt; module_src_features_mcp_McpToolError_ts
   module_src_index_ts[&quot;src/index.ts&quot;]
   module_src_mcp_ts[&quot;src/mcp.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_mcp_ts
@@ -574,6 +646,8 @@
   package__ankhorage_flow -.-&gt; module_src_social_ts
   module_src_types_execution_ts[&quot;src/types/execution.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_types_execution_ts
+  module_src_types_mcp_ts[&quot;src/types/mcp.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_types_mcp_ts
 </pre>
     </details>
   </article><article class="item" data-search="Module relationships diagrams/module-relationships.mmd">
@@ -586,16 +660,28 @@
   module_src_features_execution_domain_compileFlowGraph_ts[&quot;src/features/execution/domain/compileFlowGraph.ts&quot;]
   module_src_features_execution_domain_createDefaultNodeRegistry_ts[&quot;src/features/execution/domain/createDefaultNodeRegistry.ts&quot;]
   module_src_features_execution_domain_validateFlowDataSchema_ts[&quot;src/features/execution/domain/validateFlowDataSchema.ts&quot;]
+  module_src_features_mcp_createMcpToolRegistry_ts[&quot;src/features/mcp/createMcpToolRegistry.ts&quot;]
+  module_src_features_mcp_McpToolError_ts[&quot;src/features/mcp/McpToolError.ts&quot;]
+  module_src_features_mcp_prepareMcpProviders_ts[&quot;src/features/mcp/prepareMcpProviders.ts&quot;]
+  module_src_features_mcp_validateMcpSchema_ts[&quot;src/features/mcp/validateMcpSchema.ts&quot;]
   module_src_index_ts[&quot;src/index.ts&quot;]
   module_src_mcp_ts[&quot;src/mcp.ts&quot;]
   module_src_social_ts[&quot;src/social.ts&quot;]
   module_src_types_execution_ts[&quot;src/types/execution.ts&quot;]
+  module_src_types_mcp_ts[&quot;src/types/mcp.ts&quot;]
   module_src_features_execution_application_executeFlowAsync_ts --&gt; module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts
   module_src_features_execution_application_executeFlowAsync_ts --&gt; module_src_features_execution_domain_validateFlowDataSchema_ts
   module_src_features_execution_application_executeFlowAsync_ts --&gt; module_src_types_execution_ts
   module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts --&gt; module_src_features_execution_domain_validateFlowDataSchema_ts
   module_src_features_execution_domain_compileFlowGraph_ts --&gt; module_src_types_execution_ts
   module_src_features_execution_domain_createDefaultNodeRegistry_ts --&gt; module_src_types_execution_ts
+  module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_McpToolError_ts
+  module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_prepareMcpProviders_ts
+  module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_validateMcpSchema_ts
+  module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_types_mcp_ts
+  module_src_features_mcp_prepareMcpProviders_ts --&gt; module_src_features_mcp_McpToolError_ts
+  module_src_features_mcp_prepareMcpProviders_ts --&gt; module_src_types_mcp_ts
+  module_src_features_mcp_validateMcpSchema_ts --&gt; module_src_features_mcp_McpToolError_ts
 </div>
     <details>
       <summary>View Mermaid source</summary>
@@ -606,16 +692,28 @@
   module_src_features_execution_domain_compileFlowGraph_ts[&quot;src/features/execution/domain/compileFlowGraph.ts&quot;]
   module_src_features_execution_domain_createDefaultNodeRegistry_ts[&quot;src/features/execution/domain/createDefaultNodeRegistry.ts&quot;]
   module_src_features_execution_domain_validateFlowDataSchema_ts[&quot;src/features/execution/domain/validateFlowDataSchema.ts&quot;]
+  module_src_features_mcp_createMcpToolRegistry_ts[&quot;src/features/mcp/createMcpToolRegistry.ts&quot;]
+  module_src_features_mcp_McpToolError_ts[&quot;src/features/mcp/McpToolError.ts&quot;]
+  module_src_features_mcp_prepareMcpProviders_ts[&quot;src/features/mcp/prepareMcpProviders.ts&quot;]
+  module_src_features_mcp_validateMcpSchema_ts[&quot;src/features/mcp/validateMcpSchema.ts&quot;]
   module_src_index_ts[&quot;src/index.ts&quot;]
   module_src_mcp_ts[&quot;src/mcp.ts&quot;]
   module_src_social_ts[&quot;src/social.ts&quot;]
   module_src_types_execution_ts[&quot;src/types/execution.ts&quot;]
+  module_src_types_mcp_ts[&quot;src/types/mcp.ts&quot;]
   module_src_features_execution_application_executeFlowAsync_ts --&gt; module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts
   module_src_features_execution_application_executeFlowAsync_ts --&gt; module_src_features_execution_domain_validateFlowDataSchema_ts
   module_src_features_execution_application_executeFlowAsync_ts --&gt; module_src_types_execution_ts
   module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts --&gt; module_src_features_execution_domain_validateFlowDataSchema_ts
   module_src_features_execution_domain_compileFlowGraph_ts --&gt; module_src_types_execution_ts
   module_src_features_execution_domain_createDefaultNodeRegistry_ts --&gt; module_src_types_execution_ts
+  module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_McpToolError_ts
+  module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_prepareMcpProviders_ts
+  module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_validateMcpSchema_ts
+  module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_types_mcp_ts
+  module_src_features_mcp_prepareMcpProviders_ts --&gt; module_src_features_mcp_McpToolError_ts
+  module_src_features_mcp_prepareMcpProviders_ts --&gt; module_src_types_mcp_ts
+  module_src_features_mcp_validateMcpSchema_ts --&gt; module_src_features_mcp_McpToolError_ts
 </pre>
     </details>
   </article><article class="item" data-search="Export graph diagrams/export-graph.mmd">
@@ -628,10 +726,15 @@
   module_src_features_execution_domain_compileFlowGraph_ts[&quot;src/features/execution/domain/compileFlowGraph.ts&quot;]
   module_src_features_execution_domain_createDefaultNodeRegistry_ts[&quot;src/features/execution/domain/createDefaultNodeRegistry.ts&quot;]
   module_src_features_execution_domain_validateFlowDataSchema_ts[&quot;src/features/execution/domain/validateFlowDataSchema.ts&quot;]
+  module_src_features_mcp_createMcpToolRegistry_ts[&quot;src/features/mcp/createMcpToolRegistry.ts&quot;]
+  module_src_features_mcp_McpToolError_ts[&quot;src/features/mcp/McpToolError.ts&quot;]
+  module_src_features_mcp_prepareMcpProviders_ts[&quot;src/features/mcp/prepareMcpProviders.ts&quot;]
+  module_src_features_mcp_validateMcpSchema_ts[&quot;src/features/mcp/validateMcpSchema.ts&quot;]
   module_src_index_ts[&quot;src/index.ts&quot;]
   module_src_mcp_ts[&quot;src/mcp.ts&quot;]
   module_src_social_ts[&quot;src/social.ts&quot;]
   module_src_types_execution_ts[&quot;src/types/execution.ts&quot;]
+  module_src_types_mcp_ts[&quot;src/types/mcp.ts&quot;]
   export_compileFlowGraph[&quot;compileFlowGraph&quot;]
   module_src_features_execution_domain_compileFlowGraph_ts --&gt; export_compileFlowGraph
   export_compileFlowGraph -.-&gt; export_FlowCompiledGraph
@@ -671,10 +774,15 @@
   module_src_features_execution_domain_compileFlowGraph_ts[&quot;src/features/execution/domain/compileFlowGraph.ts&quot;]
   module_src_features_execution_domain_createDefaultNodeRegistry_ts[&quot;src/features/execution/domain/createDefaultNodeRegistry.ts&quot;]
   module_src_features_execution_domain_validateFlowDataSchema_ts[&quot;src/features/execution/domain/validateFlowDataSchema.ts&quot;]
+  module_src_features_mcp_createMcpToolRegistry_ts[&quot;src/features/mcp/createMcpToolRegistry.ts&quot;]
+  module_src_features_mcp_McpToolError_ts[&quot;src/features/mcp/McpToolError.ts&quot;]
+  module_src_features_mcp_prepareMcpProviders_ts[&quot;src/features/mcp/prepareMcpProviders.ts&quot;]
+  module_src_features_mcp_validateMcpSchema_ts[&quot;src/features/mcp/validateMcpSchema.ts&quot;]
   module_src_index_ts[&quot;src/index.ts&quot;]
   module_src_mcp_ts[&quot;src/mcp.ts&quot;]
   module_src_social_ts[&quot;src/social.ts&quot;]
   module_src_types_execution_ts[&quot;src/types/execution.ts&quot;]
+  module_src_types_mcp_ts[&quot;src/types/mcp.ts&quot;]
   export_compileFlowGraph[&quot;compileFlowGraph&quot;]
   module_src_features_execution_domain_compileFlowGraph_ts --&gt; export_compileFlowGraph
   export_compileFlowGraph -.-&gt; export_FlowCompiledGraph
@@ -1008,6 +1116,221 @@
     <h3>isDataArray</h3>
     <p class="muted"><code>src/features/execution/domain/validateFlowDataSchema.ts:217:7</code></p>
     <p>Narrow a JSON-compatible array without losing its serializable member type.</p>
+    
+  </article>
+    </section>
+  </section><section id="view-src-features-mcp-createmcptoolregistry-ts" class="view" data-view="src/features/mcp/createMcpToolRegistry.ts" hidden>
+    <section class="panel">
+      <h2>src/features/mcp/createMcpToolRegistry.ts</h2>
+      <article class="item" data-search="createMcpToolRegistry src/features/mcp/createMcpToolRegistry.ts Creates a snapshotting, allowlist-only MCP registry. Real invocation fails closed until Issue #4 releases its approval boundary.">
+    <h3>createMcpToolRegistry</h3>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:23:14</code></p>
+    <p>Creates a snapshotting, allowlist-only MCP registry. Real invocation fails closed until Issue #4 releases its approval boundary.</p>
+    
+  </article><article class="item" data-search="discoverAsync src/features/mcp/createMcpToolRegistry.ts Discovers bounded tool metadata from one trusted provider connection.">
+    <h3>discoverAsync</h3>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:61:7</code></p>
+    <p>Discovers bounded tool metadata from one trusted provider connection.</p>
+    
+  </article><article class="item" data-search="invokeAsync src/features/mcp/createMcpToolRegistry.ts Validates a requested tool locally and reports the unavailable canonical approval boundary.">
+    <h3>invokeAsync</h3>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:78:7</code></p>
+    <p>Validates a requested tool locally and reports the unavailable canonical approval boundary.</p>
+    
+  </article><article class="item" data-search="connectAsync src/features/mcp/createMcpToolRegistry.ts Connects with a bounded timeout and an abort signal propagated to the SDK transport.">
+    <h3>connectAsync</h3>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:122:7</code></p>
+    <p>Connects with a bounded timeout and an abort signal propagated to the SDK transport.</p>
+    
+  </article><article class="item" data-search="stdioTransport src/features/mcp/createMcpToolRegistry.ts Resolves executable details exclusively from trusted host configuration.">
+    <h3>stdioTransport</h3>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:140:7</code></p>
+    <p>Resolves executable details exclusively from trusted host configuration.</p>
+    
+  </article><article class="item" data-search="remoteTransport src/features/mcp/createMcpToolRegistry.ts Allows a remote connection only to the separately documented literal-loopback development exception.">
+    <h3>remoteTransport</h3>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:159:7</code></p>
+    <p>Allows a remote connection only to the separately documented literal-loopback development exception.</p>
+    
+  </article><article class="item" data-search="listToolsAsync src/features/mcp/createMcpToolRegistry.ts Lists a bounded, non-cyclic sequence of paginated tools.">
+    <h3>listToolsAsync</h3>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:180:7</code></p>
+    <p>Lists a bounded, non-cyclic sequence of paginated tools.</p>
+    
+  </article><article class="item" data-search="toMetadata src/features/mcp/createMcpToolRegistry.ts Converts valid protocol metadata into a stable Flow descriptor.">
+    <h3>toMetadata</h3>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:219:7</code></p>
+    <p>Converts valid protocol metadata into a stable Flow descriptor.</p>
+    
+  </article><article class="item" data-search="boundedAsync src/features/mcp/createMcpToolRegistry.ts Propagates cancellation and a fixed timeout into an asynchronous SDK operation.">
+    <h3>boundedAsync</h3>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:239:7</code></p>
+    <p>Propagates cancellation and a fixed timeout into an asynchronous SDK operation.</p>
+    
+  </article><article class="item" data-search="permissionFor src/features/mcp/createMcpToolRegistry.ts Finds one explicit permission for a protocol tool.">
+    <h3>permissionFor</h3>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:261:7</code></p>
+    <p>Finds one explicit permission for a protocol tool.</p>
+    
+  </article><article class="item" data-search="sameScopes src/features/mcp/createMcpToolRegistry.ts Requires every and only the configured granted scope.">
+    <h3>sameScopes</h3>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:266:7</code></p>
+    <p>Requires every and only the configured granted scope.</p>
+    
+  </article><article class="item" data-search="key src/features/mcp/createMcpToolRegistry.ts Builds a provider-scoped tool identifier.">
+    <h3>key</h3>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:272:7</code></p>
+    <p>Builds a provider-scoped tool identifier.</p>
+    
+  </article><article class="item" data-search="isRecord src/features/mcp/createMcpToolRegistry.ts Narrows unknown data to a non-array object.">
+    <h3>isRecord</h3>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:274:7</code></p>
+    <p>Narrows unknown data to a non-array object.</p>
+    
+  </article><article class="item" data-search="timeoutOf src/features/mcp/createMcpToolRegistry.ts Resolves a configured timeout to its bounded default.">
+    <h3>timeoutOf</h3>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:277:7</code></p>
+    <p>Resolves a configured timeout to its bounded default.</p>
+    
+  </article>
+    </section>
+  </section><section id="view-src-features-mcp-preparemcpproviders-ts" class="view" data-view="src/features/mcp/prepareMcpProviders.ts" hidden>
+    <section class="panel">
+      <h2>src/features/mcp/prepareMcpProviders.ts</h2>
+      <article class="item" data-search="prepareMcpProviders src/features/mcp/prepareMcpProviders.ts Snapshots and validates explicit MCP provider authority before any connection is opened.">
+    <h3>prepareMcpProviders</h3>
+    <p class="muted"><code>src/features/mcp/prepareMcpProviders.ts:7:14</code></p>
+    <p>Snapshots and validates explicit MCP provider authority before any connection is opened.</p>
+    
+  </article><article class="item" data-search="cloneProvider src/features/mcp/prepareMcpProviders.ts Clones provider data so later workflow-object mutation cannot expand authority.">
+    <h3>cloneProvider</h3>
+    <p class="muted"><code>src/features/mcp/prepareMcpProviders.ts:20:7</code></p>
+    <p>Clones provider data so later workflow-object mutation cannot expand authority.</p>
+    
+  </article><article class="item" data-search="validateProvider src/features/mcp/prepareMcpProviders.ts Requires non-empty scopes, unique tool permissions, and safe transport configuration.">
+    <h3>validateProvider</h3>
+    <p class="muted"><code>src/features/mcp/prepareMcpProviders.ts:42:7</code></p>
+    <p>Requires non-empty scopes, unique tool permissions, and safe transport configuration.</p>
+    
+  </article><article class="item" data-search="validateRemote src/features/mcp/prepareMcpProviders.ts Rejects credentials, redirects, private addresses, and non-allowlisted production endpoints.">
+    <h3>validateRemote</h3>
+    <p class="muted"><code>src/features/mcp/prepareMcpProviders.ts:72:7</code></p>
+    <p>Rejects credentials, redirects, private addresses, and non-allowlisted production endpoints.</p>
+    
+  </article><article class="item" data-search="privateIpv4 src/features/mcp/prepareMcpProviders.ts Detects private, reserved, and local IPv4 literals.">
+    <h3>privateIpv4</h3>
+    <p class="muted"><code>src/features/mcp/prepareMcpProviders.ts:110:7</code></p>
+    <p>Detects private, reserved, and local IPv4 literals.</p>
+    
+  </article><article class="item" data-search="uniqueStrings src/features/mcp/prepareMcpProviders.ts Checks unique non-empty strings.">
+    <h3>uniqueStrings</h3>
+    <p class="muted"><code>src/features/mcp/prepareMcpProviders.ts:127:7</code></p>
+    <p>Checks unique non-empty strings.</p>
+    
+  </article>
+    </section>
+  </section><section id="view-src-features-mcp-validatemcpschema-ts" class="view" data-view="src/features/mcp/validateMcpSchema.ts" hidden>
+    <section class="panel">
+      <h2>src/features/mcp/validateMcpSchema.ts</h2>
+      <article class="item" data-search="validateMcpSchema src/features/mcp/validateMcpSchema.ts Validates a closed supported JSON Schema and returns its stable argument matcher.">
+    <h3>validateMcpSchema</h3>
+    <p class="muted"><code>src/features/mcp/validateMcpSchema.ts:34:14</code></p>
+    <p>Validates a closed supported JSON Schema and returns its stable argument matcher.</p>
+    
+  </article><article class="item" data-search="validateSchema src/features/mcp/validateMcpSchema.ts Rejects unsupported JSON Schema features instead of weakening validation.">
+    <h3>validateSchema</h3>
+    <p class="muted"><code>src/features/mcp/validateMcpSchema.ts:43:7</code></p>
+    <p>Rejects unsupported JSON Schema features instead of weakening validation.</p>
+    
+  </article><article class="item" data-search="validateJsonConstraints src/features/mcp/validateMcpSchema.ts Validates portable const and enum declarations.">
+    <h3>validateJsonConstraints</h3>
+    <p class="muted"><code>src/features/mcp/validateMcpSchema.ts:62:7</code></p>
+    <p>Validates portable const and enum declarations.</p>
+    
+  </article><article class="item" data-search="validateObject src/features/mcp/validateMcpSchema.ts Requires a closed object schema with validated declared properties.">
+    <h3>validateObject</h3>
+    <p class="muted"><code>src/features/mcp/validateMcpSchema.ts:73:7</code></p>
+    <p>Requires a closed object schema with validated declared properties.</p>
+    
+  </article><article class="item" data-search="validateArray src/features/mcp/validateMcpSchema.ts Requires an item schema so every array value is validated.">
+    <h3>validateArray</h3>
+    <p class="muted"><code>src/features/mcp/validateMcpSchema.ts:105:7</code></p>
+    <p>Requires an item schema so every array value is validated.</p>
+    
+  </article><article class="item" data-search="validateString src/features/mcp/validateMcpSchema.ts Validates string bounds and regular-expression patterns.">
+    <h3>validateString</h3>
+    <p class="muted"><code>src/features/mcp/validateMcpSchema.ts:115:7</code></p>
+    <p>Validates string bounds and regular-expression patterns.</p>
+    
+  </article><article class="item" data-search="validateNumber src/features/mcp/validateMcpSchema.ts Validates finite numeric constraints.">
+    <h3>validateNumber</h3>
+    <p class="muted"><code>src/features/mcp/validateMcpSchema.ts:129:7</code></p>
+    <p>Validates finite numeric constraints.</p>
+    
+  </article><article class="item" data-search="validateBounds src/features/mcp/validateMcpSchema.ts Validates ordered numeric or integer bounds.">
+    <h3>validateBounds</h3>
+    <p class="muted"><code>src/features/mcp/validateMcpSchema.ts:148:7</code></p>
+    <p>Validates ordered numeric or integer bounds.</p>
+    
+  </article><article class="item" data-search="valid src/features/mcp/validateMcpSchema.ts ">
+    <h3>valid</h3>
+    <p class="muted"><code>src/features/mcp/validateMcpSchema.ts:155:9</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="matches src/features/mcp/validateMcpSchema.ts Matches supported JSON Schema constraints without coercion.">
+    <h3>matches</h3>
+    <p class="muted"><code>src/features/mcp/validateMcpSchema.ts:168:7</code></p>
+    <p>Matches supported JSON Schema constraints without coercion.</p>
+    
+  </article><article class="item" data-search="matchesObject src/features/mcp/validateMcpSchema.ts Matches a closed object and each declared property schema.">
+    <h3>matchesObject</h3>
+    <p class="muted"><code>src/features/mcp/validateMcpSchema.ts:184:7</code></p>
+    <p>Matches a closed object and each declared property schema.</p>
+    
+  </article><article class="item" data-search="matchesArray src/features/mcp/validateMcpSchema.ts Matches array items, bounds, and deterministic uniqueness.">
+    <h3>matchesArray</h3>
+    <p class="muted"><code>src/features/mcp/validateMcpSchema.ts:203:7</code></p>
+    <p>Matches array items, bounds, and deterministic uniqueness.</p>
+    
+  </article><article class="item" data-search="matchesString src/features/mcp/validateMcpSchema.ts Matches string constraints.">
+    <h3>matchesString</h3>
+    <p class="muted"><code>src/features/mcp/validateMcpSchema.ts:218:7</code></p>
+    <p>Matches string constraints.</p>
+    
+  </article><article class="item" data-search="matchesNumber src/features/mcp/validateMcpSchema.ts Matches finite number constraints.">
+    <h3>matchesNumber</h3>
+    <p class="muted"><code>src/features/mcp/validateMcpSchema.ts:225:7</code></p>
+    <p>Matches finite number constraints.</p>
+    
+  </article><article class="item" data-search="matchesType src/features/mcp/validateMcpSchema.ts Matches a JSON Schema primitive type.">
+    <h3>matchesType</h3>
+    <p class="muted"><code>src/features/mcp/validateMcpSchema.ts:233:7</code></p>
+    <p>Matches a JSON Schema primitive type.</p>
+    
+  </article><article class="item" data-search="isRecord src/features/mcp/validateMcpSchema.ts Narrows unknown data to a non-array object.">
+    <h3>isRecord</h3>
+    <p class="muted"><code>src/features/mcp/validateMcpSchema.ts:243:7</code></p>
+    <p>Narrows unknown data to a non-array object.</p>
+    
+  </article><article class="item" data-search="isJson src/features/mcp/validateMcpSchema.ts Confirms a value is portable JSON data.">
+    <h3>isJson</h3>
+    <p class="muted"><code>src/features/mcp/validateMcpSchema.ts:246:7</code></p>
+    <p>Confirms a value is portable JSON data.</p>
+    
+  </article><article class="item" data-search="isUniqueStrings src/features/mcp/validateMcpSchema.ts Confirms a value is an array of unique non-empty strings.">
+    <h3>isUniqueStrings</h3>
+    <p class="muted"><code>src/features/mcp/validateMcpSchema.ts:253:7</code></p>
+    <p>Confirms a value is an array of unique non-empty strings.</p>
+    
+  </article><article class="item" data-search="numberOr src/features/mcp/validateMcpSchema.ts Returns a numeric schema value or its validated default.">
+    <h3>numberOr</h3>
+    <p class="muted"><code>src/features/mcp/validateMcpSchema.ts:258:7</code></p>
+    <p>Returns a numeric schema value or its validated default.</p>
+    
+  </article><article class="item" data-search="stableStringify src/features/mcp/validateMcpSchema.ts Serializes JSON data deterministically.">
+    <h3>stableStringify</h3>
+    <p class="muted"><code>src/features/mcp/validateMcpSchema.ts:261:7</code></p>
+    <p>Serializes JSON data deterministically.</p>
     
   </article>
     </section>

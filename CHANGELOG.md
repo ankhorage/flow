@@ -1,5 +1,11 @@
 # @ankhorage/flow
 
+## 0.3.0
+
+### Minor Changes
+
+- 9bd21b1: Add an optional, fail-closed MCP tool discovery entrypoint with explicit provider and tool scopes.
+
 ## 0.2.0
 
 ### Minor Changes

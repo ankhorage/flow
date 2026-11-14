@@ -14,7 +14,7 @@
     {
       "id": "npm",
       "label": "npm",
-      "value": "v0.2.0",
+      "value": "v0.3.0",
       "color": "cb3837"
     },
     {
@@ -130,6 +130,48 @@
       ]
     },
     {
+      "path": "src/features/mcp/createMcpToolRegistry.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/mcp/McpToolError.ts",
+        "src/features/mcp/prepareMcpProviders.ts",
+        "src/features/mcp/validateMcpSchema.ts",
+        "src/types/mcp.ts"
+      ],
+      "exports": [
+        "createMcpToolRegistry"
+      ]
+    },
+    {
+      "path": "src/features/mcp/McpToolError.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": [
+        "McpToolError"
+      ]
+    },
+    {
+      "path": "src/features/mcp/prepareMcpProviders.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/mcp/McpToolError.ts",
+        "src/types/mcp.ts"
+      ],
+      "exports": [
+        "prepareMcpProviders"
+      ]
+    },
+    {
+      "path": "src/features/mcp/validateMcpSchema.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/mcp/McpToolError.ts"
+      ],
+      "exports": [
+        "validateMcpSchema"
+      ]
+    },
+    {
       "path": "src/index.ts",
       "isEntrypoint": true,
       "dependencies": [],
@@ -150,7 +192,16 @@
       "path": "src/mcp.ts",
       "isEntrypoint": false,
       "dependencies": [],
-      "exports": []
+      "exports": [
+        "createMcpToolRegistry",
+        "McpProviderDefinition",
+        "McpToolInvocation",
+        "McpToolMetadata",
+        "McpToolPermission",
+        "McpToolRegistry",
+        "McpToolResult",
+        "McpTrustedStdioProvider"
+      ]
     },
     {
       "path": "src/social.ts",
@@ -170,6 +221,20 @@
         "FlowNodeOperationResult",
         "FlowNodeRegistry",
         "FlowRunRequest"
+      ]
+    },
+    {
+      "path": "src/types/mcp.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": [
+        "McpProviderDefinition",
+        "McpToolInvocation",
+        "McpToolMetadata",
+        "McpToolPermission",
+        "McpToolRegistry",
+        "McpToolResult",
+        "McpTrustedStdioProvider"
       ]
     }
   ],
@@ -1075,6 +1140,446 @@
         "line": 217,
         "column": 7
       }
+    },
+    {
+      "name": "createMcpToolRegistry",
+      "description": "Creates a snapshotting, allowlist-only MCP registry. Real invocation fails closed until Issue #4 releases its approval boundary.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/createMcpToolRegistry.ts",
+        "line": 23,
+        "column": 14
+      }
+    },
+    {
+      "name": "discoverAsync",
+      "description": "Discovers bounded tool metadata from one trusted provider connection.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/createMcpToolRegistry.ts",
+        "line": 61,
+        "column": 7
+      }
+    },
+    {
+      "name": "invokeAsync",
+      "description": "Validates a requested tool locally and reports the unavailable canonical approval boundary.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/createMcpToolRegistry.ts",
+        "line": 78,
+        "column": 7
+      }
+    },
+    {
+      "name": "connectAsync",
+      "description": "Connects with a bounded timeout and an abort signal propagated to the SDK transport.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/createMcpToolRegistry.ts",
+        "line": 122,
+        "column": 7
+      }
+    },
+    {
+      "name": "stdioTransport",
+      "description": "Resolves executable details exclusively from trusted host configuration.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/createMcpToolRegistry.ts",
+        "line": 140,
+        "column": 7
+      }
+    },
+    {
+      "name": "remoteTransport",
+      "description": "Allows a remote connection only to the separately documented literal-loopback development exception.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/createMcpToolRegistry.ts",
+        "line": 159,
+        "column": 7
+      }
+    },
+    {
+      "name": "listToolsAsync",
+      "description": "Lists a bounded, non-cyclic sequence of paginated tools.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/createMcpToolRegistry.ts",
+        "line": 180,
+        "column": 7
+      }
+    },
+    {
+      "name": "toMetadata",
+      "description": "Converts valid protocol metadata into a stable Flow descriptor.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/createMcpToolRegistry.ts",
+        "line": 219,
+        "column": 7
+      }
+    },
+    {
+      "name": "boundedAsync",
+      "description": "Propagates cancellation and a fixed timeout into an asynchronous SDK operation.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/createMcpToolRegistry.ts",
+        "line": 239,
+        "column": 7
+      }
+    },
+    {
+      "name": "permissionFor",
+      "description": "Finds one explicit permission for a protocol tool.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/createMcpToolRegistry.ts",
+        "line": 261,
+        "column": 7
+      }
+    },
+    {
+      "name": "sameScopes",
+      "description": "Requires every and only the configured granted scope.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/createMcpToolRegistry.ts",
+        "line": 266,
+        "column": 7
+      }
+    },
+    {
+      "name": "key",
+      "description": "Builds a provider-scoped tool identifier.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/createMcpToolRegistry.ts",
+        "line": 272,
+        "column": 7
+      }
+    },
+    {
+      "name": "isRecord",
+      "description": "Narrows unknown data to a non-array object.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/createMcpToolRegistry.ts",
+        "line": 274,
+        "column": 7
+      }
+    },
+    {
+      "name": "timeoutOf",
+      "description": "Resolves a configured timeout to its bounded default.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/createMcpToolRegistry.ts",
+        "line": 277,
+        "column": 7
+      }
+    },
+    {
+      "name": "prepareMcpProviders",
+      "description": "Snapshots and validates explicit MCP provider authority before any connection is opened.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/prepareMcpProviders.ts",
+        "line": 7,
+        "column": 14
+      }
+    },
+    {
+      "name": "cloneProvider",
+      "description": "Clones provider data so later workflow-object mutation cannot expand authority.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/prepareMcpProviders.ts",
+        "line": 20,
+        "column": 7
+      }
+    },
+    {
+      "name": "validateProvider",
+      "description": "Requires non-empty scopes, unique tool permissions, and safe transport configuration.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/prepareMcpProviders.ts",
+        "line": 42,
+        "column": 7
+      }
+    },
+    {
+      "name": "validateRemote",
+      "description": "Rejects credentials, redirects, private addresses, and non-allowlisted production endpoints.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/prepareMcpProviders.ts",
+        "line": 72,
+        "column": 7
+      }
+    },
+    {
+      "name": "privateIpv4",
+      "description": "Detects private, reserved, and local IPv4 literals.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/prepareMcpProviders.ts",
+        "line": 110,
+        "column": 7
+      }
+    },
+    {
+      "name": "uniqueStrings",
+      "description": "Checks unique non-empty strings.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/prepareMcpProviders.ts",
+        "line": 127,
+        "column": 7
+      }
+    },
+    {
+      "name": "validateMcpSchema",
+      "description": "Validates a closed supported JSON Schema and returns its stable argument matcher.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/validateMcpSchema.ts",
+        "line": 34,
+        "column": 14
+      }
+    },
+    {
+      "name": "validateSchema",
+      "description": "Rejects unsupported JSON Schema features instead of weakening validation.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/validateMcpSchema.ts",
+        "line": 43,
+        "column": 7
+      }
+    },
+    {
+      "name": "validateJsonConstraints",
+      "description": "Validates portable const and enum declarations.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/validateMcpSchema.ts",
+        "line": 62,
+        "column": 7
+      }
+    },
+    {
+      "name": "validateObject",
+      "description": "Requires a closed object schema with validated declared properties.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/validateMcpSchema.ts",
+        "line": 73,
+        "column": 7
+      }
+    },
+    {
+      "name": "validateArray",
+      "description": "Requires an item schema so every array value is validated.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/validateMcpSchema.ts",
+        "line": 105,
+        "column": 7
+      }
+    },
+    {
+      "name": "validateString",
+      "description": "Validates string bounds and regular-expression patterns.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/validateMcpSchema.ts",
+        "line": 115,
+        "column": 7
+      }
+    },
+    {
+      "name": "validateNumber",
+      "description": "Validates finite numeric constraints.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/validateMcpSchema.ts",
+        "line": 129,
+        "column": 7
+      }
+    },
+    {
+      "name": "validateBounds",
+      "description": "Validates ordered numeric or integer bounds.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/validateMcpSchema.ts",
+        "line": 148,
+        "column": 7
+      }
+    },
+    {
+      "name": "valid",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/validateMcpSchema.ts",
+        "line": 155,
+        "column": 9
+      }
+    },
+    {
+      "name": "matches",
+      "description": "Matches supported JSON Schema constraints without coercion.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/validateMcpSchema.ts",
+        "line": 168,
+        "column": 7
+      }
+    },
+    {
+      "name": "matchesObject",
+      "description": "Matches a closed object and each declared property schema.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/validateMcpSchema.ts",
+        "line": 184,
+        "column": 7
+      }
+    },
+    {
+      "name": "matchesArray",
+      "description": "Matches array items, bounds, and deterministic uniqueness.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/validateMcpSchema.ts",
+        "line": 203,
+        "column": 7
+      }
+    },
+    {
+      "name": "matchesString",
+      "description": "Matches string constraints.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/validateMcpSchema.ts",
+        "line": 218,
+        "column": 7
+      }
+    },
+    {
+      "name": "matchesNumber",
+      "description": "Matches finite number constraints.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/validateMcpSchema.ts",
+        "line": 225,
+        "column": 7
+      }
+    },
+    {
+      "name": "matchesType",
+      "description": "Matches a JSON Schema primitive type.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/validateMcpSchema.ts",
+        "line": 233,
+        "column": 7
+      }
+    },
+    {
+      "name": "isRecord",
+      "description": "Narrows unknown data to a non-array object.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/validateMcpSchema.ts",
+        "line": 243,
+        "column": 7
+      }
+    },
+    {
+      "name": "isJson",
+      "description": "Confirms a value is portable JSON data.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/validateMcpSchema.ts",
+        "line": 246,
+        "column": 7
+      }
+    },
+    {
+      "name": "isUniqueStrings",
+      "description": "Confirms a value is an array of unique non-empty strings.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/validateMcpSchema.ts",
+        "line": 253,
+        "column": 7
+      }
+    },
+    {
+      "name": "numberOr",
+      "description": "Returns a numeric schema value or its validated default.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/validateMcpSchema.ts",
+        "line": 258,
+        "column": 7
+      }
+    },
+    {
+      "name": "stableStringify",
+      "description": "Serializes JSON data deterministically.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/validateMcpSchema.ts",
+        "line": 261,
+        "column": 7
+      }
     }
   ],
   "sequenceScenarios": [
@@ -1126,6 +1631,51 @@
         "sourcePath": "src/index.ts"
       },
       {
+        "fromPath": "src/mcp.ts",
+        "toPath": "src/features/mcp/createMcpToolRegistry.ts",
+        "sourcePath": "src/mcp.ts"
+      },
+      {
+        "fromPath": "src/mcp.ts",
+        "toPath": "src/types/mcp.ts",
+        "sourcePath": "src/mcp.ts"
+      },
+      {
+        "fromPath": "src/features/mcp/createMcpToolRegistry.ts",
+        "toPath": "src/types/mcp.ts",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromPath": "src/features/mcp/createMcpToolRegistry.ts",
+        "toPath": "src/features/mcp/McpToolError.ts",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromPath": "src/features/mcp/createMcpToolRegistry.ts",
+        "toPath": "src/features/mcp/prepareMcpProviders.ts",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromPath": "src/features/mcp/createMcpToolRegistry.ts",
+        "toPath": "src/features/mcp/validateMcpSchema.ts",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromPath": "src/features/mcp/prepareMcpProviders.ts",
+        "toPath": "src/types/mcp.ts",
+        "sourcePath": "src/features/mcp/prepareMcpProviders.ts"
+      },
+      {
+        "fromPath": "src/features/mcp/prepareMcpProviders.ts",
+        "toPath": "src/features/mcp/McpToolError.ts",
+        "sourcePath": "src/features/mcp/prepareMcpProviders.ts"
+      },
+      {
+        "fromPath": "src/features/mcp/validateMcpSchema.ts",
+        "toPath": "src/features/mcp/McpToolError.ts",
+        "sourcePath": "src/features/mcp/validateMcpSchema.ts"
+      },
+      {
         "fromPath": "src/features/execution/application/executeFlowAsync.ts",
         "toPath": "src/types/execution.ts",
         "sourcePath": "src/features/execution/application/executeFlowAsync.ts"
@@ -1157,6 +1707,402 @@
       }
     ],
     "calls": [
+      {
+        "fromSymbol": "createMcpToolRegistry",
+        "toSymbol": "prepareMcpProviders",
+        "callExpression": "prepareMcpProviders",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromSymbol": "src/features/mcp/createMcpToolRegistry.ts",
+        "toSymbol": "discoverAsync",
+        "callExpression": "discoverAsync",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromSymbol": "src/features/mcp/createMcpToolRegistry.ts",
+        "toSymbol": "key",
+        "callExpression": "key",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromSymbol": "src/features/mcp/createMcpToolRegistry.ts",
+        "toSymbol": "invokeAsync",
+        "callExpression": "invokeAsync",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromSymbol": "discoverAsync",
+        "toSymbol": "connectAsync",
+        "callExpression": "connectAsync",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromSymbol": "discoverAsync",
+        "toSymbol": "listToolsAsync",
+        "callExpression": "listToolsAsync",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromSymbol": "discoverAsync",
+        "toSymbol": "timeoutOf",
+        "callExpression": "timeoutOf",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromSymbol": "src/features/mcp/createMcpToolRegistry.ts",
+        "toSymbol": "permissionFor",
+        "callExpression": "permissionFor",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromSymbol": "src/features/mcp/createMcpToolRegistry.ts",
+        "toSymbol": "toMetadata",
+        "callExpression": "toMetadata",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromSymbol": "discoverAsync",
+        "toSymbol": "closeAsync",
+        "callExpression": "connection.closeAsync",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromSymbol": "invokeAsync",
+        "toSymbol": "key",
+        "callExpression": "key",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromSymbol": "invokeAsync",
+        "toSymbol": "permissionFor",
+        "callExpression": "permissionFor",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromSymbol": "invokeAsync",
+        "toSymbol": "sameScopes",
+        "callExpression": "sameScopes",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromSymbol": "invokeAsync",
+        "toSymbol": "matches",
+        "callExpression": "validateMcpSchema(tool.inputSchema).matches",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromSymbol": "invokeAsync",
+        "toSymbol": "validateMcpSchema",
+        "callExpression": "validateMcpSchema",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromSymbol": "connectAsync",
+        "toSymbol": "stdioTransport",
+        "callExpression": "stdioTransport",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromSymbol": "connectAsync",
+        "toSymbol": "remoteTransport",
+        "callExpression": "remoteTransport",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromSymbol": "connectAsync",
+        "toSymbol": "boundedAsync",
+        "callExpression": "boundedAsync",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromSymbol": "src/features/mcp/createMcpToolRegistry.ts",
+        "toSymbol": "timeoutOf",
+        "callExpression": "timeoutOf",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromSymbol": "connectAsync",
+        "toSymbol": "timeoutOf",
+        "callExpression": "timeoutOf",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromSymbol": "listToolsAsync",
+        "toSymbol": "boundedAsync",
+        "callExpression": "boundedAsync",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromSymbol": "toMetadata",
+        "toSymbol": "isRecord",
+        "callExpression": "isRecord",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromSymbol": "toMetadata",
+        "toSymbol": "permissionFor",
+        "callExpression": "permissionFor",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromSymbol": "toMetadata",
+        "toSymbol": "validateMcpSchema",
+        "callExpression": "validateMcpSchema",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromSymbol": "boundedAsync",
+        "toSymbol": "operation",
+        "callExpression": "operation",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromSymbol": "validateProvider",
+        "toSymbol": "uniqueStrings",
+        "callExpression": "uniqueStrings",
+        "sourcePath": "src/features/mcp/prepareMcpProviders.ts"
+      },
+      {
+        "fromSymbol": "src/features/mcp/prepareMcpProviders.ts",
+        "toSymbol": "uniqueStrings",
+        "callExpression": "uniqueStrings",
+        "sourcePath": "src/features/mcp/prepareMcpProviders.ts"
+      },
+      {
+        "fromSymbol": "validateProvider",
+        "toSymbol": "validateRemote",
+        "callExpression": "validateRemote",
+        "sourcePath": "src/features/mcp/prepareMcpProviders.ts"
+      },
+      {
+        "fromSymbol": "validateRemote",
+        "toSymbol": "privateIpv4",
+        "callExpression": "privateIpv4",
+        "sourcePath": "src/features/mcp/prepareMcpProviders.ts"
+      },
+      {
+        "fromSymbol": "validateRemote",
+        "toSymbol": "uniqueStrings",
+        "callExpression": "uniqueStrings",
+        "sourcePath": "src/features/mcp/prepareMcpProviders.ts"
+      },
+      {
+        "fromSymbol": "validateMcpSchema",
+        "toSymbol": "validateSchema",
+        "callExpression": "validateSchema",
+        "sourcePath": "src/features/mcp/validateMcpSchema.ts"
+      },
+      {
+        "fromSymbol": "validateMcpSchema",
+        "toSymbol": "createHash",
+        "callExpression": "createHash",
+        "sourcePath": "src/features/mcp/validateMcpSchema.ts"
+      },
+      {
+        "fromSymbol": "validateMcpSchema",
+        "toSymbol": "stableStringify",
+        "callExpression": "stableStringify",
+        "sourcePath": "src/features/mcp/validateMcpSchema.ts"
+      },
+      {
+        "fromSymbol": "matches",
+        "toSymbol": "matches",
+        "callExpression": "matches",
+        "sourcePath": "src/features/mcp/validateMcpSchema.ts"
+      },
+      {
+        "fromSymbol": "validateSchema",
+        "toSymbol": "validateJsonConstraints",
+        "callExpression": "validateJsonConstraints",
+        "sourcePath": "src/features/mcp/validateMcpSchema.ts"
+      },
+      {
+        "fromSymbol": "validateSchema",
+        "toSymbol": "validateObject",
+        "callExpression": "validateObject",
+        "sourcePath": "src/features/mcp/validateMcpSchema.ts"
+      },
+      {
+        "fromSymbol": "validateSchema",
+        "toSymbol": "validateArray",
+        "callExpression": "validateArray",
+        "sourcePath": "src/features/mcp/validateMcpSchema.ts"
+      },
+      {
+        "fromSymbol": "validateSchema",
+        "toSymbol": "validateString",
+        "callExpression": "validateString",
+        "sourcePath": "src/features/mcp/validateMcpSchema.ts"
+      },
+      {
+        "fromSymbol": "validateSchema",
+        "toSymbol": "validateNumber",
+        "callExpression": "validateNumber",
+        "sourcePath": "src/features/mcp/validateMcpSchema.ts"
+      },
+      {
+        "fromSymbol": "validateJsonConstraints",
+        "toSymbol": "isJson",
+        "callExpression": "isJson",
+        "sourcePath": "src/features/mcp/validateMcpSchema.ts"
+      },
+      {
+        "fromSymbol": "validateObject",
+        "toSymbol": "isRecord",
+        "callExpression": "isRecord",
+        "sourcePath": "src/features/mcp/validateMcpSchema.ts"
+      },
+      {
+        "fromSymbol": "src/features/mcp/validateMcpSchema.ts",
+        "toSymbol": "isRecord",
+        "callExpression": "isRecord",
+        "sourcePath": "src/features/mcp/validateMcpSchema.ts"
+      },
+      {
+        "fromSymbol": "src/features/mcp/validateMcpSchema.ts",
+        "toSymbol": "validateSchema",
+        "callExpression": "validateSchema",
+        "sourcePath": "src/features/mcp/validateMcpSchema.ts"
+      },
+      {
+        "fromSymbol": "validateObject",
+        "toSymbol": "isUniqueStrings",
+        "callExpression": "isUniqueStrings",
+        "sourcePath": "src/features/mcp/validateMcpSchema.ts"
+      },
+      {
+        "fromSymbol": "validateObject",
+        "toSymbol": "validateBounds",
+        "callExpression": "validateBounds",
+        "sourcePath": "src/features/mcp/validateMcpSchema.ts"
+      },
+      {
+        "fromSymbol": "validateArray",
+        "toSymbol": "isRecord",
+        "callExpression": "isRecord",
+        "sourcePath": "src/features/mcp/validateMcpSchema.ts"
+      },
+      {
+        "fromSymbol": "validateArray",
+        "toSymbol": "validateSchema",
+        "callExpression": "validateSchema",
+        "sourcePath": "src/features/mcp/validateMcpSchema.ts"
+      },
+      {
+        "fromSymbol": "validateArray",
+        "toSymbol": "validateBounds",
+        "callExpression": "validateBounds",
+        "sourcePath": "src/features/mcp/validateMcpSchema.ts"
+      },
+      {
+        "fromSymbol": "validateString",
+        "toSymbol": "validateBounds",
+        "callExpression": "validateBounds",
+        "sourcePath": "src/features/mcp/validateMcpSchema.ts"
+      },
+      {
+        "fromSymbol": "validateBounds",
+        "toSymbol": "valid",
+        "callExpression": "valid",
+        "sourcePath": "src/features/mcp/validateMcpSchema.ts"
+      },
+      {
+        "fromSymbol": "matches",
+        "toSymbol": "matchesType",
+        "callExpression": "matchesType",
+        "sourcePath": "src/features/mcp/validateMcpSchema.ts"
+      },
+      {
+        "fromSymbol": "matches",
+        "toSymbol": "stableStringify",
+        "callExpression": "stableStringify",
+        "sourcePath": "src/features/mcp/validateMcpSchema.ts"
+      },
+      {
+        "fromSymbol": "src/features/mcp/validateMcpSchema.ts",
+        "toSymbol": "stableStringify",
+        "callExpression": "stableStringify",
+        "sourcePath": "src/features/mcp/validateMcpSchema.ts"
+      },
+      {
+        "fromSymbol": "matches",
+        "toSymbol": "matchesObject",
+        "callExpression": "matchesObject",
+        "sourcePath": "src/features/mcp/validateMcpSchema.ts"
+      },
+      {
+        "fromSymbol": "matches",
+        "toSymbol": "matchesArray",
+        "callExpression": "matchesArray",
+        "sourcePath": "src/features/mcp/validateMcpSchema.ts"
+      },
+      {
+        "fromSymbol": "matches",
+        "toSymbol": "matchesString",
+        "callExpression": "matchesString",
+        "sourcePath": "src/features/mcp/validateMcpSchema.ts"
+      },
+      {
+        "fromSymbol": "matches",
+        "toSymbol": "matchesNumber",
+        "callExpression": "matchesNumber",
+        "sourcePath": "src/features/mcp/validateMcpSchema.ts"
+      },
+      {
+        "fromSymbol": "matchesObject",
+        "toSymbol": "numberOr",
+        "callExpression": "numberOr",
+        "sourcePath": "src/features/mcp/validateMcpSchema.ts"
+      },
+      {
+        "fromSymbol": "matchesObject",
+        "toSymbol": "isRecord",
+        "callExpression": "isRecord",
+        "sourcePath": "src/features/mcp/validateMcpSchema.ts"
+      },
+      {
+        "fromSymbol": "src/features/mcp/validateMcpSchema.ts",
+        "toSymbol": "matches",
+        "callExpression": "matches",
+        "sourcePath": "src/features/mcp/validateMcpSchema.ts"
+      },
+      {
+        "fromSymbol": "matchesArray",
+        "toSymbol": "numberOr",
+        "callExpression": "numberOr",
+        "sourcePath": "src/features/mcp/validateMcpSchema.ts"
+      },
+      {
+        "fromSymbol": "matchesArray",
+        "toSymbol": "isRecord",
+        "callExpression": "isRecord",
+        "sourcePath": "src/features/mcp/validateMcpSchema.ts"
+      },
+      {
+        "fromSymbol": "matchesString",
+        "toSymbol": "numberOr",
+        "callExpression": "numberOr",
+        "sourcePath": "src/features/mcp/validateMcpSchema.ts"
+      },
+      {
+        "fromSymbol": "matchesType",
+        "toSymbol": "isRecord",
+        "callExpression": "isRecord",
+        "sourcePath": "src/features/mcp/validateMcpSchema.ts"
+      },
+      {
+        "fromSymbol": "isJson",
+        "toSymbol": "isRecord",
+        "callExpression": "isRecord",
+        "sourcePath": "src/features/mcp/validateMcpSchema.ts"
+      },
+      {
+        "fromSymbol": "stableStringify",
+        "toSymbol": "isRecord",
+        "callExpression": "isRecord",
+        "sourcePath": "src/features/mcp/validateMcpSchema.ts"
+      },
       {
         "fromSymbol": "executeFlowAsync",
         "toSymbol": "assertFlowGraphSchemasSupported",

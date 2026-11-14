@@ -1,6 +1,6 @@
 {
   "name": "@ankhorage/flow",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Standalone workflow engine foundation for Ankhorage.",
   "keywords": [
     "ankhorage",

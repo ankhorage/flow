@@ -20,6 +20,21 @@ graph TD
   module_src_features_execution_domain_createDefaultNodeRegistry_ts --> module_src_types_execution_ts
   module_src_features_execution_domain_validateFlowDataSchema_ts["src/features/execution/domain/validateFlowDataSchema.ts"]
   package__ankhorage_flow -.-> module_src_features_execution_domain_validateFlowDataSchema_ts
+  module_src_features_mcp_createMcpToolRegistry_ts["src/features/mcp/createMcpToolRegistry.ts"]
+  package__ankhorage_flow -.-> module_src_features_mcp_createMcpToolRegistry_ts
+  module_src_features_mcp_createMcpToolRegistry_ts --> module_src_features_mcp_McpToolError_ts
+  module_src_features_mcp_createMcpToolRegistry_ts --> module_src_features_mcp_prepareMcpProviders_ts
+  module_src_features_mcp_createMcpToolRegistry_ts --> module_src_features_mcp_validateMcpSchema_ts
+  module_src_features_mcp_createMcpToolRegistry_ts --> module_src_types_mcp_ts
+  module_src_features_mcp_McpToolError_ts["src/features/mcp/McpToolError.ts"]
+  package__ankhorage_flow -.-> module_src_features_mcp_McpToolError_ts
+  module_src_features_mcp_prepareMcpProviders_ts["src/features/mcp/prepareMcpProviders.ts"]
+  package__ankhorage_flow -.-> module_src_features_mcp_prepareMcpProviders_ts
+  module_src_features_mcp_prepareMcpProviders_ts --> module_src_features_mcp_McpToolError_ts
+  module_src_features_mcp_prepareMcpProviders_ts --> module_src_types_mcp_ts
+  module_src_features_mcp_validateMcpSchema_ts["src/features/mcp/validateMcpSchema.ts"]
+  package__ankhorage_flow -.-> module_src_features_mcp_validateMcpSchema_ts
+  module_src_features_mcp_validateMcpSchema_ts --> module_src_features_mcp_McpToolError_ts
   module_src_index_ts["src/index.ts"]
   module_src_mcp_ts["src/mcp.ts"]
   package__ankhorage_flow -.-> module_src_mcp_ts
@@ -27,3 +42,5 @@ graph TD
   package__ankhorage_flow -.-> module_src_social_ts
   module_src_types_execution_ts["src/types/execution.ts"]
   package__ankhorage_flow -.-> module_src_types_execution_ts
+  module_src_types_mcp_ts["src/types/mcp.ts"]
+  package__ankhorage_flow -.-> module_src_types_mcp_ts
