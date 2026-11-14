@@ -38,20 +38,43 @@ const securityInvocation = (operationId: string) => ({
   operationId,
 });
 
-const permittingSecurity = (capabilities = ['mcp:fixture:safe_echo', 'mcp:fixture:sum_numbers']) =>
+const persistentOperationStore = () => {
+  const claimed = new Set<string>();
+  const consumed = new Set<string>();
+  const keyOf = (operation: { readonly idempotencyKey: string }) => operation.idempotencyKey;
+  return {
+    claimAsync: async (operation: { readonly idempotencyKey: string }) => {
+      const key = keyOf(operation);
+      if (claimed.has(key)) return false;
+      claimed.add(key);
+      return true;
+    },
+    consumeAsync: async (operation: { readonly idempotencyKey: string }) => {
+      const key = keyOf(operation);
+      if (!claimed.has(key) || consumed.has(key)) return false;
+      consumed.add(key);
+      return true;
+    },
+    releaseAsync: async (operation: { readonly idempotencyKey: string }) => {
+      const key = keyOf(operation);
+      if (!consumed.has(key)) claimed.delete(key);
+    },
+  };
+};
+
+const permittingSecurity = (
+  capabilities = ['mcp:fixture:safe_echo', 'mcp:fixture:sum_numbers'],
+  approvalStatus: 'approved' | 'rejected' = 'approved',
+) =>
   createFlowSecurityPort({
-    approvalStore: { getAsync: async (operation) => ({ operation, status: 'approved' }) },
+    approvalStore: { getAsync: async (operation) => ({ operation, status: approvalStatus }) },
     audit: { writeAsync: async () => undefined },
     grants: capabilities.map((capability) => ({
       ...securityInvocation('unused').actor,
       actorId: 'operator',
       capability,
     })),
-    operationStore: {
-      claimAsync: async () => true,
-      consumeAsync: async () => true,
-      releaseAsync: async () => undefined,
-    },
+    operationStore: persistentOperationStore(),
     rateLimit: { acquireAsync: async () => true },
     secretStore: {
       create: async () => ({ ok: false, error: { code: 'unavailable', message: 'unused' } }),
@@ -121,11 +144,27 @@ test('executes distinct STDIO tools only after a scoped Flow security permit is 
   ).resolves.toMatchObject({ content: [{ text: '5' }] });
 });
 
+test('rejects an MCP invocation when the canonical approval boundary rejects its exact operation', async () => {
+  const registry = createMcpToolRegistry({
+    providers: [provider],
+    security: permittingSecurity(['mcp:fixture:safe_echo'], 'rejected'),
+    trustedStdioProviders,
+  });
+  const [tool] = await registry.discoverAsync();
+  await expect(
+    registry.invokeAsync({
+      providerId: 'fixture',
+      toolName: 'safe_echo',
+      schemaFingerprint: tool?.schemaFingerprint ?? '',
+      arguments: { message: 'must not run' },
+      scopes: ['tools:invoke'],
+      security: securityInvocation('rejected-approval'),
+    }),
+  ).rejects.toThrow('approval gate rejected');
+});
+
 test('binds every AI-to-MCP tool call to a unique step identity through the canonical security port', async () => {
   const authorized: string[] = [];
-  const claimed = new Set<string>();
-  const consumed = new Set<string>();
-  const operationKey = (operation: { readonly idempotencyKey: string }) => operation.idempotencyKey;
   const security = createFlowSecurityPort({
     approvalStore: {
       getAsync: async (operation) => {
@@ -146,24 +185,7 @@ test('binds every AI-to-MCP tool call to a unique step identity through the cano
         capability: 'mcp:fixture:safe_echo',
       },
     ],
-    operationStore: {
-      claimAsync: async (operation) => {
-        const key = operationKey(operation);
-        if (claimed.has(key)) return false;
-        claimed.add(key);
-        return true;
-      },
-      consumeAsync: async (operation) => {
-        const key = operationKey(operation);
-        if (!claimed.has(key) || consumed.has(key)) return false;
-        consumed.add(key);
-        return true;
-      },
-      releaseAsync: async (operation) => {
-        const key = operationKey(operation);
-        if (!consumed.has(key)) claimed.delete(key);
-      },
-    },
+    operationStore: persistentOperationStore(),
     rateLimit: { acquireAsync: async () => true },
     secretStore: {
       create: async () => ({ ok: false, error: { code: 'unavailable', message: 'unused' } }),

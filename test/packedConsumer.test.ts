@@ -34,7 +34,7 @@ const writeConsumerFiles = (consumerDirectory: string): void => {
       "import { createFlowSecurityPort } from '@ankhorage/flow';",
       "import { executeAiNodeAsync } from '@ankhorage/flow/ai';",
       "import '@ankhorage/flow/execution';",
-      "import { createMcpToolRegistry } from '@ankhorage/flow/mcp';",
+      "import { createMcpAgentToolAdapter, createMcpToolRegistry } from '@ankhorage/flow/mcp';",
       "import '@ankhorage/flow/social';",
       "import '@ankhorage/contracts/flow';",
       "const registry = createMcpToolRegistry({ providers: [{ id: 'provider', transport: 'stdio', allowedTools: [{ name: 'safe_echo', grantedScopes: ['tools:invoke'] }], grantedScopes: ['tools:invoke'] }] });",
@@ -50,7 +50,7 @@ const writeConsumerFiles = (consumerDirectory: string): void => {
       "import { createFlowSecurityPort } from '@ankhorage/flow';",
       "import type { FlowAiModelPort } from '@ankhorage/flow/ai';",
       "import '@ankhorage/flow/execution';",
-      "import { createMcpToolRegistry } from '@ankhorage/flow/mcp';",
+      "import { createMcpAgentToolAdapter, createMcpToolRegistry } from '@ankhorage/flow/mcp';",
       "import '@ankhorage/flow/social';",
       "import '@ankhorage/contracts/flow';",
       "import type { FlowDefinition } from '@ankhorage/contracts/flow';",
@@ -60,6 +60,7 @@ const writeConsumerFiles = (consumerDirectory: string): void => {
       "const fakeModel: FlowAiModelPort = { streamAsync: async function* () { yield { type: 'output', value: { answer: 'typed' } }; } };",
       'void fakeModel;',
       'void createMcpToolRegistry;',
+      'void createMcpAgentToolAdapter;',
     ].join('\n'),
   );
   writeFileSync(
@@ -78,14 +79,15 @@ const writeConsumerFiles = (consumerDirectory: string): void => {
     join(consumerDirectory, 'consumer-with-sdk.mjs'),
     [
       "import { createFlowSecurityPort } from '@ankhorage/flow';",
-      "import { createMcpToolRegistry } from '@ankhorage/flow/mcp';",
+      "import { executeBoundedAgentAsync } from '@ankhorage/flow/ai';",
+      "import { createMcpAgentToolAdapter, createMcpToolRegistry } from '@ankhorage/flow/mcp';",
       "const actor = { id: 'operator', tenantId: 'tenant-a', projectId: 'project-a', environment: 'test' };",
-      "const security = createFlowSecurityPort({ approvalStore: { getAsync: async (operation) => ({ operation, status: 'approved' }) }, audit: { writeAsync: async () => undefined }, grants: [{ ...actor, actorId: actor.id, capability: 'mcp:provider:safe_echo' }], operationStore: { claimAsync: async () => true, consumeAsync: async () => true, releaseAsync: async () => undefined }, rateLimit: { acquireAsync: async () => true }, secretStore: { create: async () => ({ ok: false, error: { code: 'unavailable', message: 'unused' } }), getMetadata: async () => ({ ok: false, error: { code: 'not_found', message: 'unused' } }), list: async () => ({ ok: true, data: [] }), remove: async () => ({ ok: true }), replace: async () => ({ ok: false, error: { code: 'unavailable', message: 'unused' } }), resolve: async () => ({ ok: true, data: {} }) } });",
+      "const claimed = new Set(); const consumed = new Set(); const security = createFlowSecurityPort({ approvalStore: { getAsync: async (operation) => ({ operation, status: 'approved' }) }, audit: { writeAsync: async () => undefined }, grants: [{ ...actor, actorId: actor.id, capability: 'ai:tool:provider:safe_echo' }, { ...actor, actorId: actor.id, capability: 'mcp:provider:safe_echo' }], operationStore: { claimAsync: async (operation) => { if (claimed.has(operation.idempotencyKey)) return false; claimed.add(operation.idempotencyKey); return true; }, consumeAsync: async (operation) => { if (!claimed.has(operation.idempotencyKey) || consumed.has(operation.idempotencyKey)) return false; consumed.add(operation.idempotencyKey); return true; }, releaseAsync: async (operation) => { if (!consumed.has(operation.idempotencyKey)) claimed.delete(operation.idempotencyKey); } }, rateLimit: { acquireAsync: async () => true }, secretStore: { create: async () => ({ ok: false, error: { code: 'unavailable', message: 'unused' } }), getMetadata: async () => ({ ok: false, error: { code: 'not_found', message: 'unused' } }), list: async () => ({ ok: true, data: [] }), remove: async () => ({ ok: true }), replace: async () => ({ ok: false, error: { code: 'unavailable', message: 'unused' } }), resolve: async () => ({ ok: true, data: {} }) } });",
       "const registry = createMcpToolRegistry({ providers: [{ id: 'provider', transport: 'stdio', allowedTools: [{ name: 'safe_echo', grantedScopes: ['tools:invoke'] }], grantedScopes: ['tools:invoke'] }], security, trustedStdioProviders: { provider: { command: process.execPath, args: [new URL('./mcp-server.mjs', import.meta.url).pathname] } } });",
       'const tools = await registry.discoverAsync();',
       "if (tools.length !== 1 || tools[0]?.name !== 'safe_echo') throw new Error('Expected packed MCP discovery to succeed.');",
-      "const result = await registry.invokeAsync({ providerId: 'provider', toolName: 'safe_echo', schemaFingerprint: tools[0].schemaFingerprint, arguments: {}, scopes: ['tools:invoke'], security: { actor, idempotencyKey: 'packed-invocation', operationId: 'packed-invocation' } });",
-      "if (result.content[0]?.text !== 'packed') throw new Error('Expected packed MCP invocation to succeed.');",
+      "const tool = tools[0]; if (!tool) throw new Error('Expected the packed tool metadata.'); const adapter = createMcpAgentToolAdapter({ registry, tool }); let step = 0; const result = await executeBoundedAgentAsync({ allowedTools: [adapter.name], maxSteps: 3, output: { parse: (value) => value }, planner: { nextAsync: async () => [{ type: 'tool', name: adapter.name, arguments: {} }, { type: 'tool', name: adapter.name, arguments: {} }, { type: 'final', output: { answer: 'packed' } }][step++] }, security: { actor, idempotencyKey: 'packed-agent', operationId: 'packed-agent', secretRefs: [] }, securityPort: security, tools: [adapter] });",
+      "if (result.answer !== 'packed' || claimed.size !== 4 || consumed.size !== 4) throw new Error('Expected two persistently claimed and consumed packed AI-to-MCP calls.');",
     ].join('\n'),
   );
 };
