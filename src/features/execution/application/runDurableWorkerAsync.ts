@@ -74,7 +74,7 @@ const processWorkAsync = async (
         workId: work.id,
       };
     }
-    await executeEffectAsync(work, run, dependencies);
+    const effectStatus = await executeEffectAsync(work, run, dependencies);
     await dependencies.persistence.markOutboxDeliveredAsync(work.id);
     const transitioned = await transitionAsync(
       run,
@@ -84,7 +84,7 @@ const processWorkAsync = async (
     );
     if (!transitioned || !(await completeAsync(work, input.workerId, dependencies)))
       return { status: 'lost_lease', workId: work.id };
-    return { status: 'succeeded', workId: work.id };
+    return { status: effectStatus, workId: work.id };
   } catch (error) {
     if (isApprovalPending(error)) return waitForApprovalAsync(work, run, input, dependencies);
     return retryOrFailAsync(work, run, input, dependencies, error);
@@ -112,22 +112,40 @@ const prepareOutboxAsync = async (
   return created;
 };
 
-/** Runs the application effect only after the canonical security owner issues a permit. */
+/** Runs internal work directly, while protected provider work requires reconciliation and a canonical permit. */
 const executeEffectAsync = async (
   work: FlowDurableWork,
   run: FlowDurableRun,
   dependencies: Parameters<typeof runDurableWorkerAsync>[1],
-): Promise<void> => {
+): Promise<'succeeded'> => {
   const execute = () =>
     dependencies.effects.executeAsync({
       idempotencyKey: work.idempotencyKey ?? work.id,
       run,
       work,
     });
-  if (work.securityOperation === undefined) return execute();
+  if (work.effectKind === 'internal') {
+    if (work.securityOperation !== undefined)
+      throw new Error('FLOW_INTERNAL_EFFECT_SECURITY_OPERATION');
+    await execute();
+    return 'succeeded';
+  }
+  if (work.securityOperation === undefined)
+    throw new Error('FLOW_PROTECTED_EFFECT_SECURITY_OPERATION');
   if (dependencies.security === undefined) throw new Error('FLOW_SECURITY_PORT_REQUIRED');
+  if (dependencies.effects.reconcileAsync === undefined)
+    throw new Error('FLOW_PROTECTED_EFFECT_RECONCILIATION_REQUIRED');
+  if (
+    (await dependencies.effects.reconcileAsync({
+      idempotencyKey: work.idempotencyKey ?? work.id,
+      run,
+      work,
+    })) === 'delivered'
+  )
+    return 'succeeded';
   const permit = await dependencies.security.authorizeAsync(work.securityOperation);
   await permit.executeAsync(async () => execute());
+  return 'succeeded';
 };
 
 /** Persist a waiting approval and defer its at-least-once delivery without consuming the lease. */
@@ -286,6 +304,15 @@ export interface FlowDurableEffectPort {
     readonly run: FlowDurableRun;
     readonly work: FlowDurableWork;
   }) => Promise<void>;
+  /**
+   * Query the provider's idempotency boundary before a protected replay. A provider must return
+   * `delivered` only when the stable key proves that the original effect completed.
+   */
+  readonly reconcileAsync?: (input: {
+    readonly idempotencyKey: string;
+    readonly run: FlowDurableRun;
+    readonly work: FlowDurableWork;
+  }) => Promise<'delivered' | 'unknown'>;
 }
 
 /** Observable outcome for every delivery claimed by one bounded worker tick. */

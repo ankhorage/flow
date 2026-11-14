@@ -10,6 +10,7 @@ export const createRetryWork = (
   ...(completed.idempotencyKey === undefined ? {} : { idempotencyKey: completed.idempotencyKey }),
   attempt: completed.attempt + 1,
   dueAt: calculateRetryDueAt(now, completed.attempt, policy),
+  effectKind: completed.effectKind,
   flow: { ...completed.flow },
   id: `${completed.runId}:attempt:${completed.attempt + 1}`,
   runId: completed.runId,

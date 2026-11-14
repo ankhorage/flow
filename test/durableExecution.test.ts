@@ -1,4 +1,4 @@
-import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -6,11 +6,17 @@ import { describe, expect, test } from 'bun:test';
 
 import {
   calculateRetryDueAt,
+  createFlowSecurityPort,
   createDurableRunAsync,
   createRetryWork,
   isCronDueAt,
 } from '../src/index.js';
-import type { FlowDurableRun, FlowDurableWork, FlowPersistencePort } from '../src/index.js';
+import type {
+  FlowDurableRun,
+  FlowDurableWork,
+  FlowPersistencePort,
+  FlowSecurityOperation,
+} from '../src/index.js';
 import {
   cancelDurableRunAsync,
   FileFlowPersistenceAdapter,
@@ -53,6 +59,7 @@ describe('durable execution state', () => {
     const completed: FlowDurableWork = {
       attempt: 3,
       dueAt: now.toISOString(),
+      effectKind: 'internal',
       flow,
       id: 'run-1:attempt:3',
       runId: 'run-1',
@@ -66,6 +73,7 @@ describe('durable execution state', () => {
     ).toEqual({
       attempt: 4,
       dueAt: '2026-11-14T12:00:03.000Z',
+      effectKind: 'internal',
       flow,
       id: 'run-1:attempt:4',
       runId: 'run-1',
@@ -110,6 +118,7 @@ describe('durable execution state', () => {
     const work: FlowDurableWork = {
       attempt: 1,
       dueAt: now.toISOString(),
+      effectKind: 'internal',
       flow,
       id: 'run-1:attempt:1',
       runId: 'run-1',
@@ -184,6 +193,7 @@ describe('durable execution state', () => {
     const firstWork: FlowDurableWork = {
       attempt: 1,
       dueAt: now.toISOString(),
+      effectKind: 'internal',
       flow,
       id: 'run-2:attempt:1',
       runId: 'run-2',
@@ -318,6 +328,7 @@ describe('durable execution state', () => {
       await persistence.enqueueWorkAsync({
         attempt: 1,
         dueAt: clock.now().toISOString(),
+        effectKind: 'internal',
         flow,
         id: 'worker-run:attempt:1',
         idempotencyKey: 'effect-1',
@@ -362,6 +373,7 @@ describe('durable execution state', () => {
       await persistence.enqueueWorkAsync({
         attempt: 1,
         dueAt: now.toISOString(),
+        effectKind: 'internal',
         flow,
         id: 'cancel-run:attempt:1',
         runId: 'cancel-run',
@@ -392,7 +404,388 @@ describe('durable execution state', () => {
       await rm(directory, { force: true, recursive: true });
     }
   });
+
+  test('exhausts retries through worker ticks and records one terminal compensation', async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'flow-retry-'));
+    const persistence = FileFlowPersistenceAdapter(join(directory, 'flow.json'));
+    const clock = controlledClock(now);
+    const calls: string[] = [];
+    const compensated: string[] = [];
+    try {
+      await createDurableRunAsync({ flow, id: 'retry-run' }, { clock, persistence });
+      await persistence.enqueueWorkAsync(workOf('retry-run', 'retry-run:attempt:1', clock.now()));
+      for (const time of [
+        now,
+        new Date('2026-11-14T12:00:01.000Z'),
+        new Date('2026-11-14T12:00:03.000Z'),
+      ]) {
+        clock.set(time);
+        await runWorkerAsync('retry-worker', clock, persistence, {
+          compensateAsync: async ({ work }) => void compensated.push(work.id),
+          executeAsync: async ({ work }) => {
+            calls.push(work.id);
+            throw new Error('provider unavailable');
+          },
+        });
+      }
+      expect(calls).toEqual(['retry-run:attempt:1', 'retry-run:attempt:2', 'retry-run:attempt:3']);
+      expect(compensated).toEqual(['retry-run:attempt:3']);
+      expect(await persistence.readRunAsync('retry-run')).toMatchObject({
+        checkpoint: { failedStepIds: ['step-1'] },
+        status: 'failed',
+      });
+      expect(
+        (await runWorkerAsync('retry-worker', clock, persistence, failingEffects())).claimedWorkIds,
+      ).toEqual([]);
+    } finally {
+      await rm(directory, { force: true, recursive: true });
+    }
+  });
+
+  test('deduplicates concurrent callback deliveries with one fenced claim and one provider key', async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'flow-duplicate-'));
+    const persistence = FileFlowPersistenceAdapter(join(directory, 'flow.json'));
+    const clock = controlledClock(now);
+    const providerKeys: string[] = [];
+    try {
+      await createDurableRunAsync({ flow, id: 'duplicate-run' }, { clock, persistence });
+      await persistence.enqueueWorkAsync(workOf('duplicate-run', 'duplicate-run:attempt:1', now));
+      const results = await Promise.all([
+        runWorkerAsync('callback-a', clock, persistence, {
+          executeAsync: async ({ idempotencyKey }) => void providerKeys.push(idempotencyKey),
+        }),
+        runWorkerAsync('callback-b', clock, persistence, {
+          executeAsync: async ({ idempotencyKey }) => void providerKeys.push(idempotencyKey),
+        }),
+      ]);
+      expect(results.flatMap((result) => result.claimedWorkIds)).toEqual([
+        'duplicate-run:attempt:1',
+      ]);
+      expect(providerKeys).toEqual(['duplicate-run:attempt:1']);
+      expect(
+        (await persistence.readRunAsync('duplicate-run'))?.checkpoint?.completedStepIds,
+      ).toEqual(['step-1']);
+    } finally {
+      await rm(directory, { force: true, recursive: true });
+    }
+  });
+
+  test('recovers an actually terminated protected worker by reconciling the provider idempotency key', async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'flow-abort-'));
+    const path = join(directory, 'flow.json');
+    const providerLog = join(directory, 'provider.log');
+    const clock = controlledClock(now);
+    const operation = protectedOperation('abort-key');
+    try {
+      const persistence = FileFlowPersistenceAdapter(path);
+      await createDurableRunAsync({ flow, id: 'abort-run' }, { clock, persistence });
+      await persistence.enqueueWorkAsync(protectedWorkOf('abort-run', operation, now));
+      const child = Bun.spawnSync([
+        process.execPath,
+        '--eval',
+        terminatedWorkerScript(path, providerLog, now, operation),
+      ]);
+      expect(child.exitCode, child.stderr.toString()).toBe(0);
+      expect(await readFile(providerLog, 'utf8')).toBe('abort-key\n');
+      clock.set(new Date('2026-11-14T12:00:01.000Z'));
+      const resumed = await runWorkerAsync(
+        'restart-worker',
+        clock,
+        FileFlowPersistenceAdapter(path),
+        {
+          executeAsync: async () => {
+            throw new Error('provider must reconcile instead of redelivering');
+          },
+          reconcileAsync: async ({ idempotencyKey }) =>
+            (await readFile(providerLog, 'utf8')).includes(`${idempotencyKey}\n`)
+              ? 'delivered'
+              : 'unknown',
+        },
+        createWorkerSecurity({ status: 'approved' }),
+      );
+      expect(resumed).toMatchObject({
+        outcomes: [{ status: 'succeeded', workId: 'abort-run:attempt:1' }],
+        recoveredWorkIds: ['abort-run:attempt:1'],
+      });
+      expect(await persistence.readOutboxAsync('abort-run:attempt:1')).toMatchObject({
+        idempotencyKey: 'abort-key',
+        status: 'delivered',
+      });
+      expect((await persistence.readRunAsync('abort-run'))?.checkpoint?.completedStepIds).toEqual([
+        'step-1',
+      ]);
+    } finally {
+      await rm(directory, { force: true, recursive: true });
+    }
+  });
+
+  test('persists a long-lived approval wait and resumes only after canonical approval', async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'flow-approval-'));
+    const path = join(directory, 'flow.json');
+    const clock = controlledClock(now);
+    const approval = { status: 'pending' as 'approved' | 'pending' | 'rejected' | undefined };
+    const operation = protectedOperation('approval-key');
+    const effects: string[] = [];
+    try {
+      const persistence = FileFlowPersistenceAdapter(path);
+      await createDurableRunAsync({ flow, id: 'approval-run' }, { clock, persistence });
+      await persistence.enqueueWorkAsync(protectedWorkOf('approval-run', operation, clock.now()));
+      expect(
+        (
+          await runWorkerAsync(
+            'approval-a',
+            clock,
+            persistence,
+            {
+              executeAsync: async ({ idempotencyKey }) => void effects.push(idempotencyKey),
+              reconcileAsync: async () => 'unknown',
+            },
+            createWorkerSecurity(approval),
+          )
+        ).outcomes,
+      ).toEqual([{ status: 'waiting_approval', workId: 'approval-run:attempt:1' }]);
+      expect(effects).toEqual([]);
+      expect((await persistence.readRunAsync('approval-run'))?.status).toBe('waiting_approval');
+      clock.set(new Date('2026-11-17T12:00:01.000Z'));
+      approval.status = 'approved';
+      const restarted = FileFlowPersistenceAdapter(path);
+      expect(
+        (
+          await runWorkerAsync(
+            'approval-b',
+            clock,
+            restarted,
+            {
+              executeAsync: async ({ idempotencyKey }) => void effects.push(idempotencyKey),
+              reconcileAsync: async () => 'unknown',
+            },
+            createWorkerSecurity(approval),
+          )
+        ).outcomes,
+      ).toEqual([{ status: 'succeeded', workId: 'approval-run:attempt:1' }]);
+      expect(effects).toEqual(['approval-key']);
+    } finally {
+      await rm(directory, { force: true, recursive: true });
+    }
+  });
+
+  test('fails closed for missing protected authorization and expired approvals', async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'flow-security-'));
+    const persistence = FileFlowPersistenceAdapter(join(directory, 'flow.json'));
+    const clock = controlledClock(now);
+    try {
+      await createDurableRunAsync({ flow, id: 'security-run' }, { clock, persistence });
+      await persistence.enqueueWorkAsync(
+        protectedWorkOf('security-run', protectedOperation('expired'), now),
+      );
+      const missingSecurity = await runWorkerAsync(
+        'missing-security',
+        clock,
+        persistence,
+        {
+          executeAsync: async () => {
+            throw new Error('must not execute');
+          },
+          reconcileAsync: async () => 'unknown',
+        },
+        undefined,
+        1,
+      );
+      expect(missingSecurity.outcomes).toMatchObject([
+        { error: 'FLOW_SECURITY_PORT_REQUIRED', status: 'failed' },
+      ]);
+      await createDurableRunAsync({ flow, id: 'expired-run' }, { clock, persistence });
+      await persistence.enqueueWorkAsync(
+        protectedWorkOf('expired-run', protectedOperation('expired-approval'), now),
+      );
+      const result = await runWorkerAsync(
+        'security-worker',
+        clock,
+        persistence,
+        {
+          executeAsync: async () => {
+            throw new Error('must not execute');
+          },
+          reconcileAsync: async () => 'unknown',
+        },
+        createWorkerSecurity({ status: undefined }),
+        1,
+      );
+      expect(result.outcomes).toMatchObject([
+        { error: 'The Flow approval gate rejected this operation.', status: 'failed' },
+      ]);
+      expect((await persistence.readRunAsync('security-run'))?.status).toBe('failed');
+      expect((await persistence.readRunAsync('expired-run'))?.status).toBe('failed');
+    } finally {
+      await rm(directory, { force: true, recursive: true });
+    }
+  });
 });
+
+/** Create a mutable deterministic clock for persisted worker ticks. */
+const controlledClock = (initial: Date) => {
+  let current = initial;
+  return {
+    now: () => current,
+    set: (next: Date) => {
+      current = next;
+    },
+  };
+};
+
+/** Build one internal durable delivery with a stable step identity. */
+const workOf = (runId: string, id: string, dueAt: Date): FlowDurableWork => ({
+  attempt: Number(id.split(':').at(-1)),
+  dueAt: dueAt.toISOString(),
+  effectKind: 'internal',
+  flow,
+  id,
+  runId,
+  status: 'ready',
+  stepId: 'step-1',
+});
+
+/** Build one protected provider delivery that carries the exact authorization idempotency identity. */
+const protectedWorkOf = (
+  runId: string,
+  securityOperation: FlowSecurityOperation,
+  dueAt: Date,
+): FlowDurableWork => ({
+  attempt: 1,
+  dueAt: dueAt.toISOString(),
+  effectKind: 'protected',
+  flow,
+  id: `${runId}:attempt:1`,
+  idempotencyKey: securityOperation.idempotencyKey,
+  runId,
+  securityOperation,
+  status: 'ready',
+  stepId: 'step-1',
+});
+
+/** Create the canonical security operation used by protected worker fixtures. */
+const protectedOperation = (idempotencyKey: string): FlowSecurityOperation => ({
+  actor: { environment: 'test', id: 'operator', projectId: 'project', tenantId: 'tenant' },
+  capability: 'provider:write',
+  idempotencyKey,
+  operationId: idempotencyKey,
+});
+
+/** Create the released Flow security port with controlled durable approval state. */
+const createWorkerSecurity = (approval: {
+  readonly status: 'approved' | 'pending' | 'rejected' | undefined;
+}) => {
+  const claimed = new Set<string>();
+  const consumed = new Set<string>();
+  return createFlowSecurityPort({
+    approvalStore: {
+      getAsync: async (operation) =>
+        approval.status === undefined ? undefined : { operation, status: approval.status },
+    },
+    audit: { writeAsync: async () => undefined },
+    grants: [
+      {
+        actorId: 'operator',
+        capability: 'provider:write',
+        environment: 'test',
+        projectId: 'project',
+        tenantId: 'tenant',
+      },
+    ],
+    operationStore: {
+      claimAsync: async (operation) => {
+        if (claimed.has(operation.idempotencyKey)) return false;
+        claimed.add(operation.idempotencyKey);
+        return true;
+      },
+      consumeAsync: async (operation) => {
+        if (!claimed.has(operation.idempotencyKey) || consumed.has(operation.idempotencyKey))
+          return false;
+        consumed.add(operation.idempotencyKey);
+        return true;
+      },
+      releaseAsync: async (operation) => {
+        if (!consumed.has(operation.idempotencyKey)) claimed.delete(operation.idempotencyKey);
+      },
+    },
+    rateLimit: { acquireAsync: async () => true },
+    secretStore: {
+      create: async () => ({
+        error: { code: 'unavailable', message: 'unused' },
+        ok: false as const,
+      }),
+      getMetadata: async () => ({
+        error: { code: 'not_found', message: 'unused' },
+        ok: false as const,
+      }),
+      list: async () => ({ data: [], ok: true as const }),
+      remove: async () => ({ ok: true as const }),
+      replace: async () => ({
+        error: { code: 'unavailable', message: 'unused' },
+        ok: false as const,
+      }),
+      resolve: async () => ({ data: {}, ok: true as const }),
+    },
+  });
+};
+
+/** Run one bounded worker tick with the same production worker boundary used by every fixture. */
+const runWorkerAsync = (
+  workerId: string,
+  clock: { readonly now: () => Date },
+  persistence: FlowPersistencePort,
+  effects: Parameters<typeof runDurableWorkerAsync>[1]['effects'],
+  security?: ReturnType<typeof createWorkerSecurity>,
+  maxAttempts = 3,
+) =>
+  runDurableWorkerAsync(
+    {
+      approvalPollIntervalMs: 1_000,
+      concurrency: 1,
+      leaseDurationMs: 1_000,
+      limit: 1,
+      retry: { baseDelayMs: 1_000, maxAttempts, maxDelayMs: 2_000 },
+      workerId,
+    },
+    { clock, effects, persistence, ...(security === undefined ? {} : { security }) },
+  );
+
+/** Make an accidental worker delivery fail visibly in a fixture. */
+const failingEffects = (): Parameters<typeof runDurableWorkerAsync>[1]['effects'] => ({
+  executeAsync: async () => {
+    throw new Error('unexpected delivery');
+  },
+});
+
+/** Start a real worker process whose provider adapter persists one effect then terminates before its commit. */
+const terminatedWorkerScript = (
+  persistencePath: string,
+  providerLog: string,
+  current: Date,
+  operation: FlowSecurityOperation,
+): string =>
+  [
+    "import { appendFile } from 'node:fs/promises';",
+    `import { FileFlowPersistenceAdapter, runDurableWorkerAsync } from ${JSON.stringify(executionModuleUrl)};`,
+    `import { createFlowSecurityPort } from ${JSON.stringify(new URL('../src/index.ts', import.meta.url).href)};`,
+    `const operation = ${JSON.stringify(operation)};`,
+    'const claimed = new Set();',
+    'const consumed = new Set();',
+    'const security = createFlowSecurityPort({',
+    "approvalStore: { getAsync: async (identity) => ({ operation: identity, status: 'approved' }) },",
+    'audit: { writeAsync: async () => undefined },',
+    "grants: [{ actorId: 'operator', capability: 'provider:write', environment: 'test', projectId: 'project', tenantId: 'tenant' }],",
+    'operationStore: { claimAsync: async (identity) => { if (claimed.has(identity.idempotencyKey)) return false; claimed.add(identity.idempotencyKey); return true; }, consumeAsync: async (identity) => { if (consumed.has(identity.idempotencyKey)) return false; consumed.add(identity.idempotencyKey); return true; }, releaseAsync: async () => undefined },',
+    'rateLimit: { acquireAsync: async () => true },',
+    'secretStore: { create: async () => ({ ok: false }), getMetadata: async () => ({ ok: false }), list: async () => ({ ok: true, data: [] }), remove: async () => ({ ok: true }), replace: async () => ({ ok: false }), resolve: async () => ({ ok: true, data: {} }) },',
+    '});',
+    `await runDurableWorkerAsync({ approvalPollIntervalMs: 1000, concurrency: 1, leaseDurationMs: 1000, limit: 1, retry: { baseDelayMs: 1000, maxAttempts: 3, maxDelayMs: 2000 }, workerId: 'terminated-worker' }, {`,
+    `clock: { now: () => new Date(${JSON.stringify(current.toISOString())}) },`,
+    "effects: { reconcileAsync: async () => 'unknown', executeAsync: async ({ idempotencyKey }) => { await appendFile(" +
+      JSON.stringify(providerLog) +
+      ', `${idempotencyKey}\\n`); process.exit(0); } },',
+    `persistence: FileFlowPersistenceAdapter(${JSON.stringify(persistencePath)}), security });`,
+  ].join('\n');
 
 /*** Run one deterministic file-adapter claim in an isolated worker process. */
 const runWorkerProcess = (

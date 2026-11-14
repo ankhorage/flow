@@ -20,6 +20,8 @@ export interface FlowDurableRun {
 export interface FlowDurableWork {
   readonly attempt: number;
   readonly dueAt: string;
+  /** Explicitly separates side-effect-free internal work from a security-protected provider effect. */
+  readonly effectKind: 'internal' | 'protected';
   readonly flow: FlowDefinitionRef;
   readonly id: string;
   readonly idempotencyKey?: string;
