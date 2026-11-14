@@ -32,12 +32,15 @@ const writeConsumerFiles = (consumerDirectory: string): void => {
     join(consumerDirectory, 'consumer.mjs'),
     [
       "import { createFlowSecurityPort } from '@ankhorage/flow';",
-      "import '@ankhorage/flow/ai';",
+      "import { executeAiNodeAsync } from '@ankhorage/flow/ai';",
       "import '@ankhorage/flow/execution';",
       "import { createMcpToolRegistry } from '@ankhorage/flow/mcp';",
       "import '@ankhorage/flow/social';",
       "import '@ankhorage/contracts/flow';",
       "const registry = createMcpToolRegistry({ providers: [{ id: 'provider', transport: 'stdio', allowedTools: [{ name: 'safe_echo', grantedScopes: ['tools:invoke'] }], grantedScopes: ['tools:invoke'] }] });",
+      'const security = { authorizeAsync: async (operation) => ({ operation: { ...operation, secretRefs: operation.secretRefs ?? [] }, executeAsync: async (callback) => callback({}) }) };',
+      "const result = await executeAiNodeAsync(security, { budget: { maxCostMicros: 1, maxOutputTokens: 1 }, input: { context: {}, prompt: 'test', settings: { provider: 'fake', model: 'fake' } }, model: { streamAsync: async function* () { yield { type: 'output', value: { answer: 'packed' } }; } }, output: { parse: (value) => value }, security: { actor: { id: 'a', tenantId: 't', projectId: 'p', environment: 'test' }, idempotencyKey: 'key', operationId: 'operation', secretRefs: [] }, timeoutMs: 1000 });",
+      "if (result.output.answer !== 'packed') throw new Error('Expected packed AI consumer to run with its fake provider.');",
       "await registry.discoverAsync().then(() => { throw new Error('Expected MCP discovery to fail.'); }, (error) => { if (!(error instanceof Error) || !error.message.includes(process.env.FLOW_MCP_ERROR ?? '')) throw error; });",
     ].join('\n'),
   );
@@ -45,7 +48,7 @@ const writeConsumerFiles = (consumerDirectory: string): void => {
     join(consumerDirectory, 'consumer.ts'),
     [
       "import { createFlowSecurityPort } from '@ankhorage/flow';",
-      "import '@ankhorage/flow/ai';",
+      "import type { FlowAiModelPort } from '@ankhorage/flow/ai';",
       "import '@ankhorage/flow/execution';",
       "import { createMcpToolRegistry } from '@ankhorage/flow/mcp';",
       "import '@ankhorage/flow/social';",
@@ -54,6 +57,8 @@ const writeConsumerFiles = (consumerDirectory: string): void => {
       "const definition: FlowDefinition = { id: 'consumer-flow', version: 1, title: 'Consumer flow', nodes: [], edges: [], triggers: [{ id: 'manual', kind: 'manual' }] };",
       'void definition;',
       'void createFlowSecurityPort;',
+      "const fakeModel: FlowAiModelPort = { streamAsync: async function* () { yield { type: 'output', value: { answer: 'typed' } }; } };",
+      'void fakeModel;',
       'void createMcpToolRegistry;',
     ].join('\n'),
   );
