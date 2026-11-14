@@ -14,7 +14,7 @@
     {
       "id": "npm",
       "label": "npm",
-      "value": "v0.5.0",
+      "value": "v0.6.0",
       "color": "cb3837"
     },
     {
@@ -84,7 +84,27 @@
       "path": "src/ai.ts",
       "isEntrypoint": false,
       "dependencies": [],
-      "exports": []
+      "exports": [
+        "executeAiNodeAsync",
+        "executeBoundedAgentAsync",
+        "FlowAiAgentExecutionInput",
+        "FlowAiAgentPlannerPort",
+        "FlowAiAgentStep",
+        "FlowAiAgentToolPort",
+        "FlowAiBudget",
+        "FlowAiError",
+        "FlowAiExecutionInput",
+        "FlowAiInput",
+        "FlowAiModelEvent",
+        "FlowAiModelPort",
+        "FlowAiModelSettings",
+        "FlowAiProgress",
+        "FlowAiResult",
+        "FlowAiRetryPolicy",
+        "FlowAiSchema",
+        "FlowAiSecurityContext",
+        "FlowAiTelemetry"
+      ]
     },
     {
       "path": "src/execution.ts",
@@ -97,6 +117,37 @@
         "FlowWorkerOutcome",
         "FlowWorkerResult",
         "runDurableWorkerAsync"
+      ]
+    },
+    {
+      "path": "src/features/ai/application/executeAiNodeAsync.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/ai/FlowAiError.ts",
+        "src/types/ai.ts",
+        "src/types/security.ts"
+      ],
+      "exports": [
+        "executeAiNodeAsync"
+      ]
+    },
+    {
+      "path": "src/features/ai/application/executeBoundedAgentAsync.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/ai/FlowAiError.ts",
+        "src/types/ai.ts"
+      ],
+      "exports": [
+        "executeBoundedAgentAsync"
+      ]
+    },
+    {
+      "path": "src/features/ai/FlowAiError.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": [
+        "FlowAiError"
       ]
     },
     {
@@ -254,6 +305,17 @@
       ]
     },
     {
+      "path": "src/features/mcp/createMcpAgentToolAdapter.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/types/ai.ts",
+        "src/types/mcp.ts"
+      ],
+      "exports": [
+        "createMcpAgentToolAdapter"
+      ]
+    },
+    {
       "path": "src/features/mcp/createMcpRemoteTransport.ts",
       "isEntrypoint": false,
       "dependencies": [
@@ -406,6 +468,7 @@
       "isEntrypoint": false,
       "dependencies": [],
       "exports": [
+        "createMcpAgentToolAdapter",
         "createMcpToolRegistry",
         "McpProviderDefinition",
         "McpToolInvocation",
@@ -421,6 +484,31 @@
       "isEntrypoint": false,
       "dependencies": [],
       "exports": []
+    },
+    {
+      "path": "src/types/ai.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/types/security.ts"
+      ],
+      "exports": [
+        "FlowAiAgentExecutionInput",
+        "FlowAiAgentPlannerPort",
+        "FlowAiAgentStep",
+        "FlowAiAgentToolPort",
+        "FlowAiBudget",
+        "FlowAiExecutionInput",
+        "FlowAiInput",
+        "FlowAiModelEvent",
+        "FlowAiModelPort",
+        "FlowAiModelSettings",
+        "FlowAiProgress",
+        "FlowAiResult",
+        "FlowAiRetryPolicy",
+        "FlowAiSchema",
+        "FlowAiSecurityContext",
+        "FlowAiTelemetry"
+      ]
     },
     {
       "path": "src/types/durableExecution.ts",
@@ -2467,6 +2555,226 @@
   "components": [],
   "sourceFunctions": [
     {
+      "name": "executeAiNodeAsync",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/ai/application/executeAiNodeAsync.ts",
+        "line": 11,
+        "column": 14
+      }
+    },
+    {
+      "name": "executePermittedAsync",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/ai/application/executeAiNodeAsync.ts",
+        "line": 27,
+        "column": 7
+      }
+    },
+    {
+      "name": "streamAttemptAsync",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/ai/application/executeAiNodeAsync.ts",
+        "line": 45,
+        "column": 7
+      }
+    },
+    {
+      "name": "consumeStreamAsync",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/ai/application/executeAiNodeAsync.ts",
+        "line": 72,
+        "column": 7
+      }
+    },
+    {
+      "name": "awaitStreamOrAbortAsync",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/ai/application/executeAiNodeAsync.ts",
+        "line": 92,
+        "column": 7
+      }
+    },
+    {
+      "name": "abort",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/ai/application/executeAiNodeAsync.ts",
+        "line": 98,
+        "column": 11
+      }
+    },
+    {
+      "name": "applyEventAsync",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/ai/application/executeAiNodeAsync.ts",
+        "line": 120,
+        "column": 7
+      }
+    },
+    {
+      "name": "parseOutput",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/ai/application/executeAiNodeAsync.ts",
+        "line": 147,
+        "column": 7
+      }
+    },
+    {
+      "name": "validateExecutionInput",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/ai/application/executeAiNodeAsync.ts",
+        "line": 163,
+        "column": 7
+      }
+    },
+    {
+      "name": "assertBudget",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/ai/application/executeAiNodeAsync.ts",
+        "line": 178,
+        "column": 7
+      }
+    },
+    {
+      "name": "validateTelemetry",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/ai/application/executeAiNodeAsync.ts",
+        "line": 190,
+        "column": 7
+      }
+    },
+    {
+      "name": "subtractTelemetry",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/ai/application/executeAiNodeAsync.ts",
+        "line": 206,
+        "column": 7
+      }
+    },
+    {
+      "name": "addTelemetry",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/ai/application/executeAiNodeAsync.ts",
+        "line": 216,
+        "column": 7
+      }
+    },
+    {
+      "name": "assignTelemetry",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/ai/application/executeAiNodeAsync.ts",
+        "line": 223,
+        "column": 7
+      }
+    },
+    {
+      "name": "emptyTelemetry",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/ai/application/executeAiNodeAsync.ts",
+        "line": 228,
+        "column": 7
+      }
+    },
+    {
+      "name": "isRetryable",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/ai/application/executeAiNodeAsync.ts",
+        "line": 231,
+        "column": 7
+      }
+    },
+    {
+      "name": "toProviderError",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/ai/application/executeAiNodeAsync.ts",
+        "line": 235,
+        "column": 7
+      }
+    },
+    {
+      "name": "toFlowAiError",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/ai/application/executeAiNodeAsync.ts",
+        "line": 248,
+        "column": 7
+      }
+    },
+    {
+      "name": "abortError",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/ai/application/executeAiNodeAsync.ts",
+        "line": 256,
+        "column": 7
+      }
+    },
+    {
+      "name": "executeBoundedAgentAsync",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/ai/application/executeBoundedAgentAsync.ts",
+        "line": 5,
+        "column": 14
+      }
+    },
+    {
       "name": "FileFlowPersistenceAdapter",
       "description": "Create a self-hostable, single-process JSON persistence adapter for durable Flow state.",
       "see": [],
@@ -3611,6 +3919,17 @@
       }
     },
     {
+      "name": "createMcpAgentToolAdapter",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/createMcpAgentToolAdapter.ts",
+        "line": 5,
+        "column": 14
+      }
+    },
+    {
       "name": "createMcpRemoteTransportAsync",
       "description": "Opens remote MCP only through the host-owned transport that controls every peer connection.",
       "see": [],
@@ -4458,6 +4777,26 @@
   "graphs": {
     "imports": [
       {
+        "fromPath": "src/ai.ts",
+        "toPath": "src/features/ai/application/executeAiNodeAsync.ts",
+        "sourcePath": "src/ai.ts"
+      },
+      {
+        "fromPath": "src/ai.ts",
+        "toPath": "src/features/ai/application/executeBoundedAgentAsync.ts",
+        "sourcePath": "src/ai.ts"
+      },
+      {
+        "fromPath": "src/ai.ts",
+        "toPath": "src/features/ai/FlowAiError.ts",
+        "sourcePath": "src/ai.ts"
+      },
+      {
+        "fromPath": "src/ai.ts",
+        "toPath": "src/types/ai.ts",
+        "sourcePath": "src/ai.ts"
+      },
+      {
         "fromPath": "src/execution.ts",
         "toPath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
         "sourcePath": "src/execution.ts"
@@ -4544,6 +4883,11 @@
       },
       {
         "fromPath": "src/mcp.ts",
+        "toPath": "src/features/mcp/createMcpAgentToolAdapter.ts",
+        "sourcePath": "src/mcp.ts"
+      },
+      {
+        "fromPath": "src/mcp.ts",
         "toPath": "src/features/mcp/createMcpToolRegistry.ts",
         "sourcePath": "src/mcp.ts"
       },
@@ -4551,6 +4895,11 @@
         "fromPath": "src/mcp.ts",
         "toPath": "src/types/mcp.ts",
         "sourcePath": "src/mcp.ts"
+      },
+      {
+        "fromPath": "src/types/ai.ts",
+        "toPath": "src/types/security.ts",
+        "sourcePath": "src/types/ai.ts"
       },
       {
         "fromPath": "src/types/durableExecution.ts",
@@ -4561,6 +4910,16 @@
         "fromPath": "src/types/mcp.ts",
         "toPath": "src/types/security.ts",
         "sourcePath": "src/types/mcp.ts"
+      },
+      {
+        "fromPath": "src/features/mcp/createMcpAgentToolAdapter.ts",
+        "toPath": "src/types/ai.ts",
+        "sourcePath": "src/features/mcp/createMcpAgentToolAdapter.ts"
+      },
+      {
+        "fromPath": "src/features/mcp/createMcpAgentToolAdapter.ts",
+        "toPath": "src/types/mcp.ts",
+        "sourcePath": "src/features/mcp/createMcpAgentToolAdapter.ts"
       },
       {
         "fromPath": "src/features/mcp/createMcpRemoteTransport.ts",
@@ -4636,6 +4995,31 @@
         "fromPath": "src/features/mcp/validateMcpSchema.ts",
         "toPath": "src/features/mcp/McpToolError.ts",
         "sourcePath": "src/features/mcp/validateMcpSchema.ts"
+      },
+      {
+        "fromPath": "src/features/ai/application/executeAiNodeAsync.ts",
+        "toPath": "src/types/ai.ts",
+        "sourcePath": "src/features/ai/application/executeAiNodeAsync.ts"
+      },
+      {
+        "fromPath": "src/features/ai/application/executeAiNodeAsync.ts",
+        "toPath": "src/types/security.ts",
+        "sourcePath": "src/features/ai/application/executeAiNodeAsync.ts"
+      },
+      {
+        "fromPath": "src/features/ai/application/executeAiNodeAsync.ts",
+        "toPath": "src/features/ai/FlowAiError.ts",
+        "sourcePath": "src/features/ai/application/executeAiNodeAsync.ts"
+      },
+      {
+        "fromPath": "src/features/ai/application/executeBoundedAgentAsync.ts",
+        "toPath": "src/types/ai.ts",
+        "sourcePath": "src/features/ai/application/executeBoundedAgentAsync.ts"
+      },
+      {
+        "fromPath": "src/features/ai/application/executeBoundedAgentAsync.ts",
+        "toPath": "src/features/ai/FlowAiError.ts",
+        "sourcePath": "src/features/ai/application/executeBoundedAgentAsync.ts"
       },
       {
         "fromPath": "src/features/execution/adapters/FileFlowPersistenceAdapter.ts",
@@ -4794,6 +5178,12 @@
       }
     ],
     "calls": [
+      {
+        "fromSymbol": "invokeAsync",
+        "toSymbol": "invokeAsync",
+        "callExpression": "input.registry.invokeAsync",
+        "sourcePath": "src/features/mcp/createMcpAgentToolAdapter.ts"
+      },
       {
         "fromSymbol": "createMcpRemoteTransportAsync",
         "toSymbol": "loadMcpSdkAsync",
@@ -5261,6 +5651,216 @@
         "toSymbol": "isRecord",
         "callExpression": "isRecord",
         "sourcePath": "src/features/mcp/validateMcpSchema.ts"
+      },
+      {
+        "fromSymbol": "executeAiNodeAsync",
+        "toSymbol": "validateExecutionInput",
+        "callExpression": "validateExecutionInput",
+        "sourcePath": "src/features/ai/application/executeAiNodeAsync.ts"
+      },
+      {
+        "fromSymbol": "executeAiNodeAsync",
+        "toSymbol": "authorizeAsync",
+        "callExpression": "securityPort.authorizeAsync",
+        "sourcePath": "src/features/ai/application/executeAiNodeAsync.ts"
+      },
+      {
+        "fromSymbol": "executeAiNodeAsync",
+        "toSymbol": "executeAsync",
+        "callExpression": "permit.executeAsync",
+        "sourcePath": "src/features/ai/application/executeAiNodeAsync.ts"
+      },
+      {
+        "fromSymbol": "src/features/ai/application/executeAiNodeAsync.ts",
+        "toSymbol": "executePermittedAsync",
+        "callExpression": "executePermittedAsync",
+        "sourcePath": "src/features/ai/application/executeAiNodeAsync.ts"
+      },
+      {
+        "fromSymbol": "executePermittedAsync",
+        "toSymbol": "emptyTelemetry",
+        "callExpression": "emptyTelemetry",
+        "sourcePath": "src/features/ai/application/executeAiNodeAsync.ts"
+      },
+      {
+        "fromSymbol": "executePermittedAsync",
+        "toSymbol": "streamAttemptAsync",
+        "callExpression": "streamAttemptAsync",
+        "sourcePath": "src/features/ai/application/executeAiNodeAsync.ts"
+      },
+      {
+        "fromSymbol": "executePermittedAsync",
+        "toSymbol": "isRetryable",
+        "callExpression": "isRetryable",
+        "sourcePath": "src/features/ai/application/executeAiNodeAsync.ts"
+      },
+      {
+        "fromSymbol": "executePermittedAsync",
+        "toSymbol": "toFlowAiError",
+        "callExpression": "toFlowAiError",
+        "sourcePath": "src/features/ai/application/executeAiNodeAsync.ts"
+      },
+      {
+        "fromSymbol": "executePermittedAsync",
+        "toSymbol": "onProgressAsync",
+        "callExpression": "input.onProgressAsync",
+        "sourcePath": "src/features/ai/application/executeAiNodeAsync.ts"
+      },
+      {
+        "fromSymbol": "streamAttemptAsync",
+        "toSymbol": "abortError",
+        "callExpression": "abortError",
+        "sourcePath": "src/features/ai/application/executeAiNodeAsync.ts"
+      },
+      {
+        "fromSymbol": "streamAttemptAsync",
+        "toSymbol": "consumeStreamAsync",
+        "callExpression": "consumeStreamAsync",
+        "sourcePath": "src/features/ai/application/executeAiNodeAsync.ts"
+      },
+      {
+        "fromSymbol": "streamAttemptAsync",
+        "toSymbol": "awaitStreamOrAbortAsync",
+        "callExpression": "awaitStreamOrAbortAsync",
+        "sourcePath": "src/features/ai/application/executeAiNodeAsync.ts"
+      },
+      {
+        "fromSymbol": "src/features/ai/application/executeAiNodeAsync.ts",
+        "toSymbol": "abortError",
+        "callExpression": "abortError",
+        "sourcePath": "src/features/ai/application/executeAiNodeAsync.ts"
+      },
+      {
+        "fromSymbol": "consumeStreamAsync",
+        "toSymbol": "emptyTelemetry",
+        "callExpression": "emptyTelemetry",
+        "sourcePath": "src/features/ai/application/executeAiNodeAsync.ts"
+      },
+      {
+        "fromSymbol": "consumeStreamAsync",
+        "toSymbol": "streamAsync",
+        "callExpression": "input.model.streamAsync",
+        "sourcePath": "src/features/ai/application/executeAiNodeAsync.ts"
+      },
+      {
+        "fromSymbol": "consumeStreamAsync",
+        "toSymbol": "applyEventAsync",
+        "callExpression": "applyEventAsync",
+        "sourcePath": "src/features/ai/application/executeAiNodeAsync.ts"
+      },
+      {
+        "fromSymbol": "consumeStreamAsync",
+        "toSymbol": "parseOutput",
+        "callExpression": "parseOutput",
+        "sourcePath": "src/features/ai/application/executeAiNodeAsync.ts"
+      },
+      {
+        "fromSymbol": "abort",
+        "toSymbol": "error",
+        "callExpression": "error",
+        "sourcePath": "src/features/ai/application/executeAiNodeAsync.ts"
+      },
+      {
+        "fromSymbol": "abort",
+        "toSymbol": "reject",
+        "callExpression": "reject",
+        "sourcePath": "src/features/ai/application/executeAiNodeAsync.ts"
+      },
+      {
+        "fromSymbol": "src/features/ai/application/executeAiNodeAsync.ts",
+        "toSymbol": "abort",
+        "callExpression": "abort",
+        "sourcePath": "src/features/ai/application/executeAiNodeAsync.ts"
+      },
+      {
+        "fromSymbol": "src/features/ai/application/executeAiNodeAsync.ts",
+        "toSymbol": "resolve",
+        "callExpression": "resolve",
+        "sourcePath": "src/features/ai/application/executeAiNodeAsync.ts"
+      },
+      {
+        "fromSymbol": "src/features/ai/application/executeAiNodeAsync.ts",
+        "toSymbol": "reject",
+        "callExpression": "reject",
+        "sourcePath": "src/features/ai/application/executeAiNodeAsync.ts"
+      },
+      {
+        "fromSymbol": "src/features/ai/application/executeAiNodeAsync.ts",
+        "toSymbol": "toProviderError",
+        "callExpression": "toProviderError",
+        "sourcePath": "src/features/ai/application/executeAiNodeAsync.ts"
+      },
+      {
+        "fromSymbol": "applyEventAsync",
+        "toSymbol": "onProgressAsync",
+        "callExpression": "input.onProgressAsync",
+        "sourcePath": "src/features/ai/application/executeAiNodeAsync.ts"
+      },
+      {
+        "fromSymbol": "applyEventAsync",
+        "toSymbol": "validateTelemetry",
+        "callExpression": "validateTelemetry",
+        "sourcePath": "src/features/ai/application/executeAiNodeAsync.ts"
+      },
+      {
+        "fromSymbol": "applyEventAsync",
+        "toSymbol": "addTelemetry",
+        "callExpression": "addTelemetry",
+        "sourcePath": "src/features/ai/application/executeAiNodeAsync.ts"
+      },
+      {
+        "fromSymbol": "applyEventAsync",
+        "toSymbol": "subtractTelemetry",
+        "callExpression": "subtractTelemetry",
+        "sourcePath": "src/features/ai/application/executeAiNodeAsync.ts"
+      },
+      {
+        "fromSymbol": "applyEventAsync",
+        "toSymbol": "assertBudget",
+        "callExpression": "assertBudget",
+        "sourcePath": "src/features/ai/application/executeAiNodeAsync.ts"
+      },
+      {
+        "fromSymbol": "applyEventAsync",
+        "toSymbol": "assignTelemetry",
+        "callExpression": "assignTelemetry",
+        "sourcePath": "src/features/ai/application/executeAiNodeAsync.ts"
+      },
+      {
+        "fromSymbol": "parseOutput",
+        "toSymbol": "parse",
+        "callExpression": "input.output.parse",
+        "sourcePath": "src/features/ai/application/executeAiNodeAsync.ts"
+      },
+      {
+        "fromSymbol": "executeBoundedAgentAsync",
+        "toSymbol": "nextAsync",
+        "callExpression": "input.planner.nextAsync",
+        "sourcePath": "src/features/ai/application/executeBoundedAgentAsync.ts"
+      },
+      {
+        "fromSymbol": "executeBoundedAgentAsync",
+        "toSymbol": "parse",
+        "callExpression": "input.output.parse",
+        "sourcePath": "src/features/ai/application/executeBoundedAgentAsync.ts"
+      },
+      {
+        "fromSymbol": "executeBoundedAgentAsync",
+        "toSymbol": "authorizeAsync",
+        "callExpression": "input.securityPort.authorizeAsync",
+        "sourcePath": "src/features/ai/application/executeBoundedAgentAsync.ts"
+      },
+      {
+        "fromSymbol": "executeBoundedAgentAsync",
+        "toSymbol": "executeAsync",
+        "callExpression": "permit.executeAsync",
+        "sourcePath": "src/features/ai/application/executeBoundedAgentAsync.ts"
+      },
+      {
+        "fromSymbol": "src/features/ai/application/executeBoundedAgentAsync.ts",
+        "toSymbol": "invokeAsync",
+        "callExpression": "tool.invokeAsync",
+        "sourcePath": "src/features/ai/application/executeBoundedAgentAsync.ts"
       },
       {
         "fromSymbol": "FileFlowPersistenceAdapter",

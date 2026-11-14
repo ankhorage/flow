@@ -127,6 +127,16 @@
               </button>
             </li>
             <li>
+    <button class="nav-button" type="button" data-target="src/features/ai/application/executeAiNodeAsync.ts">
+      src/features/ai/application/executeAiNodeAsync.ts
+      <small>19 functions</small>
+    </button>
+  </li><li>
+    <button class="nav-button" type="button" data-target="src/features/ai/application/executeBoundedAgentAsync.ts">
+      src/features/ai/application/executeBoundedAgentAsync.ts
+      <small>1 function</small>
+    </button>
+  </li><li>
     <button class="nav-button" type="button" data-target="src/features/execution/adapters/FileFlowPersistenceAdapter.ts">
       src/features/execution/adapters/FileFlowPersistenceAdapter.ts
       <small>25 functions</small>
@@ -192,6 +202,11 @@
       <small>19 functions</small>
     </button>
   </li><li>
+    <button class="nav-button" type="button" data-target="src/features/mcp/createMcpAgentToolAdapter.ts">
+      src/features/mcp/createMcpAgentToolAdapter.ts
+      <small>1 function</small>
+    </button>
+  </li><li>
     <button class="nav-button" type="button" data-target="src/features/mcp/createMcpRemoteTransport.ts">
       src/features/mcp/createMcpRemoteTransport.ts
       <small>1 function</small>
@@ -238,7 +253,7 @@
       <div class="summary">
         <div><strong>42</strong><span class="muted">public exports</span></div>
         <div><strong>0</strong><span class="muted">components</span></div>
-        <div><strong>32</strong><span class="muted">modules</span></div>
+        <div><strong>37</strong><span class="muted">modules</span></div>
         <div><strong>1</strong><span class="muted">entrypoints</span></div>
       </div>
       <h3>Entrypoints</h3>
@@ -257,16 +272,31 @@
   </section>
     <section class="panel">
       <h2>Modules</h2>
-      <article class="item" data-search="src/ai.ts">
+      <article class="item" data-search="src/ai.ts executeAiNodeAsync executeBoundedAgentAsync FlowAiAgentExecutionInput FlowAiAgentPlannerPort FlowAiAgentStep FlowAiAgentToolPort FlowAiBudget FlowAiError FlowAiExecutionInput FlowAiInput FlowAiModelEvent FlowAiModelPort FlowAiModelSettings FlowAiProgress FlowAiResult FlowAiRetryPolicy FlowAiSchema FlowAiSecurityContext FlowAiTelemetry">
     <h3>src/ai.ts</h3>
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
-    <p><strong>Exports:</strong> <span class="empty">None</span></p>
+    <p><strong>Exports:</strong> <code>executeAiNodeAsync</code>, <code>executeBoundedAgentAsync</code>, <code>FlowAiAgentExecutionInput</code>, <code>FlowAiAgentPlannerPort</code>, <code>FlowAiAgentStep</code>, <code>FlowAiAgentToolPort</code>, <code>FlowAiBudget</code>, <code>FlowAiError</code>, <code>FlowAiExecutionInput</code>, <code>FlowAiInput</code>, <code>FlowAiModelEvent</code>, <code>FlowAiModelPort</code>, <code>FlowAiModelSettings</code>, <code>FlowAiProgress</code>, <code>FlowAiResult</code>, <code>FlowAiRetryPolicy</code>, <code>FlowAiSchema</code>, <code>FlowAiSecurityContext</code>, <code>FlowAiTelemetry</code></p>
   </article><article class="item" data-search="src/execution.ts cancelDurableRunAsync FileFlowPersistenceAdapter FlowDurableEffectPort FlowWorkerOutcome FlowWorkerResult runDurableWorkerAsync">
     <h3>src/execution.ts</h3>
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
     <p><strong>Exports:</strong> <code>cancelDurableRunAsync</code>, <code>FileFlowPersistenceAdapter</code>, <code>FlowDurableEffectPort</code>, <code>FlowWorkerOutcome</code>, <code>FlowWorkerResult</code>, <code>runDurableWorkerAsync</code></p>
+  </article><article class="item" data-search="src/features/ai/application/executeAiNodeAsync.ts src/features/ai/FlowAiError.ts src/types/ai.ts src/types/security.ts executeAiNodeAsync">
+    <h3>src/features/ai/application/executeAiNodeAsync.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/features/ai/FlowAiError.ts</code>, <code>src/types/ai.ts</code>, <code>src/types/security.ts</code></p>
+    <p><strong>Exports:</strong> <code>executeAiNodeAsync</code></p>
+  </article><article class="item" data-search="src/features/ai/application/executeBoundedAgentAsync.ts src/features/ai/FlowAiError.ts src/types/ai.ts executeBoundedAgentAsync">
+    <h3>src/features/ai/application/executeBoundedAgentAsync.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/features/ai/FlowAiError.ts</code>, <code>src/types/ai.ts</code></p>
+    <p><strong>Exports:</strong> <code>executeBoundedAgentAsync</code></p>
+  </article><article class="item" data-search="src/features/ai/FlowAiError.ts FlowAiError">
+    <h3>src/features/ai/FlowAiError.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
+    <p><strong>Exports:</strong> <code>FlowAiError</code></p>
   </article><article class="item" data-search="src/features/execution/adapters/FileFlowPersistenceAdapter.ts src/features/execution/ports/FlowPersistencePort.ts src/types/durableExecution.ts FileFlowPersistenceAdapter">
     <h3>src/features/execution/adapters/FileFlowPersistenceAdapter.ts</h3>
     <p class="muted">Referenced module</p>
@@ -337,6 +367,11 @@
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <code>src/types/durableExecution.ts</code></p>
     <p><strong>Exports:</strong> <code>FlowPersistencePort</code></p>
+  </article><article class="item" data-search="src/features/mcp/createMcpAgentToolAdapter.ts src/types/ai.ts src/types/mcp.ts createMcpAgentToolAdapter">
+    <h3>src/features/mcp/createMcpAgentToolAdapter.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/types/ai.ts</code>, <code>src/types/mcp.ts</code></p>
+    <p><strong>Exports:</strong> <code>createMcpAgentToolAdapter</code></p>
   </article><article class="item" data-search="src/features/mcp/createMcpRemoteTransport.ts src/features/mcp/loadMcpSdkAsync.ts src/features/mcp/McpToolError.ts src/types/mcp.ts src/types/security.ts createMcpRemoteTransportAsync">
     <h3>src/features/mcp/createMcpRemoteTransport.ts</h3>
     <p class="muted">Referenced module</p>
@@ -387,16 +422,21 @@
     <p class="muted">Configured entrypoint</p>
     <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
     <p><strong>Exports:</strong> <code>calculateRetryDueAt</code>, <code>compileFlowGraph</code>, <code>createDefaultNodeRegistry</code>, <code>createDurableRun</code>, <code>createDurableRunAsync</code>, <code>createFlowSecurityPort</code>, <code>createRetryWork</code>, <code>executeFlowAsync</code>, <code>FlowApprovalStorePort</code>, <code>FlowClock</code>, <code>FlowCompiledGraph</code>, <code>FlowDefinitionRef</code>, <code>FlowDurableRun</code>, <code>FlowDurableWork</code>, <code>FlowExecutionResult</code>, <code>FlowNodeOperation</code>, <code>FlowNodeOperationResult</code>, <code>FlowNodeRegistry</code>, <code>FlowOperationStorePort</code>, <code>FlowOutboundTransportPort</code>, <code>FlowOutboxRecord</code>, <code>FlowPersistencePort</code>, <code>FlowRateLimitPort</code>, <code>FlowResolvedSecrets</code>, <code>FlowRetryPolicy</code>, <code>FlowRunCheckpoint</code>, <code>FlowRunRequest</code>, <code>FlowSecretCreateInput</code>, <code>FlowSecretMetadata</code>, <code>FlowSecretRevokeInput</code>, <code>FlowSecurityActor</code>, <code>FlowSecurityApproval</code>, <code>FlowSecurityAuditEvent</code>, <code>FlowSecurityAuditPort</code>, <code>FlowSecurityError</code>, <code>FlowSecurityGrant</code>, <code>FlowSecurityOperation</code>, <code>FlowSecurityOperationIdentity</code>, <code>FlowSecurityPermit</code>, <code>FlowSecurityPort</code>, <code>FlowSecurityTarget</code>, <code>isCronDueAt</code></p>
-  </article><article class="item" data-search="src/mcp.ts createMcpToolRegistry McpProviderDefinition McpToolInvocation McpToolMetadata McpToolPermission McpToolRegistry McpToolResult McpTrustedStdioProvider">
+  </article><article class="item" data-search="src/mcp.ts createMcpAgentToolAdapter createMcpToolRegistry McpProviderDefinition McpToolInvocation McpToolMetadata McpToolPermission McpToolRegistry McpToolResult McpTrustedStdioProvider">
     <h3>src/mcp.ts</h3>
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
-    <p><strong>Exports:</strong> <code>createMcpToolRegistry</code>, <code>McpProviderDefinition</code>, <code>McpToolInvocation</code>, <code>McpToolMetadata</code>, <code>McpToolPermission</code>, <code>McpToolRegistry</code>, <code>McpToolResult</code>, <code>McpTrustedStdioProvider</code></p>
+    <p><strong>Exports:</strong> <code>createMcpAgentToolAdapter</code>, <code>createMcpToolRegistry</code>, <code>McpProviderDefinition</code>, <code>McpToolInvocation</code>, <code>McpToolMetadata</code>, <code>McpToolPermission</code>, <code>McpToolRegistry</code>, <code>McpToolResult</code>, <code>McpTrustedStdioProvider</code></p>
   </article><article class="item" data-search="src/social.ts">
     <h3>src/social.ts</h3>
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
     <p><strong>Exports:</strong> <span class="empty">None</span></p>
+  </article><article class="item" data-search="src/types/ai.ts src/types/security.ts FlowAiAgentExecutionInput FlowAiAgentPlannerPort FlowAiAgentStep FlowAiAgentToolPort FlowAiBudget FlowAiExecutionInput FlowAiInput FlowAiModelEvent FlowAiModelPort FlowAiModelSettings FlowAiProgress FlowAiResult FlowAiRetryPolicy FlowAiSchema FlowAiSecurityContext FlowAiTelemetry">
+    <h3>src/types/ai.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/types/security.ts</code></p>
+    <p><strong>Exports:</strong> <code>FlowAiAgentExecutionInput</code>, <code>FlowAiAgentPlannerPort</code>, <code>FlowAiAgentStep</code>, <code>FlowAiAgentToolPort</code>, <code>FlowAiBudget</code>, <code>FlowAiExecutionInput</code>, <code>FlowAiInput</code>, <code>FlowAiModelEvent</code>, <code>FlowAiModelPort</code>, <code>FlowAiModelSettings</code>, <code>FlowAiProgress</code>, <code>FlowAiResult</code>, <code>FlowAiRetryPolicy</code>, <code>FlowAiSchema</code>, <code>FlowAiSecurityContext</code>, <code>FlowAiTelemetry</code></p>
   </article><article class="item" data-search="src/types/durableExecution.ts src/types/security.ts FlowDefinitionRef FlowDurableRun FlowDurableWork FlowOutboxRecord FlowRetryPolicy FlowRunCheckpoint">
     <h3>src/types/durableExecution.ts</h3>
     <p class="muted">Referenced module</p>
@@ -1890,6 +1930,17 @@
   package__ankhorage_flow -.-&gt; module_src_ai_ts
   module_src_execution_ts[&quot;src/execution.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_execution_ts
+  module_src_features_ai_application_executeAiNodeAsync_ts[&quot;src/features/ai/application/executeAiNodeAsync.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_ai_application_executeAiNodeAsync_ts
+  module_src_features_ai_application_executeAiNodeAsync_ts --&gt; module_src_features_ai_FlowAiError_ts
+  module_src_features_ai_application_executeAiNodeAsync_ts --&gt; module_src_types_ai_ts
+  module_src_features_ai_application_executeAiNodeAsync_ts --&gt; module_src_types_security_ts
+  module_src_features_ai_application_executeBoundedAgentAsync_ts[&quot;src/features/ai/application/executeBoundedAgentAsync.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_ai_application_executeBoundedAgentAsync_ts
+  module_src_features_ai_application_executeBoundedAgentAsync_ts --&gt; module_src_features_ai_FlowAiError_ts
+  module_src_features_ai_application_executeBoundedAgentAsync_ts --&gt; module_src_types_ai_ts
+  module_src_features_ai_FlowAiError_ts[&quot;src/features/ai/FlowAiError.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_ai_FlowAiError_ts
   module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts[&quot;src/features/execution/adapters/FileFlowPersistenceAdapter.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts
   module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts --&gt; module_src_features_execution_ports_FlowPersistencePort_ts
@@ -1944,6 +1995,10 @@
   module_src_features_execution_ports_FlowPersistencePort_ts[&quot;src/features/execution/ports/FlowPersistencePort.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_features_execution_ports_FlowPersistencePort_ts
   module_src_features_execution_ports_FlowPersistencePort_ts --&gt; module_src_types_durableExecution_ts
+  module_src_features_mcp_createMcpAgentToolAdapter_ts[&quot;src/features/mcp/createMcpAgentToolAdapter.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_mcp_createMcpAgentToolAdapter_ts
+  module_src_features_mcp_createMcpAgentToolAdapter_ts --&gt; module_src_types_ai_ts
+  module_src_features_mcp_createMcpAgentToolAdapter_ts --&gt; module_src_types_mcp_ts
   module_src_features_mcp_createMcpRemoteTransport_ts[&quot;src/features/mcp/createMcpRemoteTransport.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_features_mcp_createMcpRemoteTransport_ts
   module_src_features_mcp_createMcpRemoteTransport_ts --&gt; module_src_features_mcp_loadMcpSdkAsync_ts
@@ -1987,6 +2042,9 @@
   package__ankhorage_flow -.-&gt; module_src_mcp_ts
   module_src_social_ts[&quot;src/social.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_social_ts
+  module_src_types_ai_ts[&quot;src/types/ai.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_types_ai_ts
+  module_src_types_ai_ts --&gt; module_src_types_security_ts
   module_src_types_durableExecution_ts[&quot;src/types/durableExecution.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_types_durableExecution_ts
   module_src_types_durableExecution_ts --&gt; module_src_types_security_ts
@@ -2008,6 +2066,17 @@
   package__ankhorage_flow -.-&gt; module_src_ai_ts
   module_src_execution_ts[&quot;src/execution.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_execution_ts
+  module_src_features_ai_application_executeAiNodeAsync_ts[&quot;src/features/ai/application/executeAiNodeAsync.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_ai_application_executeAiNodeAsync_ts
+  module_src_features_ai_application_executeAiNodeAsync_ts --&gt; module_src_features_ai_FlowAiError_ts
+  module_src_features_ai_application_executeAiNodeAsync_ts --&gt; module_src_types_ai_ts
+  module_src_features_ai_application_executeAiNodeAsync_ts --&gt; module_src_types_security_ts
+  module_src_features_ai_application_executeBoundedAgentAsync_ts[&quot;src/features/ai/application/executeBoundedAgentAsync.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_ai_application_executeBoundedAgentAsync_ts
+  module_src_features_ai_application_executeBoundedAgentAsync_ts --&gt; module_src_features_ai_FlowAiError_ts
+  module_src_features_ai_application_executeBoundedAgentAsync_ts --&gt; module_src_types_ai_ts
+  module_src_features_ai_FlowAiError_ts[&quot;src/features/ai/FlowAiError.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_ai_FlowAiError_ts
   module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts[&quot;src/features/execution/adapters/FileFlowPersistenceAdapter.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts
   module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts --&gt; module_src_features_execution_ports_FlowPersistencePort_ts
@@ -2062,6 +2131,10 @@
   module_src_features_execution_ports_FlowPersistencePort_ts[&quot;src/features/execution/ports/FlowPersistencePort.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_features_execution_ports_FlowPersistencePort_ts
   module_src_features_execution_ports_FlowPersistencePort_ts --&gt; module_src_types_durableExecution_ts
+  module_src_features_mcp_createMcpAgentToolAdapter_ts[&quot;src/features/mcp/createMcpAgentToolAdapter.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_mcp_createMcpAgentToolAdapter_ts
+  module_src_features_mcp_createMcpAgentToolAdapter_ts --&gt; module_src_types_ai_ts
+  module_src_features_mcp_createMcpAgentToolAdapter_ts --&gt; module_src_types_mcp_ts
   module_src_features_mcp_createMcpRemoteTransport_ts[&quot;src/features/mcp/createMcpRemoteTransport.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_features_mcp_createMcpRemoteTransport_ts
   module_src_features_mcp_createMcpRemoteTransport_ts --&gt; module_src_features_mcp_loadMcpSdkAsync_ts
@@ -2105,6 +2178,9 @@
   package__ankhorage_flow -.-&gt; module_src_mcp_ts
   module_src_social_ts[&quot;src/social.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_social_ts
+  module_src_types_ai_ts[&quot;src/types/ai.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_types_ai_ts
+  module_src_types_ai_ts --&gt; module_src_types_security_ts
   module_src_types_durableExecution_ts[&quot;src/types/durableExecution.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_types_durableExecution_ts
   module_src_types_durableExecution_ts --&gt; module_src_types_security_ts
@@ -2123,6 +2199,9 @@
     <div class="mermaid">graph LR
   module_src_ai_ts[&quot;src/ai.ts&quot;]
   module_src_execution_ts[&quot;src/execution.ts&quot;]
+  module_src_features_ai_application_executeAiNodeAsync_ts[&quot;src/features/ai/application/executeAiNodeAsync.ts&quot;]
+  module_src_features_ai_application_executeBoundedAgentAsync_ts[&quot;src/features/ai/application/executeBoundedAgentAsync.ts&quot;]
+  module_src_features_ai_FlowAiError_ts[&quot;src/features/ai/FlowAiError.ts&quot;]
   module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts[&quot;src/features/execution/adapters/FileFlowPersistenceAdapter.ts&quot;]
   module_src_features_execution_application_cancelDurableRunAsync_ts[&quot;src/features/execution/application/cancelDurableRunAsync.ts&quot;]
   module_src_features_execution_application_createDurableRunAsync_ts[&quot;src/features/execution/application/createDurableRunAsync.ts&quot;]
@@ -2137,6 +2216,7 @@
   module_src_features_execution_domain_isCronDueAt_ts[&quot;src/features/execution/domain/isCronDueAt.ts&quot;]
   module_src_features_execution_domain_validateFlowDataSchema_ts[&quot;src/features/execution/domain/validateFlowDataSchema.ts&quot;]
   module_src_features_execution_ports_FlowPersistencePort_ts[&quot;src/features/execution/ports/FlowPersistencePort.ts&quot;]
+  module_src_features_mcp_createMcpAgentToolAdapter_ts[&quot;src/features/mcp/createMcpAgentToolAdapter.ts&quot;]
   module_src_features_mcp_createMcpRemoteTransport_ts[&quot;src/features/mcp/createMcpRemoteTransport.ts&quot;]
   module_src_features_mcp_createMcpToolRegistry_ts[&quot;src/features/mcp/createMcpToolRegistry.ts&quot;]
   module_src_features_mcp_loadMcpSdkAsync_ts[&quot;src/features/mcp/loadMcpSdkAsync.ts&quot;]
@@ -2149,10 +2229,16 @@
   module_src_index_ts[&quot;src/index.ts&quot;]
   module_src_mcp_ts[&quot;src/mcp.ts&quot;]
   module_src_social_ts[&quot;src/social.ts&quot;]
+  module_src_types_ai_ts[&quot;src/types/ai.ts&quot;]
   module_src_types_durableExecution_ts[&quot;src/types/durableExecution.ts&quot;]
   module_src_types_execution_ts[&quot;src/types/execution.ts&quot;]
   module_src_types_mcp_ts[&quot;src/types/mcp.ts&quot;]
   module_src_types_security_ts[&quot;src/types/security.ts&quot;]
+  module_src_features_ai_application_executeAiNodeAsync_ts --&gt; module_src_features_ai_FlowAiError_ts
+  module_src_features_ai_application_executeAiNodeAsync_ts --&gt; module_src_types_ai_ts
+  module_src_features_ai_application_executeAiNodeAsync_ts --&gt; module_src_types_security_ts
+  module_src_features_ai_application_executeBoundedAgentAsync_ts --&gt; module_src_features_ai_FlowAiError_ts
+  module_src_features_ai_application_executeBoundedAgentAsync_ts --&gt; module_src_types_ai_ts
   module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts --&gt; module_src_features_execution_ports_FlowPersistencePort_ts
   module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts --&gt; module_src_types_durableExecution_ts
   module_src_features_execution_application_cancelDurableRunAsync_ts --&gt; module_src_features_execution_ports_FlowPersistencePort_ts
@@ -2179,6 +2265,8 @@
   module_src_features_execution_domain_createRetryWork_ts --&gt; module_src_features_execution_domain_calculateRetryDueAt_ts
   module_src_features_execution_domain_createRetryWork_ts --&gt; module_src_types_durableExecution_ts
   module_src_features_execution_ports_FlowPersistencePort_ts --&gt; module_src_types_durableExecution_ts
+  module_src_features_mcp_createMcpAgentToolAdapter_ts --&gt; module_src_types_ai_ts
+  module_src_features_mcp_createMcpAgentToolAdapter_ts --&gt; module_src_types_mcp_ts
   module_src_features_mcp_createMcpRemoteTransport_ts --&gt; module_src_features_mcp_loadMcpSdkAsync_ts
   module_src_features_mcp_createMcpRemoteTransport_ts --&gt; module_src_features_mcp_McpToolError_ts
   module_src_features_mcp_createMcpRemoteTransport_ts --&gt; module_src_types_mcp_ts
@@ -2199,6 +2287,7 @@
   module_src_features_security_application_createFlowSecurityPort_ts --&gt; module_src_types_security_ts
   module_src_features_security_domain_validateFlowSecurityTarget_ts --&gt; module_src_features_security_FlowSecurityError_ts
   module_src_features_security_domain_validateFlowSecurityTarget_ts --&gt; module_src_types_security_ts
+  module_src_types_ai_ts --&gt; module_src_types_security_ts
   module_src_types_durableExecution_ts --&gt; module_src_types_security_ts
   module_src_types_mcp_ts --&gt; module_src_types_security_ts
 </div>
@@ -2207,6 +2296,9 @@
       <pre>graph LR
   module_src_ai_ts[&quot;src/ai.ts&quot;]
   module_src_execution_ts[&quot;src/execution.ts&quot;]
+  module_src_features_ai_application_executeAiNodeAsync_ts[&quot;src/features/ai/application/executeAiNodeAsync.ts&quot;]
+  module_src_features_ai_application_executeBoundedAgentAsync_ts[&quot;src/features/ai/application/executeBoundedAgentAsync.ts&quot;]
+  module_src_features_ai_FlowAiError_ts[&quot;src/features/ai/FlowAiError.ts&quot;]
   module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts[&quot;src/features/execution/adapters/FileFlowPersistenceAdapter.ts&quot;]
   module_src_features_execution_application_cancelDurableRunAsync_ts[&quot;src/features/execution/application/cancelDurableRunAsync.ts&quot;]
   module_src_features_execution_application_createDurableRunAsync_ts[&quot;src/features/execution/application/createDurableRunAsync.ts&quot;]
@@ -2221,6 +2313,7 @@
   module_src_features_execution_domain_isCronDueAt_ts[&quot;src/features/execution/domain/isCronDueAt.ts&quot;]
   module_src_features_execution_domain_validateFlowDataSchema_ts[&quot;src/features/execution/domain/validateFlowDataSchema.ts&quot;]
   module_src_features_execution_ports_FlowPersistencePort_ts[&quot;src/features/execution/ports/FlowPersistencePort.ts&quot;]
+  module_src_features_mcp_createMcpAgentToolAdapter_ts[&quot;src/features/mcp/createMcpAgentToolAdapter.ts&quot;]
   module_src_features_mcp_createMcpRemoteTransport_ts[&quot;src/features/mcp/createMcpRemoteTransport.ts&quot;]
   module_src_features_mcp_createMcpToolRegistry_ts[&quot;src/features/mcp/createMcpToolRegistry.ts&quot;]
   module_src_features_mcp_loadMcpSdkAsync_ts[&quot;src/features/mcp/loadMcpSdkAsync.ts&quot;]
@@ -2233,10 +2326,16 @@
   module_src_index_ts[&quot;src/index.ts&quot;]
   module_src_mcp_ts[&quot;src/mcp.ts&quot;]
   module_src_social_ts[&quot;src/social.ts&quot;]
+  module_src_types_ai_ts[&quot;src/types/ai.ts&quot;]
   module_src_types_durableExecution_ts[&quot;src/types/durableExecution.ts&quot;]
   module_src_types_execution_ts[&quot;src/types/execution.ts&quot;]
   module_src_types_mcp_ts[&quot;src/types/mcp.ts&quot;]
   module_src_types_security_ts[&quot;src/types/security.ts&quot;]
+  module_src_features_ai_application_executeAiNodeAsync_ts --&gt; module_src_features_ai_FlowAiError_ts
+  module_src_features_ai_application_executeAiNodeAsync_ts --&gt; module_src_types_ai_ts
+  module_src_features_ai_application_executeAiNodeAsync_ts --&gt; module_src_types_security_ts
+  module_src_features_ai_application_executeBoundedAgentAsync_ts --&gt; module_src_features_ai_FlowAiError_ts
+  module_src_features_ai_application_executeBoundedAgentAsync_ts --&gt; module_src_types_ai_ts
   module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts --&gt; module_src_features_execution_ports_FlowPersistencePort_ts
   module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts --&gt; module_src_types_durableExecution_ts
   module_src_features_execution_application_cancelDurableRunAsync_ts --&gt; module_src_features_execution_ports_FlowPersistencePort_ts
@@ -2263,6 +2362,8 @@
   module_src_features_execution_domain_createRetryWork_ts --&gt; module_src_features_execution_domain_calculateRetryDueAt_ts
   module_src_features_execution_domain_createRetryWork_ts --&gt; module_src_types_durableExecution_ts
   module_src_features_execution_ports_FlowPersistencePort_ts --&gt; module_src_types_durableExecution_ts
+  module_src_features_mcp_createMcpAgentToolAdapter_ts --&gt; module_src_types_ai_ts
+  module_src_features_mcp_createMcpAgentToolAdapter_ts --&gt; module_src_types_mcp_ts
   module_src_features_mcp_createMcpRemoteTransport_ts --&gt; module_src_features_mcp_loadMcpSdkAsync_ts
   module_src_features_mcp_createMcpRemoteTransport_ts --&gt; module_src_features_mcp_McpToolError_ts
   module_src_features_mcp_createMcpRemoteTransport_ts --&gt; module_src_types_mcp_ts
@@ -2283,6 +2384,7 @@
   module_src_features_security_application_createFlowSecurityPort_ts --&gt; module_src_types_security_ts
   module_src_features_security_domain_validateFlowSecurityTarget_ts --&gt; module_src_features_security_FlowSecurityError_ts
   module_src_features_security_domain_validateFlowSecurityTarget_ts --&gt; module_src_types_security_ts
+  module_src_types_ai_ts --&gt; module_src_types_security_ts
   module_src_types_durableExecution_ts --&gt; module_src_types_security_ts
   module_src_types_mcp_ts --&gt; module_src_types_security_ts
 </pre>
@@ -2293,6 +2395,9 @@
     <div class="mermaid">graph LR
   module_src_ai_ts[&quot;src/ai.ts&quot;]
   module_src_execution_ts[&quot;src/execution.ts&quot;]
+  module_src_features_ai_application_executeAiNodeAsync_ts[&quot;src/features/ai/application/executeAiNodeAsync.ts&quot;]
+  module_src_features_ai_application_executeBoundedAgentAsync_ts[&quot;src/features/ai/application/executeBoundedAgentAsync.ts&quot;]
+  module_src_features_ai_FlowAiError_ts[&quot;src/features/ai/FlowAiError.ts&quot;]
   module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts[&quot;src/features/execution/adapters/FileFlowPersistenceAdapter.ts&quot;]
   module_src_features_execution_application_cancelDurableRunAsync_ts[&quot;src/features/execution/application/cancelDurableRunAsync.ts&quot;]
   module_src_features_execution_application_createDurableRunAsync_ts[&quot;src/features/execution/application/createDurableRunAsync.ts&quot;]
@@ -2307,6 +2412,7 @@
   module_src_features_execution_domain_isCronDueAt_ts[&quot;src/features/execution/domain/isCronDueAt.ts&quot;]
   module_src_features_execution_domain_validateFlowDataSchema_ts[&quot;src/features/execution/domain/validateFlowDataSchema.ts&quot;]
   module_src_features_execution_ports_FlowPersistencePort_ts[&quot;src/features/execution/ports/FlowPersistencePort.ts&quot;]
+  module_src_features_mcp_createMcpAgentToolAdapter_ts[&quot;src/features/mcp/createMcpAgentToolAdapter.ts&quot;]
   module_src_features_mcp_createMcpRemoteTransport_ts[&quot;src/features/mcp/createMcpRemoteTransport.ts&quot;]
   module_src_features_mcp_createMcpToolRegistry_ts[&quot;src/features/mcp/createMcpToolRegistry.ts&quot;]
   module_src_features_mcp_loadMcpSdkAsync_ts[&quot;src/features/mcp/loadMcpSdkAsync.ts&quot;]
@@ -2319,6 +2425,7 @@
   module_src_index_ts[&quot;src/index.ts&quot;]
   module_src_mcp_ts[&quot;src/mcp.ts&quot;]
   module_src_social_ts[&quot;src/social.ts&quot;]
+  module_src_types_ai_ts[&quot;src/types/ai.ts&quot;]
   module_src_types_durableExecution_ts[&quot;src/types/durableExecution.ts&quot;]
   module_src_types_execution_ts[&quot;src/types/execution.ts&quot;]
   module_src_types_mcp_ts[&quot;src/types/mcp.ts&quot;]
@@ -2464,6 +2571,9 @@
       <pre>graph LR
   module_src_ai_ts[&quot;src/ai.ts&quot;]
   module_src_execution_ts[&quot;src/execution.ts&quot;]
+  module_src_features_ai_application_executeAiNodeAsync_ts[&quot;src/features/ai/application/executeAiNodeAsync.ts&quot;]
+  module_src_features_ai_application_executeBoundedAgentAsync_ts[&quot;src/features/ai/application/executeBoundedAgentAsync.ts&quot;]
+  module_src_features_ai_FlowAiError_ts[&quot;src/features/ai/FlowAiError.ts&quot;]
   module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts[&quot;src/features/execution/adapters/FileFlowPersistenceAdapter.ts&quot;]
   module_src_features_execution_application_cancelDurableRunAsync_ts[&quot;src/features/execution/application/cancelDurableRunAsync.ts&quot;]
   module_src_features_execution_application_createDurableRunAsync_ts[&quot;src/features/execution/application/createDurableRunAsync.ts&quot;]
@@ -2478,6 +2588,7 @@
   module_src_features_execution_domain_isCronDueAt_ts[&quot;src/features/execution/domain/isCronDueAt.ts&quot;]
   module_src_features_execution_domain_validateFlowDataSchema_ts[&quot;src/features/execution/domain/validateFlowDataSchema.ts&quot;]
   module_src_features_execution_ports_FlowPersistencePort_ts[&quot;src/features/execution/ports/FlowPersistencePort.ts&quot;]
+  module_src_features_mcp_createMcpAgentToolAdapter_ts[&quot;src/features/mcp/createMcpAgentToolAdapter.ts&quot;]
   module_src_features_mcp_createMcpRemoteTransport_ts[&quot;src/features/mcp/createMcpRemoteTransport.ts&quot;]
   module_src_features_mcp_createMcpToolRegistry_ts[&quot;src/features/mcp/createMcpToolRegistry.ts&quot;]
   module_src_features_mcp_loadMcpSdkAsync_ts[&quot;src/features/mcp/loadMcpSdkAsync.ts&quot;]
@@ -2490,6 +2601,7 @@
   module_src_index_ts[&quot;src/index.ts&quot;]
   module_src_mcp_ts[&quot;src/mcp.ts&quot;]
   module_src_social_ts[&quot;src/social.ts&quot;]
+  module_src_types_ai_ts[&quot;src/types/ai.ts&quot;]
   module_src_types_durableExecution_ts[&quot;src/types/durableExecution.ts&quot;]
   module_src_types_execution_ts[&quot;src/types/execution.ts&quot;]
   module_src_types_mcp_ts[&quot;src/types/mcp.ts&quot;]
@@ -2740,7 +2852,117 @@
   </article>
     </section>
         </section>
-        <section id="view-src-features-execution-adapters-fileflowpersistenceadapter-ts" class="view" data-view="src/features/execution/adapters/FileFlowPersistenceAdapter.ts" hidden>
+        <section id="view-src-features-ai-application-executeainodeasync-ts" class="view" data-view="src/features/ai/application/executeAiNodeAsync.ts" hidden>
+    <section class="panel">
+      <h2>src/features/ai/application/executeAiNodeAsync.ts</h2>
+      <article class="item" data-search="executeAiNodeAsync src/features/ai/application/executeAiNodeAsync.ts ">
+    <h3>executeAiNodeAsync</h3>
+    <p class="muted"><code>src/features/ai/application/executeAiNodeAsync.ts:11:14</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="executePermittedAsync src/features/ai/application/executeAiNodeAsync.ts ">
+    <h3>executePermittedAsync</h3>
+    <p class="muted"><code>src/features/ai/application/executeAiNodeAsync.ts:27:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="streamAttemptAsync src/features/ai/application/executeAiNodeAsync.ts ">
+    <h3>streamAttemptAsync</h3>
+    <p class="muted"><code>src/features/ai/application/executeAiNodeAsync.ts:45:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="consumeStreamAsync src/features/ai/application/executeAiNodeAsync.ts ">
+    <h3>consumeStreamAsync</h3>
+    <p class="muted"><code>src/features/ai/application/executeAiNodeAsync.ts:72:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="awaitStreamOrAbortAsync src/features/ai/application/executeAiNodeAsync.ts ">
+    <h3>awaitStreamOrAbortAsync</h3>
+    <p class="muted"><code>src/features/ai/application/executeAiNodeAsync.ts:92:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="abort src/features/ai/application/executeAiNodeAsync.ts ">
+    <h3>abort</h3>
+    <p class="muted"><code>src/features/ai/application/executeAiNodeAsync.ts:98:11</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="applyEventAsync src/features/ai/application/executeAiNodeAsync.ts ">
+    <h3>applyEventAsync</h3>
+    <p class="muted"><code>src/features/ai/application/executeAiNodeAsync.ts:120:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="parseOutput src/features/ai/application/executeAiNodeAsync.ts ">
+    <h3>parseOutput</h3>
+    <p class="muted"><code>src/features/ai/application/executeAiNodeAsync.ts:147:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="validateExecutionInput src/features/ai/application/executeAiNodeAsync.ts ">
+    <h3>validateExecutionInput</h3>
+    <p class="muted"><code>src/features/ai/application/executeAiNodeAsync.ts:163:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="assertBudget src/features/ai/application/executeAiNodeAsync.ts ">
+    <h3>assertBudget</h3>
+    <p class="muted"><code>src/features/ai/application/executeAiNodeAsync.ts:178:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="validateTelemetry src/features/ai/application/executeAiNodeAsync.ts ">
+    <h3>validateTelemetry</h3>
+    <p class="muted"><code>src/features/ai/application/executeAiNodeAsync.ts:190:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="subtractTelemetry src/features/ai/application/executeAiNodeAsync.ts ">
+    <h3>subtractTelemetry</h3>
+    <p class="muted"><code>src/features/ai/application/executeAiNodeAsync.ts:206:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="addTelemetry src/features/ai/application/executeAiNodeAsync.ts ">
+    <h3>addTelemetry</h3>
+    <p class="muted"><code>src/features/ai/application/executeAiNodeAsync.ts:216:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="assignTelemetry src/features/ai/application/executeAiNodeAsync.ts ">
+    <h3>assignTelemetry</h3>
+    <p class="muted"><code>src/features/ai/application/executeAiNodeAsync.ts:223:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="emptyTelemetry src/features/ai/application/executeAiNodeAsync.ts ">
+    <h3>emptyTelemetry</h3>
+    <p class="muted"><code>src/features/ai/application/executeAiNodeAsync.ts:228:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="isRetryable src/features/ai/application/executeAiNodeAsync.ts ">
+    <h3>isRetryable</h3>
+    <p class="muted"><code>src/features/ai/application/executeAiNodeAsync.ts:231:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="toProviderError src/features/ai/application/executeAiNodeAsync.ts ">
+    <h3>toProviderError</h3>
+    <p class="muted"><code>src/features/ai/application/executeAiNodeAsync.ts:235:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="toFlowAiError src/features/ai/application/executeAiNodeAsync.ts ">
+    <h3>toFlowAiError</h3>
+    <p class="muted"><code>src/features/ai/application/executeAiNodeAsync.ts:248:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="abortError src/features/ai/application/executeAiNodeAsync.ts ">
+    <h3>abortError</h3>
+    <p class="muted"><code>src/features/ai/application/executeAiNodeAsync.ts:256:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article>
+    </section>
+  </section><section id="view-src-features-ai-application-executeboundedagentasync-ts" class="view" data-view="src/features/ai/application/executeBoundedAgentAsync.ts" hidden>
+    <section class="panel">
+      <h2>src/features/ai/application/executeBoundedAgentAsync.ts</h2>
+      <article class="item" data-search="executeBoundedAgentAsync src/features/ai/application/executeBoundedAgentAsync.ts ">
+    <h3>executeBoundedAgentAsync</h3>
+    <p class="muted"><code>src/features/ai/application/executeBoundedAgentAsync.ts:5:14</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article>
+    </section>
+  </section><section id="view-src-features-execution-adapters-fileflowpersistenceadapter-ts" class="view" data-view="src/features/execution/adapters/FileFlowPersistenceAdapter.ts" hidden>
     <section class="panel">
       <h2>src/features/execution/adapters/FileFlowPersistenceAdapter.ts</h2>
       <article class="item" data-search="FileFlowPersistenceAdapter src/features/execution/adapters/FileFlowPersistenceAdapter.ts Create a self-hostable, single-process JSON persistence adapter for durable Flow state.">
@@ -3322,6 +3544,16 @@
     <h3>isDataArray</h3>
     <p class="muted"><code>src/features/execution/domain/validateFlowDataSchema.ts:217:7</code></p>
     <p>Narrow a JSON-compatible array without losing its serializable member type.</p>
+    
+  </article>
+    </section>
+  </section><section id="view-src-features-mcp-createmcpagenttooladapter-ts" class="view" data-view="src/features/mcp/createMcpAgentToolAdapter.ts" hidden>
+    <section class="panel">
+      <h2>src/features/mcp/createMcpAgentToolAdapter.ts</h2>
+      <article class="item" data-search="createMcpAgentToolAdapter src/features/mcp/createMcpAgentToolAdapter.ts ">
+    <h3>createMcpAgentToolAdapter</h3>
+    <p class="muted"><code>src/features/mcp/createMcpAgentToolAdapter.ts:5:14</code></p>
+    <p class="empty">No description available.</p>
     
   </article>
     </section>

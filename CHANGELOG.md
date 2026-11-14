@@ -1,5 +1,11 @@
 # @ankhorage/flow
 
+## 0.6.0
+
+### Minor Changes
+
+- df1785f: Add provider-neutral typed AI execution with secure BYOK, streaming telemetry, budgets, retries, cancellation, and bounded agent tools.
+
 ## 0.5.0
 
 ### Minor Changes
