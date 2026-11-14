@@ -96,6 +96,7 @@ export interface FlowAiAgentToolPort {
   readonly name: string;
   invokeAsync(input: {
     readonly arguments: Readonly<Record<string, unknown>>;
+    readonly security: FlowAiSecurityContext;
     readonly signal: AbortSignal;
   }): Promise<unknown>;
 }

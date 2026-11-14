@@ -30,15 +30,18 @@ export const executeBoundedAgentAsync = async <T>(
       throw new FlowAiError('tool_denied', 'The requested agent tool is not allowlisted.');
     const tool = tools.get(next.name);
     if (!tool) throw new FlowAiError('tool_denied', 'The requested agent tool is unavailable.');
-    const permit = await input.securityPort.authorizeAsync({
+    const security = {
       actor: input.security.actor,
-      capability: `ai:tool:${next.name}`,
       idempotencyKey: `${input.security.idempotencyKey}:${step}`,
       operationId: `${input.security.operationId}:${step}`,
       secretRefs: input.security.secretRefs,
+    };
+    const permit = await input.securityPort.authorizeAsync({
+      ...security,
+      capability: `ai:tool:${next.name}`,
     });
     const result = await permit.executeAsync(async () =>
-      tool.invokeAsync({ arguments: next.arguments, signal }),
+      tool.invokeAsync({ arguments: next.arguments, security, signal }),
     );
     history.push({ name: next.name, result });
   }

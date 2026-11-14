@@ -169,6 +169,48 @@ test('retries only retryable provider failures and propagates denial, timeout, a
   });
 });
 
+test('returns stable timeout and cancellation errors when a provider ignores aborts indefinitely', async () => {
+  const stalled: FlowAiModelPort = {
+    streamAsync: async function* () {
+      await new Promise<never>(() => undefined);
+    },
+  };
+  await expect(
+    executeAiNodeAsync(security(), { ...input(stalled), timeoutMs: 10 }),
+  ).rejects.toMatchObject({ code: 'timed_out' });
+  const controller = new AbortController();
+  setTimeout(() => controller.abort(), 10);
+  await expect(
+    executeAiNodeAsync(security(), { ...input(stalled), signal: controller.signal }),
+  ).rejects.toMatchObject({ code: 'cancelled' });
+});
+
+test('enforces one cumulative budget across retries and rejects invalid provider telemetry', async () => {
+  let calls = 0;
+  const retrying: FlowAiModelPort = {
+    streamAsync: async function* () {
+      calls += 1;
+      yield { type: 'telemetry', telemetry: { costMicros: 6, inputTokens: 1, outputTokens: 6 } };
+      if (calls === 1) throw { retryable: true };
+      yield { type: 'output', value: { answer: 'never' } };
+    },
+  };
+  await expect(
+    executeAiNodeAsync(security(), { ...input(retrying), retry: { maxAttempts: 2 } }),
+  ).rejects.toMatchObject({ code: 'budget_exceeded' });
+  expect(calls).toBe(2);
+  for (const telemetry of [
+    { costMicros: -1, inputTokens: 0, outputTokens: 0 },
+    { costMicros: Number.NaN, inputTokens: 0, outputTokens: 0 },
+    { costMicros: 0, inputTokens: Number.POSITIVE_INFINITY, outputTokens: 0 },
+    { costMicros: 0.5, inputTokens: 0, outputTokens: 0 },
+    { costMicros: 'invalid', inputTokens: 0, outputTokens: 0 },
+  ])
+    await expect(
+      executeAiNodeAsync(security(), input(provider([{ type: 'telemetry', telemetry }]))),
+    ).rejects.toMatchObject({ code: 'provider_failure' });
+});
+
 test('bounds agent steps, requires security approval, and rejects tools outside its explicit allowlist', async () => {
   const agentInput = {
     allowedTools: ['echo'],
