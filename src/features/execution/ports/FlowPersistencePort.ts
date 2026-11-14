@@ -9,6 +9,8 @@ export interface FlowPersistencePort {
   }) => Promise<readonly FlowDurableWork[]>;
   readonly completeWorkAsync: (input: {
     readonly id: string;
+    readonly leaseFencingToken: number;
+    readonly now: Date;
     readonly workerId: string;
   }) => Promise<boolean>;
   readonly createRunAsync: (run: FlowDurableRun) => Promise<void>;

@@ -20,7 +20,11 @@ export interface FlowDurableWork {
   readonly dueAt: string;
   readonly flow: FlowDefinitionRef;
   readonly id: string;
-  readonly lease?: { readonly expiresAt: string; readonly workerId: string };
+  readonly lease?: {
+    readonly expiresAt: string;
+    readonly fencingToken: number;
+    readonly workerId: string;
+  };
   readonly runId: string;
   readonly status: 'claimed' | 'completed' | 'ready';
 }

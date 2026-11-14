@@ -1,25 +1,32 @@
+import { randomUUID } from 'node:crypto';
 import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
-import { dirname } from 'node:path';
+import { dirname, resolve } from 'node:path';
 
 import type { FlowDurableRun, FlowDurableWork } from '../../../types/durableExecution.js';
 import type { FlowPersistencePort } from '../ports/FlowPersistencePort.js';
 
 /*** Create a self-hostable, single-process JSON persistence adapter for durable Flow state. */
 export const FileFlowPersistenceAdapter = (path: string): FlowPersistencePort => {
-  const serializedCall = createSerializedCall();
+  const persistencePath = resolve(path);
+  const serializedCall = getSerializedCall(persistencePath);
   return {
-    claimDueWorkAsync: (input) => serializedCall.runAsync(() => claimDueWorkAsync(path, input)),
-    completeWorkAsync: (input) => serializedCall.runAsync(() => completeWorkAsync(path, input)),
-    createRunAsync: (run) => serializedCall.runAsync(() => createRunAsync(path, run)),
-    enqueueWorkAsync: (work) => serializedCall.runAsync(() => enqueueWorkAsync(path, work)),
-    readRunAsync: (id) => serializedCall.runAsync(() => readRunAsync(path, id)),
+    claimDueWorkAsync: (input) =>
+      serializedCall.runAsync(() => claimDueWorkAsync(persistencePath, input)),
+    completeWorkAsync: (input) =>
+      serializedCall.runAsync(() => completeWorkAsync(persistencePath, input)),
+    createRunAsync: (run) => serializedCall.runAsync(() => createRunAsync(persistencePath, run)),
+    enqueueWorkAsync: (work) =>
+      serializedCall.runAsync(() => enqueueWorkAsync(persistencePath, work)),
+    readRunAsync: (id) => serializedCall.runAsync(() => readRunAsync(persistencePath, id)),
     recoverExpiredClaimsAsync: (now) =>
-      serializedCall.runAsync(() => recoverExpiredClaimsAsync(path, now)),
-    transitionRunAsync: (input) => serializedCall.runAsync(() => transitionRunAsync(path, input)),
+      serializedCall.runAsync(() => recoverExpiredClaimsAsync(persistencePath, now)),
+    transitionRunAsync: (input) =>
+      serializedCall.runAsync(() => transitionRunAsync(persistencePath, input)),
   };
 };
 
 interface FileFlowStore {
+  readonly nextLeaseFencingToken: number;
   readonly runs: readonly FlowDurableRun[];
   readonly work: readonly FlowDurableWork[];
 }
@@ -28,7 +35,18 @@ interface SerializedCall {
   readonly runAsync: <Result>(operation: () => Promise<Result>) => Promise<Result>;
 }
 
-/*** Serialize adapter access so concurrent callbacks cannot claim the same file-backed work item. */
+const serializedCallsByPath = new Map<string, SerializedCall>();
+
+/*** Share serialization for every adapter instance targeting one normalized persistence path. */
+const getSerializedCall = (path: string): SerializedCall => {
+  const existing = serializedCallsByPath.get(path);
+  if (existing !== undefined) return existing;
+  const serializedCall = createSerializedCall();
+  serializedCallsByPath.set(path, serializedCall);
+  return serializedCall;
+};
+
+/*** Serialize one file path so concurrent callbacks cannot claim or overwrite the same state. */
 const createSerializedCall = (): SerializedCall => {
   let previous = Promise.resolve();
   return {
@@ -55,18 +73,30 @@ const claimDueWorkAsync = async (
         (left, right) => left.dueAt.localeCompare(right.dueAt) || left.id.localeCompare(right.id),
       )
       .slice(0, input.limit)
-      .map((work) => claimWork(work, input));
-    return { result: claimed, store: { ...store, work: replaceWork(store.work, claimed) } };
+      .map((work, index) => claimWork(work, input, store.nextLeaseFencingToken + index));
+    return {
+      result: claimed,
+      store: {
+        ...store,
+        nextLeaseFencingToken: store.nextLeaseFencingToken + claimed.length,
+        work: replaceWork(store.work, claimed),
+      },
+    };
   });
 
-/*** Complete only the work lease owned by the worker that claimed it. */
+/*** Complete only the unexpired fenced lease returned by the successful claim. */
 const completeWorkAsync = async (
   path: string,
-  { id, workerId }: Parameters<FlowPersistencePort['completeWorkAsync']>[0],
+  { id, leaseFencingToken, now, workerId }: Parameters<FlowPersistencePort['completeWorkAsync']>[0],
 ): Promise<boolean> =>
   updateStoreAsync(path, (store) => {
     const work = store.work.find((candidate) => candidate.id === id);
-    if (work?.status !== 'claimed' || work.lease?.workerId !== workerId)
+    if (
+      work?.status !== 'claimed' ||
+      work.lease?.workerId !== workerId ||
+      work.lease.fencingToken !== leaseFencingToken ||
+      work.lease.expiresAt <= now.toISOString()
+    )
       return { result: false, store };
     return {
       result: true,
@@ -128,10 +158,12 @@ const transitionRunAsync = async (
 const claimWork = (
   work: FlowDurableWork,
   input: Parameters<FlowPersistencePort['claimDueWorkAsync']>[0],
+  fencingToken: number,
 ): FlowDurableWork => ({
   ...work,
   lease: {
     expiresAt: new Date(input.now.getTime() + input.leaseDurationMs).toISOString(),
+    fencingToken,
     workerId: input.workerId,
   },
   status: 'claimed',
@@ -158,11 +190,29 @@ const replaceRuns = (
 /*** Read persisted state or initialize an empty store when it has not yet been created. */
 const readStoreAsync = async (path: string): Promise<FileFlowStore> => {
   try {
-    return JSON.parse(await readFile(path, 'utf8')) as FileFlowStore;
+    return readFileStore(JSON.parse(await readFile(path, 'utf8')));
   } catch (reason) {
-    if (isMissingFile(reason)) return { runs: [], work: [] };
+    if (isMissingFile(reason)) return { nextLeaseFencingToken: 1, runs: [], work: [] };
     throw reason;
   }
+};
+
+/*** Validate the adapter-owned persistence envelope before using its fencing counter. */
+const readFileStore = (value: unknown): FileFlowStore => {
+  if (
+    typeof value !== 'object' ||
+    value === null ||
+    !('nextLeaseFencingToken' in value) ||
+    typeof value.nextLeaseFencingToken !== 'number' ||
+    !Number.isSafeInteger(value.nextLeaseFencingToken) ||
+    value.nextLeaseFencingToken < 1 ||
+    !('runs' in value) ||
+    !Array.isArray(value.runs) ||
+    !('work' in value) ||
+    !Array.isArray(value.work)
+  )
+    throw new Error('FLOW_PERSISTENCE_INVALID');
+  return value as FileFlowStore;
 };
 
 /*** Apply one single-process transaction and atomically replace the persisted JSON snapshot. */
@@ -172,7 +222,7 @@ const updateStoreAsync = async <Result>(
 ): Promise<Result> => {
   const updated = update(await readStoreAsync(path));
   await mkdir(dirname(path), { recursive: true });
-  const temporaryPath = `${path}.tmp`;
+  const temporaryPath = `${path}.${randomUUID()}.tmp`;
   await writeFile(temporaryPath, JSON.stringify(updated.store));
   await rename(temporaryPath, path);
   return copy(updated.result);

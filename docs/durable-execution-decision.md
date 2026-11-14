@@ -22,8 +22,13 @@ approval owner. Adding a local substitute would create a second, unreviewed secu
 This PR implements only the security-independent foundation: a provider-neutral persistence port
 for runs, checkpoints and work leases; immutable Flow definition references with revision-checked
 run transitions; controlled-clock exponential retry calculations; and a self-hostable,
-single-process JSON-file adapter. Its tests prove stale transitions, bounded deterministic retry
-times, lease recovery after a stopped worker and that completed work cannot be claimed twice.
+single-process JSON-file adapter. Adapter instances addressing the same normalized file path share
+one process-local serialization boundary, use unique temporary snapshots, and persist a monotonic
+lease fencing token. Completion requires the worker ID, the returned fencing token, and an
+unexpired controlled-clock lease. Its tests prove stale transitions, bounded deterministic retry
+times, concurrent multi-instance persistence, lease recovery after a stopped worker, fencing after
+worker-ID reuse, completion idempotency, rejected corrupt envelopes, and that completed work cannot
+be claimed twice.
 
 The adapter deliberately does not execute a node, resolve a secret, deliver an outbox record or
 model an approval. It is not a multi-process database adapter: concurrent process coordination
