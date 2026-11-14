@@ -1,5 +1,11 @@
 # @ankhorage/flow
 
+## 0.6.2
+
+### Patch Changes
+
+- 9deb25f: Add canonical repository metadata for package discovery and documentation.
+
 ## 0.6.1
 
 ### Patch Changes
