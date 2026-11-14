@@ -1,6 +1,6 @@
 import type { SecretRef } from '@ankhorage/contracts/secrets';
 
-import type { FlowSecurityActor, FlowSecurityPort } from './security.js';
+import type { FlowOutboundTransportPort, FlowSecurityActor, FlowSecurityPort } from './security.js';
 
 /** The provider account classes Flow may publish to without a provider SDK. */
 export type SocialPlatform = 'meta-facebook' | 'meta-instagram' | 'linkedin';
@@ -14,6 +14,7 @@ export interface SocialAuthorization {
   readonly accountId: string;
   readonly accountType: string;
   readonly credential: Readonly<Record<string, string>>;
+  readonly expiresAt?: string;
   readonly grantedScopes: readonly string[];
 }
 
@@ -59,6 +60,7 @@ export interface SocialNodeRegistryDependencies {
   readonly actor: FlowSecurityActor;
   readonly clock: { readonly now: () => Date };
   readonly providers: readonly SocialProviderPort[];
+  readonly outboundTransport: FlowOutboundTransportPort;
   readonly security: FlowSecurityPort;
 }
 
@@ -66,19 +68,29 @@ export interface SocialNodeRegistryDependencies {
 export interface SocialProviderPort {
   readonly allowedCapabilities: readonly SocialCapability[];
   readonly allowedHosts: readonly string[];
+  /** Exact documented server API endpoint; Flow authorizes this destination before every operation. */
+  readonly endpoint: string;
   readonly platform: SocialPlatform;
   fetchAnalyticsAsync(input: {
     readonly authorization: SocialAuthorization;
+    readonly outboundTransport: FlowOutboundTransportPort;
     readonly platformPostId: string;
     readonly signal: AbortSignal;
   }): Promise<SocialAnalytics>;
   publishAsync(input: {
     readonly authorization: SocialAuthorization;
+    readonly outboundTransport: FlowOutboundTransportPort;
     readonly request: SocialPublishRequest;
     readonly signal: AbortSignal;
   }): Promise<SocialPublication>;
-  revokeAsync(input: { readonly authorization: SocialAuthorization }): Promise<void>;
-  renewAsync(input: { readonly authorization: SocialAuthorization }): Promise<void>;
+  revokeAsync(input: {
+    readonly authorization: SocialAuthorization;
+    readonly outboundTransport: FlowOutboundTransportPort;
+  }): Promise<void>;
+  renewAsync(input: {
+    readonly authorization: SocialAuthorization;
+    readonly outboundTransport: FlowOutboundTransportPort;
+  }): Promise<Readonly<Record<string, string>>>;
   validateMediaAsync(input: {
     readonly authorization: SocialAuthorization;
     readonly media: readonly SocialMedia[];

@@ -18,8 +18,8 @@ sessions, users, roles or a vault. It uses the published `SecretStoreAdapter` an
 with the released `@ankhorage/secrets-supabase-vault` adapter without making Supabase a runtime
 dependency.
 
-Credential create and revoke are server-only `FlowSecurityPort` operations. They derive their
-SecretStore scope from the granted actor and require the exact `secrets:create` or
+Credential create, renewal replacement, and revoke are server-only `FlowSecurityPort` operations. They derive their
+SecretStore scope from the granted actor and require the exact `secrets:create`, `secrets:replace`, or
 `secrets:revoke` grant; their audits contain a reference but never a credential payload. Flow is
 not an HTTP server, so hosts must expose those operations only from their authenticated server
 boundary and must never bridge `resolve` or credential payloads to a browser.

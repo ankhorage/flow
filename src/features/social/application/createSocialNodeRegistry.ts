@@ -2,14 +2,14 @@ import type { FlowDataRef, FlowNodeConfig, FlowNodeConfigValue } from '@ankhorag
 
 import type { FlowNodeOperation, FlowNodeRegistry } from '../../../types/execution.js';
 import type {
-  SocialAuthorization,
   SocialCapability,
   SocialMedia,
   SocialNodeRegistryDependencies,
   SocialPlatform,
   SocialProviderPort,
 } from '../../../types/social.js';
-import { socialAccountTypesOf, socialScopesOf } from '../domain/socialScopesOf.js';
+import { validateSocialAuthorization } from '../domain/validateSocialAuthorization.js';
+import { executeSocialOauthAsync } from './executeSocialOauthAsync.js';
 
 /** Create optional, SDK-free social publish, OAuth lifecycle, and analytics node operations. */
 export const createSocialNodeRegistry = (
@@ -18,12 +18,26 @@ export const createSocialNodeRegistry = (
   'social:analytics': { executeAsync: executeAnalyticsAsync(dependencies) },
   'social:publish': { executeAsync: executePublishAsync(dependencies) },
   'social:oauth-renew': {
-    executeAsync: async ({ config, node }) =>
-      executeOauthAsync(dependencies, config, node.id, 'oauth:renew'),
+    executeAsync: async ({ config, node }) => {
+      await executeSocialOauthAsync({
+        capability: 'oauth:renew',
+        dependencies,
+        nodeId: node.id,
+        request: readSocialConfig(config),
+      });
+      return { output: { lifecycle: { kind: 'inline', value: { status: 'renewed' } } } };
+    },
   },
   'social:oauth-revoke': {
-    executeAsync: async ({ config, node }) =>
-      executeOauthAsync(dependencies, config, node.id, 'oauth:revoke'),
+    executeAsync: async ({ config, node }) => {
+      await executeSocialOauthAsync({
+        capability: 'oauth:revoke',
+        dependencies,
+        nodeId: node.id,
+        request: readSocialConfig(config),
+      });
+      return { output: { lifecycle: { kind: 'inline', value: { status: 'revoked' } } } };
+    },
   },
 });
 
@@ -42,20 +56,20 @@ const executePublishAsync =
       secretRefs: [request.credentialRef],
       target: {
         allowedHosts: provider.allowedHosts,
-        url: `https://${provider.allowedHosts[0] ?? 'invalid'}`,
+        url: provider.endpoint,
       },
     });
     const publication = await permit.executeAsync(async (secrets) => {
-      const authorization = authorizationOf(request, secrets[request.credentialRef]);
-      assertAuthorization(
-        provider,
-        authorization,
-        request.platform,
+      const authorization = authorizationOf(
+        dependencies,
+        request,
+        secrets[request.credentialRef],
         request.scheduledAt ? 'schedule' : 'publish',
       );
       await provider.validateMediaAsync({ authorization, media: request.media });
       return provider.publishAsync({
         authorization,
+        outboundTransport: dependencies.outboundTransport,
         request: {
           accountId: request.accountId,
           idempotencyKey: request.idempotencyKey,
@@ -84,58 +98,25 @@ const executeAnalyticsAsync =
       secretRefs: [request.credentialRef],
       target: {
         allowedHosts: provider.allowedHosts,
-        url: `https://${provider.allowedHosts[0] ?? 'invalid'}`,
+        url: provider.endpoint,
       },
     });
     const analytics = await permit.executeAsync(async (secrets) => {
-      const authorization = authorizationOf(request, secrets[request.credentialRef]);
-      assertAuthorization(provider, authorization, request.platform, 'analytics:read');
+      const authorization = authorizationOf(
+        dependencies,
+        request,
+        secrets[request.credentialRef],
+        'analytics:read',
+      );
       return provider.fetchAnalyticsAsync({
         authorization,
+        outboundTransport: dependencies.outboundTransport,
         platformPostId: request.platformPostId,
         signal,
       });
     });
     return { output: { analytics: { kind: 'inline', value: analyticsValue(analytics) } } };
   };
-
-/** Authorize a token lifecycle operation and deliberately emit no credential data. */
-const executeOauthAsync = async (
-  dependencies: SocialNodeRegistryDependencies,
-  config: FlowNodeConfig | undefined,
-  nodeId: string,
-  capability: Extract<SocialCapability, 'oauth:renew' | 'oauth:revoke'>,
-) => {
-  const request = readOauthConfig(config);
-  const provider = providerOf(dependencies.providers, request.platform);
-  assertCapability(provider, request.platform, capability);
-  const permit = await dependencies.security.authorizeAsync({
-    actor: dependencies.actor,
-    capability: `social:${request.platform}:${capability}`,
-    idempotencyKey: request.idempotencyKey,
-    operationId: `social:${nodeId}:${request.idempotencyKey}`,
-    secretRefs: [request.credentialRef],
-    target: {
-      allowedHosts: provider.allowedHosts,
-      url: `https://${provider.allowedHosts[0] ?? 'invalid'}`,
-    },
-  });
-  await permit.executeAsync(async (secrets) => {
-    const authorization = authorizationOf(request, secrets[request.credentialRef]);
-    assertAuthorization(provider, authorization, request.platform, capability);
-    return capability === 'oauth:renew'
-      ? provider.renewAsync({ authorization })
-      : provider.revokeAsync({ authorization });
-  });
-  return {
-    output: {
-      lifecycle: {
-        kind: 'inline' as const,
-        value: { status: capability === 'oauth:renew' ? 'renewed' : 'revoked' },
-      },
-    },
-  };
-};
 
 interface SocialConfig {
   readonly accountId: string;
@@ -177,9 +158,6 @@ const readAnalyticsConfig = (config: FlowNodeConfig | undefined) => ({
   platformPostId: stringConfig(config, 'platformPostId'),
 });
 
-/** Read the minimal configuration shared by token renewal and revocation. */
-const readOauthConfig = (config: FlowNodeConfig | undefined) => readSocialConfig(config);
-
 /** Resolve exactly one registered platform adapter. */
 const providerOf = (
   providers: readonly SocialProviderPort[],
@@ -200,35 +178,22 @@ const assertCapability = (
     throw new Error(`SOCIAL_CAPABILITY_UNSUPPORTED:${platform}:${capability}`);
 };
 
-/** Validate the OAuth discovery result before any provider side effect. */
-const assertAuthorization = (
-  provider: SocialProviderPort,
-  authorization: SocialAuthorization,
-  platform: SocialPlatform,
-  capability: SocialCapability,
-): void => {
-  if (!socialAccountTypesOf(platform).includes(authorization.accountType))
-    throw new Error(`SOCIAL_ACCOUNT_UNSUPPORTED:${platform}`);
-  const missing = socialScopesOf(platform, capability).filter(
-    (scope) => !authorization.grantedScopes.includes(scope),
-  );
-  if (missing.length > 0) throw new Error(`SOCIAL_SCOPE_MISSING:${platform}:${missing.join(',')}`);
-  if (provider.platform !== platform) throw new Error(`SOCIAL_PROVIDER_UNSUPPORTED:${platform}`);
-};
-
 /** Construct an authorization boundary only inside the one-use security permit callback. */
 const authorizationOf = (
+  dependencies: SocialNodeRegistryDependencies,
   request: SocialConfig,
   credential: Readonly<Record<string, string>> | undefined,
-): SocialAuthorization => {
-  if (!credential) throw new Error('SOCIAL_CREDENTIAL_UNAVAILABLE');
-  return {
+  capability: SocialCapability,
+) =>
+  validateSocialAuthorization({
     accountId: request.accountId,
     accountType: request.accountType,
+    actor: dependencies.actor,
+    capability,
     credential,
-    grantedScopes: (credential.scopes ?? '').split(' ').filter(Boolean),
-  };
-};
+    now: dependencies.clock.now(),
+    platform: request.platform,
+  });
 
 /** Convert a declared artifact input to media metadata without reading its bytes in the graph engine. */
 const mediaOf = (value: FlowDataRef | undefined): readonly SocialMedia[] => {

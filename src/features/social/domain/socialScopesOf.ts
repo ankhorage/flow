@@ -4,20 +4,43 @@ import { socialCapabilities } from './socialCapabilities.js';
 /** Return the documented OAuth scopes for one provider-approved social capability. */
 export const socialScopesOf = (
   platform: SocialPlatform,
+  accountType: string,
   capability: SocialCapability,
 ): readonly string[] => {
-  const { scopes } = socialPolicyOf(platform);
+  const accountScopes = socialScopesFor(platform, accountType);
+  if (!accountScopes) return [];
   switch (capability) {
     case 'analytics:read':
-      return scopes['analytics:read'];
+      return accountScopes['analytics:read'];
     case 'oauth:renew':
-      return scopes['oauth:renew'];
+      return accountScopes['oauth:renew'];
     case 'oauth:revoke':
-      return scopes['oauth:revoke'];
+      return accountScopes['oauth:revoke'];
     case 'publish':
-      return scopes.publish;
+      return accountScopes.publish;
     case 'schedule':
-      return scopes.schedule;
+      return accountScopes.schedule;
+  }
+};
+
+/** Select account-specific permissions without indexing untrusted graph configuration. */
+const socialScopesFor = (platform: SocialPlatform, accountType: string) => {
+  const { scopes } = socialPolicyOf(platform);
+  switch (platform) {
+    case 'meta-facebook':
+      return accountType === 'page' ? scopes.page : undefined;
+    case 'meta-instagram':
+      return accountType === 'business'
+        ? scopes.business
+        : accountType === 'creator'
+          ? scopes.creator
+          : undefined;
+    case 'linkedin':
+      return accountType === 'member'
+        ? scopes.member
+        : accountType === 'organization'
+          ? scopes.organization
+          : undefined;
   }
 };
 

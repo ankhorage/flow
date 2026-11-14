@@ -7,6 +7,7 @@ import type {
   FlowResolvedSecrets,
   FlowSecretCreateInput,
   FlowSecretMetadata,
+  FlowSecretReplaceInput,
   FlowSecretRevokeInput,
   FlowSecurityActor,
   FlowSecurityAuditEvent,
@@ -20,13 +21,15 @@ import type {
 } from '../../../types/security.js';
 import { validateFlowSecurityTarget } from '../domain/validateFlowSecurityTarget.js';
 import { FlowSecurityError } from '../FlowSecurityError.js';
+import { createCredentialAudit } from './createCredentialAudit.js';
 
 const METADATA_CAPABILITY = 'secrets:metadata';
 const CREATE_CAPABILITY = 'secrets:create';
 const REVOKE_CAPABILITY = 'secrets:revoke';
+const REPLACE_CAPABILITY = 'secrets:replace';
 type FlowSecurityDenialReason = Exclude<
   FlowSecurityAuditEvent['reason'],
-  'credential_create' | 'credential_revoke'
+  'credential_create' | 'credential_revoke' | 'credential_replace'
 >;
 
 /*** Creates the provider-neutral server-side authorization, approval, audit, and secret boundary. */
@@ -42,6 +45,7 @@ export const createFlowSecurityPort = (input: {
   createSecretAsync: async (request) => createSecretAsync(input, request),
   getSecretMetadataAsync: async ({ actor, ref }) => getSecretMetadataAsync(input, actor, ref),
   revokeSecretAsync: async (request) => revokeSecretAsync(input, request),
+  replaceSecretAsync: async (request) => replaceSecretAsync(input, request),
 });
 
 /*** Authorizes and durably claims one exact operation before resolving any secret material. */
@@ -110,9 +114,10 @@ const createSecretAsync = async (
   request: FlowSecretCreateInput,
 ): Promise<FlowSecretMetadata> => {
   const actor = snapshotActor(request.actor);
+  const credentialAudit = createCredentialAudit(input.audit);
   if (!isGranted(input.grants, actor, CREATE_CAPABILITY))
-    return denyCredentialAsync(input.audit, actor, request.ref, CREATE_CAPABILITY);
-  await writeCredentialAuditAsync(input.audit, actor, request.ref, CREATE_CAPABILITY);
+    return credentialAudit.denyAsync(actor, request.ref, CREATE_CAPABILITY);
+  await credentialAudit.writeAsync(actor, request.ref, CREATE_CAPABILITY, 'credential_create');
   const result = await input.secretStore.create({
     kind: request.kind,
     payload: request.payload,
@@ -149,12 +154,33 @@ const revokeSecretAsync = async (
   request: FlowSecretRevokeInput,
 ): Promise<void> => {
   const actor = snapshotActor(request.actor);
+  const credentialAudit = createCredentialAudit(input.audit);
   if (!isGranted(input.grants, actor, REVOKE_CAPABILITY))
-    return denyCredentialAsync(input.audit, actor, request.ref, REVOKE_CAPABILITY);
-  await writeCredentialAuditAsync(input.audit, actor, request.ref, REVOKE_CAPABILITY);
+    return credentialAudit.denyAsync(actor, request.ref, REVOKE_CAPABILITY);
+  await credentialAudit.writeAsync(actor, request.ref, REVOKE_CAPABILITY, 'credential_revoke');
   const result = await input.secretStore.remove({ ref: request.ref, scope: scopeOf(actor) });
   if (!result.ok)
     throw new FlowSecurityError('secret_unavailable', 'The requested secret is unavailable.');
+};
+
+/*** Replaces a credential only through the granted server-side secret owner and redacted audit. */
+const replaceSecretAsync = async (
+  input: Parameters<typeof createFlowSecurityPort>[0],
+  request: FlowSecretReplaceInput,
+): Promise<FlowSecretMetadata> => {
+  const actor = snapshotActor(request.actor);
+  const credentialAudit = createCredentialAudit(input.audit);
+  if (!isGranted(input.grants, actor, REPLACE_CAPABILITY))
+    return credentialAudit.denyAsync(actor, request.ref, REPLACE_CAPABILITY);
+  await credentialAudit.writeAsync(actor, request.ref, REPLACE_CAPABILITY, 'credential_replace');
+  const result = await input.secretStore.replace({
+    payload: request.payload,
+    ref: request.ref,
+    scope: scopeOf(actor),
+  });
+  if (!result.ok)
+    throw new FlowSecurityError('secret_unavailable', 'The requested secret is unavailable.');
+  return result.data;
 };
 
 /*** Resolves secrets only in the server-side callback after durable consumption succeeds. */
@@ -281,41 +307,6 @@ const writeAuditAsync = (
     secretRefs: identity.secretRefs,
     ...(targetHost ? { targetHost } : {}),
   });
-/*** Audits a credential-management decision without accepting its payload at the audit edge. */
-const writeCredentialAuditAsync = (
-  audit: FlowSecurityAuditPort,
-  actor: FlowSecurityActor,
-  ref: SecretRef,
-  capability: typeof CREATE_CAPABILITY | typeof REVOKE_CAPABILITY,
-): Promise<void> =>
-  audit.writeAsync({
-    actorId: actor.id,
-    capability,
-    decision: 'permitted',
-    operationId: ref,
-    reason: capability === CREATE_CAPABILITY ? 'credential_create' : 'credential_revoke',
-    secretRefs: [ref],
-  });
-/*** Audits and returns a stable denial for unauthorized credential management. */
-const denyCredentialAsync = async (
-  audit: FlowSecurityAuditPort,
-  actor: FlowSecurityActor,
-  ref: SecretRef,
-  capability: typeof CREATE_CAPABILITY | typeof REVOKE_CAPABILITY,
-): Promise<never> => {
-  await audit.writeAsync({
-    actorId: actor.id,
-    capability,
-    decision: 'denied',
-    operationId: ref,
-    reason: 'permission_denied',
-    secretRefs: [ref],
-  });
-  throw new FlowSecurityError(
-    'permission_denied',
-    'The actor is not permitted to perform this operation.',
-  );
-};
 /*** Maps policy reasons to public redaction-safe error text. */
 const denialMessage = (reason: FlowSecurityDenialReason): string => {
   switch (reason) {
