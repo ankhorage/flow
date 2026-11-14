@@ -71,6 +71,9 @@ graph TD
   module_src_features_execution_ports_FlowPersistencePort_ts["src/features/execution/ports/FlowPersistencePort.ts"]
   package__ankhorage_flow -.-> module_src_features_execution_ports_FlowPersistencePort_ts
   module_src_features_execution_ports_FlowPersistencePort_ts --> module_src_types_durableExecution_ts
+  module_src_features_mcp_boundedMcpAsync_ts["src/features/mcp/boundedMcpAsync.ts"]
+  package__ankhorage_flow -.-> module_src_features_mcp_boundedMcpAsync_ts
+  module_src_features_mcp_boundedMcpAsync_ts --> module_src_features_mcp_McpToolError_ts
   module_src_features_mcp_createMcpAgentToolAdapter_ts["src/features/mcp/createMcpAgentToolAdapter.ts"]
   package__ankhorage_flow -.-> module_src_features_mcp_createMcpAgentToolAdapter_ts
   module_src_features_mcp_createMcpAgentToolAdapter_ts --> module_src_types_ai_ts
@@ -83,6 +86,7 @@ graph TD
   module_src_features_mcp_createMcpRemoteTransport_ts --> module_src_types_security_ts
   module_src_features_mcp_createMcpToolRegistry_ts["src/features/mcp/createMcpToolRegistry.ts"]
   package__ankhorage_flow -.-> module_src_features_mcp_createMcpToolRegistry_ts
+  module_src_features_mcp_createMcpToolRegistry_ts --> module_src_features_mcp_boundedMcpAsync_ts
   module_src_features_mcp_createMcpToolRegistry_ts --> module_src_features_mcp_createMcpRemoteTransport_ts
   module_src_features_mcp_createMcpToolRegistry_ts --> module_src_features_mcp_loadMcpSdkAsync_ts
   module_src_features_mcp_createMcpToolRegistry_ts --> module_src_features_mcp_McpToolError_ts

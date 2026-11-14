@@ -202,6 +202,11 @@
       <small>19 functions</small>
     </button>
   </li><li>
+    <button class="nav-button" type="button" data-target="src/features/mcp/boundedMcpAsync.ts">
+      src/features/mcp/boundedMcpAsync.ts
+      <small>1 function</small>
+    </button>
+  </li><li>
     <button class="nav-button" type="button" data-target="src/features/mcp/createMcpAgentToolAdapter.ts">
       src/features/mcp/createMcpAgentToolAdapter.ts
       <small>1 function</small>
@@ -253,7 +258,7 @@
       <div class="summary">
         <div><strong>42</strong><span class="muted">public exports</span></div>
         <div><strong>0</strong><span class="muted">components</span></div>
-        <div><strong>37</strong><span class="muted">modules</span></div>
+        <div><strong>38</strong><span class="muted">modules</span></div>
         <div><strong>1</strong><span class="muted">entrypoints</span></div>
       </div>
       <h3>Entrypoints</h3>
@@ -367,6 +372,11 @@
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <code>src/types/durableExecution.ts</code></p>
     <p><strong>Exports:</strong> <code>FlowPersistencePort</code></p>
+  </article><article class="item" data-search="src/features/mcp/boundedMcpAsync.ts src/features/mcp/McpToolError.ts boundedMcpAsync">
+    <h3>src/features/mcp/boundedMcpAsync.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/features/mcp/McpToolError.ts</code></p>
+    <p><strong>Exports:</strong> <code>boundedMcpAsync</code></p>
   </article><article class="item" data-search="src/features/mcp/createMcpAgentToolAdapter.ts src/types/ai.ts src/types/mcp.ts createMcpAgentToolAdapter">
     <h3>src/features/mcp/createMcpAgentToolAdapter.ts</h3>
     <p class="muted">Referenced module</p>
@@ -377,10 +387,10 @@
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <code>src/features/mcp/loadMcpSdkAsync.ts</code>, <code>src/features/mcp/McpToolError.ts</code>, <code>src/types/mcp.ts</code>, <code>src/types/security.ts</code></p>
     <p><strong>Exports:</strong> <code>createMcpRemoteTransportAsync</code></p>
-  </article><article class="item" data-search="src/features/mcp/createMcpToolRegistry.ts src/features/mcp/createMcpRemoteTransport.ts src/features/mcp/loadMcpSdkAsync.ts src/features/mcp/McpToolError.ts src/features/mcp/prepareMcpProviders.ts src/features/mcp/validateMcpSchema.ts src/types/mcp.ts src/types/security.ts createMcpToolRegistry">
+  </article><article class="item" data-search="src/features/mcp/createMcpToolRegistry.ts src/features/mcp/boundedMcpAsync.ts src/features/mcp/createMcpRemoteTransport.ts src/features/mcp/loadMcpSdkAsync.ts src/features/mcp/McpToolError.ts src/features/mcp/prepareMcpProviders.ts src/features/mcp/validateMcpSchema.ts src/types/mcp.ts src/types/security.ts createMcpToolRegistry">
     <h3>src/features/mcp/createMcpToolRegistry.ts</h3>
     <p class="muted">Referenced module</p>
-    <p><strong>Dependencies:</strong> <code>src/features/mcp/createMcpRemoteTransport.ts</code>, <code>src/features/mcp/loadMcpSdkAsync.ts</code>, <code>src/features/mcp/McpToolError.ts</code>, <code>src/features/mcp/prepareMcpProviders.ts</code>, <code>src/features/mcp/validateMcpSchema.ts</code>, <code>src/types/mcp.ts</code>, <code>src/types/security.ts</code></p>
+    <p><strong>Dependencies:</strong> <code>src/features/mcp/boundedMcpAsync.ts</code>, <code>src/features/mcp/createMcpRemoteTransport.ts</code>, <code>src/features/mcp/loadMcpSdkAsync.ts</code>, <code>src/features/mcp/McpToolError.ts</code>, <code>src/features/mcp/prepareMcpProviders.ts</code>, <code>src/features/mcp/validateMcpSchema.ts</code>, <code>src/types/mcp.ts</code>, <code>src/types/security.ts</code></p>
     <p><strong>Exports:</strong> <code>createMcpToolRegistry</code></p>
   </article><article class="item" data-search="src/features/mcp/loadMcpSdkAsync.ts src/features/mcp/McpToolError.ts loadMcpSdkAsync">
     <h3>src/features/mcp/loadMcpSdkAsync.ts</h3>
@@ -1995,6 +2005,9 @@
   module_src_features_execution_ports_FlowPersistencePort_ts[&quot;src/features/execution/ports/FlowPersistencePort.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_features_execution_ports_FlowPersistencePort_ts
   module_src_features_execution_ports_FlowPersistencePort_ts --&gt; module_src_types_durableExecution_ts
+  module_src_features_mcp_boundedMcpAsync_ts[&quot;src/features/mcp/boundedMcpAsync.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_mcp_boundedMcpAsync_ts
+  module_src_features_mcp_boundedMcpAsync_ts --&gt; module_src_features_mcp_McpToolError_ts
   module_src_features_mcp_createMcpAgentToolAdapter_ts[&quot;src/features/mcp/createMcpAgentToolAdapter.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_features_mcp_createMcpAgentToolAdapter_ts
   module_src_features_mcp_createMcpAgentToolAdapter_ts --&gt; module_src_types_ai_ts
@@ -2007,6 +2020,7 @@
   module_src_features_mcp_createMcpRemoteTransport_ts --&gt; module_src_types_security_ts
   module_src_features_mcp_createMcpToolRegistry_ts[&quot;src/features/mcp/createMcpToolRegistry.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_features_mcp_createMcpToolRegistry_ts
+  module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_boundedMcpAsync_ts
   module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_createMcpRemoteTransport_ts
   module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_loadMcpSdkAsync_ts
   module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_McpToolError_ts
@@ -2131,6 +2145,9 @@
   module_src_features_execution_ports_FlowPersistencePort_ts[&quot;src/features/execution/ports/FlowPersistencePort.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_features_execution_ports_FlowPersistencePort_ts
   module_src_features_execution_ports_FlowPersistencePort_ts --&gt; module_src_types_durableExecution_ts
+  module_src_features_mcp_boundedMcpAsync_ts[&quot;src/features/mcp/boundedMcpAsync.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_mcp_boundedMcpAsync_ts
+  module_src_features_mcp_boundedMcpAsync_ts --&gt; module_src_features_mcp_McpToolError_ts
   module_src_features_mcp_createMcpAgentToolAdapter_ts[&quot;src/features/mcp/createMcpAgentToolAdapter.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_features_mcp_createMcpAgentToolAdapter_ts
   module_src_features_mcp_createMcpAgentToolAdapter_ts --&gt; module_src_types_ai_ts
@@ -2143,6 +2160,7 @@
   module_src_features_mcp_createMcpRemoteTransport_ts --&gt; module_src_types_security_ts
   module_src_features_mcp_createMcpToolRegistry_ts[&quot;src/features/mcp/createMcpToolRegistry.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_features_mcp_createMcpToolRegistry_ts
+  module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_boundedMcpAsync_ts
   module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_createMcpRemoteTransport_ts
   module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_loadMcpSdkAsync_ts
   module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_McpToolError_ts
@@ -2216,6 +2234,7 @@
   module_src_features_execution_domain_isCronDueAt_ts[&quot;src/features/execution/domain/isCronDueAt.ts&quot;]
   module_src_features_execution_domain_validateFlowDataSchema_ts[&quot;src/features/execution/domain/validateFlowDataSchema.ts&quot;]
   module_src_features_execution_ports_FlowPersistencePort_ts[&quot;src/features/execution/ports/FlowPersistencePort.ts&quot;]
+  module_src_features_mcp_boundedMcpAsync_ts[&quot;src/features/mcp/boundedMcpAsync.ts&quot;]
   module_src_features_mcp_createMcpAgentToolAdapter_ts[&quot;src/features/mcp/createMcpAgentToolAdapter.ts&quot;]
   module_src_features_mcp_createMcpRemoteTransport_ts[&quot;src/features/mcp/createMcpRemoteTransport.ts&quot;]
   module_src_features_mcp_createMcpToolRegistry_ts[&quot;src/features/mcp/createMcpToolRegistry.ts&quot;]
@@ -2265,12 +2284,14 @@
   module_src_features_execution_domain_createRetryWork_ts --&gt; module_src_features_execution_domain_calculateRetryDueAt_ts
   module_src_features_execution_domain_createRetryWork_ts --&gt; module_src_types_durableExecution_ts
   module_src_features_execution_ports_FlowPersistencePort_ts --&gt; module_src_types_durableExecution_ts
+  module_src_features_mcp_boundedMcpAsync_ts --&gt; module_src_features_mcp_McpToolError_ts
   module_src_features_mcp_createMcpAgentToolAdapter_ts --&gt; module_src_types_ai_ts
   module_src_features_mcp_createMcpAgentToolAdapter_ts --&gt; module_src_types_mcp_ts
   module_src_features_mcp_createMcpRemoteTransport_ts --&gt; module_src_features_mcp_loadMcpSdkAsync_ts
   module_src_features_mcp_createMcpRemoteTransport_ts --&gt; module_src_features_mcp_McpToolError_ts
   module_src_features_mcp_createMcpRemoteTransport_ts --&gt; module_src_types_mcp_ts
   module_src_features_mcp_createMcpRemoteTransport_ts --&gt; module_src_types_security_ts
+  module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_boundedMcpAsync_ts
   module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_createMcpRemoteTransport_ts
   module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_loadMcpSdkAsync_ts
   module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_McpToolError_ts
@@ -2313,6 +2334,7 @@
   module_src_features_execution_domain_isCronDueAt_ts[&quot;src/features/execution/domain/isCronDueAt.ts&quot;]
   module_src_features_execution_domain_validateFlowDataSchema_ts[&quot;src/features/execution/domain/validateFlowDataSchema.ts&quot;]
   module_src_features_execution_ports_FlowPersistencePort_ts[&quot;src/features/execution/ports/FlowPersistencePort.ts&quot;]
+  module_src_features_mcp_boundedMcpAsync_ts[&quot;src/features/mcp/boundedMcpAsync.ts&quot;]
   module_src_features_mcp_createMcpAgentToolAdapter_ts[&quot;src/features/mcp/createMcpAgentToolAdapter.ts&quot;]
   module_src_features_mcp_createMcpRemoteTransport_ts[&quot;src/features/mcp/createMcpRemoteTransport.ts&quot;]
   module_src_features_mcp_createMcpToolRegistry_ts[&quot;src/features/mcp/createMcpToolRegistry.ts&quot;]
@@ -2362,12 +2384,14 @@
   module_src_features_execution_domain_createRetryWork_ts --&gt; module_src_features_execution_domain_calculateRetryDueAt_ts
   module_src_features_execution_domain_createRetryWork_ts --&gt; module_src_types_durableExecution_ts
   module_src_features_execution_ports_FlowPersistencePort_ts --&gt; module_src_types_durableExecution_ts
+  module_src_features_mcp_boundedMcpAsync_ts --&gt; module_src_features_mcp_McpToolError_ts
   module_src_features_mcp_createMcpAgentToolAdapter_ts --&gt; module_src_types_ai_ts
   module_src_features_mcp_createMcpAgentToolAdapter_ts --&gt; module_src_types_mcp_ts
   module_src_features_mcp_createMcpRemoteTransport_ts --&gt; module_src_features_mcp_loadMcpSdkAsync_ts
   module_src_features_mcp_createMcpRemoteTransport_ts --&gt; module_src_features_mcp_McpToolError_ts
   module_src_features_mcp_createMcpRemoteTransport_ts --&gt; module_src_types_mcp_ts
   module_src_features_mcp_createMcpRemoteTransport_ts --&gt; module_src_types_security_ts
+  module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_boundedMcpAsync_ts
   module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_createMcpRemoteTransport_ts
   module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_loadMcpSdkAsync_ts
   module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_McpToolError_ts
@@ -2412,6 +2436,7 @@
   module_src_features_execution_domain_isCronDueAt_ts[&quot;src/features/execution/domain/isCronDueAt.ts&quot;]
   module_src_features_execution_domain_validateFlowDataSchema_ts[&quot;src/features/execution/domain/validateFlowDataSchema.ts&quot;]
   module_src_features_execution_ports_FlowPersistencePort_ts[&quot;src/features/execution/ports/FlowPersistencePort.ts&quot;]
+  module_src_features_mcp_boundedMcpAsync_ts[&quot;src/features/mcp/boundedMcpAsync.ts&quot;]
   module_src_features_mcp_createMcpAgentToolAdapter_ts[&quot;src/features/mcp/createMcpAgentToolAdapter.ts&quot;]
   module_src_features_mcp_createMcpRemoteTransport_ts[&quot;src/features/mcp/createMcpRemoteTransport.ts&quot;]
   module_src_features_mcp_createMcpToolRegistry_ts[&quot;src/features/mcp/createMcpToolRegistry.ts&quot;]
@@ -2588,6 +2613,7 @@
   module_src_features_execution_domain_isCronDueAt_ts[&quot;src/features/execution/domain/isCronDueAt.ts&quot;]
   module_src_features_execution_domain_validateFlowDataSchema_ts[&quot;src/features/execution/domain/validateFlowDataSchema.ts&quot;]
   module_src_features_execution_ports_FlowPersistencePort_ts[&quot;src/features/execution/ports/FlowPersistencePort.ts&quot;]
+  module_src_features_mcp_boundedMcpAsync_ts[&quot;src/features/mcp/boundedMcpAsync.ts&quot;]
   module_src_features_mcp_createMcpAgentToolAdapter_ts[&quot;src/features/mcp/createMcpAgentToolAdapter.ts&quot;]
   module_src_features_mcp_createMcpRemoteTransport_ts[&quot;src/features/mcp/createMcpRemoteTransport.ts&quot;]
   module_src_features_mcp_createMcpToolRegistry_ts[&quot;src/features/mcp/createMcpToolRegistry.ts&quot;]
@@ -3547,6 +3573,16 @@
     
   </article>
     </section>
+  </section><section id="view-src-features-mcp-boundedmcpasync-ts" class="view" data-view="src/features/mcp/boundedMcpAsync.ts" hidden>
+    <section class="panel">
+      <h2>src/features/mcp/boundedMcpAsync.ts</h2>
+      <article class="item" data-search="boundedMcpAsync src/features/mcp/boundedMcpAsync.ts Propagates cancellation and a fixed timeout into an asynchronous SDK operation.">
+    <h3>boundedMcpAsync</h3>
+    <p class="muted"><code>src/features/mcp/boundedMcpAsync.ts:4:14</code></p>
+    <p>Propagates cancellation and a fixed timeout into an asynchronous SDK operation.</p>
+    
+  </article>
+    </section>
   </section><section id="view-src-features-mcp-createmcpagenttooladapter-ts" class="view" data-view="src/features/mcp/createMcpAgentToolAdapter.ts" hidden>
     <section class="panel">
       <h2>src/features/mcp/createMcpAgentToolAdapter.ts</h2>
@@ -3572,72 +3608,72 @@
       <h2>src/features/mcp/createMcpToolRegistry.ts</h2>
       <article class="item" data-search="createMcpToolRegistry src/features/mcp/createMcpToolRegistry.ts Creates a snapshotting, allowlist-only MCP registry. Real invocation fails closed until Issue #4 releases its approval boundary.">
     <h3>createMcpToolRegistry</h3>
-    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:25:14</code></p>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:26:14</code></p>
     <p>Creates a snapshotting, allowlist-only MCP registry. Real invocation fails closed until Issue #4 releases its approval boundary.</p>
     
   </article><article class="item" data-search="discoverAsync src/features/mcp/createMcpToolRegistry.ts Discovers bounded tool metadata from one trusted provider connection.">
     <h3>discoverAsync</h3>
-    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:73:7</code></p>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:74:7</code></p>
     <p>Discovers bounded tool metadata from one trusted provider connection.</p>
     
   </article><article class="item" data-search="invokeAsync src/features/mcp/createMcpToolRegistry.ts Validates, approves, and invokes one discovered tool through the server-only security port.">
     <h3>invokeAsync</h3>
-    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:91:7</code></p>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:96:7</code></p>
     <p>Validates, approves, and invokes one discovered tool through the server-only security port.</p>
     
   </article><article class="item" data-search="callToolAsync src/features/mcp/createMcpToolRegistry.ts Opens a bounded provider connection only after the approval permit was issued.">
     <h3>callToolAsync</h3>
-    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:137:7</code></p>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:142:7</code></p>
     <p>Opens a bounded provider connection only after the approval permit was issued.</p>
     
   </article><article class="item" data-search="connectAsync src/features/mcp/createMcpToolRegistry.ts Connects with a bounded timeout and an abort signal propagated to the SDK transport.">
     <h3>connectAsync</h3>
-    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:185:7</code></p>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:192:7</code></p>
     <p>Connects with a bounded timeout and an abort signal propagated to the SDK transport.</p>
     
   </article><article class="item" data-search="stdioTransport src/features/mcp/createMcpToolRegistry.ts Resolves executable details exclusively from trusted host configuration.">
     <h3>stdioTransport</h3>
-    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:207:7</code></p>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:218:7</code></p>
     <p>Resolves executable details exclusively from trusted host configuration.</p>
     
   </article><article class="item" data-search="listToolsAsync src/features/mcp/createMcpToolRegistry.ts Lists a bounded, non-cyclic sequence of paginated tools.">
     <h3>listToolsAsync</h3>
-    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:226:7</code></p>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:237:7</code></p>
     <p>Lists a bounded, non-cyclic sequence of paginated tools.</p>
     
   </article><article class="item" data-search="toMetadata src/features/mcp/createMcpToolRegistry.ts Converts valid protocol metadata into a stable Flow descriptor.">
     <h3>toMetadata</h3>
-    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:265:7</code></p>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:276:7</code></p>
     <p>Converts valid protocol metadata into a stable Flow descriptor.</p>
     
-  </article><article class="item" data-search="boundedAsync src/features/mcp/createMcpToolRegistry.ts Propagates cancellation and a fixed timeout into an asynchronous SDK operation.">
-    <h3>boundedAsync</h3>
-    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:285:7</code></p>
-    <p>Propagates cancellation and a fixed timeout into an asynchronous SDK operation.</p>
+  </article><article class="item" data-search="normalizeMcpFailure src/features/mcp/createMcpToolRegistry.ts Preserves Flow&#39;s deliberate failures while redacting untrusted provider and transport details.">
+    <h3>normalizeMcpFailure</h3>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:296:7</code></p>
+    <p>Preserves Flow&#39;s deliberate failures while redacting untrusted provider and transport details.</p>
     
   </article><article class="item" data-search="permissionFor src/features/mcp/createMcpToolRegistry.ts Finds one explicit permission for a protocol tool.">
     <h3>permissionFor</h3>
-    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:307:7</code></p>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:299:7</code></p>
     <p>Finds one explicit permission for a protocol tool.</p>
     
   </article><article class="item" data-search="sameScopes src/features/mcp/createMcpToolRegistry.ts Requires every and only the configured granted scope.">
     <h3>sameScopes</h3>
-    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:312:7</code></p>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:304:7</code></p>
     <p>Requires every and only the configured granted scope.</p>
     
   </article><article class="item" data-search="key src/features/mcp/createMcpToolRegistry.ts Builds a provider-scoped tool identifier.">
     <h3>key</h3>
-    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:318:7</code></p>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:310:7</code></p>
     <p>Builds a provider-scoped tool identifier.</p>
     
   </article><article class="item" data-search="isRecord src/features/mcp/createMcpToolRegistry.ts Narrows unknown data to a non-array object.">
     <h3>isRecord</h3>
-    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:320:7</code></p>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:312:7</code></p>
     <p>Narrows unknown data to a non-array object.</p>
     
   </article><article class="item" data-search="timeoutOf src/features/mcp/createMcpToolRegistry.ts Resolves a configured timeout to its bounded default.">
     <h3>timeoutOf</h3>
-    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:323:7</code></p>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:315:7</code></p>
     <p>Resolves a configured timeout to its bounded default.</p>
     
   </article>

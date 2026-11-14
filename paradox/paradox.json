@@ -14,7 +14,7 @@
     {
       "id": "npm",
       "label": "npm",
-      "value": "v0.6.0",
+      "value": "v0.6.1",
       "color": "cb3837"
     },
     {
@@ -305,6 +305,16 @@
       ]
     },
     {
+      "path": "src/features/mcp/boundedMcpAsync.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/mcp/McpToolError.ts"
+      ],
+      "exports": [
+        "boundedMcpAsync"
+      ]
+    },
+    {
       "path": "src/features/mcp/createMcpAgentToolAdapter.ts",
       "isEntrypoint": false,
       "dependencies": [
@@ -332,6 +342,7 @@
       "path": "src/features/mcp/createMcpToolRegistry.ts",
       "isEntrypoint": false,
       "dependencies": [
+        "src/features/mcp/boundedMcpAsync.ts",
         "src/features/mcp/createMcpRemoteTransport.ts",
         "src/features/mcp/loadMcpSdkAsync.ts",
         "src/features/mcp/McpToolError.ts",
@@ -3919,6 +3930,17 @@
       }
     },
     {
+      "name": "boundedMcpAsync",
+      "description": "Propagates cancellation and a fixed timeout into an asynchronous SDK operation.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/boundedMcpAsync.ts",
+        "line": 4,
+        "column": 14
+      }
+    },
+    {
       "name": "createMcpAgentToolAdapter",
       "description": null,
       "see": [],
@@ -3947,7 +3969,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 25,
+        "line": 26,
         "column": 14
       }
     },
@@ -3958,7 +3980,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 73,
+        "line": 74,
         "column": 7
       }
     },
@@ -3969,7 +3991,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 91,
+        "line": 96,
         "column": 7
       }
     },
@@ -3980,7 +4002,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 137,
+        "line": 142,
         "column": 7
       }
     },
@@ -3991,7 +4013,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 185,
+        "line": 192,
         "column": 7
       }
     },
@@ -4002,7 +4024,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 207,
+        "line": 218,
         "column": 7
       }
     },
@@ -4013,7 +4035,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 226,
+        "line": 237,
         "column": 7
       }
     },
@@ -4024,18 +4046,18 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 265,
+        "line": 276,
         "column": 7
       }
     },
     {
-      "name": "boundedAsync",
-      "description": "Propagates cancellation and a fixed timeout into an asynchronous SDK operation.",
+      "name": "normalizeMcpFailure",
+      "description": "Preserves Flow's deliberate failures while redacting untrusted provider and transport details.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 285,
+        "line": 296,
         "column": 7
       }
     },
@@ -4046,7 +4068,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 307,
+        "line": 299,
         "column": 7
       }
     },
@@ -4057,7 +4079,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 312,
+        "line": 304,
         "column": 7
       }
     },
@@ -4068,7 +4090,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 318,
+        "line": 310,
         "column": 7
       }
     },
@@ -4079,7 +4101,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 320,
+        "line": 312,
         "column": 7
       }
     },
@@ -4090,7 +4112,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 323,
+        "line": 315,
         "column": 7
       }
     },
@@ -4912,6 +4934,11 @@
         "sourcePath": "src/types/mcp.ts"
       },
       {
+        "fromPath": "src/features/mcp/boundedMcpAsync.ts",
+        "toPath": "src/features/mcp/McpToolError.ts",
+        "sourcePath": "src/features/mcp/boundedMcpAsync.ts"
+      },
+      {
         "fromPath": "src/features/mcp/createMcpAgentToolAdapter.ts",
         "toPath": "src/types/ai.ts",
         "sourcePath": "src/features/mcp/createMcpAgentToolAdapter.ts"
@@ -4949,6 +4976,11 @@
       {
         "fromPath": "src/features/mcp/createMcpToolRegistry.ts",
         "toPath": "src/types/security.ts",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromPath": "src/features/mcp/createMcpToolRegistry.ts",
+        "toPath": "src/features/mcp/boundedMcpAsync.ts",
         "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
       },
       {
@@ -5179,6 +5211,12 @@
     ],
     "calls": [
       {
+        "fromSymbol": "boundedMcpAsync",
+        "toSymbol": "operation",
+        "callExpression": "operation",
+        "sourcePath": "src/features/mcp/boundedMcpAsync.ts"
+      },
+      {
         "fromSymbol": "invokeAsync",
         "toSymbol": "invokeAsync",
         "callExpression": "input.registry.invokeAsync",
@@ -5257,6 +5295,12 @@
         "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
       },
       {
+        "fromSymbol": "discoverAsync",
+        "toSymbol": "normalizeMcpFailure",
+        "callExpression": "normalizeMcpFailure",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
         "fromSymbol": "invokeAsync",
         "toSymbol": "key",
         "callExpression": "key",
@@ -5312,8 +5356,8 @@
       },
       {
         "fromSymbol": "callToolAsync",
-        "toSymbol": "boundedAsync",
-        "callExpression": "boundedAsync",
+        "toSymbol": "boundedMcpAsync",
+        "callExpression": "boundedMcpAsync",
         "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
       },
       {
@@ -5326,6 +5370,12 @@
         "fromSymbol": "callToolAsync",
         "toSymbol": "isRecord",
         "callExpression": "isRecord",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromSymbol": "callToolAsync",
+        "toSymbol": "normalizeMcpFailure",
+        "callExpression": "normalizeMcpFailure",
         "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
       },
       {
@@ -5354,8 +5404,8 @@
       },
       {
         "fromSymbol": "connectAsync",
-        "toSymbol": "boundedAsync",
-        "callExpression": "boundedAsync",
+        "toSymbol": "boundedMcpAsync",
+        "callExpression": "boundedMcpAsync",
         "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
       },
       {
@@ -5371,9 +5421,15 @@
         "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
       },
       {
+        "fromSymbol": "connectAsync",
+        "toSymbol": "normalizeMcpFailure",
+        "callExpression": "normalizeMcpFailure",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
         "fromSymbol": "listToolsAsync",
-        "toSymbol": "boundedAsync",
-        "callExpression": "boundedAsync",
+        "toSymbol": "boundedMcpAsync",
+        "callExpression": "boundedMcpAsync",
         "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
       },
       {
@@ -5392,12 +5448,6 @@
         "fromSymbol": "toMetadata",
         "toSymbol": "validateMcpSchema",
         "callExpression": "validateMcpSchema",
-        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
-      },
-      {
-        "fromSymbol": "boundedAsync",
-        "toSymbol": "operation",
-        "callExpression": "operation",
         "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
       },
       {
