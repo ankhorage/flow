@@ -17,8 +17,8 @@ import type {
   FlowRunRequest,
 } from '../../../types/execution.js';
 import { assertFlowGraphSchemasSupported } from '../domain/assertFlowGraphSchemasSupported.js';
+import { structurallyEqual } from '../domain/structurallyEqual.js';
 import { validateFlowDataSchema } from '../domain/validateFlowDataSchema.js';
-
 /*** Execute a compiled graph in deterministic order within one process. */
 export const executeFlowAsync = async (
   graph: FlowCompiledGraph,
@@ -27,7 +27,8 @@ export const executeFlowAsync = async (
   clock: FlowClock = { now: () => new Date() },
 ): Promise<FlowExecutionResult> => {
   const trigger = graph.definition.triggers.find(({ id }) => id === request.triggerId);
-  if (trigger?.kind !== 'manual') throw new Error('FLOW_TRIGGER_NOT_MANUAL');
+  if (trigger?.kind !== 'manual' && trigger?.kind !== 'webhook')
+    throw new Error('FLOW_TRIGGER_NOT_EXECUTABLE');
   assertFlowGraphSchemasSupported(graph.definition.nodes, request.schemaRegistry);
   const startedAt = clock.now().toISOString();
   const state = await executeNodesAsync(graph, registry, request, clock);
@@ -283,23 +284,7 @@ const resolvePointer = (
     }, value);
 };
 
-/*** Compare JSON-compatible values with object-key-order independence. */
-const structurallyEqual = (left: DataContractValue, right: DataContractValue): boolean =>
-  JSON.stringify(normalizeValue(left)) === JSON.stringify(normalizeValue(right));
-
-/*** Canonicalize object member ordering for structural equality. */
-const normalizeValue = (value: DataContractValue): DataContractValue => {
-  if (Array.isArray(value)) return value.map(normalizeValue);
-  if (value !== null && typeof value === 'object')
-    return Object.fromEntries(
-      Object.entries(value)
-        .sort(([left], [right]) => left.localeCompare(right))
-        .map(([key, item]) => [key, normalizeValue(item)]),
-    );
-  return value;
-};
-
-/*** Narrow a serializable non-array object to an indexable data record. */
+/*** Narrow a serializable object to a keyed data record. */
 const isDataRecord = (value: object): value is Readonly<Record<string, DataContractValue>> =>
   !Array.isArray(value);
 
@@ -334,5 +319,5 @@ const createRun = (
   startedAt,
   completedAt,
   steps,
-  error,
+  ...(error === undefined ? {} : { error }),
 });
