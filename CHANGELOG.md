@@ -1,5 +1,11 @@
 # @ankhorage/flow
 
+## 0.4.1
+
+### Patch Changes
+
+- 8e96c13: Load the optional MCP SDK only when MCP discovery or approved execution opens a provider connection.
+
 ## 0.4.0
 
 ### Minor Changes

@@ -14,7 +14,7 @@
     {
       "id": "npm",
       "label": "npm",
-      "value": "v0.4.0",
+      "value": "v0.4.1",
       "color": "cb3837"
     },
     {
@@ -133,12 +133,13 @@
       "path": "src/features/mcp/createMcpRemoteTransport.ts",
       "isEntrypoint": false,
       "dependencies": [
+        "src/features/mcp/loadMcpSdkAsync.ts",
         "src/features/mcp/McpToolError.ts",
         "src/types/mcp.ts",
         "src/types/security.ts"
       ],
       "exports": [
-        "createMcpRemoteTransport"
+        "createMcpRemoteTransportAsync"
       ]
     },
     {
@@ -146,6 +147,7 @@
       "isEntrypoint": false,
       "dependencies": [
         "src/features/mcp/createMcpRemoteTransport.ts",
+        "src/features/mcp/loadMcpSdkAsync.ts",
         "src/features/mcp/McpToolError.ts",
         "src/features/mcp/prepareMcpProviders.ts",
         "src/features/mcp/validateMcpSchema.ts",
@@ -154,6 +156,16 @@
       ],
       "exports": [
         "createMcpToolRegistry"
+      ]
+    },
+    {
+      "path": "src/features/mcp/loadMcpSdkAsync.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/mcp/McpToolError.ts"
+      ],
+      "exports": [
+        "loadMcpSdkAsync"
       ]
     },
     {
@@ -2106,13 +2118,13 @@
       }
     },
     {
-      "name": "createMcpRemoteTransport",
+      "name": "createMcpRemoteTransportAsync",
       "description": "Opens remote MCP only through the host-owned transport that controls every peer connection.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpRemoteTransport.ts",
-        "line": 8,
+        "line": 9,
         "column": 14
       }
     },
@@ -2123,7 +2135,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 24,
+        "line": 25,
         "column": 14
       }
     },
@@ -2134,7 +2146,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 72,
+        "line": 73,
         "column": 7
       }
     },
@@ -2145,7 +2157,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 90,
+        "line": 91,
         "column": 7
       }
     },
@@ -2156,7 +2168,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 136,
+        "line": 137,
         "column": 7
       }
     },
@@ -2167,7 +2179,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 184,
+        "line": 185,
         "column": 7
       }
     },
@@ -2178,7 +2190,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 205,
+        "line": 207,
         "column": 7
       }
     },
@@ -2189,7 +2201,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 223,
+        "line": 226,
         "column": 7
       }
     },
@@ -2200,7 +2212,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 262,
+        "line": 265,
         "column": 7
       }
     },
@@ -2211,7 +2223,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 282,
+        "line": 285,
         "column": 7
       }
     },
@@ -2222,7 +2234,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 304,
+        "line": 307,
         "column": 7
       }
     },
@@ -2233,7 +2245,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 309,
+        "line": 312,
         "column": 7
       }
     },
@@ -2244,7 +2256,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 315,
+        "line": 318,
         "column": 7
       }
     },
@@ -2255,7 +2267,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 317,
+        "line": 320,
         "column": 7
       }
     },
@@ -2266,8 +2278,19 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 320,
+        "line": 323,
         "column": 7
+      }
+    },
+    {
+      "name": "loadMcpSdkAsync",
+      "description": "Loads the optional MCP SDK only when an approved MCP connection needs to be opened.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/loadMcpSdkAsync.ts",
+        "line": 14,
+        "column": 14
       }
     },
     {
@@ -2963,6 +2986,11 @@
       },
       {
         "fromPath": "src/features/mcp/createMcpRemoteTransport.ts",
+        "toPath": "src/features/mcp/loadMcpSdkAsync.ts",
+        "sourcePath": "src/features/mcp/createMcpRemoteTransport.ts"
+      },
+      {
+        "fromPath": "src/features/mcp/createMcpRemoteTransport.ts",
         "toPath": "src/features/mcp/McpToolError.ts",
         "sourcePath": "src/features/mcp/createMcpRemoteTransport.ts"
       },
@@ -2983,6 +3011,11 @@
       },
       {
         "fromPath": "src/features/mcp/createMcpToolRegistry.ts",
+        "toPath": "src/features/mcp/loadMcpSdkAsync.ts",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromPath": "src/features/mcp/createMcpToolRegistry.ts",
         "toPath": "src/features/mcp/McpToolError.ts",
         "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
       },
@@ -2995,6 +3028,11 @@
         "fromPath": "src/features/mcp/createMcpToolRegistry.ts",
         "toPath": "src/features/mcp/validateMcpSchema.ts",
         "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromPath": "src/features/mcp/loadMcpSdkAsync.ts",
+        "toPath": "src/features/mcp/McpToolError.ts",
+        "sourcePath": "src/features/mcp/loadMcpSdkAsync.ts"
       },
       {
         "fromPath": "src/features/mcp/prepareMcpProviders.ts",
@@ -3068,6 +3106,12 @@
       }
     ],
     "calls": [
+      {
+        "fromSymbol": "createMcpRemoteTransportAsync",
+        "toSymbol": "loadMcpSdkAsync",
+        "callExpression": "loadMcpSdkAsync",
+        "sourcePath": "src/features/mcp/createMcpRemoteTransport.ts"
+      },
       {
         "fromSymbol": "fetch",
         "toSymbol": "fetchAsync",
@@ -3214,14 +3258,20 @@
       },
       {
         "fromSymbol": "connectAsync",
+        "toSymbol": "loadMcpSdkAsync",
+        "callExpression": "loadMcpSdkAsync",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromSymbol": "connectAsync",
         "toSymbol": "stdioTransport",
         "callExpression": "stdioTransport",
         "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
       },
       {
         "fromSymbol": "connectAsync",
-        "toSymbol": "createMcpRemoteTransport",
-        "callExpression": "createMcpRemoteTransport",
+        "toSymbol": "createMcpRemoteTransportAsync",
+        "callExpression": "createMcpRemoteTransportAsync",
         "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
       },
       {

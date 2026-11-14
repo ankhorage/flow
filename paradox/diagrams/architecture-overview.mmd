@@ -22,17 +22,22 @@ graph TD
   package__ankhorage_flow -.-> module_src_features_execution_domain_validateFlowDataSchema_ts
   module_src_features_mcp_createMcpRemoteTransport_ts["src/features/mcp/createMcpRemoteTransport.ts"]
   package__ankhorage_flow -.-> module_src_features_mcp_createMcpRemoteTransport_ts
+  module_src_features_mcp_createMcpRemoteTransport_ts --> module_src_features_mcp_loadMcpSdkAsync_ts
   module_src_features_mcp_createMcpRemoteTransport_ts --> module_src_features_mcp_McpToolError_ts
   module_src_features_mcp_createMcpRemoteTransport_ts --> module_src_types_mcp_ts
   module_src_features_mcp_createMcpRemoteTransport_ts --> module_src_types_security_ts
   module_src_features_mcp_createMcpToolRegistry_ts["src/features/mcp/createMcpToolRegistry.ts"]
   package__ankhorage_flow -.-> module_src_features_mcp_createMcpToolRegistry_ts
   module_src_features_mcp_createMcpToolRegistry_ts --> module_src_features_mcp_createMcpRemoteTransport_ts
+  module_src_features_mcp_createMcpToolRegistry_ts --> module_src_features_mcp_loadMcpSdkAsync_ts
   module_src_features_mcp_createMcpToolRegistry_ts --> module_src_features_mcp_McpToolError_ts
   module_src_features_mcp_createMcpToolRegistry_ts --> module_src_features_mcp_prepareMcpProviders_ts
   module_src_features_mcp_createMcpToolRegistry_ts --> module_src_features_mcp_validateMcpSchema_ts
   module_src_features_mcp_createMcpToolRegistry_ts --> module_src_types_mcp_ts
   module_src_features_mcp_createMcpToolRegistry_ts --> module_src_types_security_ts
+  module_src_features_mcp_loadMcpSdkAsync_ts["src/features/mcp/loadMcpSdkAsync.ts"]
+  package__ankhorage_flow -.-> module_src_features_mcp_loadMcpSdkAsync_ts
+  module_src_features_mcp_loadMcpSdkAsync_ts --> module_src_features_mcp_McpToolError_ts
   module_src_features_mcp_McpToolError_ts["src/features/mcp/McpToolError.ts"]
   package__ankhorage_flow -.-> module_src_features_mcp_McpToolError_ts
   module_src_features_mcp_prepareMcpProviders_ts["src/features/mcp/prepareMcpProviders.ts"]
