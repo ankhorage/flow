@@ -152,6 +152,11 @@
       <small>19 functions</small>
     </button>
   </li><li>
+    <button class="nav-button" type="button" data-target="src/features/mcp/createMcpRemoteTransport.ts">
+      src/features/mcp/createMcpRemoteTransport.ts
+      <small>1 function</small>
+    </button>
+  </li><li>
     <button class="nav-button" type="button" data-target="src/features/mcp/createMcpToolRegistry.ts">
       src/features/mcp/createMcpToolRegistry.ts
       <small>14 functions</small>
@@ -159,12 +164,22 @@
   </li><li>
     <button class="nav-button" type="button" data-target="src/features/mcp/prepareMcpProviders.ts">
       src/features/mcp/prepareMcpProviders.ts
-      <small>6 functions</small>
+      <small>7 functions</small>
     </button>
   </li><li>
     <button class="nav-button" type="button" data-target="src/features/mcp/validateMcpSchema.ts">
       src/features/mcp/validateMcpSchema.ts
       <small>20 functions</small>
+    </button>
+  </li><li>
+    <button class="nav-button" type="button" data-target="src/features/security/application/createFlowSecurityPort.ts">
+      src/features/security/application/createFlowSecurityPort.ts
+      <small>22 functions</small>
+    </button>
+  </li><li>
+    <button class="nav-button" type="button" data-target="src/features/security/domain/validateFlowSecurityTarget.ts">
+      src/features/security/domain/validateFlowSecurityTarget.ts
+      <small>5 functions</small>
     </button>
   </li>
           </ul>
@@ -176,9 +191,9 @@
     <section class="panel">
       <h2>Package overview</h2>
       <div class="summary">
-        <div><strong>10</strong><span class="muted">public exports</span></div>
+        <div><strong>30</strong><span class="muted">public exports</span></div>
         <div><strong>0</strong><span class="muted">components</span></div>
-        <div><strong>15</strong><span class="muted">modules</span></div>
+        <div><strong>20</strong><span class="muted">modules</span></div>
         <div><strong>1</strong><span class="muted">entrypoints</span></div>
       </div>
       <h3>Entrypoints</h3>
@@ -220,10 +235,15 @@
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
     <p><strong>Exports:</strong> <code>assertFlowDataSchemaSupported</code>, <code>validateFlowDataSchema</code></p>
-  </article><article class="item" data-search="src/features/mcp/createMcpToolRegistry.ts src/features/mcp/McpToolError.ts src/features/mcp/prepareMcpProviders.ts src/features/mcp/validateMcpSchema.ts src/types/mcp.ts createMcpToolRegistry">
+  </article><article class="item" data-search="src/features/mcp/createMcpRemoteTransport.ts src/features/mcp/McpToolError.ts src/types/mcp.ts src/types/security.ts createMcpRemoteTransport">
+    <h3>src/features/mcp/createMcpRemoteTransport.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/features/mcp/McpToolError.ts</code>, <code>src/types/mcp.ts</code>, <code>src/types/security.ts</code></p>
+    <p><strong>Exports:</strong> <code>createMcpRemoteTransport</code></p>
+  </article><article class="item" data-search="src/features/mcp/createMcpToolRegistry.ts src/features/mcp/createMcpRemoteTransport.ts src/features/mcp/McpToolError.ts src/features/mcp/prepareMcpProviders.ts src/features/mcp/validateMcpSchema.ts src/types/mcp.ts src/types/security.ts createMcpToolRegistry">
     <h3>src/features/mcp/createMcpToolRegistry.ts</h3>
     <p class="muted">Referenced module</p>
-    <p><strong>Dependencies:</strong> <code>src/features/mcp/McpToolError.ts</code>, <code>src/features/mcp/prepareMcpProviders.ts</code>, <code>src/features/mcp/validateMcpSchema.ts</code>, <code>src/types/mcp.ts</code></p>
+    <p><strong>Dependencies:</strong> <code>src/features/mcp/createMcpRemoteTransport.ts</code>, <code>src/features/mcp/McpToolError.ts</code>, <code>src/features/mcp/prepareMcpProviders.ts</code>, <code>src/features/mcp/validateMcpSchema.ts</code>, <code>src/types/mcp.ts</code>, <code>src/types/security.ts</code></p>
     <p><strong>Exports:</strong> <code>createMcpToolRegistry</code></p>
   </article><article class="item" data-search="src/features/mcp/McpToolError.ts McpToolError">
     <h3>src/features/mcp/McpToolError.ts</h3>
@@ -240,11 +260,26 @@
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <code>src/features/mcp/McpToolError.ts</code></p>
     <p><strong>Exports:</strong> <code>validateMcpSchema</code></p>
-  </article><article class="item" data-search="src/index.ts compileFlowGraph createDefaultNodeRegistry executeFlowAsync FlowClock FlowCompiledGraph FlowExecutionResult FlowNodeOperation FlowNodeOperationResult FlowNodeRegistry FlowRunRequest">
+  </article><article class="item" data-search="src/features/security/application/createFlowSecurityPort.ts src/features/security/domain/validateFlowSecurityTarget.ts src/features/security/FlowSecurityError.ts src/types/security.ts createFlowSecurityPort">
+    <h3>src/features/security/application/createFlowSecurityPort.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/features/security/domain/validateFlowSecurityTarget.ts</code>, <code>src/features/security/FlowSecurityError.ts</code>, <code>src/types/security.ts</code></p>
+    <p><strong>Exports:</strong> <code>createFlowSecurityPort</code></p>
+  </article><article class="item" data-search="src/features/security/domain/validateFlowSecurityTarget.ts src/features/security/FlowSecurityError.ts src/types/security.ts validateFlowSecurityTarget">
+    <h3>src/features/security/domain/validateFlowSecurityTarget.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/features/security/FlowSecurityError.ts</code>, <code>src/types/security.ts</code></p>
+    <p><strong>Exports:</strong> <code>validateFlowSecurityTarget</code></p>
+  </article><article class="item" data-search="src/features/security/FlowSecurityError.ts FlowSecurityError">
+    <h3>src/features/security/FlowSecurityError.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
+    <p><strong>Exports:</strong> <code>FlowSecurityError</code></p>
+  </article><article class="item" data-search="src/index.ts compileFlowGraph createDefaultNodeRegistry createFlowSecurityPort executeFlowAsync FlowApprovalStorePort FlowClock FlowCompiledGraph FlowExecutionResult FlowNodeOperation FlowNodeOperationResult FlowNodeRegistry FlowOperationStorePort FlowOutboundTransportPort FlowRateLimitPort FlowResolvedSecrets FlowRunRequest FlowSecretCreateInput FlowSecretMetadata FlowSecretRevokeInput FlowSecurityActor FlowSecurityApproval FlowSecurityAuditEvent FlowSecurityAuditPort FlowSecurityError FlowSecurityGrant FlowSecurityOperation FlowSecurityOperationIdentity FlowSecurityPermit FlowSecurityPort FlowSecurityTarget">
     <h3>src/index.ts</h3>
     <p class="muted">Configured entrypoint</p>
     <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
-    <p><strong>Exports:</strong> <code>compileFlowGraph</code>, <code>createDefaultNodeRegistry</code>, <code>executeFlowAsync</code>, <code>FlowClock</code>, <code>FlowCompiledGraph</code>, <code>FlowExecutionResult</code>, <code>FlowNodeOperation</code>, <code>FlowNodeOperationResult</code>, <code>FlowNodeRegistry</code>, <code>FlowRunRequest</code></p>
+    <p><strong>Exports:</strong> <code>compileFlowGraph</code>, <code>createDefaultNodeRegistry</code>, <code>createFlowSecurityPort</code>, <code>executeFlowAsync</code>, <code>FlowApprovalStorePort</code>, <code>FlowClock</code>, <code>FlowCompiledGraph</code>, <code>FlowExecutionResult</code>, <code>FlowNodeOperation</code>, <code>FlowNodeOperationResult</code>, <code>FlowNodeRegistry</code>, <code>FlowOperationStorePort</code>, <code>FlowOutboundTransportPort</code>, <code>FlowRateLimitPort</code>, <code>FlowResolvedSecrets</code>, <code>FlowRunRequest</code>, <code>FlowSecretCreateInput</code>, <code>FlowSecretMetadata</code>, <code>FlowSecretRevokeInput</code>, <code>FlowSecurityActor</code>, <code>FlowSecurityApproval</code>, <code>FlowSecurityAuditEvent</code>, <code>FlowSecurityAuditPort</code>, <code>FlowSecurityError</code>, <code>FlowSecurityGrant</code>, <code>FlowSecurityOperation</code>, <code>FlowSecurityOperationIdentity</code>, <code>FlowSecurityPermit</code>, <code>FlowSecurityPort</code>, <code>FlowSecurityTarget</code></p>
   </article><article class="item" data-search="src/mcp.ts createMcpToolRegistry McpProviderDefinition McpToolInvocation McpToolMetadata McpToolPermission McpToolRegistry McpToolResult McpTrustedStdioProvider">
     <h3>src/mcp.ts</h3>
     <p class="muted">Referenced module</p>
@@ -260,11 +295,16 @@
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
     <p><strong>Exports:</strong> <code>FlowClock</code>, <code>FlowCompiledGraph</code>, <code>FlowExecutionResult</code>, <code>FlowNodeOperation</code>, <code>FlowNodeOperationResult</code>, <code>FlowNodeRegistry</code>, <code>FlowRunRequest</code></p>
-  </article><article class="item" data-search="src/types/mcp.ts McpProviderDefinition McpToolInvocation McpToolMetadata McpToolPermission McpToolRegistry McpToolResult McpTrustedStdioProvider">
+  </article><article class="item" data-search="src/types/mcp.ts src/types/security.ts McpProviderDefinition McpToolInvocation McpToolMetadata McpToolPermission McpToolRegistry McpToolResult McpTrustedStdioProvider">
     <h3>src/types/mcp.ts</h3>
     <p class="muted">Referenced module</p>
-    <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
+    <p><strong>Dependencies:</strong> <code>src/types/security.ts</code></p>
     <p><strong>Exports:</strong> <code>McpProviderDefinition</code>, <code>McpToolInvocation</code>, <code>McpToolMetadata</code>, <code>McpToolPermission</code>, <code>McpToolRegistry</code>, <code>McpToolResult</code>, <code>McpTrustedStdioProvider</code></p>
+  </article><article class="item" data-search="src/types/security.ts FlowApprovalStorePort FlowOperationStorePort FlowOutboundTransportPort FlowRateLimitPort FlowResolvedSecrets FlowSecretCreateInput FlowSecretMetadata FlowSecretRevokeInput FlowSecurityActor FlowSecurityApproval FlowSecurityAuditEvent FlowSecurityAuditPort FlowSecurityGrant FlowSecurityOperation FlowSecurityOperationIdentity FlowSecurityPermit FlowSecurityPort FlowSecurityTarget">
+    <h3>src/types/security.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
+    <p><strong>Exports:</strong> <code>FlowApprovalStorePort</code>, <code>FlowOperationStorePort</code>, <code>FlowOutboundTransportPort</code>, <code>FlowRateLimitPort</code>, <code>FlowResolvedSecrets</code>, <code>FlowSecretCreateInput</code>, <code>FlowSecretMetadata</code>, <code>FlowSecretRevokeInput</code>, <code>FlowSecurityActor</code>, <code>FlowSecurityApproval</code>, <code>FlowSecurityAuditEvent</code>, <code>FlowSecurityAuditPort</code>, <code>FlowSecurityGrant</code>, <code>FlowSecurityOperation</code>, <code>FlowSecurityOperationIdentity</code>, <code>FlowSecurityPermit</code>, <code>FlowSecurityPort</code>, <code>FlowSecurityTarget</code></p>
   </article>
     </section>
     <section class="panel">
@@ -364,6 +404,49 @@
         
         <p><strong>Returns:</strong> <code>Readonly&lt;Record&lt;string, FlowNodeOperation&gt;&gt;</code></p>
       </div>
+    
+  </article>
+            </section>
+            <section>
+              <h3>src/features/security/application/createFlowSecurityPort.ts</h3>
+              <article class="item" id="symbol-createflowsecurityport" data-search="createFlowSecurityPort  value src/features/security/application/createFlowSecurityPort.ts Creates the provider-neutral server-side authorization, approval, audit, and secret boundary. FlowApprovalStorePort FlowOperationStorePort FlowRateLimitPort FlowSecurityAuditPort FlowSecurityGrant FlowSecurityPort (input: { readonly approvalStore: FlowApprovalStorePort; readonly audit: FlowSecurityAuditPort; readonly grants: readonly FlowSecurityGrant[]; readonly operationStore: FlowOperationStorePort; readonly rateLimit: FlowRateLimitPort; readonly secretStore: SecretStoreAdapter; }) =&gt; FlowSecurityPort">
+    <h4>createFlowSecurityPort</h4>
+    
+    <p class="muted">value • <code>src/features/security/application/createFlowSecurityPort.ts:33:14</code></p>
+    <p>Creates the provider-neutral server-side authorization, approval, audit, and secret boundary.</p>
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <ul class="chips"><li class="chip">FlowApprovalStorePort</li><li class="chip">FlowOperationStorePort</li><li class="chip">FlowRateLimitPort</li><li class="chip">FlowSecurityAuditPort</li><li class="chip">FlowSecurityGrant</li><li class="chip">FlowSecurityPort</li></ul></div>
+    <div>
+        <h5>Signature</h5>
+        <pre>(input: { readonly approvalStore: FlowApprovalStorePort; readonly audit: FlowSecurityAuditPort; readonly grants: readonly FlowSecurityGrant[]; readonly operationStore: FlowOperationStorePort; readonly rateLimit: FlowRateLimitPort; readonly secretStore: SecretStoreAdapter; }) =&gt; FlowSecurityPort</pre>
+        <table>
+                <thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+                <tbody>
+                  <tr>
+                        <td><code>input</code></td>
+                        <td><code>{ readonly approvalStore: FlowApprovalStorePort; readonly audit: FlowSecurityAuditPort; readonly grants: readonly FlowSecurityGrant[]; readonly operationStore: FlowOperationStorePort; readonly rateLimit: FlowRateLimitPort; readonly secretStore: SecretStoreAdapter; }</code></td>
+                        <td>yes</td>
+                        <td></td>
+                      </tr>
+                </tbody>
+              </table>
+        <p><strong>Returns:</strong> <code>FlowSecurityPort</code></p>
+      </div>
+    
+  </article>
+            </section>
+            <section>
+              <h3>src/features/security/FlowSecurityError.ts</h3>
+              <article class="item" id="symbol-flowsecurityerror" data-search="FlowSecurityError  type src/features/security/FlowSecurityError.ts Represents a stable, payload-redacted Flow security denial.">
+    <h4>FlowSecurityError</h4>
+    
+    <p class="muted">type • <code>src/features/security/FlowSecurityError.ts:2:1</code></p>
+    <p>Represents a stable, payload-redacted Flow security denial.</p>
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <span class="empty">None</span></div>
+    
     
   </article>
             </section>
@@ -543,6 +626,582 @@
   </table>
   </article>
             </section>
+            <section>
+              <h3>src/types/security.ts</h3>
+              <article class="item" id="symbol-flowapprovalstoreport" data-search="FlowApprovalStorePort  type src/types/security.ts  FlowSecurityApproval FlowSecurityOperationIdentity">
+    <h4>FlowApprovalStorePort</h4>
+    
+    <p class="muted">type • <code>src/types/security.ts:53:1</code></p>
+    
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <ul class="chips"><li class="chip">FlowSecurityApproval</li><li class="chip">FlowSecurityOperationIdentity</li></ul></div>
+    
+    <table>
+    <thead><tr><th>Member</th><th>Kind</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr>
+            <td><code>getAsync</code></td>
+            <td>method</td>
+            <td><code>(operation: FlowSecurityOperationIdentity) =&gt; Promise&lt;FlowSecurityApproval | undefined&gt;</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr>
+    </tbody>
+  </table>
+  </article><article class="item" id="symbol-flowoperationstoreport" data-search="FlowOperationStorePort  type src/types/security.ts  FlowSecurityOperationIdentity">
+    <h4>FlowOperationStorePort</h4>
+    
+    <p class="muted">type • <code>src/types/security.ts:61:1</code></p>
+    
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <ul class="chips"><li class="chip">FlowSecurityOperationIdentity</li></ul></div>
+    
+    <table>
+    <thead><tr><th>Member</th><th>Kind</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr>
+            <td><code>claimAsync</code></td>
+            <td>method</td>
+            <td><code>(operation: FlowSecurityOperationIdentity) =&gt; Promise&lt;boolean&gt;</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>consumeAsync</code></td>
+            <td>method</td>
+            <td><code>(operation: FlowSecurityOperationIdentity) =&gt; Promise&lt;boolean&gt;</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>releaseAsync</code></td>
+            <td>method</td>
+            <td><code>(operation: FlowSecurityOperationIdentity) =&gt; Promise&lt;void&gt;</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr>
+    </tbody>
+  </table>
+  </article><article class="item" id="symbol-flowoutboundtransportport" data-search="FlowOutboundTransportPort  type src/types/security.ts ">
+    <h4>FlowOutboundTransportPort</h4>
+    
+    <p class="muted">type • <code>src/types/security.ts:72:1</code></p>
+    
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <span class="empty">None</span></div>
+    
+    <table>
+    <thead><tr><th>Member</th><th>Kind</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr>
+            <td><code>fetchAsync</code></td>
+            <td>method</td>
+            <td><code>(input: { readonly allowedHosts: readonly string[]; readonly init?: RequestInit; readonly url: string; }) =&gt; Promise&lt;Response&gt;</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr>
+    </tbody>
+  </table>
+  </article><article class="item" id="symbol-flowratelimitport" data-search="FlowRateLimitPort  type src/types/security.ts  FlowSecurityActor">
+    <h4>FlowRateLimitPort</h4>
+    
+    <p class="muted">type • <code>src/types/security.ts:81:1</code></p>
+    
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <ul class="chips"><li class="chip">FlowSecurityActor</li></ul></div>
+    
+    <table>
+    <thead><tr><th>Member</th><th>Kind</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr>
+            <td><code>acquireAsync</code></td>
+            <td>method</td>
+            <td><code>(input: { readonly actor: FlowSecurityActor; readonly capability: string; readonly operationId: string; }) =&gt; Promise&lt;boolean&gt;</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr>
+    </tbody>
+  </table>
+  </article><article class="item" id="symbol-flowresolvedsecrets" data-search="FlowResolvedSecrets  unknown src/types/security.ts ">
+    <h4>FlowResolvedSecrets</h4>
+    
+    <p class="muted">unknown • <code>src/types/security.ts:116:1</code></p>
+    
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <span class="empty">None</span></div>
+    
+    
+  </article><article class="item" id="symbol-flowsecretcreateinput" data-search="FlowSecretCreateInput  type src/types/security.ts  FlowSecurityActor">
+    <h4>FlowSecretCreateInput</h4>
+    
+    <p class="muted">type • <code>src/types/security.ts:119:1</code></p>
+    
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <ul class="chips"><li class="chip">FlowSecurityActor</li></ul></div>
+    
+    <table>
+    <thead><tr><th>Member</th><th>Kind</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr>
+            <td><code>actor</code></td>
+            <td>property</td>
+            <td><code>FlowSecurityActor</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>kind</code></td>
+            <td>property</td>
+            <td><code>string</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>payload</code></td>
+            <td>property</td>
+            <td><code>Readonly&lt;Record&lt;string, string&gt;&gt;</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>provider</code></td>
+            <td>property</td>
+            <td><code>string | undefined</code></td>
+            <td>no</td>
+            <td></td>
+          </tr><tr>
+            <td><code>ref</code></td>
+            <td>property</td>
+            <td><code>string</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr>
+    </tbody>
+  </table>
+  </article><article class="item" id="symbol-flowsecretmetadata" data-search="FlowSecretMetadata  unknown src/types/security.ts ">
+    <h4>FlowSecretMetadata</h4>
+    
+    <p class="muted">unknown • <code>src/types/security.ts:115:1</code></p>
+    
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <span class="empty">None</span></div>
+    
+    
+  </article><article class="item" id="symbol-flowsecretrevokeinput" data-search="FlowSecretRevokeInput  type src/types/security.ts  FlowSecurityActor">
+    <h4>FlowSecretRevokeInput</h4>
+    
+    <p class="muted">type • <code>src/types/security.ts:128:1</code></p>
+    
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <ul class="chips"><li class="chip">FlowSecurityActor</li></ul></div>
+    
+    <table>
+    <thead><tr><th>Member</th><th>Kind</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr>
+            <td><code>actor</code></td>
+            <td>property</td>
+            <td><code>FlowSecurityActor</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>ref</code></td>
+            <td>property</td>
+            <td><code>string</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr>
+    </tbody>
+  </table>
+  </article><article class="item" id="symbol-flowsecurityactor" data-search="FlowSecurityActor  type src/types/security.ts ">
+    <h4>FlowSecurityActor</h4>
+    
+    <p class="muted">type • <code>src/types/security.ts:4:1</code></p>
+    
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <span class="empty">None</span></div>
+    
+    <table>
+    <thead><tr><th>Member</th><th>Kind</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr>
+            <td><code>environment</code></td>
+            <td>property</td>
+            <td><code>string</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>id</code></td>
+            <td>property</td>
+            <td><code>string</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>projectId</code></td>
+            <td>property</td>
+            <td><code>string</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>tenantId</code></td>
+            <td>property</td>
+            <td><code>string</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr>
+    </tbody>
+  </table>
+  </article><article class="item" id="symbol-flowsecurityapproval" data-search="FlowSecurityApproval  type src/types/security.ts  FlowSecurityOperationIdentity">
+    <h4>FlowSecurityApproval</h4>
+    
+    <p class="muted">type • <code>src/types/security.ts:47:1</code></p>
+    
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <ul class="chips"><li class="chip">FlowSecurityOperationIdentity</li></ul></div>
+    
+    <table>
+    <thead><tr><th>Member</th><th>Kind</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr>
+            <td><code>operation</code></td>
+            <td>property</td>
+            <td><code>FlowSecurityOperationIdentity</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>status</code></td>
+            <td>property</td>
+            <td><code>&quot;approved&quot; | &quot;pending&quot; | &quot;rejected&quot;</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr>
+    </tbody>
+  </table>
+  </article><article class="item" id="symbol-flowsecurityauditevent" data-search="FlowSecurityAuditEvent  type src/types/security.ts ">
+    <h4>FlowSecurityAuditEvent</h4>
+    
+    <p class="muted">type • <code>src/types/security.ts:95:1</code></p>
+    
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <span class="empty">None</span></div>
+    
+    <table>
+    <thead><tr><th>Member</th><th>Kind</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr>
+            <td><code>actorId</code></td>
+            <td>property</td>
+            <td><code>string</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>capability</code></td>
+            <td>property</td>
+            <td><code>string</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>decision</code></td>
+            <td>property</td>
+            <td><code>&quot;denied&quot; | &quot;permitted&quot;</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>operationId</code></td>
+            <td>property</td>
+            <td><code>string</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>reason</code></td>
+            <td>property</td>
+            <td><code>&quot;approval_pending&quot; | &quot;approval_rejected&quot; | &quot;credential_create&quot; | &quot;credential_revoke&quot; | &quot;idempotency_conflict&quot; | &quot;invalid_target&quot; | &quot;permission_denied&quot; | &quot;rate_limited&quot; | &quot;secret_unavailable&quot;</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>secretRefs</code></td>
+            <td>property</td>
+            <td><code>readonly string[]</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>targetHost</code></td>
+            <td>property</td>
+            <td><code>string | undefined</code></td>
+            <td>no</td>
+            <td></td>
+          </tr>
+    </tbody>
+  </table>
+  </article><article class="item" id="symbol-flowsecurityauditport" data-search="FlowSecurityAuditPort  type src/types/security.ts  FlowSecurityAuditEvent">
+    <h4>FlowSecurityAuditPort</h4>
+    
+    <p class="muted">type • <code>src/types/security.ts:90:1</code></p>
+    
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <ul class="chips"><li class="chip">FlowSecurityAuditEvent</li></ul></div>
+    
+    <table>
+    <thead><tr><th>Member</th><th>Kind</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr>
+            <td><code>writeAsync</code></td>
+            <td>method</td>
+            <td><code>(event: FlowSecurityAuditEvent) =&gt; Promise&lt;void&gt;</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr>
+    </tbody>
+  </table>
+  </article><article class="item" id="symbol-flowsecuritygrant" data-search="FlowSecurityGrant  type src/types/security.ts ">
+    <h4>FlowSecurityGrant</h4>
+    
+    <p class="muted">type • <code>src/types/security.ts:12:1</code></p>
+    
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <span class="empty">None</span></div>
+    
+    <table>
+    <thead><tr><th>Member</th><th>Kind</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr>
+            <td><code>actorId</code></td>
+            <td>property</td>
+            <td><code>string</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>capability</code></td>
+            <td>property</td>
+            <td><code>string</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>environment</code></td>
+            <td>property</td>
+            <td><code>string</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>projectId</code></td>
+            <td>property</td>
+            <td><code>string</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>tenantId</code></td>
+            <td>property</td>
+            <td><code>string</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr>
+    </tbody>
+  </table>
+  </article><article class="item" id="symbol-flowsecurityoperation" data-search="FlowSecurityOperation  type src/types/security.ts  FlowSecurityActor FlowSecurityTarget">
+    <h4>FlowSecurityOperation</h4>
+    
+    <p class="muted">type • <code>src/types/security.ts:21:1</code></p>
+    
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <ul class="chips"><li class="chip">FlowSecurityActor</li><li class="chip">FlowSecurityTarget</li></ul></div>
+    
+    <table>
+    <thead><tr><th>Member</th><th>Kind</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr>
+            <td><code>actor</code></td>
+            <td>property</td>
+            <td><code>FlowSecurityActor</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>capability</code></td>
+            <td>property</td>
+            <td><code>string</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>idempotencyKey</code></td>
+            <td>property</td>
+            <td><code>string</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>operationId</code></td>
+            <td>property</td>
+            <td><code>string</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>secretRefs</code></td>
+            <td>property</td>
+            <td><code>readonly string[] | undefined</code></td>
+            <td>no</td>
+            <td></td>
+          </tr><tr>
+            <td><code>target</code></td>
+            <td>property</td>
+            <td><code>FlowSecurityTarget | undefined</code></td>
+            <td>no</td>
+            <td></td>
+          </tr>
+    </tbody>
+  </table>
+  </article><article class="item" id="symbol-flowsecurityoperationidentity" data-search="FlowSecurityOperationIdentity  type src/types/security.ts  FlowSecurityActor FlowSecurityTarget">
+    <h4>FlowSecurityOperationIdentity</h4>
+    
+    <p class="muted">type • <code>src/types/security.ts:37:1</code></p>
+    
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <ul class="chips"><li class="chip">FlowSecurityActor</li><li class="chip">FlowSecurityTarget</li></ul></div>
+    
+    <table>
+    <thead><tr><th>Member</th><th>Kind</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr>
+            <td><code>actor</code></td>
+            <td>property</td>
+            <td><code>FlowSecurityActor</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>capability</code></td>
+            <td>property</td>
+            <td><code>string</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>idempotencyKey</code></td>
+            <td>property</td>
+            <td><code>string</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>operationId</code></td>
+            <td>property</td>
+            <td><code>string</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>secretRefs</code></td>
+            <td>property</td>
+            <td><code>readonly string[]</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>target</code></td>
+            <td>property</td>
+            <td><code>FlowSecurityTarget | undefined</code></td>
+            <td>no</td>
+            <td></td>
+          </tr>
+    </tbody>
+  </table>
+  </article><article class="item" id="symbol-flowsecuritypermit" data-search="FlowSecurityPermit  type src/types/security.ts  FlowResolvedSecrets FlowSecurityOperationIdentity">
+    <h4>FlowSecurityPermit</h4>
+    
+    <p class="muted">type • <code>src/types/security.ts:134:1</code></p>
+    
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <ul class="chips"><li class="chip">FlowResolvedSecrets</li><li class="chip">FlowSecurityOperationIdentity</li></ul></div>
+    
+    <table>
+    <thead><tr><th>Member</th><th>Kind</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr>
+            <td><code>executeAsync</code></td>
+            <td>method</td>
+            <td><code>&lt;T&gt;(operation: (secrets: FlowResolvedSecrets) =&gt; Promise&lt;T&gt;) =&gt; Promise&lt;T&gt;</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>operation</code></td>
+            <td>property</td>
+            <td><code>FlowSecurityOperationIdentity</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr>
+    </tbody>
+  </table>
+  </article><article class="item" id="symbol-flowsecurityport" data-search="FlowSecurityPort  type src/types/security.ts  FlowSecretCreateInput FlowSecretMetadata FlowSecretRevokeInput FlowSecurityActor FlowSecurityOperation FlowSecurityPermit">
+    <h4>FlowSecurityPort</h4>
+    
+    <p class="muted">type • <code>src/types/security.ts:140:1</code></p>
+    
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <ul class="chips"><li class="chip">FlowSecretCreateInput</li><li class="chip">FlowSecretMetadata</li><li class="chip">FlowSecretRevokeInput</li><li class="chip">FlowSecurityActor</li><li class="chip">FlowSecurityOperation</li><li class="chip">FlowSecurityPermit</li></ul></div>
+    
+    <table>
+    <thead><tr><th>Member</th><th>Kind</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr>
+            <td><code>authorizeAsync</code></td>
+            <td>method</td>
+            <td><code>(operation: FlowSecurityOperation) =&gt; Promise&lt;FlowSecurityPermit&gt;</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>createSecretAsync</code></td>
+            <td>method</td>
+            <td><code>(input: FlowSecretCreateInput) =&gt; Promise&lt;FlowSecretMetadata&gt;</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>getSecretMetadataAsync</code></td>
+            <td>method</td>
+            <td><code>(input: { readonly actor: FlowSecurityActor; readonly ref: SecretRef; }) =&gt; Promise&lt;FlowSecretMetadata&gt;</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>revokeSecretAsync</code></td>
+            <td>method</td>
+            <td><code>(input: FlowSecretRevokeInput) =&gt; Promise&lt;void&gt;</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr>
+    </tbody>
+  </table>
+  </article><article class="item" id="symbol-flowsecuritytarget" data-search="FlowSecurityTarget  type src/types/security.ts ">
+    <h4>FlowSecurityTarget</h4>
+    
+    <p class="muted">type • <code>src/types/security.ts:31:1</code></p>
+    
+    
+    <p><strong>Export paths:</strong> <code>src/index.ts</code></p>
+    <div><strong>Related symbols:</strong> <span class="empty">None</span></div>
+    
+    <table>
+    <thead><tr><th>Member</th><th>Kind</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr>
+            <td><code>allowedHosts</code></td>
+            <td>property</td>
+            <td><code>readonly string[]</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr><tr>
+            <td><code>url</code></td>
+            <td>property</td>
+            <td><code>string</code></td>
+            <td>yes</td>
+            <td></td>
+          </tr>
+    </tbody>
+  </table>
+  </article>
+            </section>
     </section>
     <section class="panel">
       <h2>Component registry</h2>
@@ -575,12 +1234,19 @@
   module_src_features_execution_domain_createDefaultNodeRegistry_ts --&gt; module_src_types_execution_ts
   module_src_features_execution_domain_validateFlowDataSchema_ts[&quot;src/features/execution/domain/validateFlowDataSchema.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_features_execution_domain_validateFlowDataSchema_ts
+  module_src_features_mcp_createMcpRemoteTransport_ts[&quot;src/features/mcp/createMcpRemoteTransport.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_mcp_createMcpRemoteTransport_ts
+  module_src_features_mcp_createMcpRemoteTransport_ts --&gt; module_src_features_mcp_McpToolError_ts
+  module_src_features_mcp_createMcpRemoteTransport_ts --&gt; module_src_types_mcp_ts
+  module_src_features_mcp_createMcpRemoteTransport_ts --&gt; module_src_types_security_ts
   module_src_features_mcp_createMcpToolRegistry_ts[&quot;src/features/mcp/createMcpToolRegistry.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_features_mcp_createMcpToolRegistry_ts
+  module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_createMcpRemoteTransport_ts
   module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_McpToolError_ts
   module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_prepareMcpProviders_ts
   module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_validateMcpSchema_ts
   module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_types_mcp_ts
+  module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_types_security_ts
   module_src_features_mcp_McpToolError_ts[&quot;src/features/mcp/McpToolError.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_features_mcp_McpToolError_ts
   module_src_features_mcp_prepareMcpProviders_ts[&quot;src/features/mcp/prepareMcpProviders.ts&quot;]
@@ -590,6 +1256,17 @@
   module_src_features_mcp_validateMcpSchema_ts[&quot;src/features/mcp/validateMcpSchema.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_features_mcp_validateMcpSchema_ts
   module_src_features_mcp_validateMcpSchema_ts --&gt; module_src_features_mcp_McpToolError_ts
+  module_src_features_security_application_createFlowSecurityPort_ts[&quot;src/features/security/application/createFlowSecurityPort.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_security_application_createFlowSecurityPort_ts
+  module_src_features_security_application_createFlowSecurityPort_ts --&gt; module_src_features_security_domain_validateFlowSecurityTarget_ts
+  module_src_features_security_application_createFlowSecurityPort_ts --&gt; module_src_features_security_FlowSecurityError_ts
+  module_src_features_security_application_createFlowSecurityPort_ts --&gt; module_src_types_security_ts
+  module_src_features_security_domain_validateFlowSecurityTarget_ts[&quot;src/features/security/domain/validateFlowSecurityTarget.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_security_domain_validateFlowSecurityTarget_ts
+  module_src_features_security_domain_validateFlowSecurityTarget_ts --&gt; module_src_features_security_FlowSecurityError_ts
+  module_src_features_security_domain_validateFlowSecurityTarget_ts --&gt; module_src_types_security_ts
+  module_src_features_security_FlowSecurityError_ts[&quot;src/features/security/FlowSecurityError.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_security_FlowSecurityError_ts
   module_src_index_ts[&quot;src/index.ts&quot;]
   module_src_mcp_ts[&quot;src/mcp.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_mcp_ts
@@ -599,6 +1276,9 @@
   package__ankhorage_flow -.-&gt; module_src_types_execution_ts
   module_src_types_mcp_ts[&quot;src/types/mcp.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_types_mcp_ts
+  module_src_types_mcp_ts --&gt; module_src_types_security_ts
+  module_src_types_security_ts[&quot;src/types/security.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_types_security_ts
 </div>
     <details>
       <summary>View Mermaid source</summary>
@@ -624,12 +1304,19 @@
   module_src_features_execution_domain_createDefaultNodeRegistry_ts --&gt; module_src_types_execution_ts
   module_src_features_execution_domain_validateFlowDataSchema_ts[&quot;src/features/execution/domain/validateFlowDataSchema.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_features_execution_domain_validateFlowDataSchema_ts
+  module_src_features_mcp_createMcpRemoteTransport_ts[&quot;src/features/mcp/createMcpRemoteTransport.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_mcp_createMcpRemoteTransport_ts
+  module_src_features_mcp_createMcpRemoteTransport_ts --&gt; module_src_features_mcp_McpToolError_ts
+  module_src_features_mcp_createMcpRemoteTransport_ts --&gt; module_src_types_mcp_ts
+  module_src_features_mcp_createMcpRemoteTransport_ts --&gt; module_src_types_security_ts
   module_src_features_mcp_createMcpToolRegistry_ts[&quot;src/features/mcp/createMcpToolRegistry.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_features_mcp_createMcpToolRegistry_ts
+  module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_createMcpRemoteTransport_ts
   module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_McpToolError_ts
   module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_prepareMcpProviders_ts
   module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_validateMcpSchema_ts
   module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_types_mcp_ts
+  module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_types_security_ts
   module_src_features_mcp_McpToolError_ts[&quot;src/features/mcp/McpToolError.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_features_mcp_McpToolError_ts
   module_src_features_mcp_prepareMcpProviders_ts[&quot;src/features/mcp/prepareMcpProviders.ts&quot;]
@@ -639,6 +1326,17 @@
   module_src_features_mcp_validateMcpSchema_ts[&quot;src/features/mcp/validateMcpSchema.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_features_mcp_validateMcpSchema_ts
   module_src_features_mcp_validateMcpSchema_ts --&gt; module_src_features_mcp_McpToolError_ts
+  module_src_features_security_application_createFlowSecurityPort_ts[&quot;src/features/security/application/createFlowSecurityPort.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_security_application_createFlowSecurityPort_ts
+  module_src_features_security_application_createFlowSecurityPort_ts --&gt; module_src_features_security_domain_validateFlowSecurityTarget_ts
+  module_src_features_security_application_createFlowSecurityPort_ts --&gt; module_src_features_security_FlowSecurityError_ts
+  module_src_features_security_application_createFlowSecurityPort_ts --&gt; module_src_types_security_ts
+  module_src_features_security_domain_validateFlowSecurityTarget_ts[&quot;src/features/security/domain/validateFlowSecurityTarget.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_security_domain_validateFlowSecurityTarget_ts
+  module_src_features_security_domain_validateFlowSecurityTarget_ts --&gt; module_src_features_security_FlowSecurityError_ts
+  module_src_features_security_domain_validateFlowSecurityTarget_ts --&gt; module_src_types_security_ts
+  module_src_features_security_FlowSecurityError_ts[&quot;src/features/security/FlowSecurityError.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_security_FlowSecurityError_ts
   module_src_index_ts[&quot;src/index.ts&quot;]
   module_src_mcp_ts[&quot;src/mcp.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_mcp_ts
@@ -648,6 +1346,9 @@
   package__ankhorage_flow -.-&gt; module_src_types_execution_ts
   module_src_types_mcp_ts[&quot;src/types/mcp.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_types_mcp_ts
+  module_src_types_mcp_ts --&gt; module_src_types_security_ts
+  module_src_types_security_ts[&quot;src/types/security.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_types_security_ts
 </pre>
     </details>
   </article><article class="item" data-search="Module relationships diagrams/module-relationships.mmd">
@@ -660,28 +1361,44 @@
   module_src_features_execution_domain_compileFlowGraph_ts[&quot;src/features/execution/domain/compileFlowGraph.ts&quot;]
   module_src_features_execution_domain_createDefaultNodeRegistry_ts[&quot;src/features/execution/domain/createDefaultNodeRegistry.ts&quot;]
   module_src_features_execution_domain_validateFlowDataSchema_ts[&quot;src/features/execution/domain/validateFlowDataSchema.ts&quot;]
+  module_src_features_mcp_createMcpRemoteTransport_ts[&quot;src/features/mcp/createMcpRemoteTransport.ts&quot;]
   module_src_features_mcp_createMcpToolRegistry_ts[&quot;src/features/mcp/createMcpToolRegistry.ts&quot;]
   module_src_features_mcp_McpToolError_ts[&quot;src/features/mcp/McpToolError.ts&quot;]
   module_src_features_mcp_prepareMcpProviders_ts[&quot;src/features/mcp/prepareMcpProviders.ts&quot;]
   module_src_features_mcp_validateMcpSchema_ts[&quot;src/features/mcp/validateMcpSchema.ts&quot;]
+  module_src_features_security_application_createFlowSecurityPort_ts[&quot;src/features/security/application/createFlowSecurityPort.ts&quot;]
+  module_src_features_security_domain_validateFlowSecurityTarget_ts[&quot;src/features/security/domain/validateFlowSecurityTarget.ts&quot;]
+  module_src_features_security_FlowSecurityError_ts[&quot;src/features/security/FlowSecurityError.ts&quot;]
   module_src_index_ts[&quot;src/index.ts&quot;]
   module_src_mcp_ts[&quot;src/mcp.ts&quot;]
   module_src_social_ts[&quot;src/social.ts&quot;]
   module_src_types_execution_ts[&quot;src/types/execution.ts&quot;]
   module_src_types_mcp_ts[&quot;src/types/mcp.ts&quot;]
+  module_src_types_security_ts[&quot;src/types/security.ts&quot;]
   module_src_features_execution_application_executeFlowAsync_ts --&gt; module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts
   module_src_features_execution_application_executeFlowAsync_ts --&gt; module_src_features_execution_domain_validateFlowDataSchema_ts
   module_src_features_execution_application_executeFlowAsync_ts --&gt; module_src_types_execution_ts
   module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts --&gt; module_src_features_execution_domain_validateFlowDataSchema_ts
   module_src_features_execution_domain_compileFlowGraph_ts --&gt; module_src_types_execution_ts
   module_src_features_execution_domain_createDefaultNodeRegistry_ts --&gt; module_src_types_execution_ts
+  module_src_features_mcp_createMcpRemoteTransport_ts --&gt; module_src_features_mcp_McpToolError_ts
+  module_src_features_mcp_createMcpRemoteTransport_ts --&gt; module_src_types_mcp_ts
+  module_src_features_mcp_createMcpRemoteTransport_ts --&gt; module_src_types_security_ts
+  module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_createMcpRemoteTransport_ts
   module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_McpToolError_ts
   module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_prepareMcpProviders_ts
   module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_validateMcpSchema_ts
   module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_types_mcp_ts
+  module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_types_security_ts
   module_src_features_mcp_prepareMcpProviders_ts --&gt; module_src_features_mcp_McpToolError_ts
   module_src_features_mcp_prepareMcpProviders_ts --&gt; module_src_types_mcp_ts
   module_src_features_mcp_validateMcpSchema_ts --&gt; module_src_features_mcp_McpToolError_ts
+  module_src_features_security_application_createFlowSecurityPort_ts --&gt; module_src_features_security_domain_validateFlowSecurityTarget_ts
+  module_src_features_security_application_createFlowSecurityPort_ts --&gt; module_src_features_security_FlowSecurityError_ts
+  module_src_features_security_application_createFlowSecurityPort_ts --&gt; module_src_types_security_ts
+  module_src_features_security_domain_validateFlowSecurityTarget_ts --&gt; module_src_features_security_FlowSecurityError_ts
+  module_src_features_security_domain_validateFlowSecurityTarget_ts --&gt; module_src_types_security_ts
+  module_src_types_mcp_ts --&gt; module_src_types_security_ts
 </div>
     <details>
       <summary>View Mermaid source</summary>
@@ -692,28 +1409,44 @@
   module_src_features_execution_domain_compileFlowGraph_ts[&quot;src/features/execution/domain/compileFlowGraph.ts&quot;]
   module_src_features_execution_domain_createDefaultNodeRegistry_ts[&quot;src/features/execution/domain/createDefaultNodeRegistry.ts&quot;]
   module_src_features_execution_domain_validateFlowDataSchema_ts[&quot;src/features/execution/domain/validateFlowDataSchema.ts&quot;]
+  module_src_features_mcp_createMcpRemoteTransport_ts[&quot;src/features/mcp/createMcpRemoteTransport.ts&quot;]
   module_src_features_mcp_createMcpToolRegistry_ts[&quot;src/features/mcp/createMcpToolRegistry.ts&quot;]
   module_src_features_mcp_McpToolError_ts[&quot;src/features/mcp/McpToolError.ts&quot;]
   module_src_features_mcp_prepareMcpProviders_ts[&quot;src/features/mcp/prepareMcpProviders.ts&quot;]
   module_src_features_mcp_validateMcpSchema_ts[&quot;src/features/mcp/validateMcpSchema.ts&quot;]
+  module_src_features_security_application_createFlowSecurityPort_ts[&quot;src/features/security/application/createFlowSecurityPort.ts&quot;]
+  module_src_features_security_domain_validateFlowSecurityTarget_ts[&quot;src/features/security/domain/validateFlowSecurityTarget.ts&quot;]
+  module_src_features_security_FlowSecurityError_ts[&quot;src/features/security/FlowSecurityError.ts&quot;]
   module_src_index_ts[&quot;src/index.ts&quot;]
   module_src_mcp_ts[&quot;src/mcp.ts&quot;]
   module_src_social_ts[&quot;src/social.ts&quot;]
   module_src_types_execution_ts[&quot;src/types/execution.ts&quot;]
   module_src_types_mcp_ts[&quot;src/types/mcp.ts&quot;]
+  module_src_types_security_ts[&quot;src/types/security.ts&quot;]
   module_src_features_execution_application_executeFlowAsync_ts --&gt; module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts
   module_src_features_execution_application_executeFlowAsync_ts --&gt; module_src_features_execution_domain_validateFlowDataSchema_ts
   module_src_features_execution_application_executeFlowAsync_ts --&gt; module_src_types_execution_ts
   module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts --&gt; module_src_features_execution_domain_validateFlowDataSchema_ts
   module_src_features_execution_domain_compileFlowGraph_ts --&gt; module_src_types_execution_ts
   module_src_features_execution_domain_createDefaultNodeRegistry_ts --&gt; module_src_types_execution_ts
+  module_src_features_mcp_createMcpRemoteTransport_ts --&gt; module_src_features_mcp_McpToolError_ts
+  module_src_features_mcp_createMcpRemoteTransport_ts --&gt; module_src_types_mcp_ts
+  module_src_features_mcp_createMcpRemoteTransport_ts --&gt; module_src_types_security_ts
+  module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_createMcpRemoteTransport_ts
   module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_McpToolError_ts
   module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_prepareMcpProviders_ts
   module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_features_mcp_validateMcpSchema_ts
   module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_types_mcp_ts
+  module_src_features_mcp_createMcpToolRegistry_ts --&gt; module_src_types_security_ts
   module_src_features_mcp_prepareMcpProviders_ts --&gt; module_src_features_mcp_McpToolError_ts
   module_src_features_mcp_prepareMcpProviders_ts --&gt; module_src_types_mcp_ts
   module_src_features_mcp_validateMcpSchema_ts --&gt; module_src_features_mcp_McpToolError_ts
+  module_src_features_security_application_createFlowSecurityPort_ts --&gt; module_src_features_security_domain_validateFlowSecurityTarget_ts
+  module_src_features_security_application_createFlowSecurityPort_ts --&gt; module_src_features_security_FlowSecurityError_ts
+  module_src_features_security_application_createFlowSecurityPort_ts --&gt; module_src_types_security_ts
+  module_src_features_security_domain_validateFlowSecurityTarget_ts --&gt; module_src_features_security_FlowSecurityError_ts
+  module_src_features_security_domain_validateFlowSecurityTarget_ts --&gt; module_src_types_security_ts
+  module_src_types_mcp_ts --&gt; module_src_types_security_ts
 </pre>
     </details>
   </article><article class="item" data-search="Export graph diagrams/export-graph.mmd">
@@ -726,15 +1459,20 @@
   module_src_features_execution_domain_compileFlowGraph_ts[&quot;src/features/execution/domain/compileFlowGraph.ts&quot;]
   module_src_features_execution_domain_createDefaultNodeRegistry_ts[&quot;src/features/execution/domain/createDefaultNodeRegistry.ts&quot;]
   module_src_features_execution_domain_validateFlowDataSchema_ts[&quot;src/features/execution/domain/validateFlowDataSchema.ts&quot;]
+  module_src_features_mcp_createMcpRemoteTransport_ts[&quot;src/features/mcp/createMcpRemoteTransport.ts&quot;]
   module_src_features_mcp_createMcpToolRegistry_ts[&quot;src/features/mcp/createMcpToolRegistry.ts&quot;]
   module_src_features_mcp_McpToolError_ts[&quot;src/features/mcp/McpToolError.ts&quot;]
   module_src_features_mcp_prepareMcpProviders_ts[&quot;src/features/mcp/prepareMcpProviders.ts&quot;]
   module_src_features_mcp_validateMcpSchema_ts[&quot;src/features/mcp/validateMcpSchema.ts&quot;]
+  module_src_features_security_application_createFlowSecurityPort_ts[&quot;src/features/security/application/createFlowSecurityPort.ts&quot;]
+  module_src_features_security_domain_validateFlowSecurityTarget_ts[&quot;src/features/security/domain/validateFlowSecurityTarget.ts&quot;]
+  module_src_features_security_FlowSecurityError_ts[&quot;src/features/security/FlowSecurityError.ts&quot;]
   module_src_index_ts[&quot;src/index.ts&quot;]
   module_src_mcp_ts[&quot;src/mcp.ts&quot;]
   module_src_social_ts[&quot;src/social.ts&quot;]
   module_src_types_execution_ts[&quot;src/types/execution.ts&quot;]
   module_src_types_mcp_ts[&quot;src/types/mcp.ts&quot;]
+  module_src_types_security_ts[&quot;src/types/security.ts&quot;]
   export_compileFlowGraph[&quot;compileFlowGraph&quot;]
   module_src_features_execution_domain_compileFlowGraph_ts --&gt; export_compileFlowGraph
   export_compileFlowGraph -.-&gt; export_FlowCompiledGraph
@@ -742,6 +1480,14 @@
   export_createDefaultNodeRegistry[&quot;createDefaultNodeRegistry&quot;]
   module_src_features_execution_domain_createDefaultNodeRegistry_ts --&gt; export_createDefaultNodeRegistry
   export_createDefaultNodeRegistry -.-&gt; export_FlowNodeOperation
+  export_createFlowSecurityPort[&quot;createFlowSecurityPort&quot;]
+  module_src_features_security_application_createFlowSecurityPort_ts --&gt; export_createFlowSecurityPort
+  export_createFlowSecurityPort -.-&gt; export_FlowApprovalStorePort
+  export_createFlowSecurityPort -.-&gt; export_FlowOperationStorePort
+  export_createFlowSecurityPort -.-&gt; export_FlowRateLimitPort
+  export_createFlowSecurityPort -.-&gt; export_FlowSecurityAuditPort
+  export_createFlowSecurityPort -.-&gt; export_FlowSecurityGrant
+  export_createFlowSecurityPort -.-&gt; export_FlowSecurityPort
   export_executeFlowAsync[&quot;executeFlowAsync&quot;]
   module_src_features_execution_application_executeFlowAsync_ts --&gt; export_executeFlowAsync
   export_executeFlowAsync -.-&gt; export_FlowClock
@@ -749,6 +1495,10 @@
   export_executeFlowAsync -.-&gt; export_FlowExecutionResult
   export_executeFlowAsync -.-&gt; export_FlowNodeOperation
   export_executeFlowAsync -.-&gt; export_FlowRunRequest
+  export_FlowApprovalStorePort[&quot;FlowApprovalStorePort&quot;]
+  module_src_types_security_ts --&gt; export_FlowApprovalStorePort
+  export_FlowApprovalStorePort -.-&gt; export_FlowSecurityApproval
+  export_FlowApprovalStorePort -.-&gt; export_FlowSecurityOperationIdentity
   export_FlowClock[&quot;FlowClock&quot;]
   module_src_types_execution_ts --&gt; export_FlowClock
   export_FlowCompiledGraph[&quot;FlowCompiledGraph&quot;]
@@ -762,8 +1512,62 @@
   module_src_types_execution_ts --&gt; export_FlowNodeOperationResult
   export_FlowNodeRegistry[&quot;FlowNodeRegistry&quot;]
   module_src_types_execution_ts --&gt; export_FlowNodeRegistry
+  export_FlowOperationStorePort[&quot;FlowOperationStorePort&quot;]
+  module_src_types_security_ts --&gt; export_FlowOperationStorePort
+  export_FlowOperationStorePort -.-&gt; export_FlowSecurityOperationIdentity
+  export_FlowOutboundTransportPort[&quot;FlowOutboundTransportPort&quot;]
+  module_src_types_security_ts --&gt; export_FlowOutboundTransportPort
+  export_FlowRateLimitPort[&quot;FlowRateLimitPort&quot;]
+  module_src_types_security_ts --&gt; export_FlowRateLimitPort
+  export_FlowRateLimitPort -.-&gt; export_FlowSecurityActor
+  export_FlowResolvedSecrets[&quot;FlowResolvedSecrets&quot;]
+  module_src_types_security_ts --&gt; export_FlowResolvedSecrets
   export_FlowRunRequest[&quot;FlowRunRequest&quot;]
   module_src_types_execution_ts --&gt; export_FlowRunRequest
+  export_FlowSecretCreateInput[&quot;FlowSecretCreateInput&quot;]
+  module_src_types_security_ts --&gt; export_FlowSecretCreateInput
+  export_FlowSecretCreateInput -.-&gt; export_FlowSecurityActor
+  export_FlowSecretMetadata[&quot;FlowSecretMetadata&quot;]
+  module_src_types_security_ts --&gt; export_FlowSecretMetadata
+  export_FlowSecretRevokeInput[&quot;FlowSecretRevokeInput&quot;]
+  module_src_types_security_ts --&gt; export_FlowSecretRevokeInput
+  export_FlowSecretRevokeInput -.-&gt; export_FlowSecurityActor
+  export_FlowSecurityActor[&quot;FlowSecurityActor&quot;]
+  module_src_types_security_ts --&gt; export_FlowSecurityActor
+  export_FlowSecurityApproval[&quot;FlowSecurityApproval&quot;]
+  module_src_types_security_ts --&gt; export_FlowSecurityApproval
+  export_FlowSecurityApproval -.-&gt; export_FlowSecurityOperationIdentity
+  export_FlowSecurityAuditEvent[&quot;FlowSecurityAuditEvent&quot;]
+  module_src_types_security_ts --&gt; export_FlowSecurityAuditEvent
+  export_FlowSecurityAuditPort[&quot;FlowSecurityAuditPort&quot;]
+  module_src_types_security_ts --&gt; export_FlowSecurityAuditPort
+  export_FlowSecurityAuditPort -.-&gt; export_FlowSecurityAuditEvent
+  export_FlowSecurityError[&quot;FlowSecurityError&quot;]
+  module_src_features_security_FlowSecurityError_ts --&gt; export_FlowSecurityError
+  export_FlowSecurityGrant[&quot;FlowSecurityGrant&quot;]
+  module_src_types_security_ts --&gt; export_FlowSecurityGrant
+  export_FlowSecurityOperation[&quot;FlowSecurityOperation&quot;]
+  module_src_types_security_ts --&gt; export_FlowSecurityOperation
+  export_FlowSecurityOperation -.-&gt; export_FlowSecurityActor
+  export_FlowSecurityOperation -.-&gt; export_FlowSecurityTarget
+  export_FlowSecurityOperationIdentity[&quot;FlowSecurityOperationIdentity&quot;]
+  module_src_types_security_ts --&gt; export_FlowSecurityOperationIdentity
+  export_FlowSecurityOperationIdentity -.-&gt; export_FlowSecurityActor
+  export_FlowSecurityOperationIdentity -.-&gt; export_FlowSecurityTarget
+  export_FlowSecurityPermit[&quot;FlowSecurityPermit&quot;]
+  module_src_types_security_ts --&gt; export_FlowSecurityPermit
+  export_FlowSecurityPermit -.-&gt; export_FlowResolvedSecrets
+  export_FlowSecurityPermit -.-&gt; export_FlowSecurityOperationIdentity
+  export_FlowSecurityPort[&quot;FlowSecurityPort&quot;]
+  module_src_types_security_ts --&gt; export_FlowSecurityPort
+  export_FlowSecurityPort -.-&gt; export_FlowSecretCreateInput
+  export_FlowSecurityPort -.-&gt; export_FlowSecretMetadata
+  export_FlowSecurityPort -.-&gt; export_FlowSecretRevokeInput
+  export_FlowSecurityPort -.-&gt; export_FlowSecurityActor
+  export_FlowSecurityPort -.-&gt; export_FlowSecurityOperation
+  export_FlowSecurityPort -.-&gt; export_FlowSecurityPermit
+  export_FlowSecurityTarget[&quot;FlowSecurityTarget&quot;]
+  module_src_types_security_ts --&gt; export_FlowSecurityTarget
 </div>
     <details>
       <summary>View Mermaid source</summary>
@@ -774,15 +1578,20 @@
   module_src_features_execution_domain_compileFlowGraph_ts[&quot;src/features/execution/domain/compileFlowGraph.ts&quot;]
   module_src_features_execution_domain_createDefaultNodeRegistry_ts[&quot;src/features/execution/domain/createDefaultNodeRegistry.ts&quot;]
   module_src_features_execution_domain_validateFlowDataSchema_ts[&quot;src/features/execution/domain/validateFlowDataSchema.ts&quot;]
+  module_src_features_mcp_createMcpRemoteTransport_ts[&quot;src/features/mcp/createMcpRemoteTransport.ts&quot;]
   module_src_features_mcp_createMcpToolRegistry_ts[&quot;src/features/mcp/createMcpToolRegistry.ts&quot;]
   module_src_features_mcp_McpToolError_ts[&quot;src/features/mcp/McpToolError.ts&quot;]
   module_src_features_mcp_prepareMcpProviders_ts[&quot;src/features/mcp/prepareMcpProviders.ts&quot;]
   module_src_features_mcp_validateMcpSchema_ts[&quot;src/features/mcp/validateMcpSchema.ts&quot;]
+  module_src_features_security_application_createFlowSecurityPort_ts[&quot;src/features/security/application/createFlowSecurityPort.ts&quot;]
+  module_src_features_security_domain_validateFlowSecurityTarget_ts[&quot;src/features/security/domain/validateFlowSecurityTarget.ts&quot;]
+  module_src_features_security_FlowSecurityError_ts[&quot;src/features/security/FlowSecurityError.ts&quot;]
   module_src_index_ts[&quot;src/index.ts&quot;]
   module_src_mcp_ts[&quot;src/mcp.ts&quot;]
   module_src_social_ts[&quot;src/social.ts&quot;]
   module_src_types_execution_ts[&quot;src/types/execution.ts&quot;]
   module_src_types_mcp_ts[&quot;src/types/mcp.ts&quot;]
+  module_src_types_security_ts[&quot;src/types/security.ts&quot;]
   export_compileFlowGraph[&quot;compileFlowGraph&quot;]
   module_src_features_execution_domain_compileFlowGraph_ts --&gt; export_compileFlowGraph
   export_compileFlowGraph -.-&gt; export_FlowCompiledGraph
@@ -790,6 +1599,14 @@
   export_createDefaultNodeRegistry[&quot;createDefaultNodeRegistry&quot;]
   module_src_features_execution_domain_createDefaultNodeRegistry_ts --&gt; export_createDefaultNodeRegistry
   export_createDefaultNodeRegistry -.-&gt; export_FlowNodeOperation
+  export_createFlowSecurityPort[&quot;createFlowSecurityPort&quot;]
+  module_src_features_security_application_createFlowSecurityPort_ts --&gt; export_createFlowSecurityPort
+  export_createFlowSecurityPort -.-&gt; export_FlowApprovalStorePort
+  export_createFlowSecurityPort -.-&gt; export_FlowOperationStorePort
+  export_createFlowSecurityPort -.-&gt; export_FlowRateLimitPort
+  export_createFlowSecurityPort -.-&gt; export_FlowSecurityAuditPort
+  export_createFlowSecurityPort -.-&gt; export_FlowSecurityGrant
+  export_createFlowSecurityPort -.-&gt; export_FlowSecurityPort
   export_executeFlowAsync[&quot;executeFlowAsync&quot;]
   module_src_features_execution_application_executeFlowAsync_ts --&gt; export_executeFlowAsync
   export_executeFlowAsync -.-&gt; export_FlowClock
@@ -797,6 +1614,10 @@
   export_executeFlowAsync -.-&gt; export_FlowExecutionResult
   export_executeFlowAsync -.-&gt; export_FlowNodeOperation
   export_executeFlowAsync -.-&gt; export_FlowRunRequest
+  export_FlowApprovalStorePort[&quot;FlowApprovalStorePort&quot;]
+  module_src_types_security_ts --&gt; export_FlowApprovalStorePort
+  export_FlowApprovalStorePort -.-&gt; export_FlowSecurityApproval
+  export_FlowApprovalStorePort -.-&gt; export_FlowSecurityOperationIdentity
   export_FlowClock[&quot;FlowClock&quot;]
   module_src_types_execution_ts --&gt; export_FlowClock
   export_FlowCompiledGraph[&quot;FlowCompiledGraph&quot;]
@@ -810,8 +1631,62 @@
   module_src_types_execution_ts --&gt; export_FlowNodeOperationResult
   export_FlowNodeRegistry[&quot;FlowNodeRegistry&quot;]
   module_src_types_execution_ts --&gt; export_FlowNodeRegistry
+  export_FlowOperationStorePort[&quot;FlowOperationStorePort&quot;]
+  module_src_types_security_ts --&gt; export_FlowOperationStorePort
+  export_FlowOperationStorePort -.-&gt; export_FlowSecurityOperationIdentity
+  export_FlowOutboundTransportPort[&quot;FlowOutboundTransportPort&quot;]
+  module_src_types_security_ts --&gt; export_FlowOutboundTransportPort
+  export_FlowRateLimitPort[&quot;FlowRateLimitPort&quot;]
+  module_src_types_security_ts --&gt; export_FlowRateLimitPort
+  export_FlowRateLimitPort -.-&gt; export_FlowSecurityActor
+  export_FlowResolvedSecrets[&quot;FlowResolvedSecrets&quot;]
+  module_src_types_security_ts --&gt; export_FlowResolvedSecrets
   export_FlowRunRequest[&quot;FlowRunRequest&quot;]
   module_src_types_execution_ts --&gt; export_FlowRunRequest
+  export_FlowSecretCreateInput[&quot;FlowSecretCreateInput&quot;]
+  module_src_types_security_ts --&gt; export_FlowSecretCreateInput
+  export_FlowSecretCreateInput -.-&gt; export_FlowSecurityActor
+  export_FlowSecretMetadata[&quot;FlowSecretMetadata&quot;]
+  module_src_types_security_ts --&gt; export_FlowSecretMetadata
+  export_FlowSecretRevokeInput[&quot;FlowSecretRevokeInput&quot;]
+  module_src_types_security_ts --&gt; export_FlowSecretRevokeInput
+  export_FlowSecretRevokeInput -.-&gt; export_FlowSecurityActor
+  export_FlowSecurityActor[&quot;FlowSecurityActor&quot;]
+  module_src_types_security_ts --&gt; export_FlowSecurityActor
+  export_FlowSecurityApproval[&quot;FlowSecurityApproval&quot;]
+  module_src_types_security_ts --&gt; export_FlowSecurityApproval
+  export_FlowSecurityApproval -.-&gt; export_FlowSecurityOperationIdentity
+  export_FlowSecurityAuditEvent[&quot;FlowSecurityAuditEvent&quot;]
+  module_src_types_security_ts --&gt; export_FlowSecurityAuditEvent
+  export_FlowSecurityAuditPort[&quot;FlowSecurityAuditPort&quot;]
+  module_src_types_security_ts --&gt; export_FlowSecurityAuditPort
+  export_FlowSecurityAuditPort -.-&gt; export_FlowSecurityAuditEvent
+  export_FlowSecurityError[&quot;FlowSecurityError&quot;]
+  module_src_features_security_FlowSecurityError_ts --&gt; export_FlowSecurityError
+  export_FlowSecurityGrant[&quot;FlowSecurityGrant&quot;]
+  module_src_types_security_ts --&gt; export_FlowSecurityGrant
+  export_FlowSecurityOperation[&quot;FlowSecurityOperation&quot;]
+  module_src_types_security_ts --&gt; export_FlowSecurityOperation
+  export_FlowSecurityOperation -.-&gt; export_FlowSecurityActor
+  export_FlowSecurityOperation -.-&gt; export_FlowSecurityTarget
+  export_FlowSecurityOperationIdentity[&quot;FlowSecurityOperationIdentity&quot;]
+  module_src_types_security_ts --&gt; export_FlowSecurityOperationIdentity
+  export_FlowSecurityOperationIdentity -.-&gt; export_FlowSecurityActor
+  export_FlowSecurityOperationIdentity -.-&gt; export_FlowSecurityTarget
+  export_FlowSecurityPermit[&quot;FlowSecurityPermit&quot;]
+  module_src_types_security_ts --&gt; export_FlowSecurityPermit
+  export_FlowSecurityPermit -.-&gt; export_FlowResolvedSecrets
+  export_FlowSecurityPermit -.-&gt; export_FlowSecurityOperationIdentity
+  export_FlowSecurityPort[&quot;FlowSecurityPort&quot;]
+  module_src_types_security_ts --&gt; export_FlowSecurityPort
+  export_FlowSecurityPort -.-&gt; export_FlowSecretCreateInput
+  export_FlowSecurityPort -.-&gt; export_FlowSecretMetadata
+  export_FlowSecurityPort -.-&gt; export_FlowSecretRevokeInput
+  export_FlowSecurityPort -.-&gt; export_FlowSecurityActor
+  export_FlowSecurityPort -.-&gt; export_FlowSecurityOperation
+  export_FlowSecurityPort -.-&gt; export_FlowSecurityPermit
+  export_FlowSecurityTarget[&quot;FlowSecurityTarget&quot;]
+  module_src_types_security_ts --&gt; export_FlowSecurityTarget
 </pre>
     </details>
   </article><article class="item" data-search="compileFlowGraph sequence diagrams/sequences/compile-flow-graph.mmd">
@@ -1119,77 +1994,87 @@
     
   </article>
     </section>
+  </section><section id="view-src-features-mcp-createmcpremotetransport-ts" class="view" data-view="src/features/mcp/createMcpRemoteTransport.ts" hidden>
+    <section class="panel">
+      <h2>src/features/mcp/createMcpRemoteTransport.ts</h2>
+      <article class="item" data-search="createMcpRemoteTransport src/features/mcp/createMcpRemoteTransport.ts Opens remote MCP only through the host-owned transport that controls every peer connection.">
+    <h3>createMcpRemoteTransport</h3>
+    <p class="muted"><code>src/features/mcp/createMcpRemoteTransport.ts:8:14</code></p>
+    <p>Opens remote MCP only through the host-owned transport that controls every peer connection.</p>
+    
+  </article>
+    </section>
   </section><section id="view-src-features-mcp-createmcptoolregistry-ts" class="view" data-view="src/features/mcp/createMcpToolRegistry.ts" hidden>
     <section class="panel">
       <h2>src/features/mcp/createMcpToolRegistry.ts</h2>
       <article class="item" data-search="createMcpToolRegistry src/features/mcp/createMcpToolRegistry.ts Creates a snapshotting, allowlist-only MCP registry. Real invocation fails closed until Issue #4 releases its approval boundary.">
     <h3>createMcpToolRegistry</h3>
-    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:23:14</code></p>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:24:14</code></p>
     <p>Creates a snapshotting, allowlist-only MCP registry. Real invocation fails closed until Issue #4 releases its approval boundary.</p>
     
   </article><article class="item" data-search="discoverAsync src/features/mcp/createMcpToolRegistry.ts Discovers bounded tool metadata from one trusted provider connection.">
     <h3>discoverAsync</h3>
-    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:61:7</code></p>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:72:7</code></p>
     <p>Discovers bounded tool metadata from one trusted provider connection.</p>
     
-  </article><article class="item" data-search="invokeAsync src/features/mcp/createMcpToolRegistry.ts Validates a requested tool locally and reports the unavailable canonical approval boundary.">
+  </article><article class="item" data-search="invokeAsync src/features/mcp/createMcpToolRegistry.ts Validates, approves, and invokes one discovered tool through the server-only security port.">
     <h3>invokeAsync</h3>
-    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:78:7</code></p>
-    <p>Validates a requested tool locally and reports the unavailable canonical approval boundary.</p>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:90:7</code></p>
+    <p>Validates, approves, and invokes one discovered tool through the server-only security port.</p>
+    
+  </article><article class="item" data-search="callToolAsync src/features/mcp/createMcpToolRegistry.ts Opens a bounded provider connection only after the approval permit was issued.">
+    <h3>callToolAsync</h3>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:136:7</code></p>
+    <p>Opens a bounded provider connection only after the approval permit was issued.</p>
     
   </article><article class="item" data-search="connectAsync src/features/mcp/createMcpToolRegistry.ts Connects with a bounded timeout and an abort signal propagated to the SDK transport.">
     <h3>connectAsync</h3>
-    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:122:7</code></p>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:184:7</code></p>
     <p>Connects with a bounded timeout and an abort signal propagated to the SDK transport.</p>
     
   </article><article class="item" data-search="stdioTransport src/features/mcp/createMcpToolRegistry.ts Resolves executable details exclusively from trusted host configuration.">
     <h3>stdioTransport</h3>
-    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:140:7</code></p>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:205:7</code></p>
     <p>Resolves executable details exclusively from trusted host configuration.</p>
-    
-  </article><article class="item" data-search="remoteTransport src/features/mcp/createMcpToolRegistry.ts Allows a remote connection only to the separately documented literal-loopback development exception.">
-    <h3>remoteTransport</h3>
-    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:159:7</code></p>
-    <p>Allows a remote connection only to the separately documented literal-loopback development exception.</p>
     
   </article><article class="item" data-search="listToolsAsync src/features/mcp/createMcpToolRegistry.ts Lists a bounded, non-cyclic sequence of paginated tools.">
     <h3>listToolsAsync</h3>
-    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:180:7</code></p>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:223:7</code></p>
     <p>Lists a bounded, non-cyclic sequence of paginated tools.</p>
     
   </article><article class="item" data-search="toMetadata src/features/mcp/createMcpToolRegistry.ts Converts valid protocol metadata into a stable Flow descriptor.">
     <h3>toMetadata</h3>
-    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:219:7</code></p>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:262:7</code></p>
     <p>Converts valid protocol metadata into a stable Flow descriptor.</p>
     
   </article><article class="item" data-search="boundedAsync src/features/mcp/createMcpToolRegistry.ts Propagates cancellation and a fixed timeout into an asynchronous SDK operation.">
     <h3>boundedAsync</h3>
-    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:239:7</code></p>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:282:7</code></p>
     <p>Propagates cancellation and a fixed timeout into an asynchronous SDK operation.</p>
     
   </article><article class="item" data-search="permissionFor src/features/mcp/createMcpToolRegistry.ts Finds one explicit permission for a protocol tool.">
     <h3>permissionFor</h3>
-    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:261:7</code></p>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:304:7</code></p>
     <p>Finds one explicit permission for a protocol tool.</p>
     
   </article><article class="item" data-search="sameScopes src/features/mcp/createMcpToolRegistry.ts Requires every and only the configured granted scope.">
     <h3>sameScopes</h3>
-    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:266:7</code></p>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:309:7</code></p>
     <p>Requires every and only the configured granted scope.</p>
     
   </article><article class="item" data-search="key src/features/mcp/createMcpToolRegistry.ts Builds a provider-scoped tool identifier.">
     <h3>key</h3>
-    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:272:7</code></p>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:315:7</code></p>
     <p>Builds a provider-scoped tool identifier.</p>
     
   </article><article class="item" data-search="isRecord src/features/mcp/createMcpToolRegistry.ts Narrows unknown data to a non-array object.">
     <h3>isRecord</h3>
-    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:274:7</code></p>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:317:7</code></p>
     <p>Narrows unknown data to a non-array object.</p>
     
   </article><article class="item" data-search="timeoutOf src/features/mcp/createMcpToolRegistry.ts Resolves a configured timeout to its bounded default.">
     <h3>timeoutOf</h3>
-    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:277:7</code></p>
+    <p class="muted"><code>src/features/mcp/createMcpToolRegistry.ts:320:7</code></p>
     <p>Resolves a configured timeout to its bounded default.</p>
     
   </article>
@@ -1209,22 +2094,27 @@
     
   </article><article class="item" data-search="validateProvider src/features/mcp/prepareMcpProviders.ts Requires non-empty scopes, unique tool permissions, and safe transport configuration.">
     <h3>validateProvider</h3>
-    <p class="muted"><code>src/features/mcp/prepareMcpProviders.ts:42:7</code></p>
+    <p class="muted"><code>src/features/mcp/prepareMcpProviders.ts:41:7</code></p>
     <p>Requires non-empty scopes, unique tool permissions, and safe transport configuration.</p>
     
-  </article><article class="item" data-search="validateRemote src/features/mcp/prepareMcpProviders.ts Rejects credentials, redirects, private addresses, and non-allowlisted production endpoints.">
+  </article><article class="item" data-search="validateRemote src/features/mcp/prepareMcpProviders.ts Rejects credentials, private literals, and endpoints outside their explicit host allowlist.">
     <h3>validateRemote</h3>
-    <p class="muted"><code>src/features/mcp/prepareMcpProviders.ts:72:7</code></p>
-    <p>Rejects credentials, redirects, private addresses, and non-allowlisted production endpoints.</p>
+    <p class="muted"><code>src/features/mcp/prepareMcpProviders.ts:71:7</code></p>
+    <p>Rejects credentials, private literals, and endpoints outside their explicit host allowlist.</p>
+    
+  </article><article class="item" data-search="privateIpv6 src/features/mcp/prepareMcpProviders.ts Detects loopback, link-local, unique-local, and unspecified IPv6 literals.">
+    <h3>privateIpv6</h3>
+    <p class="muted"><code>src/features/mcp/prepareMcpProviders.ts:100:7</code></p>
+    <p>Detects loopback, link-local, unique-local, and unspecified IPv6 literals.</p>
     
   </article><article class="item" data-search="privateIpv4 src/features/mcp/prepareMcpProviders.ts Detects private, reserved, and local IPv4 literals.">
     <h3>privateIpv4</h3>
-    <p class="muted"><code>src/features/mcp/prepareMcpProviders.ts:110:7</code></p>
+    <p class="muted"><code>src/features/mcp/prepareMcpProviders.ts:116:7</code></p>
     <p>Detects private, reserved, and local IPv4 literals.</p>
     
   </article><article class="item" data-search="uniqueStrings src/features/mcp/prepareMcpProviders.ts Checks unique non-empty strings.">
     <h3>uniqueStrings</h3>
-    <p class="muted"><code>src/features/mcp/prepareMcpProviders.ts:127:7</code></p>
+    <p class="muted"><code>src/features/mcp/prepareMcpProviders.ts:133:7</code></p>
     <p>Checks unique non-empty strings.</p>
     
   </article>
@@ -1331,6 +2221,151 @@
     <h3>stableStringify</h3>
     <p class="muted"><code>src/features/mcp/validateMcpSchema.ts:261:7</code></p>
     <p>Serializes JSON data deterministically.</p>
+    
+  </article>
+    </section>
+  </section><section id="view-src-features-security-application-createflowsecurityport-ts" class="view" data-view="src/features/security/application/createFlowSecurityPort.ts" hidden>
+    <section class="panel">
+      <h2>src/features/security/application/createFlowSecurityPort.ts</h2>
+      <article class="item" data-search="createFlowSecurityPort src/features/security/application/createFlowSecurityPort.ts Creates the provider-neutral server-side authorization, approval, audit, and secret boundary.">
+    <h3>createFlowSecurityPort</h3>
+    <p class="muted"><code>src/features/security/application/createFlowSecurityPort.ts:33:14</code></p>
+    <p>Creates the provider-neutral server-side authorization, approval, audit, and secret boundary.</p>
+    
+  </article><article class="item" data-search="authorizeAsync src/features/security/application/createFlowSecurityPort.ts Authorizes and durably claims one exact operation before resolving any secret material.">
+    <h3>authorizeAsync</h3>
+    <p class="muted"><code>src/features/security/application/createFlowSecurityPort.ts:48:7</code></p>
+    <p>Authorizes and durably claims one exact operation before resolving any secret material.</p>
+    
+  </article><article class="item" data-search="createPermit src/features/security/application/createFlowSecurityPort.ts Creates a one-use permit that atomically consumes the durable operation claim before side effects.">
+    <h3>createPermit</h3>
+    <p class="muted"><code>src/features/security/application/createFlowSecurityPort.ts:81:7</code></p>
+    <p>Creates a one-use permit that atomically consumes the durable operation claim before side effects.</p>
+    
+  </article><article class="item" data-search="denyAfterReleaseAsync src/features/security/application/createFlowSecurityPort.ts Releases an unconsumed claim before emitting a retryable denial.">
+    <h3>denyAfterReleaseAsync</h3>
+    <p class="muted"><code>src/features/security/application/createFlowSecurityPort.ts:97:7</code></p>
+    <p>Releases an unconsumed claim before emitting a retryable denial.</p>
+    
+  </article><article class="item" data-search="createSecretAsync src/features/security/application/createFlowSecurityPort.ts Creates a credential only after an explicit server-side scoped grant and redacted audit.">
+    <h3>createSecretAsync</h3>
+    <p class="muted"><code>src/features/security/application/createFlowSecurityPort.ts:108:7</code></p>
+    <p>Creates a credential only after an explicit server-side scoped grant and redacted audit.</p>
+    
+  </article><article class="item" data-search="getSecretMetadataAsync src/features/security/application/createFlowSecurityPort.ts Returns metadata only after an explicit actor, tenant, project, and environment grant.">
+    <h3>getSecretMetadataAsync</h3>
+    <p class="muted"><code>src/features/security/application/createFlowSecurityPort.ts:129:7</code></p>
+    <p>Returns metadata only after an explicit actor, tenant, project, and environment grant.</p>
+    
+  </article><article class="item" data-search="revokeSecretAsync src/features/security/application/createFlowSecurityPort.ts Revokes a credential only after an explicit server-side scoped grant and redacted audit.">
+    <h3>revokeSecretAsync</h3>
+    <p class="muted"><code>src/features/security/application/createFlowSecurityPort.ts:147:7</code></p>
+    <p>Revokes a credential only after an explicit server-side scoped grant and redacted audit.</p>
+    
+  </article><article class="item" data-search="resolveAndExecuteAsync src/features/security/application/createFlowSecurityPort.ts Resolves secrets only in the server-side callback after durable consumption succeeds.">
+    <h3>resolveAndExecuteAsync</h3>
+    <p class="muted"><code>src/features/security/application/createFlowSecurityPort.ts:161:7</code></p>
+    <p>Resolves secrets only in the server-side callback after durable consumption succeeds.</p>
+    
+  </article><article class="item" data-search="resolveSecretAsync src/features/security/application/createFlowSecurityPort.ts Resolves one published secret reference without exposing a provider error or payload in failures.">
+    <h3>resolveSecretAsync</h3>
+    <p class="muted"><code>src/features/security/application/createFlowSecurityPort.ts:176:7</code></p>
+    <p>Resolves one published secret reference without exposing a provider error or payload in failures.</p>
+    
+  </article><article class="item" data-search="identityOf src/features/security/application/createFlowSecurityPort.ts Creates a deterministic complete identity from untrusted operation input.">
+    <h3>identityOf</h3>
+    <p class="muted"><code>src/features/security/application/createFlowSecurityPort.ts:188:7</code></p>
+    <p>Creates a deterministic complete identity from untrusted operation input.</p>
+    
+  </article><article class="item" data-search="snapshotActor src/features/security/application/createFlowSecurityPort.ts Captures a runtime-immutable actor scope before any authorization boundary can await.">
+    <h3>snapshotActor</h3>
+    <p class="muted"><code>src/features/security/application/createFlowSecurityPort.ts:206:7</code></p>
+    <p>Captures a runtime-immutable actor scope before any authorization boundary can await.</p>
+    
+  </article><article class="item" data-search="sameIdentity src/features/security/application/createFlowSecurityPort.ts Compares every authorization-relevant operation field without relying on object identity.">
+    <h3>sameIdentity</h3>
+    <p class="muted"><code>src/features/security/application/createFlowSecurityPort.ts:209:7</code></p>
+    <p>Compares every authorization-relevant operation field without relying on object identity.</p>
+    
+  </article><article class="item" data-search="sameTarget src/features/security/application/createFlowSecurityPort.ts Compares target authority exactly so approvals cannot move an operation to another host.">
+    <h3>sameTarget</h3>
+    <p class="muted"><code>src/features/security/application/createFlowSecurityPort.ts:224:7</code></p>
+    <p>Compares target authority exactly so approvals cannot move an operation to another host.</p>
+    
+  </article><article class="item" data-search="sameStrings src/features/security/application/createFlowSecurityPort.ts Matches two ordered identity arrays exactly.">
+    <h3>sameStrings</h3>
+    <p class="muted"><code>src/features/security/application/createFlowSecurityPort.ts:233:7</code></p>
+    <p>Matches two ordered identity arrays exactly.</p>
+    
+  </article><article class="item" data-search="isGranted src/features/security/application/createFlowSecurityPort.ts Matches a grant only when all actor isolation dimensions are equal.">
+    <h3>isGranted</h3>
+    <p class="muted"><code>src/features/security/application/createFlowSecurityPort.ts:237:7</code></p>
+    <p>Matches a grant only when all actor isolation dimensions are equal.</p>
+    
+  </article><article class="item" data-search="scopeOf src/features/security/application/createFlowSecurityPort.ts Converts a trusted actor boundary to the published secret-store scope.">
+    <h3>scopeOf</h3>
+    <p class="muted"><code>src/features/security/application/createFlowSecurityPort.ts:251:7</code></p>
+    <p>Converts a trusted actor boundary to the published secret-store scope.</p>
+    
+  </article><article class="item" data-search="unique src/features/security/application/createFlowSecurityPort.ts Deduplicates secret references without changing their deterministic order.">
+    <h3>unique</h3>
+    <p class="muted"><code>src/features/security/application/createFlowSecurityPort.ts:256:7</code></p>
+    <p>Deduplicates secret references without changing their deterministic order.</p>
+    
+  </article><article class="item" data-search="denyAsync src/features/security/application/createFlowSecurityPort.ts Audits a redacted decision before returning a stable denial.">
+    <h3>denyAsync</h3>
+    <p class="muted"><code>src/features/security/application/createFlowSecurityPort.ts:258:7</code></p>
+    <p>Audits a redacted decision before returning a stable denial.</p>
+    
+  </article><article class="item" data-search="writeAuditAsync src/features/security/application/createFlowSecurityPort.ts Emits only identifiers and target host metadata to the audit edge.">
+    <h3>writeAuditAsync</h3>
+    <p class="muted"><code>src/features/security/application/createFlowSecurityPort.ts:268:7</code></p>
+    <p>Emits only identifiers and target host metadata to the audit edge.</p>
+    
+  </article><article class="item" data-search="writeCredentialAuditAsync src/features/security/application/createFlowSecurityPort.ts Audits a credential-management decision without accepting its payload at the audit edge.">
+    <h3>writeCredentialAuditAsync</h3>
+    <p class="muted"><code>src/features/security/application/createFlowSecurityPort.ts:285:7</code></p>
+    <p>Audits a credential-management decision without accepting its payload at the audit edge.</p>
+    
+  </article><article class="item" data-search="denyCredentialAsync src/features/security/application/createFlowSecurityPort.ts Audits and returns a stable denial for unauthorized credential management.">
+    <h3>denyCredentialAsync</h3>
+    <p class="muted"><code>src/features/security/application/createFlowSecurityPort.ts:300:7</code></p>
+    <p>Audits and returns a stable denial for unauthorized credential management.</p>
+    
+  </article><article class="item" data-search="denialMessage src/features/security/application/createFlowSecurityPort.ts Maps policy reasons to public redaction-safe error text.">
+    <h3>denialMessage</h3>
+    <p class="muted"><code>src/features/security/application/createFlowSecurityPort.ts:320:7</code></p>
+    <p>Maps policy reasons to public redaction-safe error text.</p>
+    
+  </article>
+    </section>
+  </section><section id="view-src-features-security-domain-validateflowsecuritytarget-ts" class="view" data-view="src/features/security/domain/validateFlowSecurityTarget.ts" hidden>
+    <section class="panel">
+      <h2>src/features/security/domain/validateFlowSecurityTarget.ts</h2>
+      <article class="item" data-search="validateFlowSecurityTarget src/features/security/domain/validateFlowSecurityTarget.ts Validates target syntax before the host transport verifies every resolved network peer.">
+    <h3>validateFlowSecurityTarget</h3>
+    <p class="muted"><code>src/features/security/domain/validateFlowSecurityTarget.ts:5:14</code></p>
+    <p>Validates target syntax before the host transport verifies every resolved network peer.</p>
+    
+  </article><article class="item" data-search="isUnsafeLiteralHost src/features/security/domain/validateFlowSecurityTarget.ts Rejects normalized loopback, local, private, and special-use IP literals before transport access.">
+    <h3>isUnsafeLiteralHost</h3>
+    <p class="muted"><code>src/features/security/domain/validateFlowSecurityTarget.ts:33:7</code></p>
+    <p>Rejects normalized loopback, local, private, and special-use IP literals before transport access.</p>
+    
+  </article><article class="item" data-search="isUnsafeIpv4 src/features/security/domain/validateFlowSecurityTarget.ts Identifies IPv4 ranges that must never be an outbound target.">
+    <h3>isUnsafeIpv4</h3>
+    <p class="muted"><code>src/features/security/domain/validateFlowSecurityTarget.ts:37:7</code></p>
+    <p>Identifies IPv4 ranges that must never be an outbound target.</p>
+    
+  </article><article class="item" data-search="isUnsafeIpv6 src/features/security/domain/validateFlowSecurityTarget.ts Identifies IPv6 loopback, unspecified, unique-local, link-local, and mapped literal forms.">
+    <h3>isUnsafeIpv6</h3>
+    <p class="muted"><code>src/features/security/domain/validateFlowSecurityTarget.ts:54:7</code></p>
+    <p>Identifies IPv6 loopback, unspecified, unique-local, link-local, and mapped literal forms.</p>
+    
+  </article><article class="item" data-search="uniqueStrings src/features/security/domain/validateFlowSecurityTarget.ts Checks unique non-empty authority strings.">
+    <h3>uniqueStrings</h3>
+    <p class="muted"><code>src/features/security/domain/validateFlowSecurityTarget.ts:70:7</code></p>
+    <p>Checks unique non-empty authority strings.</p>
     
   </article>
     </section>

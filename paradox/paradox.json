@@ -14,7 +14,7 @@
     {
       "id": "npm",
       "label": "npm",
-      "value": "v0.3.0",
+      "value": "v0.4.0",
       "color": "cb3837"
     },
     {
@@ -130,13 +130,27 @@
       ]
     },
     {
-      "path": "src/features/mcp/createMcpToolRegistry.ts",
+      "path": "src/features/mcp/createMcpRemoteTransport.ts",
       "isEntrypoint": false,
       "dependencies": [
         "src/features/mcp/McpToolError.ts",
+        "src/types/mcp.ts",
+        "src/types/security.ts"
+      ],
+      "exports": [
+        "createMcpRemoteTransport"
+      ]
+    },
+    {
+      "path": "src/features/mcp/createMcpToolRegistry.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/mcp/createMcpRemoteTransport.ts",
+        "src/features/mcp/McpToolError.ts",
         "src/features/mcp/prepareMcpProviders.ts",
         "src/features/mcp/validateMcpSchema.ts",
-        "src/types/mcp.ts"
+        "src/types/mcp.ts",
+        "src/types/security.ts"
       ],
       "exports": [
         "createMcpToolRegistry"
@@ -172,20 +186,71 @@
       ]
     },
     {
+      "path": "src/features/security/application/createFlowSecurityPort.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/security/domain/validateFlowSecurityTarget.ts",
+        "src/features/security/FlowSecurityError.ts",
+        "src/types/security.ts"
+      ],
+      "exports": [
+        "createFlowSecurityPort"
+      ]
+    },
+    {
+      "path": "src/features/security/domain/validateFlowSecurityTarget.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/security/FlowSecurityError.ts",
+        "src/types/security.ts"
+      ],
+      "exports": [
+        "validateFlowSecurityTarget"
+      ]
+    },
+    {
+      "path": "src/features/security/FlowSecurityError.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": [
+        "FlowSecurityError"
+      ]
+    },
+    {
       "path": "src/index.ts",
       "isEntrypoint": true,
       "dependencies": [],
       "exports": [
         "compileFlowGraph",
         "createDefaultNodeRegistry",
+        "createFlowSecurityPort",
         "executeFlowAsync",
+        "FlowApprovalStorePort",
         "FlowClock",
         "FlowCompiledGraph",
         "FlowExecutionResult",
         "FlowNodeOperation",
         "FlowNodeOperationResult",
         "FlowNodeRegistry",
-        "FlowRunRequest"
+        "FlowOperationStorePort",
+        "FlowOutboundTransportPort",
+        "FlowRateLimitPort",
+        "FlowResolvedSecrets",
+        "FlowRunRequest",
+        "FlowSecretCreateInput",
+        "FlowSecretMetadata",
+        "FlowSecretRevokeInput",
+        "FlowSecurityActor",
+        "FlowSecurityApproval",
+        "FlowSecurityAuditEvent",
+        "FlowSecurityAuditPort",
+        "FlowSecurityError",
+        "FlowSecurityGrant",
+        "FlowSecurityOperation",
+        "FlowSecurityOperationIdentity",
+        "FlowSecurityPermit",
+        "FlowSecurityPort",
+        "FlowSecurityTarget"
       ]
     },
     {
@@ -226,7 +291,9 @@
     {
       "path": "src/types/mcp.ts",
       "isEntrypoint": false,
-      "dependencies": [],
+      "dependencies": [
+        "src/types/security.ts"
+      ],
       "exports": [
         "McpProviderDefinition",
         "McpToolInvocation",
@@ -235,6 +302,31 @@
         "McpToolRegistry",
         "McpToolResult",
         "McpTrustedStdioProvider"
+      ]
+    },
+    {
+      "path": "src/types/security.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": [
+        "FlowApprovalStorePort",
+        "FlowOperationStorePort",
+        "FlowOutboundTransportPort",
+        "FlowRateLimitPort",
+        "FlowResolvedSecrets",
+        "FlowSecretCreateInput",
+        "FlowSecretMetadata",
+        "FlowSecretRevokeInput",
+        "FlowSecurityActor",
+        "FlowSecurityApproval",
+        "FlowSecurityAuditEvent",
+        "FlowSecurityAuditPort",
+        "FlowSecurityGrant",
+        "FlowSecurityOperation",
+        "FlowSecurityOperationIdentity",
+        "FlowSecurityPermit",
+        "FlowSecurityPort",
+        "FlowSecurityTarget"
       ]
     }
   ],
@@ -316,6 +408,49 @@
       "structuredRows": []
     },
     {
+      "name": "createFlowSecurityPort",
+      "title": null,
+      "description": "Creates the provider-neutral server-side authorization, approval, audit, and secret boundary.",
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "value",
+      "modulePath": "src/features/security/application/createFlowSecurityPort.ts",
+      "sourceLocation": {
+        "filePath": "src/features/security/application/createFlowSecurityPort.ts",
+        "line": 33,
+        "column": 14
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [
+        "FlowApprovalStorePort",
+        "FlowOperationStorePort",
+        "FlowRateLimitPort",
+        "FlowSecurityAuditPort",
+        "FlowSecurityGrant",
+        "FlowSecurityPort"
+      ],
+      "signatures": [
+        {
+          "label": "(input: { readonly approvalStore: FlowApprovalStorePort; readonly audit: FlowSecurityAuditPort; readonly grants: readonly FlowSecurityGrant[]; readonly operationStore: FlowOperationStorePort; readonly rateLimit: FlowRateLimitPort; readonly secretStore: SecretStoreAdapter; }) => FlowSecurityPort",
+          "parameters": [
+            {
+              "name": "input",
+              "type": "{ readonly approvalStore: FlowApprovalStorePort; readonly audit: FlowSecurityAuditPort; readonly grants: readonly FlowSecurityGrant[]; readonly operationStore: FlowOperationStorePort; readonly rateLimit: FlowRateLimitPort; readonly secretStore: SecretStoreAdapter; }",
+              "required": true,
+              "description": null
+            }
+          ],
+          "returnType": "FlowSecurityPort",
+          "returnDescription": null
+        }
+      ],
+      "members": [],
+      "structuredRows": []
+    },
+    {
       "name": "executeFlowAsync",
       "title": null,
       "description": "Execute a compiled graph in deterministic order within one process.",
@@ -373,6 +508,39 @@
         }
       ],
       "members": [],
+      "structuredRows": []
+    },
+    {
+      "name": "FlowApprovalStorePort",
+      "title": null,
+      "description": null,
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "type",
+      "modulePath": "src/types/security.ts",
+      "sourceLocation": {
+        "filePath": "src/types/security.ts",
+        "line": 53,
+        "column": 1
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [
+        "FlowSecurityApproval",
+        "FlowSecurityOperationIdentity"
+      ],
+      "signatures": [],
+      "members": [
+        {
+          "name": "getAsync",
+          "kind": "method",
+          "type": "(operation: FlowSecurityOperationIdentity) => Promise<FlowSecurityApproval | undefined>",
+          "required": true,
+          "description": null
+        }
+      ],
       "structuredRows": []
     },
     {
@@ -564,6 +732,136 @@
       "structuredRows": []
     },
     {
+      "name": "FlowOperationStorePort",
+      "title": null,
+      "description": null,
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "type",
+      "modulePath": "src/types/security.ts",
+      "sourceLocation": {
+        "filePath": "src/types/security.ts",
+        "line": 61,
+        "column": 1
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [
+        "FlowSecurityOperationIdentity"
+      ],
+      "signatures": [],
+      "members": [
+        {
+          "name": "claimAsync",
+          "kind": "method",
+          "type": "(operation: FlowSecurityOperationIdentity) => Promise<boolean>",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "consumeAsync",
+          "kind": "method",
+          "type": "(operation: FlowSecurityOperationIdentity) => Promise<boolean>",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "releaseAsync",
+          "kind": "method",
+          "type": "(operation: FlowSecurityOperationIdentity) => Promise<void>",
+          "required": true,
+          "description": null
+        }
+      ],
+      "structuredRows": []
+    },
+    {
+      "name": "FlowOutboundTransportPort",
+      "title": null,
+      "description": null,
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "type",
+      "modulePath": "src/types/security.ts",
+      "sourceLocation": {
+        "filePath": "src/types/security.ts",
+        "line": 72,
+        "column": 1
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [],
+      "signatures": [],
+      "members": [
+        {
+          "name": "fetchAsync",
+          "kind": "method",
+          "type": "(input: { readonly allowedHosts: readonly string[]; readonly init?: RequestInit; readonly url: string; }) => Promise<Response>",
+          "required": true,
+          "description": null
+        }
+      ],
+      "structuredRows": []
+    },
+    {
+      "name": "FlowRateLimitPort",
+      "title": null,
+      "description": null,
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "type",
+      "modulePath": "src/types/security.ts",
+      "sourceLocation": {
+        "filePath": "src/types/security.ts",
+        "line": 81,
+        "column": 1
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [
+        "FlowSecurityActor"
+      ],
+      "signatures": [],
+      "members": [
+        {
+          "name": "acquireAsync",
+          "kind": "method",
+          "type": "(input: { readonly actor: FlowSecurityActor; readonly capability: string; readonly operationId: string; }) => Promise<boolean>",
+          "required": true,
+          "description": null
+        }
+      ],
+      "structuredRows": []
+    },
+    {
+      "name": "FlowResolvedSecrets",
+      "title": null,
+      "description": null,
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "unknown",
+      "modulePath": "src/types/security.ts",
+      "sourceLocation": {
+        "filePath": "src/types/security.ts",
+        "line": 116,
+        "column": 1
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [],
+      "signatures": [],
+      "members": [],
+      "structuredRows": []
+    },
+    {
       "name": "FlowRunRequest",
       "title": null,
       "description": null,
@@ -613,6 +911,672 @@
         },
         {
           "name": "triggerId",
+          "kind": "property",
+          "type": "string",
+          "required": true,
+          "description": null
+        }
+      ],
+      "structuredRows": []
+    },
+    {
+      "name": "FlowSecretCreateInput",
+      "title": null,
+      "description": null,
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "type",
+      "modulePath": "src/types/security.ts",
+      "sourceLocation": {
+        "filePath": "src/types/security.ts",
+        "line": 119,
+        "column": 1
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [
+        "FlowSecurityActor"
+      ],
+      "signatures": [],
+      "members": [
+        {
+          "name": "actor",
+          "kind": "property",
+          "type": "FlowSecurityActor",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "kind",
+          "kind": "property",
+          "type": "string",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "payload",
+          "kind": "property",
+          "type": "Readonly<Record<string, string>>",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "provider",
+          "kind": "property",
+          "type": "string | undefined",
+          "required": false,
+          "description": null
+        },
+        {
+          "name": "ref",
+          "kind": "property",
+          "type": "string",
+          "required": true,
+          "description": null
+        }
+      ],
+      "structuredRows": []
+    },
+    {
+      "name": "FlowSecretMetadata",
+      "title": null,
+      "description": null,
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "unknown",
+      "modulePath": "src/types/security.ts",
+      "sourceLocation": {
+        "filePath": "src/types/security.ts",
+        "line": 115,
+        "column": 1
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [],
+      "signatures": [],
+      "members": [],
+      "structuredRows": []
+    },
+    {
+      "name": "FlowSecretRevokeInput",
+      "title": null,
+      "description": null,
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "type",
+      "modulePath": "src/types/security.ts",
+      "sourceLocation": {
+        "filePath": "src/types/security.ts",
+        "line": 128,
+        "column": 1
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [
+        "FlowSecurityActor"
+      ],
+      "signatures": [],
+      "members": [
+        {
+          "name": "actor",
+          "kind": "property",
+          "type": "FlowSecurityActor",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "ref",
+          "kind": "property",
+          "type": "string",
+          "required": true,
+          "description": null
+        }
+      ],
+      "structuredRows": []
+    },
+    {
+      "name": "FlowSecurityActor",
+      "title": null,
+      "description": null,
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "type",
+      "modulePath": "src/types/security.ts",
+      "sourceLocation": {
+        "filePath": "src/types/security.ts",
+        "line": 4,
+        "column": 1
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [],
+      "signatures": [],
+      "members": [
+        {
+          "name": "environment",
+          "kind": "property",
+          "type": "string",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "id",
+          "kind": "property",
+          "type": "string",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "projectId",
+          "kind": "property",
+          "type": "string",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "tenantId",
+          "kind": "property",
+          "type": "string",
+          "required": true,
+          "description": null
+        }
+      ],
+      "structuredRows": []
+    },
+    {
+      "name": "FlowSecurityApproval",
+      "title": null,
+      "description": null,
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "type",
+      "modulePath": "src/types/security.ts",
+      "sourceLocation": {
+        "filePath": "src/types/security.ts",
+        "line": 47,
+        "column": 1
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [
+        "FlowSecurityOperationIdentity"
+      ],
+      "signatures": [],
+      "members": [
+        {
+          "name": "operation",
+          "kind": "property",
+          "type": "FlowSecurityOperationIdentity",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "status",
+          "kind": "property",
+          "type": "\"approved\" | \"pending\" | \"rejected\"",
+          "required": true,
+          "description": null
+        }
+      ],
+      "structuredRows": []
+    },
+    {
+      "name": "FlowSecurityAuditEvent",
+      "title": null,
+      "description": null,
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "type",
+      "modulePath": "src/types/security.ts",
+      "sourceLocation": {
+        "filePath": "src/types/security.ts",
+        "line": 95,
+        "column": 1
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [],
+      "signatures": [],
+      "members": [
+        {
+          "name": "actorId",
+          "kind": "property",
+          "type": "string",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "capability",
+          "kind": "property",
+          "type": "string",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "decision",
+          "kind": "property",
+          "type": "\"denied\" | \"permitted\"",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "operationId",
+          "kind": "property",
+          "type": "string",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "reason",
+          "kind": "property",
+          "type": "\"approval_pending\" | \"approval_rejected\" | \"credential_create\" | \"credential_revoke\" | \"idempotency_conflict\" | \"invalid_target\" | \"permission_denied\" | \"rate_limited\" | \"secret_unavailable\"",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "secretRefs",
+          "kind": "property",
+          "type": "readonly string[]",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "targetHost",
+          "kind": "property",
+          "type": "string | undefined",
+          "required": false,
+          "description": null
+        }
+      ],
+      "structuredRows": []
+    },
+    {
+      "name": "FlowSecurityAuditPort",
+      "title": null,
+      "description": null,
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "type",
+      "modulePath": "src/types/security.ts",
+      "sourceLocation": {
+        "filePath": "src/types/security.ts",
+        "line": 90,
+        "column": 1
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [
+        "FlowSecurityAuditEvent"
+      ],
+      "signatures": [],
+      "members": [
+        {
+          "name": "writeAsync",
+          "kind": "method",
+          "type": "(event: FlowSecurityAuditEvent) => Promise<void>",
+          "required": true,
+          "description": null
+        }
+      ],
+      "structuredRows": []
+    },
+    {
+      "name": "FlowSecurityError",
+      "title": null,
+      "description": "Represents a stable, payload-redacted Flow security denial.",
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "type",
+      "modulePath": "src/features/security/FlowSecurityError.ts",
+      "sourceLocation": {
+        "filePath": "src/features/security/FlowSecurityError.ts",
+        "line": 2,
+        "column": 1
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [],
+      "signatures": [],
+      "members": [],
+      "structuredRows": []
+    },
+    {
+      "name": "FlowSecurityGrant",
+      "title": null,
+      "description": null,
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "type",
+      "modulePath": "src/types/security.ts",
+      "sourceLocation": {
+        "filePath": "src/types/security.ts",
+        "line": 12,
+        "column": 1
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [],
+      "signatures": [],
+      "members": [
+        {
+          "name": "actorId",
+          "kind": "property",
+          "type": "string",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "capability",
+          "kind": "property",
+          "type": "string",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "environment",
+          "kind": "property",
+          "type": "string",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "projectId",
+          "kind": "property",
+          "type": "string",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "tenantId",
+          "kind": "property",
+          "type": "string",
+          "required": true,
+          "description": null
+        }
+      ],
+      "structuredRows": []
+    },
+    {
+      "name": "FlowSecurityOperation",
+      "title": null,
+      "description": null,
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "type",
+      "modulePath": "src/types/security.ts",
+      "sourceLocation": {
+        "filePath": "src/types/security.ts",
+        "line": 21,
+        "column": 1
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [
+        "FlowSecurityActor",
+        "FlowSecurityTarget"
+      ],
+      "signatures": [],
+      "members": [
+        {
+          "name": "actor",
+          "kind": "property",
+          "type": "FlowSecurityActor",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "capability",
+          "kind": "property",
+          "type": "string",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "idempotencyKey",
+          "kind": "property",
+          "type": "string",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "operationId",
+          "kind": "property",
+          "type": "string",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "secretRefs",
+          "kind": "property",
+          "type": "readonly string[] | undefined",
+          "required": false,
+          "description": null
+        },
+        {
+          "name": "target",
+          "kind": "property",
+          "type": "FlowSecurityTarget | undefined",
+          "required": false,
+          "description": null
+        }
+      ],
+      "structuredRows": []
+    },
+    {
+      "name": "FlowSecurityOperationIdentity",
+      "title": null,
+      "description": null,
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "type",
+      "modulePath": "src/types/security.ts",
+      "sourceLocation": {
+        "filePath": "src/types/security.ts",
+        "line": 37,
+        "column": 1
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [
+        "FlowSecurityActor",
+        "FlowSecurityTarget"
+      ],
+      "signatures": [],
+      "members": [
+        {
+          "name": "actor",
+          "kind": "property",
+          "type": "FlowSecurityActor",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "capability",
+          "kind": "property",
+          "type": "string",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "idempotencyKey",
+          "kind": "property",
+          "type": "string",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "operationId",
+          "kind": "property",
+          "type": "string",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "secretRefs",
+          "kind": "property",
+          "type": "readonly string[]",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "target",
+          "kind": "property",
+          "type": "FlowSecurityTarget | undefined",
+          "required": false,
+          "description": null
+        }
+      ],
+      "structuredRows": []
+    },
+    {
+      "name": "FlowSecurityPermit",
+      "title": null,
+      "description": null,
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "type",
+      "modulePath": "src/types/security.ts",
+      "sourceLocation": {
+        "filePath": "src/types/security.ts",
+        "line": 134,
+        "column": 1
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [
+        "FlowResolvedSecrets",
+        "FlowSecurityOperationIdentity"
+      ],
+      "signatures": [],
+      "members": [
+        {
+          "name": "executeAsync",
+          "kind": "method",
+          "type": "<T>(operation: (secrets: FlowResolvedSecrets) => Promise<T>) => Promise<T>",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "operation",
+          "kind": "property",
+          "type": "FlowSecurityOperationIdentity",
+          "required": true,
+          "description": null
+        }
+      ],
+      "structuredRows": []
+    },
+    {
+      "name": "FlowSecurityPort",
+      "title": null,
+      "description": null,
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "type",
+      "modulePath": "src/types/security.ts",
+      "sourceLocation": {
+        "filePath": "src/types/security.ts",
+        "line": 140,
+        "column": 1
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [
+        "FlowSecretCreateInput",
+        "FlowSecretMetadata",
+        "FlowSecretRevokeInput",
+        "FlowSecurityActor",
+        "FlowSecurityOperation",
+        "FlowSecurityPermit"
+      ],
+      "signatures": [],
+      "members": [
+        {
+          "name": "authorizeAsync",
+          "kind": "method",
+          "type": "(operation: FlowSecurityOperation) => Promise<FlowSecurityPermit>",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "createSecretAsync",
+          "kind": "method",
+          "type": "(input: FlowSecretCreateInput) => Promise<FlowSecretMetadata>",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "getSecretMetadataAsync",
+          "kind": "method",
+          "type": "(input: { readonly actor: FlowSecurityActor; readonly ref: SecretRef; }) => Promise<FlowSecretMetadata>",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "revokeSecretAsync",
+          "kind": "method",
+          "type": "(input: FlowSecretRevokeInput) => Promise<void>",
+          "required": true,
+          "description": null
+        }
+      ],
+      "structuredRows": []
+    },
+    {
+      "name": "FlowSecurityTarget",
+      "title": null,
+      "description": null,
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "type",
+      "modulePath": "src/types/security.ts",
+      "sourceLocation": {
+        "filePath": "src/types/security.ts",
+        "line": 31,
+        "column": 1
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [],
+      "signatures": [],
+      "members": [
+        {
+          "name": "allowedHosts",
+          "kind": "property",
+          "type": "readonly string[]",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "url",
           "kind": "property",
           "type": "string",
           "required": true,
@@ -1142,13 +2106,24 @@
       }
     },
     {
+      "name": "createMcpRemoteTransport",
+      "description": "Opens remote MCP only through the host-owned transport that controls every peer connection.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/createMcpRemoteTransport.ts",
+        "line": 8,
+        "column": 14
+      }
+    },
+    {
       "name": "createMcpToolRegistry",
       "description": "Creates a snapshotting, allowlist-only MCP registry. Real invocation fails closed until Issue #4 releases its approval boundary.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 23,
+        "line": 24,
         "column": 14
       }
     },
@@ -1159,18 +2134,29 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 61,
+        "line": 72,
         "column": 7
       }
     },
     {
       "name": "invokeAsync",
-      "description": "Validates a requested tool locally and reports the unavailable canonical approval boundary.",
+      "description": "Validates, approves, and invokes one discovered tool through the server-only security port.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 78,
+        "line": 90,
+        "column": 7
+      }
+    },
+    {
+      "name": "callToolAsync",
+      "description": "Opens a bounded provider connection only after the approval permit was issued.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/createMcpToolRegistry.ts",
+        "line": 136,
         "column": 7
       }
     },
@@ -1181,7 +2167,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 122,
+        "line": 184,
         "column": 7
       }
     },
@@ -1192,18 +2178,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 140,
-        "column": 7
-      }
-    },
-    {
-      "name": "remoteTransport",
-      "description": "Allows a remote connection only to the separately documented literal-loopback development exception.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 159,
+        "line": 205,
         "column": 7
       }
     },
@@ -1214,7 +2189,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 180,
+        "line": 223,
         "column": 7
       }
     },
@@ -1225,7 +2200,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 219,
+        "line": 262,
         "column": 7
       }
     },
@@ -1236,7 +2211,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 239,
+        "line": 282,
         "column": 7
       }
     },
@@ -1247,7 +2222,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 261,
+        "line": 304,
         "column": 7
       }
     },
@@ -1258,7 +2233,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 266,
+        "line": 309,
         "column": 7
       }
     },
@@ -1269,7 +2244,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 272,
+        "line": 315,
         "column": 7
       }
     },
@@ -1280,7 +2255,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 274,
+        "line": 317,
         "column": 7
       }
     },
@@ -1291,7 +2266,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/createMcpToolRegistry.ts",
-        "line": 277,
+        "line": 320,
         "column": 7
       }
     },
@@ -1324,18 +2299,29 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/prepareMcpProviders.ts",
-        "line": 42,
+        "line": 41,
         "column": 7
       }
     },
     {
       "name": "validateRemote",
-      "description": "Rejects credentials, redirects, private addresses, and non-allowlisted production endpoints.",
+      "description": "Rejects credentials, private literals, and endpoints outside their explicit host allowlist.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/prepareMcpProviders.ts",
-        "line": 72,
+        "line": 71,
+        "column": 7
+      }
+    },
+    {
+      "name": "privateIpv6",
+      "description": "Detects loopback, link-local, unique-local, and unspecified IPv6 literals.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/mcp/prepareMcpProviders.ts",
+        "line": 100,
         "column": 7
       }
     },
@@ -1346,7 +2332,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/prepareMcpProviders.ts",
-        "line": 110,
+        "line": 116,
         "column": 7
       }
     },
@@ -1357,7 +2343,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/mcp/prepareMcpProviders.ts",
-        "line": 127,
+        "line": 133,
         "column": 7
       }
     },
@@ -1580,6 +2566,303 @@
         "line": 261,
         "column": 7
       }
+    },
+    {
+      "name": "createFlowSecurityPort",
+      "description": "Creates the provider-neutral server-side authorization, approval, audit, and secret boundary.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/security/application/createFlowSecurityPort.ts",
+        "line": 33,
+        "column": 14
+      }
+    },
+    {
+      "name": "authorizeAsync",
+      "description": "Authorizes and durably claims one exact operation before resolving any secret material.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/security/application/createFlowSecurityPort.ts",
+        "line": 48,
+        "column": 7
+      }
+    },
+    {
+      "name": "createPermit",
+      "description": "Creates a one-use permit that atomically consumes the durable operation claim before side effects.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/security/application/createFlowSecurityPort.ts",
+        "line": 81,
+        "column": 7
+      }
+    },
+    {
+      "name": "denyAfterReleaseAsync",
+      "description": "Releases an unconsumed claim before emitting a retryable denial.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/security/application/createFlowSecurityPort.ts",
+        "line": 97,
+        "column": 7
+      }
+    },
+    {
+      "name": "createSecretAsync",
+      "description": "Creates a credential only after an explicit server-side scoped grant and redacted audit.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/security/application/createFlowSecurityPort.ts",
+        "line": 108,
+        "column": 7
+      }
+    },
+    {
+      "name": "getSecretMetadataAsync",
+      "description": "Returns metadata only after an explicit actor, tenant, project, and environment grant.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/security/application/createFlowSecurityPort.ts",
+        "line": 129,
+        "column": 7
+      }
+    },
+    {
+      "name": "revokeSecretAsync",
+      "description": "Revokes a credential only after an explicit server-side scoped grant and redacted audit.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/security/application/createFlowSecurityPort.ts",
+        "line": 147,
+        "column": 7
+      }
+    },
+    {
+      "name": "resolveAndExecuteAsync",
+      "description": "Resolves secrets only in the server-side callback after durable consumption succeeds.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/security/application/createFlowSecurityPort.ts",
+        "line": 161,
+        "column": 7
+      }
+    },
+    {
+      "name": "resolveSecretAsync",
+      "description": "Resolves one published secret reference without exposing a provider error or payload in failures.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/security/application/createFlowSecurityPort.ts",
+        "line": 176,
+        "column": 7
+      }
+    },
+    {
+      "name": "identityOf",
+      "description": "Creates a deterministic complete identity from untrusted operation input.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/security/application/createFlowSecurityPort.ts",
+        "line": 188,
+        "column": 7
+      }
+    },
+    {
+      "name": "snapshotActor",
+      "description": "Captures a runtime-immutable actor scope before any authorization boundary can await.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/security/application/createFlowSecurityPort.ts",
+        "line": 206,
+        "column": 7
+      }
+    },
+    {
+      "name": "sameIdentity",
+      "description": "Compares every authorization-relevant operation field without relying on object identity.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/security/application/createFlowSecurityPort.ts",
+        "line": 209,
+        "column": 7
+      }
+    },
+    {
+      "name": "sameTarget",
+      "description": "Compares target authority exactly so approvals cannot move an operation to another host.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/security/application/createFlowSecurityPort.ts",
+        "line": 224,
+        "column": 7
+      }
+    },
+    {
+      "name": "sameStrings",
+      "description": "Matches two ordered identity arrays exactly.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/security/application/createFlowSecurityPort.ts",
+        "line": 233,
+        "column": 7
+      }
+    },
+    {
+      "name": "isGranted",
+      "description": "Matches a grant only when all actor isolation dimensions are equal.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/security/application/createFlowSecurityPort.ts",
+        "line": 237,
+        "column": 7
+      }
+    },
+    {
+      "name": "scopeOf",
+      "description": "Converts a trusted actor boundary to the published secret-store scope.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/security/application/createFlowSecurityPort.ts",
+        "line": 251,
+        "column": 7
+      }
+    },
+    {
+      "name": "unique",
+      "description": "Deduplicates secret references without changing their deterministic order.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/security/application/createFlowSecurityPort.ts",
+        "line": 256,
+        "column": 7
+      }
+    },
+    {
+      "name": "denyAsync",
+      "description": "Audits a redacted decision before returning a stable denial.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/security/application/createFlowSecurityPort.ts",
+        "line": 258,
+        "column": 7
+      }
+    },
+    {
+      "name": "writeAuditAsync",
+      "description": "Emits only identifiers and target host metadata to the audit edge.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/security/application/createFlowSecurityPort.ts",
+        "line": 268,
+        "column": 7
+      }
+    },
+    {
+      "name": "writeCredentialAuditAsync",
+      "description": "Audits a credential-management decision without accepting its payload at the audit edge.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/security/application/createFlowSecurityPort.ts",
+        "line": 285,
+        "column": 7
+      }
+    },
+    {
+      "name": "denyCredentialAsync",
+      "description": "Audits and returns a stable denial for unauthorized credential management.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/security/application/createFlowSecurityPort.ts",
+        "line": 300,
+        "column": 7
+      }
+    },
+    {
+      "name": "denialMessage",
+      "description": "Maps policy reasons to public redaction-safe error text.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/security/application/createFlowSecurityPort.ts",
+        "line": 320,
+        "column": 7
+      }
+    },
+    {
+      "name": "validateFlowSecurityTarget",
+      "description": "Validates target syntax before the host transport verifies every resolved network peer.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/security/domain/validateFlowSecurityTarget.ts",
+        "line": 5,
+        "column": 14
+      }
+    },
+    {
+      "name": "isUnsafeLiteralHost",
+      "description": "Rejects normalized loopback, local, private, and special-use IP literals before transport access.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/security/domain/validateFlowSecurityTarget.ts",
+        "line": 33,
+        "column": 7
+      }
+    },
+    {
+      "name": "isUnsafeIpv4",
+      "description": "Identifies IPv4 ranges that must never be an outbound target.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/security/domain/validateFlowSecurityTarget.ts",
+        "line": 37,
+        "column": 7
+      }
+    },
+    {
+      "name": "isUnsafeIpv6",
+      "description": "Identifies IPv6 loopback, unspecified, unique-local, link-local, and mapped literal forms.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/security/domain/validateFlowSecurityTarget.ts",
+        "line": 54,
+        "column": 7
+      }
+    },
+    {
+      "name": "uniqueStrings",
+      "description": "Checks unique non-empty authority strings.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/security/domain/validateFlowSecurityTarget.ts",
+        "line": 70,
+        "column": 7
+      }
     }
   ],
   "sequenceScenarios": [
@@ -1597,6 +2880,14 @@
       "sourcePath": "src/features/execution/domain/createDefaultNodeRegistry.ts",
       "symbolName": "createDefaultNodeRegistry",
       "description": "Create the built-in operations that have no provider or host dependency.",
+      "isReadme": false
+    },
+    {
+      "kind": "export",
+      "name": "createFlowSecurityPort",
+      "sourcePath": "src/features/security/application/createFlowSecurityPort.ts",
+      "symbolName": "createFlowSecurityPort",
+      "description": "Creates the provider-neutral server-side authorization, approval, audit, and secret boundary.",
       "isReadme": false
     },
     {
@@ -1627,7 +2918,22 @@
       },
       {
         "fromPath": "src/index.ts",
+        "toPath": "src/features/security/application/createFlowSecurityPort.ts",
+        "sourcePath": "src/index.ts"
+      },
+      {
+        "fromPath": "src/index.ts",
+        "toPath": "src/features/security/FlowSecurityError.ts",
+        "sourcePath": "src/index.ts"
+      },
+      {
+        "fromPath": "src/index.ts",
         "toPath": "src/types/execution.ts",
+        "sourcePath": "src/index.ts"
+      },
+      {
+        "fromPath": "src/index.ts",
+        "toPath": "src/types/security.ts",
         "sourcePath": "src/index.ts"
       },
       {
@@ -1641,8 +2947,38 @@
         "sourcePath": "src/mcp.ts"
       },
       {
+        "fromPath": "src/types/mcp.ts",
+        "toPath": "src/types/security.ts",
+        "sourcePath": "src/types/mcp.ts"
+      },
+      {
+        "fromPath": "src/features/mcp/createMcpRemoteTransport.ts",
+        "toPath": "src/types/mcp.ts",
+        "sourcePath": "src/features/mcp/createMcpRemoteTransport.ts"
+      },
+      {
+        "fromPath": "src/features/mcp/createMcpRemoteTransport.ts",
+        "toPath": "src/types/security.ts",
+        "sourcePath": "src/features/mcp/createMcpRemoteTransport.ts"
+      },
+      {
+        "fromPath": "src/features/mcp/createMcpRemoteTransport.ts",
+        "toPath": "src/features/mcp/McpToolError.ts",
+        "sourcePath": "src/features/mcp/createMcpRemoteTransport.ts"
+      },
+      {
         "fromPath": "src/features/mcp/createMcpToolRegistry.ts",
         "toPath": "src/types/mcp.ts",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromPath": "src/features/mcp/createMcpToolRegistry.ts",
+        "toPath": "src/types/security.ts",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromPath": "src/features/mcp/createMcpToolRegistry.ts",
+        "toPath": "src/features/mcp/createMcpRemoteTransport.ts",
         "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
       },
       {
@@ -1704,9 +3040,40 @@
         "fromPath": "src/features/execution/domain/createDefaultNodeRegistry.ts",
         "toPath": "src/types/execution.ts",
         "sourcePath": "src/features/execution/domain/createDefaultNodeRegistry.ts"
+      },
+      {
+        "fromPath": "src/features/security/application/createFlowSecurityPort.ts",
+        "toPath": "src/types/security.ts",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromPath": "src/features/security/application/createFlowSecurityPort.ts",
+        "toPath": "src/features/security/domain/validateFlowSecurityTarget.ts",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromPath": "src/features/security/application/createFlowSecurityPort.ts",
+        "toPath": "src/features/security/FlowSecurityError.ts",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromPath": "src/features/security/domain/validateFlowSecurityTarget.ts",
+        "toPath": "src/types/security.ts",
+        "sourcePath": "src/features/security/domain/validateFlowSecurityTarget.ts"
+      },
+      {
+        "fromPath": "src/features/security/domain/validateFlowSecurityTarget.ts",
+        "toPath": "src/features/security/FlowSecurityError.ts",
+        "sourcePath": "src/features/security/domain/validateFlowSecurityTarget.ts"
       }
     ],
     "calls": [
+      {
+        "fromSymbol": "fetch",
+        "toSymbol": "fetchAsync",
+        "callExpression": "outboundTransport.fetchAsync",
+        "sourcePath": "src/features/mcp/createMcpRemoteTransport.ts"
+      },
       {
         "fromSymbol": "createMcpToolRegistry",
         "toSymbol": "prepareMcpProviders",
@@ -1726,7 +3093,7 @@
         "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
       },
       {
-        "fromSymbol": "src/features/mcp/createMcpToolRegistry.ts",
+        "fromSymbol": "invokeAsync",
         "toSymbol": "invokeAsync",
         "callExpression": "invokeAsync",
         "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
@@ -1798,6 +3165,54 @@
         "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
       },
       {
+        "fromSymbol": "invokeAsync",
+        "toSymbol": "authorizeAsync",
+        "callExpression": "security.authorizeAsync",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromSymbol": "invokeAsync",
+        "toSymbol": "executeAsync",
+        "callExpression": "permit.executeAsync",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromSymbol": "src/features/mcp/createMcpToolRegistry.ts",
+        "toSymbol": "callToolAsync",
+        "callExpression": "callToolAsync",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromSymbol": "callToolAsync",
+        "toSymbol": "connectAsync",
+        "callExpression": "connectAsync",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromSymbol": "callToolAsync",
+        "toSymbol": "boundedAsync",
+        "callExpression": "boundedAsync",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromSymbol": "callToolAsync",
+        "toSymbol": "timeoutOf",
+        "callExpression": "timeoutOf",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromSymbol": "callToolAsync",
+        "toSymbol": "isRecord",
+        "callExpression": "isRecord",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
+        "fromSymbol": "callToolAsync",
+        "toSymbol": "closeAsync",
+        "callExpression": "connection.closeAsync",
+        "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
+      },
+      {
         "fromSymbol": "connectAsync",
         "toSymbol": "stdioTransport",
         "callExpression": "stdioTransport",
@@ -1805,8 +3220,8 @@
       },
       {
         "fromSymbol": "connectAsync",
-        "toSymbol": "remoteTransport",
-        "callExpression": "remoteTransport",
+        "toSymbol": "createMcpRemoteTransport",
+        "callExpression": "createMcpRemoteTransport",
         "sourcePath": "src/features/mcp/createMcpToolRegistry.ts"
       },
       {
@@ -1879,6 +3294,12 @@
         "fromSymbol": "validateRemote",
         "toSymbol": "privateIpv4",
         "callExpression": "privateIpv4",
+        "sourcePath": "src/features/mcp/prepareMcpProviders.ts"
+      },
+      {
+        "fromSymbol": "validateRemote",
+        "toSymbol": "privateIpv6",
+        "callExpression": "privateIpv6",
         "sourcePath": "src/features/mcp/prepareMcpProviders.ts"
       },
       {
@@ -2486,6 +3907,306 @@
         "toSymbol": "isDataArray",
         "callExpression": "isDataArray",
         "sourcePath": "src/features/execution/domain/validateFlowDataSchema.ts"
+      },
+      {
+        "fromSymbol": "authorizeAsync",
+        "toSymbol": "authorizeAsync",
+        "callExpression": "authorizeAsync",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "createSecretAsync",
+        "toSymbol": "createSecretAsync",
+        "callExpression": "createSecretAsync",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "getSecretMetadataAsync",
+        "toSymbol": "getSecretMetadataAsync",
+        "callExpression": "getSecretMetadataAsync",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "revokeSecretAsync",
+        "toSymbol": "revokeSecretAsync",
+        "callExpression": "revokeSecretAsync",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "authorizeAsync",
+        "toSymbol": "identityOf",
+        "callExpression": "identityOf",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "authorizeAsync",
+        "toSymbol": "validateFlowSecurityTarget",
+        "callExpression": "validateFlowSecurityTarget",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "authorizeAsync",
+        "toSymbol": "isGranted",
+        "callExpression": "isGranted",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "authorizeAsync",
+        "toSymbol": "denyAsync",
+        "callExpression": "denyAsync",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "authorizeAsync",
+        "toSymbol": "getAsync",
+        "callExpression": "input.approvalStore.getAsync",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "authorizeAsync",
+        "toSymbol": "sameIdentity",
+        "callExpression": "sameIdentity",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "authorizeAsync",
+        "toSymbol": "claimAsync",
+        "callExpression": "input.operationStore.claimAsync",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "authorizeAsync",
+        "toSymbol": "acquireAsync",
+        "callExpression": "input.rateLimit.acquireAsync",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "authorizeAsync",
+        "toSymbol": "denyAfterReleaseAsync",
+        "callExpression": "denyAfterReleaseAsync",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "authorizeAsync",
+        "toSymbol": "writeAuditAsync",
+        "callExpression": "writeAuditAsync",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "authorizeAsync",
+        "toSymbol": "createPermit",
+        "callExpression": "createPermit",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "authorizeAsync",
+        "toSymbol": "releaseAsync",
+        "callExpression": "input.operationStore.releaseAsync",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "executeAsync",
+        "toSymbol": "consumeAsync",
+        "callExpression": "input.operationStore.consumeAsync",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "executeAsync",
+        "toSymbol": "resolveAndExecuteAsync",
+        "callExpression": "resolveAndExecuteAsync",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "denyAfterReleaseAsync",
+        "toSymbol": "releaseAsync",
+        "callExpression": "input.operationStore.releaseAsync",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "denyAfterReleaseAsync",
+        "toSymbol": "denyAsync",
+        "callExpression": "denyAsync",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "createSecretAsync",
+        "toSymbol": "snapshotActor",
+        "callExpression": "snapshotActor",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "createSecretAsync",
+        "toSymbol": "isGranted",
+        "callExpression": "isGranted",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "createSecretAsync",
+        "toSymbol": "denyCredentialAsync",
+        "callExpression": "denyCredentialAsync",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "createSecretAsync",
+        "toSymbol": "writeCredentialAuditAsync",
+        "callExpression": "writeCredentialAuditAsync",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "createSecretAsync",
+        "toSymbol": "scopeOf",
+        "callExpression": "scopeOf",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "getSecretMetadataAsync",
+        "toSymbol": "snapshotActor",
+        "callExpression": "snapshotActor",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "getSecretMetadataAsync",
+        "toSymbol": "isGranted",
+        "callExpression": "isGranted",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "getSecretMetadataAsync",
+        "toSymbol": "scopeOf",
+        "callExpression": "scopeOf",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "revokeSecretAsync",
+        "toSymbol": "snapshotActor",
+        "callExpression": "snapshotActor",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "revokeSecretAsync",
+        "toSymbol": "isGranted",
+        "callExpression": "isGranted",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "revokeSecretAsync",
+        "toSymbol": "denyCredentialAsync",
+        "callExpression": "denyCredentialAsync",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "revokeSecretAsync",
+        "toSymbol": "writeCredentialAuditAsync",
+        "callExpression": "writeCredentialAuditAsync",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "revokeSecretAsync",
+        "toSymbol": "scopeOf",
+        "callExpression": "scopeOf",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "src/features/security/application/createFlowSecurityPort.ts",
+        "toSymbol": "resolveSecretAsync",
+        "callExpression": "resolveSecretAsync",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "resolveAndExecuteAsync",
+        "toSymbol": "callback",
+        "callExpression": "callback",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "resolveSecretAsync",
+        "toSymbol": "scopeOf",
+        "callExpression": "scopeOf",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "identityOf",
+        "toSymbol": "snapshotActor",
+        "callExpression": "snapshotActor",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "identityOf",
+        "toSymbol": "unique",
+        "callExpression": "unique",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "sameIdentity",
+        "toSymbol": "sameStrings",
+        "callExpression": "sameStrings",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "sameIdentity",
+        "toSymbol": "sameTarget",
+        "callExpression": "sameTarget",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "sameTarget",
+        "toSymbol": "sameStrings",
+        "callExpression": "sameStrings",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "denyAsync",
+        "toSymbol": "writeAuditAsync",
+        "callExpression": "writeAuditAsync",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "denyAsync",
+        "toSymbol": "denialMessage",
+        "callExpression": "denialMessage",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "writeAuditAsync",
+        "toSymbol": "writeAsync",
+        "callExpression": "audit.writeAsync",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "writeCredentialAuditAsync",
+        "toSymbol": "writeAsync",
+        "callExpression": "audit.writeAsync",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "denyCredentialAsync",
+        "toSymbol": "writeAsync",
+        "callExpression": "audit.writeAsync",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "validateFlowSecurityTarget",
+        "toSymbol": "uniqueStrings",
+        "callExpression": "uniqueStrings",
+        "sourcePath": "src/features/security/domain/validateFlowSecurityTarget.ts"
+      },
+      {
+        "fromSymbol": "validateFlowSecurityTarget",
+        "toSymbol": "isUnsafeLiteralHost",
+        "callExpression": "isUnsafeLiteralHost",
+        "sourcePath": "src/features/security/domain/validateFlowSecurityTarget.ts"
+      },
+      {
+        "fromSymbol": "isUnsafeLiteralHost",
+        "toSymbol": "isUnsafeIpv4",
+        "callExpression": "isUnsafeIpv4",
+        "sourcePath": "src/features/security/domain/validateFlowSecurityTarget.ts"
+      },
+      {
+        "fromSymbol": "isUnsafeLiteralHost",
+        "toSymbol": "isUnsafeIpv6",
+        "callExpression": "isUnsafeIpv6",
+        "sourcePath": "src/features/security/domain/validateFlowSecurityTarget.ts"
       }
     ],
     "typeReferences": [
@@ -2548,6 +4269,41 @@
         "fromSymbol": "createDefaultNodeRegistry",
         "toType": "Readonly",
         "sourcePath": "src/features/execution/domain/createDefaultNodeRegistry.ts"
+      },
+      {
+        "fromSymbol": "createFlowSecurityPort",
+        "toType": "FlowApprovalStorePort",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "createFlowSecurityPort",
+        "toType": "FlowOperationStorePort",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "createFlowSecurityPort",
+        "toType": "FlowRateLimitPort",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "createFlowSecurityPort",
+        "toType": "FlowSecurityAuditPort",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "createFlowSecurityPort",
+        "toType": "FlowSecurityGrant",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "createFlowSecurityPort",
+        "toType": "FlowSecurityPort",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
+      },
+      {
+        "fromSymbol": "createFlowSecurityPort",
+        "toType": "SecretStoreAdapter",
+        "sourcePath": "src/features/security/application/createFlowSecurityPort.ts"
       },
       {
         "fromSymbol": "FlowCompiledGraph",
@@ -2633,6 +4389,131 @@
         "fromSymbol": "FlowRunRequest",
         "toType": "Readonly",
         "sourcePath": "src/types/execution.ts"
+      },
+      {
+        "fromSymbol": "FlowApprovalStorePort",
+        "toType": "FlowSecurityApproval",
+        "sourcePath": "src/types/security.ts"
+      },
+      {
+        "fromSymbol": "FlowApprovalStorePort",
+        "toType": "FlowSecurityOperationIdentity",
+        "sourcePath": "src/types/security.ts"
+      },
+      {
+        "fromSymbol": "FlowOperationStorePort",
+        "toType": "FlowSecurityOperationIdentity",
+        "sourcePath": "src/types/security.ts"
+      },
+      {
+        "fromSymbol": "FlowOutboundTransportPort",
+        "toType": "RequestInit",
+        "sourcePath": "src/types/security.ts"
+      },
+      {
+        "fromSymbol": "FlowOutboundTransportPort",
+        "toType": "Response",
+        "sourcePath": "src/types/security.ts"
+      },
+      {
+        "fromSymbol": "FlowRateLimitPort",
+        "toType": "FlowSecurityActor",
+        "sourcePath": "src/types/security.ts"
+      },
+      {
+        "fromSymbol": "FlowSecretCreateInput",
+        "toType": "FlowSecurityActor",
+        "sourcePath": "src/types/security.ts"
+      },
+      {
+        "fromSymbol": "FlowSecretCreateInput",
+        "toType": "Readonly",
+        "sourcePath": "src/types/security.ts"
+      },
+      {
+        "fromSymbol": "FlowSecretRevokeInput",
+        "toType": "FlowSecurityActor",
+        "sourcePath": "src/types/security.ts"
+      },
+      {
+        "fromSymbol": "FlowSecurityApproval",
+        "toType": "FlowSecurityOperationIdentity",
+        "sourcePath": "src/types/security.ts"
+      },
+      {
+        "fromSymbol": "FlowSecurityAuditPort",
+        "toType": "FlowSecurityAuditEvent",
+        "sourcePath": "src/types/security.ts"
+      },
+      {
+        "fromSymbol": "FlowSecurityOperation",
+        "toType": "FlowSecurityActor",
+        "sourcePath": "src/types/security.ts"
+      },
+      {
+        "fromSymbol": "FlowSecurityOperation",
+        "toType": "FlowSecurityTarget",
+        "sourcePath": "src/types/security.ts"
+      },
+      {
+        "fromSymbol": "FlowSecurityOperationIdentity",
+        "toType": "FlowSecurityActor",
+        "sourcePath": "src/types/security.ts"
+      },
+      {
+        "fromSymbol": "FlowSecurityOperationIdentity",
+        "toType": "FlowSecurityTarget",
+        "sourcePath": "src/types/security.ts"
+      },
+      {
+        "fromSymbol": "FlowSecurityPermit",
+        "toType": "FlowResolvedSecrets",
+        "sourcePath": "src/types/security.ts"
+      },
+      {
+        "fromSymbol": "FlowSecurityPermit",
+        "toType": "FlowSecurityOperationIdentity",
+        "sourcePath": "src/types/security.ts"
+      },
+      {
+        "fromSymbol": "FlowSecurityPermit",
+        "toType": "T",
+        "sourcePath": "src/types/security.ts"
+      },
+      {
+        "fromSymbol": "FlowSecurityPort",
+        "toType": "FlowSecretCreateInput",
+        "sourcePath": "src/types/security.ts"
+      },
+      {
+        "fromSymbol": "FlowSecurityPort",
+        "toType": "FlowSecretMetadata",
+        "sourcePath": "src/types/security.ts"
+      },
+      {
+        "fromSymbol": "FlowSecurityPort",
+        "toType": "FlowSecretRevokeInput",
+        "sourcePath": "src/types/security.ts"
+      },
+      {
+        "fromSymbol": "FlowSecurityPort",
+        "toType": "FlowSecurityActor",
+        "sourcePath": "src/types/security.ts"
+      },
+      {
+        "fromSymbol": "FlowSecurityPort",
+        "toType": "FlowSecurityOperation",
+        "sourcePath": "src/types/security.ts"
+      },
+      {
+        "fromSymbol": "FlowSecurityPort",
+        "toType": "FlowSecurityPermit",
+        "sourcePath": "src/types/security.ts"
+      },
+      {
+        "fromSymbol": "FlowSecurityPort",
+        "toType": "SecretRef",
+        "sourcePath": "src/types/security.ts"
       }
     ],
     "componentComposition": []
