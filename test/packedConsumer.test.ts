@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -28,7 +28,6 @@ const writeConsumerFiles = (consumerDirectory: string): void => {
     [
       "import '@ankhorage/flow';",
       "import '@ankhorage/flow/ai';",
-      "import '@ankhorage/flow/mcp';",
       "import '@ankhorage/flow/social';",
       "import '@ankhorage/contracts/flow';",
     ].join('\n'),
@@ -38,7 +37,6 @@ const writeConsumerFiles = (consumerDirectory: string): void => {
     [
       "import '@ankhorage/flow';",
       "import '@ankhorage/flow/ai';",
-      "import '@ankhorage/flow/mcp';",
       "import '@ankhorage/flow/social';",
       "import '@ankhorage/contracts/flow';",
       "import type { FlowDefinition } from '@ankhorage/contracts/flow';",
@@ -64,6 +62,7 @@ const packAndInstall = (consumerDirectory: string, packedDirectory: string): voi
 };
 
 const verifyConsumer = (consumerDirectory: string): void => {
+  expect(existsSync(join(consumerDirectory, 'node_modules/@modelcontextprotocol/sdk'))).toBe(false);
   runCommand(['node', 'consumer.mjs'], consumerDirectory);
   runCommand(['bun', 'consumer.mjs'], consumerDirectory);
   runCommand(
@@ -84,7 +83,7 @@ const verifyConsumer = (consumerDirectory: string): void => {
 };
 
 describe('packed Flow consumer', () => {
-  it('supports Node ESM, Bun, TypeScript, and every reserved public subpath', () => {
+  it('supports Node ESM, Bun, and TypeScript without resolving the optional MCP SDK', () => {
     const temporaryDirectory = mkdtempSync(join(tmpdir(), 'flow-packed-consumer-'));
     const consumerDirectory = join(temporaryDirectory, 'package');
     const packedDirectory = join(temporaryDirectory, 'packed');
