@@ -1,5 +1,12 @@
 # @ankhorage/flow
 
+## 0.6.1
+
+### Patch Changes
+
+- f32b474: Normalize untrusted MCP transport and provider failures to stable redaction-safe errors while
+  proving approved STDIO and remote tool invocation in isolated consumers.
+
 ## 0.6.0
 
 ### Minor Changes

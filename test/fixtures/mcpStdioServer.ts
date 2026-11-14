@@ -24,11 +24,36 @@ server.setRequestHandler(ListToolsRequestSchema, () => ({
       name: 'not_allowlisted',
       inputSchema: { type: 'object', properties: {}, additionalProperties: false },
     },
+    {
+      name: 'sum_numbers',
+      description: 'Returns the sum of finite input numbers.',
+      inputSchema: {
+        type: 'object',
+        properties: { values: { type: 'array', items: { type: 'number' } } },
+        required: ['values'],
+        additionalProperties: false,
+      },
+      annotations: { readOnlyHint: true },
+    },
   ],
 }));
 
-server.setRequestHandler(CallToolRequestSchema, (request) => ({
-  content: [{ type: 'text', text: String(request.params.arguments?.message ?? '') }],
-}));
+server.setRequestHandler(CallToolRequestSchema, (request) =>
+  request.params.name === 'sum_numbers'
+    ? {
+        content: [
+          {
+            type: 'text',
+            text: String(
+              (request.params.arguments?.values as readonly number[]).reduce(
+                (total, value) => total + value,
+                0,
+              ),
+            ),
+          },
+        ],
+      }
+    : { content: [{ type: 'text', text: String(request.params.arguments?.message ?? '') }] },
+);
 
 await server.connect(new StdioServerTransport());
