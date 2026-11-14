@@ -21,6 +21,10 @@
       "types": "./dist/ai.d.ts",
       "default": "./dist/ai.js"
     },
+    "./execution": {
+      "types": "./dist/execution.d.ts",
+      "default": "./dist/execution.js"
+    },
     "./mcp": {
       "types": "./dist/mcp.d.ts",
       "default": "./dist/mcp.js"

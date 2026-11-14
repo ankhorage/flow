@@ -1,6 +1,6 @@
 # Durable execution architecture decision
 
-**Status:** blocked pending Flow #4 published security owner boundary (2026-11-14)
+**Status:** partial implementation; effect delivery blocked pending Flow #4 published security owner boundary (2026-11-14)
 
 ## Decision
 
@@ -16,6 +16,19 @@ choices behind an adapter only if a host explicitly selects and operates them.
 No durable-effect worker is implemented by this change. Running the existing `FlowNodeOperation`
 against a persisted job before Flow #4 is published would bypass the required authorization and
 approval owner. Adding a local substitute would create a second, unreviewed security boundary.
+
+## Implemented safe foundation
+
+This PR implements only the security-independent foundation: a provider-neutral persistence port
+for runs, checkpoints and work leases; immutable Flow definition references with revision-checked
+run transitions; controlled-clock exponential retry calculations; and a self-hostable,
+single-process JSON-file adapter. Its tests prove stale transitions, bounded deterministic retry
+times, lease recovery after a stopped worker and that completed work cannot be claimed twice.
+
+The adapter deliberately does not execute a node, resolve a secret, deliver an outbox record or
+model an approval. It is not a multi-process database adapter: concurrent process coordination
+belongs to a later adapter with an atomic storage primitive. This keeps the proven file adapter
+within its single-process correctness boundary rather than implying unsupported delivery safety.
 
 ## Evaluation
 
@@ -67,13 +80,12 @@ guess its DTOs, or invoke provider side effects until it is available.
 
 ## Implementation contract after the gate is released
 
-The implementation is intentionally deferred as one coherent slice, rather than partially adding
-an insecure worker:
+The remaining implementation stays deferred as one coherent effect-delivery slice:
 
-1. Define Flow-owned persistence, lease/claim, queue, clock and outbox ports under the execution
-   feature. The persistence adapter atomically stores a run transition, immutable definition
-   reference, checkpoint and outbox record.
-2. Provide a self-hostable file-backed adapter for controlled tests and standalone deployments;
+1. Extend the existing persistence, lease/claim, queue and clock boundary with the published
+   security decision and outbox ports. A transactional adapter must atomically store a run
+   transition, immutable definition reference, checkpoint and outbox record.
+2. Evolve the self-hostable adapter only after its operational concurrency contract is explicit;
    database adapters stay optional outer adapters.
 3. Claim due work with bounded concurrency and backpressure. A lease expiration can redeliver
    work, so the worker records a one-based immutable step attempt and uses deterministic retry

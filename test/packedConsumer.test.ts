@@ -28,6 +28,7 @@ const writeConsumerFiles = (consumerDirectory: string): void => {
     [
       "import '@ankhorage/flow';",
       "import '@ankhorage/flow/ai';",
+      "import '@ankhorage/flow/execution';",
       "import '@ankhorage/flow/social';",
       "import '@ankhorage/contracts/flow';",
     ].join('\n'),
@@ -37,6 +38,7 @@ const writeConsumerFiles = (consumerDirectory: string): void => {
     [
       "import '@ankhorage/flow';",
       "import '@ankhorage/flow/ai';",
+      "import '@ankhorage/flow/execution';",
       "import '@ankhorage/flow/social';",
       "import '@ankhorage/contracts/flow';",
       "import type { FlowDefinition } from '@ankhorage/contracts/flow';",
