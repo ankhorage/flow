@@ -62,19 +62,25 @@ const writeConsumerFiles = (consumerDirectory: string): void => {
     [
       "import { Server } from '@modelcontextprotocol/sdk/server/index.js';",
       "import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';",
-      "import { ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';",
+      "import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';",
       "const server = new Server({ name: 'packed-flow-test', version: '1.0.0' }, { capabilities: { tools: {} } });",
       "server.setRequestHandler(ListToolsRequestSchema, () => ({ tools: [{ name: 'safe_echo', inputSchema: { type: 'object', properties: {}, additionalProperties: false } }] }));",
+      "server.setRequestHandler(CallToolRequestSchema, () => ({ content: [{ type: 'text', text: 'packed' }] }));",
       'await server.connect(new StdioServerTransport());',
     ].join('\n'),
   );
   writeFileSync(
     join(consumerDirectory, 'consumer-with-sdk.mjs'),
     [
+      "import { createFlowSecurityPort } from '@ankhorage/flow';",
       "import { createMcpToolRegistry } from '@ankhorage/flow/mcp';",
-      "const registry = createMcpToolRegistry({ providers: [{ id: 'provider', transport: 'stdio', allowedTools: [{ name: 'safe_echo', grantedScopes: ['tools:invoke'] }], grantedScopes: ['tools:invoke'] }], trustedStdioProviders: { provider: { command: process.execPath, args: [new URL('./mcp-server.mjs', import.meta.url).pathname] } } });",
+      "const actor = { id: 'operator', tenantId: 'tenant-a', projectId: 'project-a', environment: 'test' };",
+      "const security = createFlowSecurityPort({ approvalStore: { getAsync: async (operation) => ({ operation, status: 'approved' }) }, audit: { writeAsync: async () => undefined }, grants: [{ ...actor, actorId: actor.id, capability: 'mcp:provider:safe_echo' }], operationStore: { claimAsync: async () => true, consumeAsync: async () => true, releaseAsync: async () => undefined }, rateLimit: { acquireAsync: async () => true }, secretStore: { create: async () => ({ ok: false, error: { code: 'unavailable', message: 'unused' } }), getMetadata: async () => ({ ok: false, error: { code: 'not_found', message: 'unused' } }), list: async () => ({ ok: true, data: [] }), remove: async () => ({ ok: true }), replace: async () => ({ ok: false, error: { code: 'unavailable', message: 'unused' } }), resolve: async () => ({ ok: true, data: {} }) } });",
+      "const registry = createMcpToolRegistry({ providers: [{ id: 'provider', transport: 'stdio', allowedTools: [{ name: 'safe_echo', grantedScopes: ['tools:invoke'] }], grantedScopes: ['tools:invoke'] }], security, trustedStdioProviders: { provider: { command: process.execPath, args: [new URL('./mcp-server.mjs', import.meta.url).pathname] } } });",
       'const tools = await registry.discoverAsync();',
       "if (tools.length !== 1 || tools[0]?.name !== 'safe_echo') throw new Error('Expected packed MCP discovery to succeed.');",
+      "const result = await registry.invokeAsync({ providerId: 'provider', toolName: 'safe_echo', schemaFingerprint: tools[0].schemaFingerprint, arguments: {}, scopes: ['tools:invoke'], security: { actor, idempotencyKey: 'packed-invocation', operationId: 'packed-invocation' } });",
+      "if (result.content[0]?.text !== 'packed') throw new Error('Expected packed MCP invocation to succeed.');",
     ].join('\n'),
   );
 };
