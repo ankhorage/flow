@@ -2,6 +2,7 @@ import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
+import type { DataContractValue } from '@ankhorage/contracts/data';
 import type { FlowDefinition } from '@ankhorage/contracts/flow';
 import { describe, expect, it } from 'bun:test';
 
@@ -13,7 +14,10 @@ import {
   InMemoryFlowRuntimeStore,
   createDefaultNodeRegistry,
   createFlowRuntime,
+  compileFlowGraph,
+  executeFlowAsync,
 } from '../src/index.js';
+import type { FlowNodeRegistry, FlowSecurityPort } from '../src/index.js';
 import { createFlowHttpHandler } from '../src/features/headless/adapters/createFlowHttpHandler.js';
 
 const definition: FlowDefinition = {
@@ -249,4 +253,230 @@ describe('headless Flow runtime', () => {
     expect(await runtime.readEventsAsync(otherScope, 0, run.id)).toEqual([]);
     expect(await runtime.getWorkflowAsync(otherScope, 'demo', 1)).toBeUndefined();
   });
+
+  it('executes an authenticated webhook through a protected node without changing manual execution', async () => {
+    const deliveries: string[] = [];
+    const runtime = createFlowRuntime({
+      nodeRegistry: {
+        'fixture:protected': {
+          effect: {
+            createSecurityOperation: ({ effect }) => ({
+              actor: { environment: 'test', id: 'actor', projectId: 'project', tenantId: 'tenant' },
+              capability: 'fixture:protected',
+              idempotencyKey: effect.idempotencyKey,
+              operationId: effect.idempotencyKey,
+            }),
+            kind: 'protected',
+          },
+          executeAsync: async ({ effect }) => {
+            deliveries.push(effect.idempotencyKey);
+            return { output: {} };
+          },
+        },
+      },
+      persistence: InMemoryFlowPersistenceAdapter(),
+      security: permittedSecurity(),
+      store: InMemoryFlowRuntimeStore(),
+    });
+    const webhook = {
+      ...definition,
+      id: 'protected-webhook',
+      nodes: [
+        {
+          capability: { capabilityId: 'protected', providerId: 'fixture' },
+          id: 'effect',
+          ports: [],
+        },
+      ],
+      version: 2,
+    };
+    await runtime.createDraftAsync(scope, webhook);
+    await runtime.publishAsync(scope, webhook.id, webhook.version);
+    const handler = createFlowHttpHandler({
+      access: { acquireAsync: async () => true, authorizeAsync: async () => true },
+      authenticator: {
+        authenticateAsync: async () => ({ environment: 'test', id: 'actor', ...scope }),
+      },
+      runtime,
+    });
+    const response = await handler(
+      new Request('http://flow/v1/webhooks/protected-webhook/hook', {
+        body: JSON.stringify({ idempotencyKey: 'protected-webhook' }),
+        method: 'POST',
+      }),
+    );
+    const run = (await response.json()) as { readonly id: string };
+    await drainRuntimeAsync(runtime);
+    expect(response.status).toBe(202);
+    expect((await runtime.getRunAsync(scope, run.id))?.status).toBe('succeeded');
+    expect(deliveries).toEqual([`${run.id}:step:effect`]);
+  });
+
+  it.each(graphParityFixtures())(
+    'keeps durable headless graph behavior equal to the canonical executor: $name',
+    async ({ definition: fixture, name, registry }) => {
+      const expected = await executeFlowAsync(compileFlowGraph(fixture, registry), registry, {
+        runId: `direct-${name}`,
+        triggerId: 'manual',
+      });
+      const runtime = createFlowRuntime({
+        nodeRegistry: registry,
+        persistence: InMemoryFlowPersistenceAdapter(),
+        store: InMemoryFlowRuntimeStore(),
+      });
+      await runtime.createDraftAsync(scope, fixture);
+      await runtime.publishAsync(scope, fixture.id, fixture.version);
+      const run = await runtime.triggerAsync({
+        flowId: fixture.id,
+        idempotencyKey: name,
+        scope,
+        triggerId: 'manual',
+      });
+      await drainRuntimeAsync(runtime);
+      const actual = await runtime.getRunAsync(scope, run.id);
+      expect(actual?.status).toBe(expected.run.status);
+      expect(actual?.steps.map((step) => step.nodeId)).toEqual(
+        expected.run.steps.map((step) => step.nodeId),
+      );
+    },
+  );
+});
+
+/** Complete the finite fixture queue without assuming one graph node per worker tick. */
+const drainRuntimeAsync = async (runtime: {
+  readonly runWorkerTickAsync: () => Promise<unknown>;
+}) => {
+  await runtime.runWorkerTickAsync();
+  await runtime.runWorkerTickAsync();
+  await runtime.runWorkerTickAsync();
+  await runtime.runWorkerTickAsync();
+};
+
+/** Provide the released security port shape for a protected headless provider fixture. */
+const permittedSecurity = (): FlowSecurityPort => ({
+  authorizeAsync: async (operation) => ({
+    executeAsync: async <Result>(
+      callback: (
+        secrets: Readonly<Record<string, Readonly<Record<string, string>>>>,
+      ) => Promise<Result>,
+    ) => callback({}),
+    operation: { ...operation, secretRefs: operation.secretRefs ?? [] },
+  }),
+  createSecretAsync: async () => {
+    throw new Error('FLOW_TEST_SECRET_UNUSED');
+  },
+  getSecretMetadataAsync: async () => {
+    throw new Error('FLOW_TEST_SECRET_UNUSED');
+  },
+  revokeSecretAsync: async () => {
+    throw new Error('FLOW_TEST_SECRET_UNUSED');
+  },
+});
+
+/** Supply representative diamond, failure, and key-order-independent conditional graph fixtures. */
+const graphParityFixtures = () => [diamondFixture(), failureFixture(), reorderedJsonFixture()];
+
+/** An unselected diamond branch must not strand the selected join. */
+const diamondFixture = () =>
+  graphFixture('diamond', { selected: true }, [
+    conditionalEdge('source', 'left', true),
+    conditionalEdge('source', 'right', false),
+    edge('left', 'join'),
+    edge('right', 'join'),
+  ]);
+
+/** A failure outcome follows its declared branch before the run becomes terminal. */
+const failureFixture = () => ({
+  definition: {
+    edges: [
+      {
+        condition: { kind: 'outcome', outcome: 'failure' },
+        id: 'failure',
+        source: { nodeId: 'source', portId: 'value' },
+        target: { nodeId: 'recovered', portId: 'value' },
+      },
+    ],
+    id: 'failure',
+    nodes: [node('source', 'fail'), node('recovered', 'pass')],
+    title: 'Failure',
+    triggers: [{ id: 'manual', kind: 'manual' }],
+    version: 1,
+  } satisfies FlowDefinition,
+  name: 'failure',
+  registry: fixtureRegistry({ source: 'fail' }),
+});
+
+/** Conditional JSON equality ignores object key order in both execution modes. */
+const reorderedJsonFixture = () =>
+  graphFixture('reordered-json', { nested: { a: 1, b: 2 } }, [
+    {
+      condition: { equals: { a: 1, b: 2 }, kind: 'value', path: '/nested' },
+      id: 'reordered',
+      source: { nodeId: 'source', portId: 'value' },
+      target: { nodeId: 'matched', portId: 'value' },
+    },
+  ]);
+
+/** Create a transform source plus pass-through targets for a parity graph. */
+const graphFixture = (name: string, value: DataContractValue, edges: FlowDefinition['edges']) => ({
+  definition: {
+    edges,
+    id: name,
+    nodes: [node('source', 'emit'), ...targetNodes(edges)],
+    title: name,
+    triggers: [{ id: 'manual', kind: 'manual' }],
+    version: 1,
+  } satisfies FlowDefinition,
+  name,
+  registry: fixtureRegistry({ source: 'emit', value }),
+});
+
+/** Define a fixture node with a value output that can also accept join input. */
+const node = (id: string, capabilityId: string) => ({
+  capability: { capabilityId, providerId: 'fixture' },
+  id,
+  ports: [
+    { direction: 'input' as const, id: 'value', required: false },
+    { direction: 'output' as const, id: 'value', required: false },
+  ],
+});
+
+/** Make one target node per edge while retaining deterministic graph ordering. */
+const targetNodes = (edges: FlowDefinition['edges']) =>
+  [...new Set(edges.map((entry) => entry.target.nodeId))].map((id) => node(id, 'pass'));
+
+/** Connect two fixture nodes over their shared portable value port. */
+const edge = (source: string, target: string) => ({
+  id: `${source}-${target}`,
+  source: { nodeId: source, portId: 'value' },
+  target: { nodeId: target, portId: 'value' },
+});
+
+/** Create a boolean-value branch edge. */
+const conditionalEdge = (source: string, target: string, equals: boolean) => ({
+  ...edge(source, target),
+  condition: { equals, kind: 'value' as const, path: '/selected' },
+});
+
+/** Create controlled test-only node operations with a stable observable output. */
+const fixtureRegistry = (source: {
+  readonly source: 'emit' | 'fail';
+  readonly value?: DataContractValue;
+}): FlowNodeRegistry => ({
+  'fixture:emit': {
+    effect: { kind: 'internal' as const },
+    executeAsync: async () => ({
+      output: { value: { kind: 'inline' as const, value: source.value ?? null } },
+    }),
+  },
+  'fixture:fail': {
+    effect: { kind: 'internal' as const },
+    executeAsync: async () => {
+      throw new Error('FLOW_FIXTURE_FAILURE');
+    },
+  },
+  'fixture:pass': {
+    effect: { kind: 'internal' as const },
+    executeAsync: async () => ({ output: {} }),
+  },
 });

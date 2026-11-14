@@ -1,10 +1,4 @@
-import type {
-  FlowDataRef,
-  FlowDefinition,
-  FlowEdge,
-  FlowNode,
-  FlowStepSnapshot,
-} from '@ankhorage/contracts/flow';
+import type { FlowDefinition, FlowNode, FlowStepSnapshot } from '@ankhorage/contracts/flow';
 
 import type {
   FlowDurableEffectResult,
@@ -14,6 +8,7 @@ import type {
 import type { FlowClock, FlowCompiledGraph, FlowNodeRegistry } from '../../../types/execution.js';
 import { executeFlowAsync } from '../../execution/application/executeFlowAsync.js';
 import { compileFlowGraph } from '../../execution/domain/compileFlowGraph.js';
+import { planFlowNodeInput } from '../../execution/domain/planFlowNodeInput.js';
 import { createDurableHeadlessWork } from './createDurableHeadlessWork.js';
 
 /*** Execute one materialized graph node and persist the exact downstream branch plan with its checkpoint. */
@@ -107,7 +102,7 @@ const executeStepAsync = async (
   return step;
 };
 
-/** Materialize only nodes whose complete predecessor set makes their typed input and branch activation known. */
+/** Materialize only nodes that the canonical graph policy declares ready. */
 const planReadyWork = (
   graph: FlowCompiledGraph,
   run: FlowDurableRun,
@@ -121,15 +116,15 @@ const planReadyWork = (
     .flatMap((nodeId) => {
       const node = graph.definition.nodes.find((candidate) => candidate.id === nodeId);
       if (node === undefined) return [];
-      const planned = planNodeInput(graph, node, steps);
-      return planned === undefined
+      const planned = planFlowNodeInput(graph, node.id, steps);
+      return planned.status !== 'ready'
         ? []
         : [
             createDurableHeadlessWork({
               attempt: 1,
               dueAt: now.toISOString(),
               flow: run.flow,
-              ...(Object.keys(planned).length === 0 ? {} : { input: planned }),
+              ...(Object.keys(planned.input).length === 0 ? {} : { input: planned.input }),
               node,
               registry,
               runId: run.id,
@@ -137,71 +132,6 @@ const planReadyWork = (
             }),
           ];
     });
-
-/** Return an input only after every upstream result is known and every required port was activated. */
-const planNodeInput = (
-  graph: FlowCompiledGraph,
-  node: FlowNode,
-  steps: readonly FlowStepSnapshot[],
-): Readonly<Record<string, FlowDataRef>> | undefined => {
-  const incoming = graph.definition.edges.filter((edge) => edge.target.nodeId === node.id);
-  if (incoming.length === 0) return {};
-  const sourceSteps = incoming.map(
-    (edge) => [edge, steps.find((step) => step.nodeId === edge.source.nodeId)] as const,
-  );
-  if (sourceSteps.some(([, step]) => step === undefined)) return undefined;
-  const input = Object.fromEntries(
-    sourceSteps.flatMap(([edge, step]) => {
-      const value = step?.output?.[edge.source.portId];
-      return edgeMatches(edge, value, step?.status === 'failed' ? 'failure' : 'success') &&
-        value !== undefined
-        ? [[edge.target.portId, value]]
-        : [];
-    }),
-  );
-  const activated = sourceSteps.some(([edge, step]) =>
-    edgeMatches(
-      edge,
-      step?.output?.[edge.source.portId],
-      step?.status === 'failed' ? 'failure' : 'success',
-    ),
-  );
-  const hasRequired = node.ports
-    .filter((port) => port.direction === 'input' && port.required)
-    .every((port) => input[port.id] !== undefined);
-  return activated && hasRequired ? input : undefined;
-};
-
-/** Apply the same declarative branch conditions as the compiled executor. */
-const edgeMatches = (
-  edge: FlowEdge,
-  value: FlowDataRef | undefined,
-  outcome: 'failure' | 'success',
-): boolean => {
-  const condition = edge.condition ?? { kind: 'always' as const };
-  if (condition.kind === 'always') return outcome === 'success';
-  if (condition.kind === 'outcome') return condition.outcome === outcome;
-  if (value?.kind !== 'inline') return false;
-  const selected = resolvePointer(value.value, condition.path);
-  return selected !== undefined && JSON.stringify(selected) === JSON.stringify(condition.equals);
-};
-
-/** Resolve a portable JSON pointer without evaluating user-provided expressions. */
-const resolvePointer = (value: unknown, pointer: string): unknown =>
-  pointer === ''
-    ? value
-    : !pointer.startsWith('/')
-      ? undefined
-      : pointer
-          .slice(1)
-          .split('/')
-          .reduce<unknown>((current, segment) => {
-            if (current === null || typeof current !== 'object') return undefined;
-            const key = segment.replaceAll('~1', '/').replaceAll('~0', '~');
-            return Array.isArray(current)
-              ? current[Number(key)]
-              : Object.entries(current).find(([candidate]) => candidate === key)?.[1];
-          }, value);
 
 /** Complete an empty graph without inventing a synthetic provider effect. */
 const completedFlow = (run: FlowDurableRun): FlowDurableEffectResult => ({
