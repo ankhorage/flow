@@ -6,7 +6,8 @@ import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 
 import { createFlowSecurityPort } from '../src/index.js';
-import { createMcpToolRegistry } from '../src/mcp.js';
+import { executeBoundedAgentAsync } from '../src/ai.js';
+import { createMcpAgentToolAdapter, createMcpToolRegistry } from '../src/mcp.js';
 
 const provider = {
   id: 'fixture',
@@ -100,6 +101,87 @@ test('executes only after a scoped Flow security permit is approved', async () =
       security: securityInvocation('approved'),
     }),
   ).resolves.toMatchObject({ content: [{ text: 'permitted' }] });
+});
+
+test('binds every AI-to-MCP tool call to a unique step identity through the canonical security port', async () => {
+  const authorized: string[] = [];
+  const claimed = new Set<string>();
+  const consumed = new Set<string>();
+  const operationKey = (operation: { readonly idempotencyKey: string }) => operation.idempotencyKey;
+  const security = createFlowSecurityPort({
+    approvalStore: {
+      getAsync: async (operation) => {
+        authorized.push(operation.idempotencyKey);
+        return { operation, status: 'approved' };
+      },
+    },
+    audit: { writeAsync: async () => undefined },
+    grants: [
+      {
+        ...securityInvocation('unused').actor,
+        actorId: 'operator',
+        capability: 'ai:tool:fixture:safe_echo',
+      },
+      {
+        ...securityInvocation('unused').actor,
+        actorId: 'operator',
+        capability: 'mcp:fixture:safe_echo',
+      },
+    ],
+    operationStore: {
+      claimAsync: async (operation) => {
+        const key = operationKey(operation);
+        if (claimed.has(key)) return false;
+        claimed.add(key);
+        return true;
+      },
+      consumeAsync: async (operation) => {
+        const key = operationKey(operation);
+        if (!claimed.has(key) || consumed.has(key)) return false;
+        consumed.add(key);
+        return true;
+      },
+      releaseAsync: async (operation) => {
+        const key = operationKey(operation);
+        if (!consumed.has(key)) claimed.delete(key);
+      },
+    },
+    rateLimit: { acquireAsync: async () => true },
+    secretStore: {
+      create: async () => ({ ok: false, error: { code: 'unavailable', message: 'unused' } }),
+      getMetadata: async () => ({ ok: false, error: { code: 'not_found', message: 'unused' } }),
+      list: async () => ({ ok: true, data: [] }),
+      remove: async () => ({ ok: true }),
+      replace: async () => ({ ok: false, error: { code: 'unavailable', message: 'unused' } }),
+      resolve: async () => ({ ok: true, data: {} }),
+    },
+  });
+  const registry = createMcpToolRegistry({
+    providers: [provider],
+    security,
+    trustedStdioProviders,
+  });
+  const [tool] = await registry.discoverAsync();
+  if (!tool) throw new Error('Expected the fixture tool to be discovered.');
+  const adapter = createMcpAgentToolAdapter({ registry, tool });
+  const plan = [
+    { type: 'tool' as const, name: adapter.name, arguments: { message: 'first' } },
+    { type: 'tool' as const, name: adapter.name, arguments: { message: 'second' } },
+    { type: 'final' as const, output: { answer: 'done' } },
+  ];
+  let next = 0;
+  await expect(
+    executeBoundedAgentAsync({
+      allowedTools: [adapter.name],
+      maxSteps: 3,
+      output: { parse: (value) => value as { readonly answer: string } },
+      planner: { nextAsync: async () => plan[next++] ?? plan[2]! },
+      security: { ...securityInvocation('agent'), secretRefs: [] },
+      securityPort: security,
+      tools: [adapter],
+    }),
+  ).resolves.toEqual({ answer: 'done' });
+  expect(authorized).toEqual(['agent:1', 'agent:1:mcp', 'agent:2', 'agent:2:mcp']);
 });
 
 test('rejects missing scopes, stale schemas, and schema-invalid arguments before authorization', async () => {
