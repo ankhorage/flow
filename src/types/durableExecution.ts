@@ -1,5 +1,6 @@
 import type { DataContractValue } from '@ankhorage/contracts/data';
 
+import type { FlowResourceScope } from './headless.js';
 import type { FlowSecurityOperation } from './security.js';
 
 export interface FlowDefinitionRef {
@@ -13,6 +14,7 @@ export interface FlowDurableRun {
   readonly flow: FlowDefinitionRef;
   readonly id: string;
   readonly revision: number;
+  readonly scope?: FlowResourceScope;
   readonly status: 'cancelled' | 'failed' | 'queued' | 'running' | 'succeeded' | 'waiting_approval';
   readonly updatedAt: string;
 }
