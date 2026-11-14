@@ -1,6 +1,6 @@
 # Durable execution architecture decision
 
-**Status:** partial implementation; effect delivery blocked pending Flow #4 published security owner boundary (2026-11-14)
+**Status:** implemented on the Flow #7 delivery branch; pending full review acceptance (2026-11-14)
 
 ## Decision
 
@@ -13,13 +13,13 @@ without a mandatory database or cloud dependency in the package core.
 Temporal and Trigger.dev are not dependencies of `@ankhorage/flow`. They are viable deployment
 choices behind an adapter only if a host explicitly selects and operates them.
 
-No durable-effect worker is implemented by this change. Running the existing `FlowNodeOperation`
-against a persisted job before Flow #4 is published would bypass the required authorization and
-approval owner. Adding a local substitute would create a second, unreviewed security boundary.
+Durable effects are authorized through the published canonical `FlowSecurityPort`. Flow does not
+create another approval or secret boundary: it defers pending approvals as leased work and invokes
+the returned permit only at the external-effect boundary.
 
 ## Implemented safe foundation
 
-This PR implements only the security-independent foundation: a provider-neutral persistence port
+This PR implements a provider-neutral persistence port
 for runs, checkpoints and work leases; immutable Flow definition references with revision-checked
 run transitions; controlled-clock exponential retry calculations; and a self-hostable,
 single-process JSON-file adapter. Adapter instances addressing the same normalized file path share
@@ -30,8 +30,11 @@ times, concurrent multi-instance persistence, lease recovery after a stopped wor
 worker-ID reuse, completion idempotency, rejected corrupt envelopes, and that completed work cannot
 be claimed twice.
 
-The adapter deliberately does not execute a node, resolve a secret, deliver an outbox record or
-model an approval. It is not a multi-process database adapter: concurrent process coordination
+The adapter persists an idempotency-keyed outbox record before delivery, does not resolve secrets,
+and defers a pending approval without consuming its work item. Delivery is at least once: a crash
+after an external call may redeliver the pending outbox record, so the provider adapter must honor
+the supplied idempotency key. This is application-level idempotency, not an exactly-once claim.
+It is not a multi-process database adapter: concurrent process coordination
 belongs to a later adapter with an atomic storage primitive. This keeps the proven file adapter
 within its single-process correctness boundary rather than implying unsupported delivery safety.
 
@@ -65,13 +68,11 @@ bun install --frozen-lockfile
 rg -n 'executeAsync|FlowApprovalRequest|FlowSecretRef' src node_modules/@ankhorage/contracts/dist/flow.d.ts
 ```
 
-At evaluation time the first command returns an open #4 with `closed_at: null`. The second search
-shows the existing executor accepts an operation directly, while the published contract has no
-authorization/approval decision port that a worker may call before an effect.
+The security PR is now merged and Flow `0.4.1` exposes its public `createFlowSecurityPort` root API.
 
-## Required published integration boundary
+## Published security integration boundary
 
-Flow #4 must publish a canonical public boundary that lets the worker ask the security owner to:
+The published canonical public boundary lets the worker ask the security owner to:
 
 1. authorize the exact immutable `FlowDefinitionRef`, run, step attempt, capability and actor;
 2. resolve secret references only inside that owner boundary, never into a Flow run, checkpoint,
@@ -80,18 +81,17 @@ Flow #4 must publish a canonical public boundary that lets the worker ask the se
 4. reject the effect before delivery when authorization or approval is absent, expired, rejected
    or cancelled.
 
-The boundary must be consumed through its released public package API. Flow must not duplicate it,
-guess its DTOs, or invoke provider side effects until it is available.
+The worker consumes that boundary through its released root API and does not duplicate it or expose
+secret material in persisted state.
 
-## Implementation contract after the gate is released
+## Delivery contract
 
-The remaining implementation stays deferred as one coherent effect-delivery slice:
+The completed delivery slice follows these constraints:
 
-1. Extend the existing persistence, lease/claim, queue and clock boundary with the published
-   security decision and outbox ports. A transactional adapter must atomically store a run
-   transition, immutable definition reference, checkpoint and outbox record.
-2. Evolve the self-hostable adapter only after its operational concurrency contract is explicit;
-   database adapters stay optional outer adapters.
+1. Persist outbox identities before effects and retain immutable flow revision references and
+   checkpoints. Database adapters may strengthen transaction boundaries but must retain the port.
+2. Keep the self-hostable adapter explicitly single-process; database adapters remain optional
+   outer adapters for multi-process coordination.
 3. Claim due work with bounded concurrency and backpressure. A lease expiration can redeliver
    work, so the worker records a one-based immutable step attempt and uses deterministic retry
    backoff based on persisted attempt state.
@@ -105,17 +105,10 @@ The remaining implementation stays deferred as one coherent effect-delivery slic
 6. Resume from a persisted checkpoint after a worker stop. Completed attempts are never invoked
    again; an in-flight attempt can be redelivered only through the idempotency/outbox path.
 
-## Acceptance plan once unblocked
+## Acceptance contract
 
 Controlled-clock tests must prove worker restart, duplicate events, exhausted retry/backoff,
 cancellation, concurrent callbacks, DST skipped/repeated local times, immutable revision pinning,
 long-lived approval waits and the file-backed self-hosted adapter. A packed consumer must exercise
 the public ports only. Build, typecheck, lint, Knip, format, Changeset status and Exact-HEAD CI
 remain release gates.
-
-## Integration blocker
-
-**Do not merge or close Flow #7 from this PR.** Flow #4 is open and unpublished. Its absence
-prevents a secure durable worker and external effects. This is a deliberate fail-closed boundary,
-not an implementation omission: completing the requested acceptance before the owner boundary is
-released would require either invented local security APIs or unverified provider side effects.

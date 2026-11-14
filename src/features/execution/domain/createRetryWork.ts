@@ -7,10 +7,15 @@ export const createRetryWork = (
   now: Date,
   policy: FlowRetryPolicy,
 ): FlowDurableWork => ({
+  ...(completed.idempotencyKey === undefined ? {} : { idempotencyKey: completed.idempotencyKey }),
   attempt: completed.attempt + 1,
   dueAt: calculateRetryDueAt(now, completed.attempt, policy),
   flow: { ...completed.flow },
   id: `${completed.runId}:attempt:${completed.attempt + 1}`,
   runId: completed.runId,
+  ...(completed.securityOperation === undefined
+    ? {}
+    : { securityOperation: completed.securityOperation }),
+  ...(completed.stepId === undefined ? {} : { stepId: completed.stepId }),
   status: 'ready',
 });

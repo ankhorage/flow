@@ -1,6 +1,5 @@
-import { Client } from '@modelcontextprotocol/sdk/client/index.js';
-import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
-import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
+import type { Client as McpClient } from '@modelcontextprotocol/sdk/client/index.js';
+import type { StdioClientTransport as McpStdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
 
 import type {
   McpProviderDefinition,
@@ -11,6 +10,9 @@ import type {
   McpToolResult,
   McpTrustedStdioProvider,
 } from '../../types/mcp.js';
+import type { FlowOutboundTransportPort, FlowSecurityPort } from '../../types/security.js';
+import { createMcpRemoteTransportAsync } from './createMcpRemoteTransport.js';
+import { loadMcpSdkAsync } from './loadMcpSdkAsync.js';
 import { McpToolError } from './McpToolError.js';
 import { prepareMcpProviders } from './prepareMcpProviders.js';
 import { validateMcpSchema } from './validateMcpSchema.js';
@@ -22,6 +24,8 @@ const DEFAULT_TIMEOUT_MS = 10_000;
 /*** Creates a snapshotting, allowlist-only MCP registry. Real invocation fails closed until Issue #4 releases its approval boundary. */
 export const createMcpToolRegistry = (input: {
   readonly providers: readonly McpProviderDefinition[];
+  readonly outboundTransport?: FlowOutboundTransportPort;
+  readonly security?: FlowSecurityPort;
   readonly trustedStdioProviders?: Readonly<Record<string, McpTrustedStdioProvider>>;
 }): McpToolRegistry => {
   const providers = prepareMcpProviders(input.providers);
@@ -31,7 +35,6 @@ export const createMcpToolRegistry = (input: {
       {
         command: value.command,
         ...(value.args ? { args: [...value.args] } : {}),
-        ...(value.environment ? { environment: { ...value.environment } } : {}),
       },
     ]),
   );
@@ -39,7 +42,9 @@ export const createMcpToolRegistry = (input: {
   return {
     discoverAsync: async (signal) => {
       const groups = await Promise.all(
-        [...providers.values()].map((provider) => discoverAsync(provider, trusted, signal)),
+        [...providers.values()].map((provider) =>
+          discoverAsync(provider, trusted, input.outboundTransport, signal),
+        ),
       );
       const tools = groups.flat();
       const entries = tools.map((tool) => [key(tool.providerId, tool.name), tool] as const);
@@ -53,7 +58,14 @@ export const createMcpToolRegistry = (input: {
       return tools;
     },
     invokeAsync: (invocation) =>
-      Promise.resolve().then(() => invokeAsync(providers, snapshot, invocation)),
+      invokeAsync(
+        providers,
+        trusted,
+        snapshot,
+        input.security,
+        input.outboundTransport,
+        invocation,
+      ),
   };
 };
 
@@ -61,9 +73,10 @@ export const createMcpToolRegistry = (input: {
 const discoverAsync = async (
   provider: McpProviderDefinition,
   trusted: ReadonlyMap<string, McpTrustedStdioProvider>,
+  outboundTransport: FlowOutboundTransportPort | undefined,
   signal?: AbortSignal,
 ): Promise<readonly McpToolMetadata[]> => {
-  const connection = await connectAsync(provider, trusted, signal);
+  const connection = await connectAsync(provider, trusted, outboundTransport, signal);
   try {
     const tools = await listToolsAsync(connection.client, timeoutOf(provider), signal);
     return tools
@@ -74,12 +87,15 @@ const discoverAsync = async (
   }
 };
 
-/*** Validates a requested tool locally and reports the unavailable canonical approval boundary. */
-const invokeAsync = (
+/*** Validates, approves, and invokes one discovered tool through the server-only security port. */
+const invokeAsync = async (
   providers: ReadonlyMap<string, McpProviderDefinition>,
+  trusted: ReadonlyMap<string, McpTrustedStdioProvider>,
   snapshot: ReadonlyMap<string, McpToolMetadata>,
+  security: FlowSecurityPort | undefined,
+  outboundTransport: FlowOutboundTransportPort | undefined,
   invocation: McpToolInvocation,
-): McpToolResult => {
+): Promise<McpToolResult> => {
   const provider = providers.get(invocation.providerId);
   const tool = snapshot.get(key(invocation.providerId, invocation.toolName));
   if (!provider || !tool || !permissionFor(provider, invocation.toolName))
@@ -100,10 +116,57 @@ const invokeAsync = (
       'invalid_arguments',
       'MCP tool arguments do not satisfy the discovered schema.',
     );
-  throw new McpToolError(
-    'authorization_boundary_unavailable',
-    'MCP tool execution is unavailable until Flow security approvals are installed.',
+  if (!security)
+    throw new McpToolError(
+      'authorization_boundary_unavailable',
+      'MCP tool execution is unavailable until Flow security approvals are installed.',
+    );
+  const permit = await security.authorizeAsync({
+    ...invocation.security,
+    capability: `mcp:${provider.id}:${tool.name}`,
+    ...(provider.transport === 'remote'
+      ? { target: { allowedHosts: provider.allowedHosts, url: provider.endpoint } }
+      : {}),
+  });
+  return permit.executeAsync(async () =>
+    callToolAsync(provider, trusted, outboundTransport, invocation),
   );
+};
+
+/*** Opens a bounded provider connection only after the approval permit was issued. */
+const callToolAsync = async (
+  provider: McpProviderDefinition,
+  trusted: ReadonlyMap<string, McpTrustedStdioProvider>,
+  outboundTransport: FlowOutboundTransportPort | undefined,
+  invocation: McpToolInvocation,
+): Promise<McpToolResult> => {
+  const connection = await connectAsync(provider, trusted, outboundTransport, invocation.signal);
+  try {
+    const result = await boundedAsync(
+      (signal) =>
+        connection.client.callTool(
+          { name: invocation.toolName, arguments: invocation.arguments },
+          undefined,
+          { signal },
+        ),
+      timeoutOf(provider),
+      invocation.signal,
+    );
+    if (!Array.isArray(result.content))
+      throw new McpToolError(
+        'invalid_execution_response',
+        'The MCP provider returned an invalid tool result.',
+      );
+    return {
+      content: result.content,
+      ...(isRecord(result.structuredContent)
+        ? { structuredContent: result.structuredContent }
+        : {}),
+      isError: result.isError === true,
+    };
+  } finally {
+    await connection.closeAsync().catch(() => undefined);
+  }
 };
 
 interface ListedTool {
@@ -114,7 +177,7 @@ interface ListedTool {
   readonly annotations?: { readonly readOnlyHint?: boolean };
 }
 interface Connection {
-  readonly client: Client;
+  readonly client: McpClient;
   closeAsync(): Promise<void>;
 }
 
@@ -122,11 +185,15 @@ interface Connection {
 const connectAsync = async (
   provider: McpProviderDefinition,
   trusted: ReadonlyMap<string, McpTrustedStdioProvider>,
+  outboundTransport: FlowOutboundTransportPort | undefined,
   signal?: AbortSignal,
 ): Promise<Connection> => {
+  const { Client, StdioClientTransport } = await loadMcpSdkAsync();
   const client = new Client({ name: '@ankhorage/flow', version: '0.1.0' });
   const transport =
-    provider.transport === 'stdio' ? stdioTransport(provider, trusted) : remoteTransport(provider);
+    provider.transport === 'stdio'
+      ? stdioTransport(provider, trusted, StdioClientTransport)
+      : await createMcpRemoteTransportAsync(provider, outboundTransport);
   await boundedAsync(
     (timeoutSignal) =>
       client.connect(transport, { signal: timeoutSignal, timeout: timeoutOf(provider) }),
@@ -140,7 +207,8 @@ const connectAsync = async (
 const stdioTransport = (
   provider: Extract<McpProviderDefinition, { readonly transport: 'stdio' }>,
   trusted: ReadonlyMap<string, McpTrustedStdioProvider>,
-): StdioClientTransport => {
+  StdioClientTransport: typeof McpStdioClientTransport,
+): McpStdioClientTransport => {
   const host = trusted.get(provider.id);
   if (!host)
     throw new McpToolError(
@@ -150,35 +218,13 @@ const stdioTransport = (
   return new StdioClientTransport({
     command: host.command,
     args: host.args ? [...host.args] : undefined,
-    env: host.environment ? { ...host.environment } : undefined,
     stderr: 'pipe',
-  });
-};
-
-/*** Allows a remote connection only to the separately documented literal-loopback development exception. */
-const remoteTransport = (
-  provider: Extract<McpProviderDefinition, { readonly transport: 'remote' }>,
-): StreamableHTTPClientTransport => {
-  const url = new URL(provider.endpoint);
-  if (!provider.allowDevelopmentLoopback)
-    throw new McpToolError(
-      'remote_security_boundary_unavailable',
-      'Production remote MCP discovery requires the Flow security transport boundary.',
-    );
-  return new StreamableHTTPClientTransport(url, {
-    redirectPolicy: 'same-origin',
-    reconnectionOptions: {
-      initialReconnectionDelay: 100,
-      maxReconnectionDelay: 1_000,
-      reconnectionDelayGrowFactor: 1,
-      maxRetries: 0,
-    },
   });
 };
 
 /*** Lists a bounded, non-cyclic sequence of paginated tools. */
 const listToolsAsync = async (
-  client: Client,
+  client: McpClient,
   timeoutMs: number,
   signal?: AbortSignal,
 ): Promise<readonly ListedTool[]> => {

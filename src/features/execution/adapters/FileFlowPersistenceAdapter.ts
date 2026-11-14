@@ -2,7 +2,11 @@ import { randomUUID } from 'node:crypto';
 import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 
-import type { FlowDurableRun, FlowDurableWork } from '../../../types/durableExecution.js';
+import type {
+  FlowDurableRun,
+  FlowDurableWork,
+  FlowOutboxRecord,
+} from '../../../types/durableExecution.js';
 import type { FlowPersistencePort } from '../ports/FlowPersistencePort.js';
 
 /*** Create a self-hostable, single-process JSON persistence adapter for durable Flow state. */
@@ -10,26 +14,62 @@ export const FileFlowPersistenceAdapter = (path: string): FlowPersistencePort =>
   const persistencePath = resolve(path);
   const serializedCall = getSerializedCall(persistencePath);
   return {
+    cancelRunWorkAsync: (runId) =>
+      serializedCall.runAsync(() => cancelRunWorkAsync(persistencePath, runId)),
     claimDueWorkAsync: (input) =>
       serializedCall.runAsync(() => claimDueWorkAsync(persistencePath, input)),
     completeWorkAsync: (input) =>
       serializedCall.runAsync(() => completeWorkAsync(persistencePath, input)),
+    createOutboxAsync: (record) =>
+      serializedCall.runAsync(() => createOutboxAsync(persistencePath, record)),
     createRunAsync: (run) => serializedCall.runAsync(() => createRunAsync(persistencePath, run)),
     enqueueWorkAsync: (work) =>
       serializedCall.runAsync(() => enqueueWorkAsync(persistencePath, work)),
+    markOutboxDeliveredAsync: (id) =>
+      serializedCall.runAsync(() => markOutboxDeliveredAsync(persistencePath, id)),
+    readOutboxAsync: (id) => serializedCall.runAsync(() => readOutboxAsync(persistencePath, id)),
     readRunAsync: (id) => serializedCall.runAsync(() => readRunAsync(persistencePath, id)),
     recoverExpiredClaimsAsync: (now) =>
       serializedCall.runAsync(() => recoverExpiredClaimsAsync(persistencePath, now)),
+    releaseWorkAsync: (input) =>
+      serializedCall.runAsync(() => releaseWorkAsync(persistencePath, input)),
     transitionRunAsync: (input) =>
       serializedCall.runAsync(() => transitionRunAsync(persistencePath, input)),
   };
 };
 
+/** Cancel every nonterminal delivery for a run after its durable cancellation transition. */
+const cancelRunWorkAsync = async (path: string, runId: string): Promise<readonly string[]> =>
+  updateStoreAsync(path, (store) => {
+    const cancelled = store.work
+      .filter(
+        (work) => work.runId === runId && (work.status === 'ready' || work.status === 'claimed'),
+      )
+      .map((work) => ({ ...work, lease: undefined, status: 'cancelled' as const }));
+    return {
+      result: cancelled.map((work) => work.id),
+      store: { ...store, work: replaceWork(store.work, cancelled) },
+    };
+  });
+
 interface FileFlowStore {
   readonly nextLeaseFencingToken: number;
+  readonly outbox: readonly FlowOutboxRecord[];
   readonly runs: readonly FlowDurableRun[];
   readonly work: readonly FlowDurableWork[];
 }
+
+/** Persist a stable outbox identity before any external effect is attempted. */
+const createOutboxAsync = async (path: string, record: FlowOutboxRecord): Promise<void> =>
+  updateStoreAsync(path, (store) => {
+    const existing = store.outbox.find((candidate) => candidate.id === record.id);
+    if (existing !== undefined && existing.idempotencyKey !== record.idempotencyKey)
+      throw new Error(`FLOW_OUTBOX_CONFLICT:${record.id}`);
+    return {
+      result: undefined,
+      store: existing === undefined ? { ...store, outbox: [...store.outbox, copy(record)] } : store,
+    };
+  });
 
 interface SerializedCall {
   readonly runAsync: <Result>(operation: () => Promise<Result>) => Promise<Result>;
@@ -120,6 +160,24 @@ const enqueueWorkAsync = async (path: string, work: FlowDurableWork): Promise<vo
     return { result: undefined, store: { ...store, work: [...store.work, copy(work)] } };
   });
 
+/** Mark an effect delivery complete; duplicate marks are harmless and do not rerun the effect. */
+const markOutboxDeliveredAsync = async (path: string, id: string): Promise<boolean> =>
+  updateStoreAsync(path, (store) => {
+    const record = store.outbox.find((candidate) => candidate.id === id);
+    if (record === undefined) return { result: false, store };
+    return {
+      result: true,
+      store: {
+        ...store,
+        outbox: replaceOutbox(store.outbox, [{ ...record, status: 'delivered' }]),
+      },
+    };
+  });
+
+/** Read a copied outbox snapshot without exposing adapter-owned mutable state. */
+const readOutboxAsync = async (path: string, id: string): Promise<FlowOutboxRecord | undefined> =>
+  copy((await readStoreAsync(path)).outbox.find((record) => record.id === id));
+
 /*** Read a copied run snapshot so callers cannot mutate persisted state in-place. */
 const readRunAsync = async (path: string, id: string): Promise<FlowDurableRun | undefined> =>
   copy((await readStoreAsync(path)).runs.find((run) => run.id === id));
@@ -138,6 +196,30 @@ const recoverExpiredClaimsAsync = async (path: string, now: Date): Promise<reado
     return {
       result: recovered.map((work) => work.id),
       store: { ...store, work: replaceWork(store.work, recovered) },
+    };
+  });
+
+/** Return a fenced claim to the queue without permitting a stale worker to reschedule it. */
+const releaseWorkAsync = async (
+  path: string,
+  input: Parameters<FlowPersistencePort['releaseWorkAsync']>[0],
+): Promise<boolean> =>
+  updateStoreAsync(path, (store) => {
+    const work = store.work.find((candidate) => candidate.id === input.id);
+    if (
+      work?.status !== 'claimed' ||
+      work.lease?.workerId !== input.workerId ||
+      work.lease.fencingToken !== input.leaseFencingToken
+    )
+      return { result: false, store };
+    return {
+      result: true,
+      store: {
+        ...store,
+        work: replaceWork(store.work, [
+          { ...work, dueAt: input.dueAt, lease: undefined, status: 'ready' },
+        ]),
+      },
     };
   });
 
@@ -187,12 +269,21 @@ const replaceRuns = (
     (candidate) => replacements.find((replacement) => replacement.id === candidate.id) ?? candidate,
   );
 
+/** Replace durable outbox records by identity. */
+const replaceOutbox = (
+  records: readonly FlowOutboxRecord[],
+  replacements: readonly FlowOutboxRecord[],
+): readonly FlowOutboxRecord[] =>
+  records.map(
+    (candidate) => replacements.find((replacement) => replacement.id === candidate.id) ?? candidate,
+  );
+
 /*** Read persisted state or initialize an empty store when it has not yet been created. */
 const readStoreAsync = async (path: string): Promise<FileFlowStore> => {
   try {
     return readFileStore(JSON.parse(await readFile(path, 'utf8')));
   } catch (reason) {
-    if (isMissingFile(reason)) return { nextLeaseFencingToken: 1, runs: [], work: [] };
+    if (isMissingFile(reason)) return { nextLeaseFencingToken: 1, outbox: [], runs: [], work: [] };
     throw reason;
   }
 };
@@ -209,7 +300,9 @@ const readFileStore = (value: unknown): FileFlowStore => {
     !('runs' in value) ||
     !Array.isArray(value.runs) ||
     !('work' in value) ||
-    !Array.isArray(value.work)
+    !Array.isArray(value.work) ||
+    !('outbox' in value) ||
+    !Array.isArray(value.outbox)
   )
     throw new Error('FLOW_PERSISTENCE_INVALID');
   return value as FileFlowStore;

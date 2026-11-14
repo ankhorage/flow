@@ -20,12 +20,24 @@ graph TD
   module_src_features_execution_domain_createDefaultNodeRegistry_ts --> module_src_types_execution_ts
   module_src_features_execution_domain_validateFlowDataSchema_ts["src/features/execution/domain/validateFlowDataSchema.ts"]
   package__ankhorage_flow -.-> module_src_features_execution_domain_validateFlowDataSchema_ts
+  module_src_features_mcp_createMcpRemoteTransport_ts["src/features/mcp/createMcpRemoteTransport.ts"]
+  package__ankhorage_flow -.-> module_src_features_mcp_createMcpRemoteTransport_ts
+  module_src_features_mcp_createMcpRemoteTransport_ts --> module_src_features_mcp_loadMcpSdkAsync_ts
+  module_src_features_mcp_createMcpRemoteTransport_ts --> module_src_features_mcp_McpToolError_ts
+  module_src_features_mcp_createMcpRemoteTransport_ts --> module_src_types_mcp_ts
+  module_src_features_mcp_createMcpRemoteTransport_ts --> module_src_types_security_ts
   module_src_features_mcp_createMcpToolRegistry_ts["src/features/mcp/createMcpToolRegistry.ts"]
   package__ankhorage_flow -.-> module_src_features_mcp_createMcpToolRegistry_ts
+  module_src_features_mcp_createMcpToolRegistry_ts --> module_src_features_mcp_createMcpRemoteTransport_ts
+  module_src_features_mcp_createMcpToolRegistry_ts --> module_src_features_mcp_loadMcpSdkAsync_ts
   module_src_features_mcp_createMcpToolRegistry_ts --> module_src_features_mcp_McpToolError_ts
   module_src_features_mcp_createMcpToolRegistry_ts --> module_src_features_mcp_prepareMcpProviders_ts
   module_src_features_mcp_createMcpToolRegistry_ts --> module_src_features_mcp_validateMcpSchema_ts
   module_src_features_mcp_createMcpToolRegistry_ts --> module_src_types_mcp_ts
+  module_src_features_mcp_createMcpToolRegistry_ts --> module_src_types_security_ts
+  module_src_features_mcp_loadMcpSdkAsync_ts["src/features/mcp/loadMcpSdkAsync.ts"]
+  package__ankhorage_flow -.-> module_src_features_mcp_loadMcpSdkAsync_ts
+  module_src_features_mcp_loadMcpSdkAsync_ts --> module_src_features_mcp_McpToolError_ts
   module_src_features_mcp_McpToolError_ts["src/features/mcp/McpToolError.ts"]
   package__ankhorage_flow -.-> module_src_features_mcp_McpToolError_ts
   module_src_features_mcp_prepareMcpProviders_ts["src/features/mcp/prepareMcpProviders.ts"]
@@ -35,6 +47,17 @@ graph TD
   module_src_features_mcp_validateMcpSchema_ts["src/features/mcp/validateMcpSchema.ts"]
   package__ankhorage_flow -.-> module_src_features_mcp_validateMcpSchema_ts
   module_src_features_mcp_validateMcpSchema_ts --> module_src_features_mcp_McpToolError_ts
+  module_src_features_security_application_createFlowSecurityPort_ts["src/features/security/application/createFlowSecurityPort.ts"]
+  package__ankhorage_flow -.-> module_src_features_security_application_createFlowSecurityPort_ts
+  module_src_features_security_application_createFlowSecurityPort_ts --> module_src_features_security_domain_validateFlowSecurityTarget_ts
+  module_src_features_security_application_createFlowSecurityPort_ts --> module_src_features_security_FlowSecurityError_ts
+  module_src_features_security_application_createFlowSecurityPort_ts --> module_src_types_security_ts
+  module_src_features_security_domain_validateFlowSecurityTarget_ts["src/features/security/domain/validateFlowSecurityTarget.ts"]
+  package__ankhorage_flow -.-> module_src_features_security_domain_validateFlowSecurityTarget_ts
+  module_src_features_security_domain_validateFlowSecurityTarget_ts --> module_src_features_security_FlowSecurityError_ts
+  module_src_features_security_domain_validateFlowSecurityTarget_ts --> module_src_types_security_ts
+  module_src_features_security_FlowSecurityError_ts["src/features/security/FlowSecurityError.ts"]
+  package__ankhorage_flow -.-> module_src_features_security_FlowSecurityError_ts
   module_src_index_ts["src/index.ts"]
   module_src_mcp_ts["src/mcp.ts"]
   package__ankhorage_flow -.-> module_src_mcp_ts
@@ -44,3 +67,6 @@ graph TD
   package__ankhorage_flow -.-> module_src_types_execution_ts
   module_src_types_mcp_ts["src/types/mcp.ts"]
   package__ankhorage_flow -.-> module_src_types_mcp_ts
+  module_src_types_mcp_ts --> module_src_types_security_ts
+  module_src_types_security_ts["src/types/security.ts"]
+  package__ankhorage_flow -.-> module_src_types_security_ts

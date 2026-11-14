@@ -5,6 +5,7 @@ import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 
+import { createFlowSecurityPort } from '../src/index.js';
 import { createMcpToolRegistry } from '../src/mcp.js';
 
 const provider = {
@@ -21,6 +22,44 @@ const trustedStdioProviders = {
     args: [new URL('./fixtures/mcpStdioServer.ts', import.meta.url).pathname],
   },
 };
+
+const securityInvocation = (operationId: string) => ({
+  actor: {
+    id: 'operator',
+    tenantId: 'tenant-a',
+    projectId: 'project-a',
+    environment: 'test',
+  },
+  idempotencyKey: operationId,
+  operationId,
+});
+
+const permittingSecurity = () =>
+  createFlowSecurityPort({
+    approvalStore: { getAsync: async (operation) => ({ operation, status: 'approved' }) },
+    audit: { writeAsync: async () => undefined },
+    grants: [
+      {
+        ...securityInvocation('unused').actor,
+        actorId: 'operator',
+        capability: 'mcp:fixture:safe_echo',
+      },
+    ],
+    operationStore: {
+      claimAsync: async () => true,
+      consumeAsync: async () => true,
+      releaseAsync: async () => undefined,
+    },
+    rateLimit: { acquireAsync: async () => true },
+    secretStore: {
+      create: async () => ({ ok: false, error: { code: 'unavailable', message: 'unused' } }),
+      getMetadata: async () => ({ ok: false, error: { code: 'not_found', message: 'unused' } }),
+      list: async () => ({ ok: true, data: [] }),
+      remove: async () => ({ ok: true }),
+      replace: async () => ({ ok: false, error: { code: 'unavailable', message: 'unused' } }),
+      resolve: async () => ({ ok: true, data: {} }),
+    },
+  });
 
 test('discovers only explicitly permitted tools from a trusted STDIO host provider', async () => {
   const registry = createMcpToolRegistry({ providers: [provider], trustedStdioProviders });
@@ -39,8 +78,28 @@ test('fails closed before real tool execution until the approval boundary is rel
       schemaFingerprint: tool?.schemaFingerprint ?? '',
       arguments: { message: 'must not run' },
       scopes: ['tools:invoke'],
+      security: securityInvocation('denied'),
     }),
   ).rejects.toThrow('security approvals');
+});
+
+test('executes only after a scoped Flow security permit is approved', async () => {
+  const registry = createMcpToolRegistry({
+    providers: [provider],
+    security: permittingSecurity(),
+    trustedStdioProviders,
+  });
+  const [tool] = await registry.discoverAsync();
+  await expect(
+    registry.invokeAsync({
+      providerId: 'fixture',
+      toolName: 'safe_echo',
+      schemaFingerprint: tool?.schemaFingerprint ?? '',
+      arguments: { message: 'permitted' },
+      scopes: ['tools:invoke'],
+      security: securityInvocation('approved'),
+    }),
+  ).resolves.toMatchObject({ content: [{ text: 'permitted' }] });
 });
 
 test('rejects missing scopes, stale schemas, and schema-invalid arguments before authorization', async () => {
@@ -51,6 +110,7 @@ test('rejects missing scopes, stale schemas, and schema-invalid arguments before
     toolName: 'safe_echo',
     schemaFingerprint: tool?.schemaFingerprint ?? '',
     arguments: { message: 'hello' },
+    security: securityInvocation('validation'),
   };
   await expect(registry.invokeAsync({ ...invocation, scopes: [] })).rejects.toThrow('scopes');
   await expect(
@@ -83,6 +143,20 @@ test('rejects unsafe remote endpoints and production remote access before networ
       ],
     }),
   ).toThrow('public host allowlist');
+  expect(() =>
+    createMcpToolRegistry({
+      providers: [
+        {
+          id: 'unsafe-ipv6',
+          transport: 'remote',
+          endpoint: 'https://[::ffff:7f00:1]/mcp',
+          allowedHosts: ['::ffff:7f00:1'],
+          allowedTools: [{ name: 'tool', grantedScopes: ['tools:invoke'] }],
+          grantedScopes: ['tools:invoke'],
+        },
+      ],
+    }),
+  ).toThrow('public host allowlist');
 
   const production = createMcpToolRegistry({
     providers: [
@@ -99,7 +173,32 @@ test('rejects unsafe remote endpoints and production remote access before networ
   await expect(production.discoverAsync()).rejects.toThrow('security transport boundary');
 });
 
-test('permits only an explicit literal-loopback remote development fixture', async () => {
+test('does not bypass a host transport that rejects an outbound peer', async () => {
+  const registry = createMcpToolRegistry({
+    providers: [
+      {
+        id: 'blocked',
+        transport: 'remote',
+        endpoint: 'https://mcp.example.test/endpoint',
+        allowedHosts: ['mcp.example.test'],
+        allowedTools: [{ name: 'tool', grantedScopes: ['tools:invoke'] }],
+        grantedScopes: ['tools:invoke'],
+      },
+    ],
+    outboundTransport: {
+      fetchAsync: async ({ allowedHosts, url }) => {
+        expect(allowedHosts).toEqual(['mcp.example.test']);
+        expect(url).toContain('mcp.example.test');
+        throw new Error('host transport rejected the resolved peer');
+      },
+    },
+  });
+  await expect(registry.discoverAsync()).rejects.toThrow(
+    'host transport rejected the resolved peer',
+  );
+});
+
+test('routes remote discovery through the host transport boundary', async () => {
   const httpServer = createServer(async (request, response) => {
     const server = createRemoteMcpServer();
     const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
@@ -116,13 +215,18 @@ test('permits only an explicit literal-loopback remote development fixture', asy
         {
           id: 'remote',
           transport: 'remote',
-          endpoint: `http://127.0.0.1:${address.port}/mcp`,
-          allowedHosts: [],
-          allowDevelopmentLoopback: true,
+          endpoint: 'https://mcp.example.test/mcp',
+          allowedHosts: ['mcp.example.test'],
           allowedTools: [{ name: 'remote_echo', grantedScopes: ['tools:invoke'] }],
           grantedScopes: ['tools:invoke'],
         },
       ],
+      outboundTransport: {
+        fetchAsync: async ({ init, url }) => {
+          expect(url).toContain('mcp.example.test');
+          return fetch(`http://127.0.0.1:${address.port}/mcp`, init);
+        },
+      },
     });
     expect(await registry.discoverAsync()).toHaveLength(1);
   } finally {
@@ -144,7 +248,7 @@ test('propagates caller cancellation before provider discovery', async () => {
   await expect(registry.discoverAsync(controller.signal)).rejects.toThrow('cancelled');
 });
 
-test('bounds stalled loopback discovery with the provider timeout', async () => {
+test('bounds stalled host-transport discovery with the provider timeout', async () => {
   const httpServer = createServer(() => undefined);
   await new Promise<void>((resolve) => httpServer.listen(0, '127.0.0.1', resolve));
   const address = httpServer.address();
@@ -156,14 +260,16 @@ test('bounds stalled loopback discovery with the provider timeout', async () => 
         {
           id: 'stalled',
           transport: 'remote',
-          endpoint: `http://127.0.0.1:${address.port}/mcp`,
-          allowedHosts: [],
-          allowDevelopmentLoopback: true,
+          endpoint: 'https://mcp.example.test/mcp',
+          allowedHosts: ['mcp.example.test'],
           allowedTools: [{ name: 'tool', grantedScopes: ['tools:invoke'] }],
           grantedScopes: ['tools:invoke'],
           timeoutMs: 100,
         },
       ],
+      outboundTransport: {
+        fetchAsync: async ({ init }) => fetch(`http://127.0.0.1:${address.port}/mcp`, init),
+      },
     });
     await expect(registry.discoverAsync()).rejects.toThrow('timed out');
   } finally {
@@ -227,13 +333,15 @@ test('rejects unsupported schemas instead of accepting arbitrary tool arguments'
         {
           id: 'invalid-schema',
           transport: 'remote',
-          endpoint: `http://127.0.0.1:${address.port}/mcp`,
-          allowedHosts: [],
-          allowDevelopmentLoopback: true,
+          endpoint: 'https://mcp.example.test/mcp',
+          allowedHosts: ['mcp.example.test'],
           allowedTools: [{ name: 'unsafe_schema', grantedScopes: ['tools:invoke'] }],
           grantedScopes: ['tools:invoke'],
         },
       ],
+      outboundTransport: {
+        fetchAsync: async ({ init }) => fetch(`http://127.0.0.1:${address.port}/mcp`, init),
+      },
     });
     await expect(registry.discoverAsync()).rejects.toThrow(
       'must set additionalProperties to false',

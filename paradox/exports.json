@@ -76,6 +76,49 @@
     "structuredRows": []
   },
   {
+    "name": "createFlowSecurityPort",
+    "title": null,
+    "description": "Creates the provider-neutral server-side authorization, approval, audit, and secret boundary.",
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "value",
+    "modulePath": "src/features/security/application/createFlowSecurityPort.ts",
+    "sourceLocation": {
+      "filePath": "src/features/security/application/createFlowSecurityPort.ts",
+      "line": 33,
+      "column": 14
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [
+      "FlowApprovalStorePort",
+      "FlowOperationStorePort",
+      "FlowRateLimitPort",
+      "FlowSecurityAuditPort",
+      "FlowSecurityGrant",
+      "FlowSecurityPort"
+    ],
+    "signatures": [
+      {
+        "label": "(input: { readonly approvalStore: FlowApprovalStorePort; readonly audit: FlowSecurityAuditPort; readonly grants: readonly FlowSecurityGrant[]; readonly operationStore: FlowOperationStorePort; readonly rateLimit: FlowRateLimitPort; readonly secretStore: SecretStoreAdapter; }) => FlowSecurityPort",
+        "parameters": [
+          {
+            "name": "input",
+            "type": "{ readonly approvalStore: FlowApprovalStorePort; readonly audit: FlowSecurityAuditPort; readonly grants: readonly FlowSecurityGrant[]; readonly operationStore: FlowOperationStorePort; readonly rateLimit: FlowRateLimitPort; readonly secretStore: SecretStoreAdapter; }",
+            "required": true,
+            "description": null
+          }
+        ],
+        "returnType": "FlowSecurityPort",
+        "returnDescription": null
+      }
+    ],
+    "members": [],
+    "structuredRows": []
+  },
+  {
     "name": "executeFlowAsync",
     "title": null,
     "description": "Execute a compiled graph in deterministic order within one process.",
@@ -133,6 +176,39 @@
       }
     ],
     "members": [],
+    "structuredRows": []
+  },
+  {
+    "name": "FlowApprovalStorePort",
+    "title": null,
+    "description": null,
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "type",
+    "modulePath": "src/types/security.ts",
+    "sourceLocation": {
+      "filePath": "src/types/security.ts",
+      "line": 53,
+      "column": 1
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [
+      "FlowSecurityApproval",
+      "FlowSecurityOperationIdentity"
+    ],
+    "signatures": [],
+    "members": [
+      {
+        "name": "getAsync",
+        "kind": "method",
+        "type": "(operation: FlowSecurityOperationIdentity) => Promise<FlowSecurityApproval | undefined>",
+        "required": true,
+        "description": null
+      }
+    ],
     "structuredRows": []
   },
   {
@@ -324,6 +400,136 @@
     "structuredRows": []
   },
   {
+    "name": "FlowOperationStorePort",
+    "title": null,
+    "description": null,
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "type",
+    "modulePath": "src/types/security.ts",
+    "sourceLocation": {
+      "filePath": "src/types/security.ts",
+      "line": 61,
+      "column": 1
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [
+      "FlowSecurityOperationIdentity"
+    ],
+    "signatures": [],
+    "members": [
+      {
+        "name": "claimAsync",
+        "kind": "method",
+        "type": "(operation: FlowSecurityOperationIdentity) => Promise<boolean>",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "consumeAsync",
+        "kind": "method",
+        "type": "(operation: FlowSecurityOperationIdentity) => Promise<boolean>",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "releaseAsync",
+        "kind": "method",
+        "type": "(operation: FlowSecurityOperationIdentity) => Promise<void>",
+        "required": true,
+        "description": null
+      }
+    ],
+    "structuredRows": []
+  },
+  {
+    "name": "FlowOutboundTransportPort",
+    "title": null,
+    "description": null,
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "type",
+    "modulePath": "src/types/security.ts",
+    "sourceLocation": {
+      "filePath": "src/types/security.ts",
+      "line": 72,
+      "column": 1
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [],
+    "signatures": [],
+    "members": [
+      {
+        "name": "fetchAsync",
+        "kind": "method",
+        "type": "(input: { readonly allowedHosts: readonly string[]; readonly init?: RequestInit; readonly url: string; }) => Promise<Response>",
+        "required": true,
+        "description": null
+      }
+    ],
+    "structuredRows": []
+  },
+  {
+    "name": "FlowRateLimitPort",
+    "title": null,
+    "description": null,
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "type",
+    "modulePath": "src/types/security.ts",
+    "sourceLocation": {
+      "filePath": "src/types/security.ts",
+      "line": 81,
+      "column": 1
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [
+      "FlowSecurityActor"
+    ],
+    "signatures": [],
+    "members": [
+      {
+        "name": "acquireAsync",
+        "kind": "method",
+        "type": "(input: { readonly actor: FlowSecurityActor; readonly capability: string; readonly operationId: string; }) => Promise<boolean>",
+        "required": true,
+        "description": null
+      }
+    ],
+    "structuredRows": []
+  },
+  {
+    "name": "FlowResolvedSecrets",
+    "title": null,
+    "description": null,
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "unknown",
+    "modulePath": "src/types/security.ts",
+    "sourceLocation": {
+      "filePath": "src/types/security.ts",
+      "line": 116,
+      "column": 1
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [],
+    "signatures": [],
+    "members": [],
+    "structuredRows": []
+  },
+  {
     "name": "FlowRunRequest",
     "title": null,
     "description": null,
@@ -373,6 +579,672 @@
       },
       {
         "name": "triggerId",
+        "kind": "property",
+        "type": "string",
+        "required": true,
+        "description": null
+      }
+    ],
+    "structuredRows": []
+  },
+  {
+    "name": "FlowSecretCreateInput",
+    "title": null,
+    "description": null,
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "type",
+    "modulePath": "src/types/security.ts",
+    "sourceLocation": {
+      "filePath": "src/types/security.ts",
+      "line": 119,
+      "column": 1
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [
+      "FlowSecurityActor"
+    ],
+    "signatures": [],
+    "members": [
+      {
+        "name": "actor",
+        "kind": "property",
+        "type": "FlowSecurityActor",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "kind",
+        "kind": "property",
+        "type": "string",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "payload",
+        "kind": "property",
+        "type": "Readonly<Record<string, string>>",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "provider",
+        "kind": "property",
+        "type": "string | undefined",
+        "required": false,
+        "description": null
+      },
+      {
+        "name": "ref",
+        "kind": "property",
+        "type": "string",
+        "required": true,
+        "description": null
+      }
+    ],
+    "structuredRows": []
+  },
+  {
+    "name": "FlowSecretMetadata",
+    "title": null,
+    "description": null,
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "unknown",
+    "modulePath": "src/types/security.ts",
+    "sourceLocation": {
+      "filePath": "src/types/security.ts",
+      "line": 115,
+      "column": 1
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [],
+    "signatures": [],
+    "members": [],
+    "structuredRows": []
+  },
+  {
+    "name": "FlowSecretRevokeInput",
+    "title": null,
+    "description": null,
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "type",
+    "modulePath": "src/types/security.ts",
+    "sourceLocation": {
+      "filePath": "src/types/security.ts",
+      "line": 128,
+      "column": 1
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [
+      "FlowSecurityActor"
+    ],
+    "signatures": [],
+    "members": [
+      {
+        "name": "actor",
+        "kind": "property",
+        "type": "FlowSecurityActor",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "ref",
+        "kind": "property",
+        "type": "string",
+        "required": true,
+        "description": null
+      }
+    ],
+    "structuredRows": []
+  },
+  {
+    "name": "FlowSecurityActor",
+    "title": null,
+    "description": null,
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "type",
+    "modulePath": "src/types/security.ts",
+    "sourceLocation": {
+      "filePath": "src/types/security.ts",
+      "line": 4,
+      "column": 1
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [],
+    "signatures": [],
+    "members": [
+      {
+        "name": "environment",
+        "kind": "property",
+        "type": "string",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "id",
+        "kind": "property",
+        "type": "string",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "projectId",
+        "kind": "property",
+        "type": "string",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "tenantId",
+        "kind": "property",
+        "type": "string",
+        "required": true,
+        "description": null
+      }
+    ],
+    "structuredRows": []
+  },
+  {
+    "name": "FlowSecurityApproval",
+    "title": null,
+    "description": null,
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "type",
+    "modulePath": "src/types/security.ts",
+    "sourceLocation": {
+      "filePath": "src/types/security.ts",
+      "line": 47,
+      "column": 1
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [
+      "FlowSecurityOperationIdentity"
+    ],
+    "signatures": [],
+    "members": [
+      {
+        "name": "operation",
+        "kind": "property",
+        "type": "FlowSecurityOperationIdentity",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "status",
+        "kind": "property",
+        "type": "\"approved\" | \"pending\" | \"rejected\"",
+        "required": true,
+        "description": null
+      }
+    ],
+    "structuredRows": []
+  },
+  {
+    "name": "FlowSecurityAuditEvent",
+    "title": null,
+    "description": null,
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "type",
+    "modulePath": "src/types/security.ts",
+    "sourceLocation": {
+      "filePath": "src/types/security.ts",
+      "line": 95,
+      "column": 1
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [],
+    "signatures": [],
+    "members": [
+      {
+        "name": "actorId",
+        "kind": "property",
+        "type": "string",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "capability",
+        "kind": "property",
+        "type": "string",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "decision",
+        "kind": "property",
+        "type": "\"denied\" | \"permitted\"",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "operationId",
+        "kind": "property",
+        "type": "string",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "reason",
+        "kind": "property",
+        "type": "\"approval_pending\" | \"approval_rejected\" | \"credential_create\" | \"credential_revoke\" | \"idempotency_conflict\" | \"invalid_target\" | \"permission_denied\" | \"rate_limited\" | \"secret_unavailable\"",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "secretRefs",
+        "kind": "property",
+        "type": "readonly string[]",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "targetHost",
+        "kind": "property",
+        "type": "string | undefined",
+        "required": false,
+        "description": null
+      }
+    ],
+    "structuredRows": []
+  },
+  {
+    "name": "FlowSecurityAuditPort",
+    "title": null,
+    "description": null,
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "type",
+    "modulePath": "src/types/security.ts",
+    "sourceLocation": {
+      "filePath": "src/types/security.ts",
+      "line": 90,
+      "column": 1
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [
+      "FlowSecurityAuditEvent"
+    ],
+    "signatures": [],
+    "members": [
+      {
+        "name": "writeAsync",
+        "kind": "method",
+        "type": "(event: FlowSecurityAuditEvent) => Promise<void>",
+        "required": true,
+        "description": null
+      }
+    ],
+    "structuredRows": []
+  },
+  {
+    "name": "FlowSecurityError",
+    "title": null,
+    "description": "Represents a stable, payload-redacted Flow security denial.",
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "type",
+    "modulePath": "src/features/security/FlowSecurityError.ts",
+    "sourceLocation": {
+      "filePath": "src/features/security/FlowSecurityError.ts",
+      "line": 2,
+      "column": 1
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [],
+    "signatures": [],
+    "members": [],
+    "structuredRows": []
+  },
+  {
+    "name": "FlowSecurityGrant",
+    "title": null,
+    "description": null,
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "type",
+    "modulePath": "src/types/security.ts",
+    "sourceLocation": {
+      "filePath": "src/types/security.ts",
+      "line": 12,
+      "column": 1
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [],
+    "signatures": [],
+    "members": [
+      {
+        "name": "actorId",
+        "kind": "property",
+        "type": "string",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "capability",
+        "kind": "property",
+        "type": "string",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "environment",
+        "kind": "property",
+        "type": "string",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "projectId",
+        "kind": "property",
+        "type": "string",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "tenantId",
+        "kind": "property",
+        "type": "string",
+        "required": true,
+        "description": null
+      }
+    ],
+    "structuredRows": []
+  },
+  {
+    "name": "FlowSecurityOperation",
+    "title": null,
+    "description": null,
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "type",
+    "modulePath": "src/types/security.ts",
+    "sourceLocation": {
+      "filePath": "src/types/security.ts",
+      "line": 21,
+      "column": 1
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [
+      "FlowSecurityActor",
+      "FlowSecurityTarget"
+    ],
+    "signatures": [],
+    "members": [
+      {
+        "name": "actor",
+        "kind": "property",
+        "type": "FlowSecurityActor",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "capability",
+        "kind": "property",
+        "type": "string",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "idempotencyKey",
+        "kind": "property",
+        "type": "string",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "operationId",
+        "kind": "property",
+        "type": "string",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "secretRefs",
+        "kind": "property",
+        "type": "readonly string[] | undefined",
+        "required": false,
+        "description": null
+      },
+      {
+        "name": "target",
+        "kind": "property",
+        "type": "FlowSecurityTarget | undefined",
+        "required": false,
+        "description": null
+      }
+    ],
+    "structuredRows": []
+  },
+  {
+    "name": "FlowSecurityOperationIdentity",
+    "title": null,
+    "description": null,
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "type",
+    "modulePath": "src/types/security.ts",
+    "sourceLocation": {
+      "filePath": "src/types/security.ts",
+      "line": 37,
+      "column": 1
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [
+      "FlowSecurityActor",
+      "FlowSecurityTarget"
+    ],
+    "signatures": [],
+    "members": [
+      {
+        "name": "actor",
+        "kind": "property",
+        "type": "FlowSecurityActor",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "capability",
+        "kind": "property",
+        "type": "string",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "idempotencyKey",
+        "kind": "property",
+        "type": "string",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "operationId",
+        "kind": "property",
+        "type": "string",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "secretRefs",
+        "kind": "property",
+        "type": "readonly string[]",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "target",
+        "kind": "property",
+        "type": "FlowSecurityTarget | undefined",
+        "required": false,
+        "description": null
+      }
+    ],
+    "structuredRows": []
+  },
+  {
+    "name": "FlowSecurityPermit",
+    "title": null,
+    "description": null,
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "type",
+    "modulePath": "src/types/security.ts",
+    "sourceLocation": {
+      "filePath": "src/types/security.ts",
+      "line": 134,
+      "column": 1
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [
+      "FlowResolvedSecrets",
+      "FlowSecurityOperationIdentity"
+    ],
+    "signatures": [],
+    "members": [
+      {
+        "name": "executeAsync",
+        "kind": "method",
+        "type": "<T>(operation: (secrets: FlowResolvedSecrets) => Promise<T>) => Promise<T>",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "operation",
+        "kind": "property",
+        "type": "FlowSecurityOperationIdentity",
+        "required": true,
+        "description": null
+      }
+    ],
+    "structuredRows": []
+  },
+  {
+    "name": "FlowSecurityPort",
+    "title": null,
+    "description": null,
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "type",
+    "modulePath": "src/types/security.ts",
+    "sourceLocation": {
+      "filePath": "src/types/security.ts",
+      "line": 140,
+      "column": 1
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [
+      "FlowSecretCreateInput",
+      "FlowSecretMetadata",
+      "FlowSecretRevokeInput",
+      "FlowSecurityActor",
+      "FlowSecurityOperation",
+      "FlowSecurityPermit"
+    ],
+    "signatures": [],
+    "members": [
+      {
+        "name": "authorizeAsync",
+        "kind": "method",
+        "type": "(operation: FlowSecurityOperation) => Promise<FlowSecurityPermit>",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "createSecretAsync",
+        "kind": "method",
+        "type": "(input: FlowSecretCreateInput) => Promise<FlowSecretMetadata>",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "getSecretMetadataAsync",
+        "kind": "method",
+        "type": "(input: { readonly actor: FlowSecurityActor; readonly ref: SecretRef; }) => Promise<FlowSecretMetadata>",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "revokeSecretAsync",
+        "kind": "method",
+        "type": "(input: FlowSecretRevokeInput) => Promise<void>",
+        "required": true,
+        "description": null
+      }
+    ],
+    "structuredRows": []
+  },
+  {
+    "name": "FlowSecurityTarget",
+    "title": null,
+    "description": null,
+    "isReadme": false,
+    "see": [],
+    "security": [],
+    "kind": "type",
+    "modulePath": "src/types/security.ts",
+    "sourceLocation": {
+      "filePath": "src/types/security.ts",
+      "line": 31,
+      "column": 1
+    },
+    "exportPaths": [
+      "src/index.ts"
+    ],
+    "relatedSymbols": [],
+    "signatures": [],
+    "members": [
+      {
+        "name": "allowedHosts",
+        "kind": "property",
+        "type": "readonly string[]",
+        "required": true,
+        "description": null
+      },
+      {
+        "name": "url",
         "kind": "property",
         "type": "string",
         "required": true,

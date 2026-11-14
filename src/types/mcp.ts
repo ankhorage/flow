@@ -1,3 +1,7 @@
+import type { SecretRef } from '@ankhorage/contracts/secrets';
+
+import type { FlowSecurityActor } from './security.js';
+
 /** Public configuration and results for the optional MCP integration. */
 export interface McpToolPermission {
   readonly name: string;
@@ -13,8 +17,6 @@ export type McpProviderDefinition =
       readonly allowedTools: readonly McpToolPermission[];
       readonly grantedScopes: readonly string[];
       readonly timeoutMs?: number;
-      /** Enables only literal-loopback test and development endpoints. Never enable in production. */
-      readonly allowDevelopmentLoopback?: boolean;
     }
   | {
       readonly id: string;
@@ -28,7 +30,6 @@ export type McpProviderDefinition =
 export interface McpTrustedStdioProvider {
   readonly command: string;
   readonly args?: readonly string[];
-  readonly environment?: Readonly<Record<string, string>>;
 }
 
 export interface McpToolMetadata {
@@ -48,6 +49,12 @@ export interface McpToolInvocation {
   readonly schemaFingerprint: string;
   readonly arguments: Readonly<Record<string, unknown>>;
   readonly scopes: readonly string[];
+  readonly security: {
+    readonly actor: FlowSecurityActor;
+    readonly idempotencyKey: string;
+    readonly operationId: string;
+    readonly secretRefs?: readonly SecretRef[];
+  };
   readonly signal?: AbortSignal;
 }
 

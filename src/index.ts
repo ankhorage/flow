@@ -6,12 +6,17 @@ export { compileFlowGraph } from './features/execution/domain/compileFlowGraph.j
 export { createDefaultNodeRegistry } from './features/execution/domain/createDefaultNodeRegistry.js';
 export { createDurableRun } from './features/execution/domain/createDurableRun.js';
 export { createRetryWork } from './features/execution/domain/createRetryWork.js';
+export { isCronDueAt } from './features/execution/domain/isCronDueAt.js';
 export type { FlowPersistencePort } from './features/execution/ports/FlowPersistencePort.js';
+export { createFlowSecurityPort } from './features/security/application/createFlowSecurityPort.js';
+export { FlowSecurityError } from './features/security/FlowSecurityError.js';
 export type {
   FlowDefinitionRef,
   FlowDurableRun,
   FlowDurableWork,
+  FlowOutboxRecord,
   FlowRetryPolicy,
+  FlowRunCheckpoint,
 } from './types/durableExecution.js';
 export type {
   FlowClock,
@@ -22,3 +27,23 @@ export type {
   FlowNodeRegistry,
   FlowRunRequest,
 } from './types/execution.js';
+export type {
+  FlowApprovalStorePort,
+  FlowOperationStorePort,
+  FlowOutboundTransportPort,
+  FlowRateLimitPort,
+  FlowResolvedSecrets,
+  FlowSecretCreateInput,
+  FlowSecretMetadata,
+  FlowSecretRevokeInput,
+  FlowSecurityActor,
+  FlowSecurityApproval,
+  FlowSecurityAuditEvent,
+  FlowSecurityAuditPort,
+  FlowSecurityGrant,
+  FlowSecurityOperation,
+  FlowSecurityOperationIdentity,
+  FlowSecurityPermit,
+  FlowSecurityPort,
+  FlowSecurityTarget,
+} from './types/security.js';
