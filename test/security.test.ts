@@ -379,3 +379,54 @@ test('protects credential creation and revocation and resolves through the relea
   expect(JSON.stringify(events)).not.toContain('SENTINEL_SECRET');
   expect(calls).toHaveLength(6);
 });
+
+test('replaces renewed credentials only through the scoped server secret owner and redacts its audit', async () => {
+  const replacements: unknown[] = [];
+  const { events, port } = createSecurity({
+    grants: [{ ...actor, actorId: actor.id, capability: 'secrets:replace' }],
+    secretStore: {
+      create: async () => ({ ok: false, error: { code: 'unavailable', message: 'unused' } }),
+      getMetadata: async () => ({ ok: false, error: { code: 'not_found', message: 'unused' } }),
+      list: async () => ({ ok: true, data: [] }),
+      remove: async () => ({ ok: false, error: { code: 'unavailable', message: 'unused' } }),
+      replace: async (input) => {
+        replacements.push(input);
+        return {
+          ok: true,
+          data: {
+            configuredFields: Object.keys(input.payload),
+            createdAt: '2026-01-01T00:00:00.000Z',
+            kind: 'token',
+            ref: input.ref,
+            scope: input.scope,
+            updatedAt: '2026-01-01T00:00:00.000Z',
+          },
+        };
+      },
+      resolve: async () => ({ ok: false, error: { code: 'not_found', message: 'unused' } }),
+    },
+  });
+  await port.replaceSecretAsync({
+    actor,
+    payload: { token: 'SENTINEL_RENEWED_TOKEN' },
+    ref: 'providers/renewed',
+  });
+  expect(replacements).toEqual([
+    {
+      payload: { token: 'SENTINEL_RENEWED_TOKEN' },
+      ref: 'providers/renewed',
+      scope: { environment: actor.environment, projectId: actor.projectId },
+    },
+  ]);
+  expect(JSON.stringify(events)).not.toContain('SENTINEL_RENEWED_TOKEN');
+  expect(events).toEqual([
+    {
+      actorId: actor.id,
+      capability: 'secrets:replace',
+      decision: 'permitted',
+      operationId: 'providers/renewed',
+      reason: 'credential_replace',
+      secretRefs: ['providers/renewed'],
+    },
+  ]);
+});

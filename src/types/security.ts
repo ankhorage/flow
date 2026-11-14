@@ -102,6 +102,7 @@ export interface FlowSecurityAuditEvent {
     | 'approval_rejected'
     | 'credential_create'
     | 'credential_revoke'
+    | 'credential_replace'
     | 'idempotency_conflict'
     | 'invalid_target'
     | 'permission_denied'
@@ -130,6 +131,13 @@ export interface FlowSecretRevokeInput {
   readonly ref: SecretRef;
 }
 
+/** Protected server-side credential renewal input. Its scope is always derived from the actor. */
+export interface FlowSecretReplaceInput {
+  readonly actor: FlowSecurityActor;
+  readonly payload: SecretPayload;
+  readonly ref: SecretRef;
+}
+
 /** One-use authorization result. Raw secrets stay private to the returned server closure. */
 export interface FlowSecurityPermit {
   readonly operation: FlowSecurityOperationIdentity;
@@ -145,4 +153,5 @@ export interface FlowSecurityPort {
     readonly ref: SecretRef;
   }): Promise<FlowSecretMetadata>;
   revokeSecretAsync(input: FlowSecretRevokeInput): Promise<void>;
+  replaceSecretAsync(input: FlowSecretReplaceInput): Promise<FlowSecretMetadata>;
 }
