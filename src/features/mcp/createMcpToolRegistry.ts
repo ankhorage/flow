@@ -1,5 +1,5 @@
-import { Client } from '@modelcontextprotocol/sdk/client/index.js';
-import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
+import type { Client as McpClient } from '@modelcontextprotocol/sdk/client/index.js';
+import type { StdioClientTransport as McpStdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
 
 import type {
   McpProviderDefinition,
@@ -11,7 +11,8 @@ import type {
   McpTrustedStdioProvider,
 } from '../../types/mcp.js';
 import type { FlowOutboundTransportPort, FlowSecurityPort } from '../../types/security.js';
-import { createMcpRemoteTransport } from './createMcpRemoteTransport.js';
+import { createMcpRemoteTransportAsync } from './createMcpRemoteTransport.js';
+import { loadMcpSdkAsync } from './loadMcpSdkAsync.js';
 import { McpToolError } from './McpToolError.js';
 import { prepareMcpProviders } from './prepareMcpProviders.js';
 import { validateMcpSchema } from './validateMcpSchema.js';
@@ -176,7 +177,7 @@ interface ListedTool {
   readonly annotations?: { readonly readOnlyHint?: boolean };
 }
 interface Connection {
-  readonly client: Client;
+  readonly client: McpClient;
   closeAsync(): Promise<void>;
 }
 
@@ -187,11 +188,12 @@ const connectAsync = async (
   outboundTransport: FlowOutboundTransportPort | undefined,
   signal?: AbortSignal,
 ): Promise<Connection> => {
+  const { Client, StdioClientTransport } = await loadMcpSdkAsync();
   const client = new Client({ name: '@ankhorage/flow', version: '0.1.0' });
   const transport =
     provider.transport === 'stdio'
-      ? stdioTransport(provider, trusted)
-      : createMcpRemoteTransport(provider, outboundTransport);
+      ? stdioTransport(provider, trusted, StdioClientTransport)
+      : await createMcpRemoteTransportAsync(provider, outboundTransport);
   await boundedAsync(
     (timeoutSignal) =>
       client.connect(transport, { signal: timeoutSignal, timeout: timeoutOf(provider) }),
@@ -205,7 +207,8 @@ const connectAsync = async (
 const stdioTransport = (
   provider: Extract<McpProviderDefinition, { readonly transport: 'stdio' }>,
   trusted: ReadonlyMap<string, McpTrustedStdioProvider>,
-): StdioClientTransport => {
+  StdioClientTransport: typeof McpStdioClientTransport,
+): McpStdioClientTransport => {
   const host = trusted.get(provider.id);
   if (!host)
     throw new McpToolError(
@@ -221,7 +224,7 @@ const stdioTransport = (
 
 /*** Lists a bounded, non-cyclic sequence of paginated tools. */
 const listToolsAsync = async (
-  client: Client,
+  client: McpClient,
   timeoutMs: number,
   signal?: AbortSignal,
 ): Promise<readonly ListedTool[]> => {
