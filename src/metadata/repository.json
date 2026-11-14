@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "kind": "library",
+  "title": "Ankhorage Flow",
+  "summary": "Provides a standalone workflow engine foundation with deterministic graph compilation and single-process execution.",
+  "purpose": "Give applications a reusable workflow execution foundation with explicit persistence, security, and transport ports.",
+  "domain": "workflow execution",
+  "responsibilities": [
+    "Compile flow definitions into executable graphs.",
+    "Execute durable workflow runs and retry work.",
+    "Expose explicit persistence, security, and outbound transport ports."
+  ],
+  "boundaries": [
+    "Does not require a specific hosting topology or provider.",
+    "Does not own a user-interface workflow editor.",
+    "Does not embed concrete persistence or secret-provider implementations."
+  ],
+  "audience": [
+    "Application and platform authors building workflow automation.",
+    "Adapter authors supplying Flow ports."
+  ],
+  "useCases": [
+    "Compile and execute deterministic workflow graphs.",
+    "Coordinate durable workflow runs with explicit ports."
+  ],
+  "architecture": {
+    "role": "Headless workflow engine with explicit ports for durable execution and security.",
+    "invariants": [
+      "Graph compilation and execution remain independent of concrete adapters.",
+      "Provider behavior is supplied through explicit ports."
+    ]
+  },
+  "constraints": {
+    "limitations": [
+      "Durability, secrets, and transport capabilities require consumer-supplied ports."
+    ]
+  }
+}
