@@ -25,6 +25,10 @@
       "types": "./dist/execution.d.ts",
       "default": "./dist/execution.js"
     },
+    "./deployment": {
+      "types": "./dist/deployment.d.ts",
+      "default": "./dist/deployment.js"
+    },
     "./server": {
       "types": "./dist/server.d.ts",
       "default": "./dist/server.js"

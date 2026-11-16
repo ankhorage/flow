@@ -10,7 +10,57 @@ import type {
   FlowRuntime,
 } from './types/headless.js';
 
-/*** Start a standalone Bun HTTP server and a client-independent Flow worker loop. */
+/*** Start the authenticated HTTP API without starting a durable worker. */
+export const startFlowApiServerAsync = (
+  input: {
+    readonly access?: FlowHttpAccessPort;
+    readonly authenticator?: FlowHttpAuthenticatorPort;
+    readonly hostname?: string;
+    readonly localDemo?: boolean;
+    readonly persistencePath?: string;
+    readonly port?: number;
+    readonly runtime?: FlowRuntime;
+  } = {},
+) => {
+  assertServerInput(input);
+  const runtime = runtimeFor(input);
+  const { access, authenticator } = securityFor(input);
+  const server = Bun.serve({
+    fetch: createFlowHttpHandler({ access, authenticator, runtime }),
+    hostname: input.hostname ?? '127.0.0.1',
+    port: input.port ?? 4318,
+  });
+  return {
+    port: server.port,
+    runtime,
+    stop: () => {
+      void server.stop(true);
+      return Promise.resolve();
+    },
+  };
+};
+
+/*** Run one client-independent durable Flow worker loop without opening an HTTP listener. */
+export const startFlowWorkerAsync = (
+  input: {
+    readonly persistencePath?: string;
+    readonly runtime?: FlowRuntime;
+    readonly workerIntervalMs?: number;
+  } = {},
+) => {
+  assertWorkerInput(input);
+  const runtime = runtimeFor(input);
+  const timer = setInterval(() => void runtime.runWorkerTickAsync(), input.workerIntervalMs ?? 100);
+  return {
+    runtime,
+    stop: () => {
+      clearInterval(timer);
+      return Promise.resolve();
+    },
+  };
+};
+
+/*** Start the historical combined API and worker process through the separated canonical boundaries. */
 export const startFlowServerAsync = (
   input: {
     readonly access?: FlowHttpAccessPort;
@@ -23,27 +73,18 @@ export const startFlowServerAsync = (
     readonly workerIntervalMs?: number;
   } = {},
 ) => {
-  assertServerInput(input);
-  const runtime = runtimeFor(input);
-  const { access, authenticator } = securityFor(input);
-  const server = Bun.serve({
-    fetch: createFlowHttpHandler({ access, authenticator, runtime }),
-    hostname: input.hostname ?? '127.0.0.1',
-    port: input.port ?? 4318,
-  });
-  const timer = setInterval(() => void runtime.runWorkerTickAsync(), input.workerIntervalMs ?? 100);
+  const api = startFlowApiServerAsync(input);
+  const worker = startFlowWorkerAsync({ ...input, runtime: api.runtime });
   return {
-    port: server.port,
-    runtime,
-    stop: () => {
-      clearInterval(timer);
-      void server.stop(true);
-      return Promise.resolve();
+    ...api,
+    stop: async () => {
+      await worker.stop();
+      await api.stop();
     },
   };
 };
 
-type ServerInput = NonNullable<Parameters<typeof startFlowServerAsync>[0]>;
+type ServerInput = NonNullable<Parameters<typeof startFlowApiServerAsync>[0]>;
 
 /*** Reject insecure host composition before opening a network listener. */
 const assertServerInput = (input: ServerInput): void => {
@@ -55,8 +96,16 @@ const assertServerInput = (input: ServerInput): void => {
     throw new Error('FLOW_PERSISTENCE_PATH_REQUIRED');
 };
 
+/** Reject an uncomposed worker before it can create ephemeral state. */
+const assertWorkerInput = (
+  input: NonNullable<Parameters<typeof startFlowWorkerAsync>[0]>,
+): void => {
+  if (input.runtime === undefined && input.persistencePath === undefined)
+    throw new Error('FLOW_PERSISTENCE_PATH_REQUIRED');
+};
+
 /*** Compose a persistent runtime unless an embedding host owns it directly. */
-const runtimeFor = (input: ServerInput): FlowRuntime =>
+const runtimeFor = (input: Pick<ServerInput, 'persistencePath' | 'runtime'>): FlowRuntime =>
   input.runtime ??
   createFlowRuntime({
     nodeRegistry: createDefaultNodeRegistry(),

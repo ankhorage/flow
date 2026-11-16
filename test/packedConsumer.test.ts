@@ -33,10 +33,12 @@ const writeConsumerFiles = (consumerDirectory: string): void => {
     [
       "import { createFlowSecurityPort } from '@ankhorage/flow';",
       "import { executeAiNodeAsync } from '@ankhorage/flow/ai';",
+      "import { createFlowDeploymentDescriptor } from '@ankhorage/flow/deployment';",
       "import '@ankhorage/flow/execution';",
       "import { createMcpAgentToolAdapter, createMcpToolRegistry } from '@ankhorage/flow/mcp';",
       "import '@ankhorage/flow/social';",
       "import '@ankhorage/contracts/flow';",
+      "if (typeof createFlowDeploymentDescriptor !== 'function') throw new Error('Expected packed deployment descriptor export.');",
       "const registry = createMcpToolRegistry({ providers: [{ id: 'provider', transport: 'stdio', allowedTools: [{ name: 'safe_echo', grantedScopes: ['tools:invoke'] }], grantedScopes: ['tools:invoke'] }] });",
       'const security = { authorizeAsync: async (operation) => ({ operation: { ...operation, secretRefs: operation.secretRefs ?? [] }, executeAsync: async (callback) => callback({}) }) };',
       "const result = await executeAiNodeAsync(security, { budget: { maxCostMicros: 1, maxOutputTokens: 1 }, input: { context: {}, prompt: 'test', settings: { provider: 'fake', model: 'fake' } }, model: { streamAsync: async function* () { yield { type: 'output', value: { answer: 'packed' } }; } }, output: { parse: (value) => value }, security: { actor: { id: 'a', tenantId: 't', projectId: 'p', environment: 'test' }, idempotencyKey: 'key', operationId: 'operation', secretRefs: [] }, timeoutMs: 1000 });",
@@ -49,6 +51,7 @@ const writeConsumerFiles = (consumerDirectory: string): void => {
     [
       "import { createFlowSecurityPort } from '@ankhorage/flow';",
       "import type { FlowAiModelPort } from '@ankhorage/flow/ai';",
+      "import type { FlowDeploymentDescriptorInput } from '@ankhorage/flow/deployment';",
       "import '@ankhorage/flow/execution';",
       "import { createMcpAgentToolAdapter, createMcpToolRegistry } from '@ankhorage/flow/mcp';",
       "import '@ankhorage/flow/social';",
@@ -61,6 +64,8 @@ const writeConsumerFiles = (consumerDirectory: string): void => {
       'void fakeModel;',
       'void createMcpToolRegistry;',
       'void createMcpAgentToolAdapter;',
+      'const deployment: FlowDeploymentDescriptorInput | undefined = undefined;',
+      'void deployment;',
     ].join('\n'),
   );
   writeFileSync(
