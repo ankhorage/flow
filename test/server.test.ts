@@ -30,3 +30,53 @@ test('starts and stops isolated local API and worker boundaries using one host-o
 test('refuses to start an uncomposed worker', () => {
   expect(() => startFlowWorkerAsync()).toThrow('FLOW_PERSISTENCE_PATH_REQUIRED');
 });
+
+test('serializes worker ticks, retains failures, fences shutdown, and restarts cleanly', async () => {
+  let calls = 0;
+  let concurrent = 0;
+  let maximumConcurrent = 0;
+  let releaseTick: (() => void) | undefined;
+  const base = createFlowRuntime({
+    nodeRegistry: createDefaultNodeRegistry(),
+    persistence: InMemoryFlowPersistenceAdapter(),
+    store: InMemoryFlowRuntimeStore(),
+  });
+  const runtime = {
+    ...base,
+    runWorkerTickAsync: async () => {
+      calls += 1;
+      concurrent += 1;
+      maximumConcurrent = Math.max(maximumConcurrent, concurrent);
+      await new Promise<void>((resolve) => {
+        releaseTick = resolve;
+      });
+      concurrent -= 1;
+      if (calls === 1) throw new Error('expected tick failure');
+      return [];
+    },
+  };
+  const errors: unknown[] = [];
+  const worker = startFlowWorkerAsync({
+    onError: (error) => errors.push(error),
+    runtime,
+    workerIntervalMs: 1,
+  });
+
+  await Bun.sleep(5);
+  expect(calls).toBe(1);
+  expect(maximumConcurrent).toBe(1);
+  const stopping = worker.stop();
+  releaseTick?.();
+  await stopping;
+  await Bun.sleep(5);
+  expect(calls).toBe(1);
+  expect(errors).toHaveLength(1);
+
+  const restarted = startFlowWorkerAsync({ runtime, workerIntervalMs: 1 });
+  await Bun.sleep(5);
+  expect(calls).toBe(2);
+  const restartStopping = restarted.stop();
+  releaseTick?.();
+  await restartStopping;
+  expect(maximumConcurrent).toBe(1);
+});

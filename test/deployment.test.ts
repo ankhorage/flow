@@ -16,8 +16,6 @@ const apiToken = {
 
 const input: FlowDeploymentDescriptorInput = {
   api: {
-    command: ['flow-api'],
-    health: { kind: 'http', path: '/health', port: 4318 },
     port: 4318,
     resources: { cpuMillis: 250, memoryMiB: 256 },
     secretRefs: { FLOW_API_TOKEN: apiToken },
@@ -39,8 +37,6 @@ const input: FlowDeploymentDescriptorInput = {
     environment: { FLOW_SCHEDULER_INGRESS: { kind: 'literal', value: 'configured' } },
   },
   worker: {
-    command: ['flow-worker'],
-    health: { command: ['flow-worker', 'health'], kind: 'command' },
     resources: { cpuMillis: 250, memoryMiB: 256 },
     secretRefs: {
       FLOW_ARTIFACT_STORAGE_TOKEN: {
@@ -60,7 +56,15 @@ test('composes independent, validated API and worker workloads from exact adapte
   expect(workloads.map(({ id }) => id)).toEqual(['flow-api', 'flow-worker']);
   expect(workloads.every(isInfraWorkloadSpec)).toBe(true);
   expect(workloads[0]?.persistence).toEqual(workloads[1]?.persistence);
-  expect(workloads[0]?.command).not.toEqual(workloads[1]?.command);
+  expect(workloads.map(({ command }) => command)).toEqual([
+    ['flow', 'api'],
+    ['flow', 'worker'],
+  ]);
+  expect(workloads[0]?.health).toEqual({ kind: 'http', path: '/health', port: 4318 });
+  expect(workloads[1]?.health).toEqual({
+    command: ['flow', 'worker', 'health'],
+    kind: 'command',
+  });
   expect(workloads[0]?.environment?.FLOW_API_TOKEN).toEqual({
     kind: 'secret',
     reference: apiToken,
@@ -70,6 +74,16 @@ test('composes independent, validated API and worker workloads from exact adapte
 test('fails closed before guessing an image, secret reference, artifact storage, or scheduler', () => {
   expect(() =>
     createFlowDeploymentDescriptor({ ...input, image: 'registry.example.test/flow:latest' }),
+  ).toThrow('FLOW_DEPLOYMENT_IMAGE_DIGEST_REQUIRED');
+  expect(() =>
+    createFlowDeploymentDescriptor({
+      ...input,
+      image:
+        'garbage registry.example.test/flow@sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
+    }),
+  ).toThrow('FLOW_DEPLOYMENT_IMAGE_DIGEST_REQUIRED');
+  expect(() =>
+    createFlowDeploymentDescriptor({ ...input, image: 'registry.example.test/flow@sha256:xyz' }),
   ).toThrow('FLOW_DEPLOYMENT_IMAGE_DIGEST_REQUIRED');
   expect(() =>
     createFlowDeploymentDescriptor({ ...input, worker: { ...input.worker, secretRefs: {} } }),

@@ -1,6 +1,5 @@
 import type {
   InfraSecretReference,
-  InfraWorkloadHealthSpec,
   InfraWorkloadResourceSpec,
   InfraWorkloadValue,
   InfraWorkloadVolumeSpec,
@@ -9,8 +8,6 @@ import type {
 /** Public, provider-neutral composition input for separately operated Flow API and worker workloads. */
 export interface FlowDeploymentDescriptorInput {
   readonly api: {
-    readonly command: readonly string[];
-    readonly health: InfraWorkloadHealthSpec;
     readonly port: number;
     readonly resources: InfraWorkloadResourceSpec;
     readonly secretRefs: Readonly<Record<string, InfraSecretReference>>;
@@ -26,8 +23,6 @@ export interface FlowDeploymentDescriptorInput {
     readonly environment: Readonly<Record<string, InfraWorkloadValue>>;
   };
   readonly worker: {
-    readonly command: readonly string[];
-    readonly health: InfraWorkloadHealthSpec;
     readonly resources: InfraWorkloadResourceSpec;
     readonly secretRefs: Readonly<Record<string, InfraSecretReference>>;
   };

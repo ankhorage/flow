@@ -12,6 +12,9 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "sideEffects": false,
+  "bin": {
+    "flow": "./dist/cli/standalone.js"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -104,6 +107,21 @@
     "provider": "./dist/cli/index.js",
     "capabilities": [
       {
+        "id": "flow.api",
+        "owner": "@ankhorage/flow",
+        "access": [
+          "invoke"
+        ],
+        "binding": {
+          "kind": "action",
+          "bindableAs": [
+            "target"
+          ]
+        },
+        "label": "Start Flow API",
+        "description": "Start a Flow HTTP API against an explicitly composed shared durable runtime."
+      },
+      {
         "id": "flow.serve",
         "owner": "@ankhorage/flow",
         "access": [
@@ -117,6 +135,21 @@
         },
         "label": "Start Flow server",
         "description": "Start an authenticated standalone Flow workflow server."
+      },
+      {
+        "id": "flow.worker",
+        "owner": "@ankhorage/flow",
+        "access": [
+          "invoke"
+        ],
+        "binding": {
+          "kind": "action",
+          "bindableAs": [
+            "target"
+          ]
+        },
+        "label": "Start Flow worker",
+        "description": "Start a Flow durable worker against an explicitly composed shared runtime."
       }
     ]
   },

@@ -19,11 +19,11 @@ export const createFlowDeploymentDescriptor = (
   const workloads = [
     {
       artifact: { image: input.image, kind: 'image' },
-      command: input.api.command,
+      command: ['flow', 'api'],
       dependsOn: dependenciesOf(input),
       environment: { ...sharedEnvironment, ...secretEnvironment(input.api.secretRefs) },
       exposure: 'public',
-      health: input.api.health,
+      health: { kind: 'http', path: '/health', port: input.api.port },
       id: 'flow-api',
       persistence: { [input.persistence.id]: input.persistence },
       ports: { http: { port: input.api.port, protocol: 'tcp' } },
@@ -32,11 +32,11 @@ export const createFlowDeploymentDescriptor = (
     },
     {
       artifact: { image: input.image, kind: 'image' },
-      command: input.worker.command,
+      command: ['flow', 'worker'],
       dependsOn: dependenciesOf(input),
       environment: { ...sharedEnvironment, ...secretEnvironment(input.worker.secretRefs) },
       exposure: 'internal',
-      health: input.worker.health,
+      health: { command: ['flow', 'worker', 'health'], kind: 'command' },
       id: 'flow-worker',
       persistence: { [input.persistence.id]: input.persistence },
       replicas: 1,
@@ -50,8 +50,6 @@ export const createFlowDeploymentDescriptor = (
 /** Reject incomplete composition rather than guessing images, credentials, storage, or scheduler behavior. */
 const assertDeploymentInput = (input: FlowDeploymentDescriptorInput): void => {
   if (!isImmutableImage(input.image)) throw new Error('FLOW_DEPLOYMENT_IMAGE_DIGEST_REQUIRED');
-  if (!isCommand(input.api.command) || !isCommand(input.worker.command))
-    throw new Error('FLOW_DEPLOYMENT_COMMAND_REQUIRED');
   if (!isPositivePort(input.api.port)) throw new Error('FLOW_DEPLOYMENT_API_PORT_REQUIRED');
   if (!isNonEmptyRecord(input.api.secretRefs) || !isNonEmptyRecord(input.worker.secretRefs))
     throw new Error('FLOW_DEPLOYMENT_SECRET_REFS_REQUIRED');
@@ -78,10 +76,10 @@ const dependenciesOf = (input: FlowDeploymentDescriptorInput): Readonly<Record<s
 });
 
 /** Require OCI content-addressing so image selection cannot drift after planning. */
-const isImmutableImage = (value: string): boolean => /\S+@sha256:[a-f\d]{64}$/u.test(value);
-
-/** Require one executable and reject empty or whitespace-only arguments. */
-const isCommand = (value: readonly string[]): boolean => value.length > 0 && value.every(isText);
+const isImmutableImage = (value: string): boolean =>
+  /^(?:[a-z\d]+(?:[._-][a-z\d]+)*(?::[\d]+)?\/)?[a-z\d]+(?:[._-][a-z\d]+)*(?:\/[a-z\d]+(?:[._-][a-z\d]+)*)*@sha256:[a-f\d]{64}$/u.test(
+    value,
+  );
 
 /** Keep the public listener inside the portable TCP range. */
 const isPositivePort = (value: number): boolean =>

@@ -1,9 +1,8 @@
-import type { AnkhCommandHandler } from '@ankhorage/ankh';
-
 import { startFlowServerAsync } from '../../server.js';
+import { registerProcessShutdown } from '../registerProcessShutdown.js';
 
 /*** Start the authenticated standalone Flow server through the existing Ankh provider discovery. */
-export const serve: AnkhCommandHandler = ({ argv }) => {
+export const serve = (argv: readonly string[]): Promise<void> => {
   const token = process.env.FLOW_API_TOKEN;
   if (!token) throw new Error('FLOW_API_TOKEN_REQUIRED');
   const port = readPort(argv);
@@ -36,6 +35,7 @@ export const serve: AnkhCommandHandler = ({ argv }) => {
     persistencePath,
     port,
   });
+  registerProcessShutdown(server.stop);
   process.stdout.write(`Flow server listening on http://127.0.0.1:${server.port}\n`);
   return Promise.resolve();
 };

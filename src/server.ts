@@ -43,6 +43,7 @@ export const startFlowApiServerAsync = (
 /*** Run one client-independent durable Flow worker loop without opening an HTTP listener. */
 export const startFlowWorkerAsync = (
   input: {
+    readonly onError?: (error: unknown) => void;
     readonly persistencePath?: string;
     readonly runtime?: FlowRuntime;
     readonly workerIntervalMs?: number;
@@ -50,13 +51,11 @@ export const startFlowWorkerAsync = (
 ) => {
   assertWorkerInput(input);
   const runtime = runtimeFor(input);
-  const timer = setInterval(() => void runtime.runWorkerTickAsync(), input.workerIntervalMs ?? 100);
+  const loop = createWorkerLoop(runtime, input.workerIntervalMs ?? 100, input.onError);
+  loop.start();
   return {
     runtime,
-    stop: () => {
-      clearInterval(timer);
-      return Promise.resolve();
-    },
+    stop: loop.stopAsync,
   };
 };
 
@@ -102,6 +101,11 @@ const assertWorkerInput = (
 ): void => {
   if (input.runtime === undefined && input.persistencePath === undefined)
     throw new Error('FLOW_PERSISTENCE_PATH_REQUIRED');
+  if (
+    input.workerIntervalMs !== undefined &&
+    (!Number.isSafeInteger(input.workerIntervalMs) || input.workerIntervalMs < 1)
+  )
+    throw new Error('FLOW_WORKER_INTERVAL_INVALID');
 };
 
 /*** Compose a persistent runtime unless an embedding host owns it directly. */
@@ -114,6 +118,49 @@ const runtimeFor = (input: Pick<ServerInput, 'persistencePath' | 'runtime'>): Fl
       ? FileFlowRuntimeStore(input.persistencePath)
       : InMemoryFlowRuntimeStore(),
   });
+
+/*** Serialize worker ticks, retain failures at the process edge, and fence shutdown from rescheduling. */
+const createWorkerLoop = (
+  runtime: FlowRuntime,
+  intervalMs: number,
+  onError: (error: unknown) => void = reportWorkerError,
+) => {
+  let stopped = false;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  let active = Promise.resolve();
+  const isStopped = (): boolean => stopped;
+  const runAsync = (): void => {
+    active = (async () => {
+      if (isStopped()) return;
+      try {
+        await runtime.runWorkerTickAsync();
+      } catch (error) {
+        try {
+          onError(error);
+        } catch (reportingError) {
+          reportWorkerError(reportingError);
+        }
+      }
+      if (!isStopped()) timer = setTimeout(runAsync, intervalMs);
+    })();
+  };
+  return {
+    start: () => {
+      runAsync();
+    },
+    stopAsync: async () => {
+      stopped = true;
+      if (timer !== undefined) clearTimeout(timer);
+      await active;
+    },
+  };
+};
+
+/** Report a worker failure without leaking a rejected timer promise into the host runtime. */
+const reportWorkerError = (error: unknown): void => {
+  const message = error instanceof Error ? error.message : 'FLOW_WORKER_TICK_FAILED';
+  process.stderr.write(`Flow worker tick failed: ${message}\n`);
+};
 
 /*** Provide permissive boundaries only for an explicit loopback local demonstration. */
 const securityFor = (
