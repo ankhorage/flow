@@ -58,6 +58,15 @@ const executeCredentialLifecycleAsync = async (
       authorization,
       outboundTransport: dependencies.outboundTransport,
     });
+    validateSocialAuthorization({
+      accountId: request.accountId,
+      accountType: request.accountType,
+      actor: dependencies.actor,
+      capability,
+      credential,
+      now: dependencies.clock.now(),
+      platform: request.platform,
+    });
     await dependencies.security.replaceSecretAsync({
       actor: dependencies.actor,
       payload: credential,

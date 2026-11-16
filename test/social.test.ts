@@ -249,12 +249,31 @@ test('renews and revokes only through the server-owned secret boundary without r
   expect(revocation.output?.lifecycle).toEqual({ kind: 'inline', value: { status: 'revoked' } });
 });
 
+test('rejects a renewed credential with a different tenant binding before secret replacement', async () => {
+  const fixture = socialFixture({
+    renewedCredential: credential({ tenantId: 'other-tenant', token: 'SENTINEL_UNBOUND_TOKEN' }),
+  });
+  const renew = fixture.registry['social:oauth-renew'];
+  if (!renew) throw new Error('Expected a renewal operation.');
+  await expect(
+    renew.executeAsync({
+      config: config({ idempotencyKey: 'renew-unbound' }),
+      input: {},
+      node: node('renew-unbound'),
+      signal: new AbortController().signal,
+    }),
+  ).rejects.toThrow('SOCIAL_CREDENTIAL_BINDING_INVALID');
+  expect(fixture.calls).toMatchObject({ renew: 1, replace: 0 });
+  expect(JSON.stringify(fixture.audit)).not.toContain('SENTINEL_UNBOUND_TOKEN');
+});
+
 /** Exercise the optional SDK-free boundary with a provider that can only reach the host transport. */
 const socialFixture = (
   options: {
     readonly authorizeError?: string;
     readonly credential?: Readonly<Record<string, string>>;
     readonly publishError?: string;
+    readonly renewedCredential?: Readonly<Record<string, string>>;
     readonly transportError?: string;
   } = {},
 ) => {
@@ -298,7 +317,7 @@ const socialFixture = (
         allowedHosts: ['mock.social.test'],
         url: 'https://mock.social.test/v1/renew',
       });
-      return credential({ token: 'SENTINEL_RENEWED_TOKEN' });
+      return options.renewedCredential ?? credential({ token: 'SENTINEL_RENEWED_TOKEN' });
     },
     revokeAsync: async ({ outboundTransport }) => {
       calls.revoke += 1;
