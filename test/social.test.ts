@@ -11,7 +11,7 @@ import {
   createFlowRuntime,
 } from '../src/index.js';
 import { createSocialNodeRegistry, socialCapabilities } from '../src/social.js';
-import type { SocialProviderPort } from '../src/social.js';
+import type { SocialProviderPort, SocialProviderReceipt } from '../src/social.js';
 import type { FlowSecurityPort } from '../src/types/security.js';
 
 const actor = { environment: 'test', id: 'author', projectId: 'project', tenantId: 'tenant' };
@@ -484,12 +484,67 @@ test('rejects a renewed credential with a different tenant binding before secret
   expect(JSON.stringify(fixture.audit)).not.toContain('SENTINEL_UNBOUND_TOKEN');
 });
 
+test('rejects spoofed receipt kinds before credential mutation or provider replay', async () => {
+  for (const [operationId, receipt] of [
+    ['social:publish', { kind: 'oauth-revoke' }],
+    ['social:oauth-revoke', { kind: 'oauth-renew', credential: credential() }],
+  ] as const) {
+    const fixture = socialFixture({ receipt });
+    await expect(reconcileSocialAsync(fixture.registry, operationId)).rejects.toThrow(
+      'SOCIAL_RECEIPT_KIND_INVALID',
+    );
+    expect(fixture.calls).toMatchObject({ publish: 0, remove: 0, replace: 0, renew: 0, revoke: 0 });
+    expect(JSON.stringify(fixture.audit)).not.toContain('SENTINEL_TOKEN');
+  }
+});
+
+test('rejects receipt-renewed credentials that violate trusted binding or scopes', async () => {
+  for (const [name, renewedCredential, error] of [
+    [
+      'tenant',
+      credential({ tenantId: 'other-tenant', token: 'SENTINEL_RECEIPT_TENANT' }),
+      'SOCIAL_CREDENTIAL_BINDING_INVALID',
+    ],
+    [
+      'platform',
+      credential({ platform: 'linkedin', token: 'SENTINEL_RECEIPT_PLATFORM' }),
+      'SOCIAL_CREDENTIAL_BINDING_INVALID',
+    ],
+    [
+      'account',
+      credential({ accountId: 'other-page', token: 'SENTINEL_RECEIPT_ACCOUNT' }),
+      'SOCIAL_CREDENTIAL_BINDING_INVALID',
+    ],
+    [
+      'account type',
+      credential({ accountType: 'profile', token: 'SENTINEL_RECEIPT_ACCOUNT_TYPE' }),
+      'SOCIAL_CREDENTIAL_BINDING_INVALID',
+    ],
+    [
+      'scopes',
+      credential({ scopes: 'pages_read_engagement', token: 'SENTINEL_RECEIPT_SCOPES' }),
+      'SOCIAL_SCOPE_MISSING',
+    ],
+  ] as const) {
+    const fixture = socialFixture({
+      receipt: { credential: renewedCredential, kind: 'oauth-renew' },
+    });
+    await expect(
+      reconcileSocialAsync(fixture.registry, 'social:oauth-renew'),
+      name,
+    ).rejects.toThrow(error);
+    expect(fixture.calls).toMatchObject({ publish: 0, remove: 0, replace: 0, renew: 0, revoke: 0 });
+    expect(JSON.stringify(fixture.audit)).not.toContain('SENTINEL_RECEIPT');
+  }
+});
+
 /** Exercise the optional SDK-free boundary with a provider that can only reach the host transport. */
 const socialFixture = (
   options: {
     readonly authorizeError?: string;
     readonly credential?: Readonly<Record<string, string>>;
     readonly publishError?: string;
+    readonly receipt?: SocialProviderReceipt;
     readonly renewedCredential?: Readonly<Record<string, string>>;
     readonly transportError?: string;
   } = {},
@@ -528,7 +583,7 @@ const socialFixture = (
       if (options.publishError) throw new Error(options.publishError);
       return { platformPostId: 'post-1', status: 'posted' as const };
     },
-    reconcileAsync: async () => ({ kind: 'unknown' }),
+    reconcileAsync: async () => options.receipt ?? { kind: 'unknown' },
     renewAsync: async ({ outboundTransport }) => {
       calls.renew += 1;
       await outboundTransport.fetchAsync({
@@ -622,5 +677,21 @@ const publishAsync = async (registry: ReturnType<typeof createSocialNodeRegistry
     input: { media: { artifactId: 'asset-1', kind: 'artifact', mediaType: 'image/jpeg' } },
     node: node('publish'),
     signal: new AbortController().signal,
+  });
+};
+
+/** Ask the public social recovery boundary to reconstruct one completed protected operation. */
+const reconcileSocialAsync = async (
+  registry: ReturnType<typeof createSocialNodeRegistry>,
+  operationId: 'social:oauth-renew' | 'social:oauth-revoke' | 'social:publish',
+) => {
+  const operation = registry[operationId];
+  if (operation?.reconcileAsync === undefined) throw new Error('Expected social reconciliation.');
+  return operation.reconcileAsync({
+    config: config(),
+    effect: { idempotencyKey: `recover-${operationId}` },
+    input: {},
+    node: node('recover'),
+    secrets: { 'oauth-ref': credential() },
   });
 };

@@ -16,6 +16,7 @@ import { validateSocialAuthorization } from '../domain/validateSocialAuthorizati
 import type { SocialConfig } from './createSocialConfigReader.js';
 import { createSocialConfigReader } from './createSocialConfigReader.js';
 import { executeSocialOauthAsync } from './executeSocialOauthAsync.js';
+import { reconcileSocialReceiptAsync } from './reconcileSocialReceiptAsync.js';
 
 /** Create optional, SDK-free social publish, OAuth lifecycle, and analytics node operations. */
 export const createSocialNodeRegistry = (
@@ -177,31 +178,13 @@ const reconcileSocialAsync =
       idempotencyKey: effect.idempotencyKey,
       outboundTransport: dependencies.outboundTransport,
     });
-    switch (receipt.kind) {
-      case 'analytics':
-        return {
-          output: { analytics: { kind: 'inline', value: analyticsValue(receipt.analytics) } },
-        };
-      case 'oauth-renew':
-        await dependencies.security.replaceSecretAsync({
-          actor: dependencies.actor,
-          payload: receipt.credential,
-          ref: request.credentialRef,
-        });
-        return { output: { lifecycle: { kind: 'inline', value: { status: 'renewed' } } } };
-      case 'oauth-revoke':
-        await dependencies.security.revokeSecretAsync({
-          actor: dependencies.actor,
-          ref: request.credentialRef,
-        });
-        return { output: { lifecycle: { kind: 'inline', value: { status: 'revoked' } } } };
-      case 'publish':
-        return {
-          output: { publication: { kind: 'inline', value: publicationValue(receipt.publication) } },
-        };
-      case 'unknown':
-        return 'unknown';
-    }
+    if (receipt.kind === 'unknown') return 'unknown';
+    return reconcileSocialReceiptAsync({
+      capability: resolvedCapability,
+      dependencies,
+      receipt,
+      request,
+    });
   };
 
 /** Resolve secrets through exactly one permit: the worker's durable permit or a direct executor permit. */
