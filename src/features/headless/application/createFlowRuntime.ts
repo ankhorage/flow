@@ -232,6 +232,8 @@ const runWorkerTickAsync = async (
           return result;
         },
         reconcileAsync: (input) => reconcileDurableHeadlessStepAsync(input, dependencies, clock),
+        reconcileWithoutSecretsAsync: (input) =>
+          reconcileDurableHeadlessStepAsync(input, dependencies, clock),
       },
       persistence: dependencies.persistence,
       ...(dependencies.security === undefined ? {} : { security: dependencies.security }),

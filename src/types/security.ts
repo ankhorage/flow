@@ -146,6 +146,8 @@ export interface FlowSecurityPermit {
 
 /** Recovery-only credential access for reconstructing an already applied protected effect. */
 export interface FlowSecurityReconciliationPermit {
+  /** Execute an approved receipt lookup that intentionally requires no credential material. */
+  reconcileWithoutSecretsAsync<T>(operation: () => Promise<T>): Promise<T>;
   reconcileAsync<T>(operation: (secrets: FlowResolvedSecrets) => Promise<T>): Promise<T>;
 }
 

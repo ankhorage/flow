@@ -86,6 +86,7 @@ const provider: SocialProviderPort = {
       ? { kind: 'unknown' }
       : { kind: 'publish', publication: receipt.publication };
   },
+  reconcileRevocationAsync: async () => ({ kind: 'unknown' }),
   renewAsync: async () => {
     throw new Error('FLOW_TEST_RENEW_UNUSED');
   },
@@ -104,6 +105,7 @@ const security: FlowSecurityPort = {
     };
   },
   reconcileAsync: async () => ({
+    reconcileWithoutSecretsAsync: async (callback) => callback(),
     reconcileAsync: async (callback) => callback({ 'oauth-ref': credential }),
   }),
   createSecretAsync: async () => {

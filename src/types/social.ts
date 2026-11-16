@@ -98,8 +98,20 @@ export interface SocialProviderPort {
     readonly idempotencyKey: string;
     readonly outboundTransport: FlowOutboundTransportPort;
   }): Promise<SocialProviderReceipt>;
+  /**
+   * Read the provider-owned, operation-bound revoke receipt without a credential. Providers must
+   * durably bind the receipt to the supplied stable effect identity before reporting revocation.
+   */
+  reconcileRevocationAsync(input: {
+    readonly accountId: string;
+    readonly accountType: string;
+    readonly idempotencyKey: string;
+    readonly outboundTransport: FlowOutboundTransportPort;
+  }): Promise<Extract<SocialProviderReceipt, { readonly kind: 'oauth-revoke' | 'unknown' }>>;
   revokeAsync(input: {
     readonly authorization: SocialAuthorization;
+    /** Stable Flow operation identity that the provider receipt must bind before success. */
+    readonly idempotencyKey: string;
     readonly outboundTransport: FlowOutboundTransportPort;
   }): Promise<void>;
   renewAsync(input: {

@@ -41,12 +41,20 @@ export const executeSocialOauthAsync = async (input: {
       provider,
       request,
       capability,
+      effect.idempotencyKey,
       input.secrets,
     );
   await (
     await dependencies.security.authorizeAsync(operation)
   ).executeAsync((secrets) =>
-    executeCredentialLifecycleAsync(dependencies, provider, request, capability, secrets),
+    executeCredentialLifecycleAsync(
+      dependencies,
+      provider,
+      request,
+      capability,
+      effect.idempotencyKey,
+      secrets,
+    ),
   );
 };
 
@@ -56,6 +64,7 @@ const executeCredentialLifecycleAsync = async (
   provider: SocialProviderPort,
   request: Parameters<typeof executeSocialOauthAsync>[0]['request'],
   capability: Extract<SocialCapability, 'oauth:renew' | 'oauth:revoke'>,
+  idempotencyKey: string,
   secrets: Readonly<Record<string, Readonly<Record<string, string>>>>,
 ): Promise<void> => {
   const authorization = validateSocialAuthorization({
@@ -88,7 +97,11 @@ const executeCredentialLifecycleAsync = async (
     });
     return;
   }
-  await provider.revokeAsync({ authorization, outboundTransport: dependencies.outboundTransport });
+  await provider.revokeAsync({
+    authorization,
+    idempotencyKey,
+    outboundTransport: dependencies.outboundTransport,
+  });
   await dependencies.security.revokeSecretAsync({
     actor: dependencies.actor,
     ref: request.credentialRef,

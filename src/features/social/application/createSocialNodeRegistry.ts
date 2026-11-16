@@ -61,6 +61,7 @@ export const createSocialNodeRegistry = (
       return { output: { lifecycle: { kind: 'inline', value: { status: 'revoked' } } } };
     },
     reconcileAsync: reconcileSocialAsync(dependencies, 'oauth:revoke'),
+    reconcileWithoutSecretsAsync: reconcileSocialRevocationAsync(dependencies),
   },
 });
 const socialConfig = createSocialConfigReader();
@@ -181,6 +182,29 @@ const reconcileSocialAsync =
     if (receipt.kind === 'unknown') return 'unknown';
     return reconcileSocialReceiptAsync({
       capability: resolvedCapability,
+      dependencies,
+      receipt,
+      request,
+    });
+  };
+
+/** Recover a revoke only from the provider's durable operation receipt, never from its old token. */
+const reconcileSocialRevocationAsync =
+  (
+    dependencies: SocialNodeRegistryDependencies,
+  ): NonNullable<FlowNodeOperation['reconcileWithoutSecretsAsync']> =>
+  async ({ config, effect }) => {
+    const request = socialConfig.common(config);
+    const provider = providerOf(dependencies.providers, request.platform);
+    const receipt = await provider.reconcileRevocationAsync({
+      accountId: request.accountId,
+      accountType: request.accountType,
+      idempotencyKey: effect.idempotencyKey,
+      outboundTransport: dependencies.outboundTransport,
+    });
+    if (receipt.kind === 'unknown') return 'unknown';
+    return reconcileSocialReceiptAsync({
+      capability: 'oauth:revoke',
       dependencies,
       receipt,
       request,

@@ -12,7 +12,9 @@ import type { FlowClock } from '../../../types/execution.js';
 import type { FlowResolvedSecrets, FlowSecurityPort } from '../../../types/security.js';
 import { FlowSecurityError } from '../../security/FlowSecurityError.js';
 import { createRetryWork } from '../domain/createRetryWork.js';
+import { updateDurableCheckpoint } from '../domain/updateDurableCheckpoint.js';
 import type { FlowPersistencePort } from '../ports/FlowPersistencePort.js';
+import { reconcileDurableReceiptAsync } from './reconcileDurableReceiptAsync.js';
 
 /** Claim bounded durable work and execute it with fenced recovery, retry, and approval handling. */
 export const runDurableWorkerAsync = async (
@@ -55,14 +57,14 @@ const processWorkAsync = async (
   const { lease } = work;
   if (lease === undefined) return { status: 'lost_lease', workId: work.id };
   const run = await dependencies.persistence.readRunAsync(work.runId);
-  if (run === undefined || run.status === 'cancelled') {
-    await completeAsync(work, input.workerId, dependencies);
-    return { status: 'cancelled', workId: work.id };
-  }
-  if (isCompleted(run.checkpoint, work.stepId)) {
-    await completeAsync(work, input.workerId, dependencies);
-    return { status: 'already_completed', workId: work.id };
-  }
+  if (run === undefined || run.status === 'cancelled')
+    return completeAsync(work, input.workerId, dependencies).then(() =>
+      outcomeOf(work, 'cancelled'),
+    );
+  if (isCompleted(run.checkpoint, work.stepId))
+    return completeAsync(work, input.workerId, dependencies).then(() =>
+      outcomeOf(work, 'already_completed'),
+    );
   try {
     if (
       !(await dependencies.persistence.verifyClaimAsync({
@@ -93,7 +95,7 @@ const processWorkAsync = async (
     if (!finalized) return { status: 'lost_lease', workId: work.id };
     return { status: 'succeeded', workId: work.id };
   } catch (error) {
-    if (isApprovalPending(error)) return waitForApprovalAsync(work, run, input, dependencies);
+    if (isPendingApproval(error)) return waitForApprovalAsync(work, run, input, dependencies);
     return retryOrFailAsync(work, run, input, dependencies, error);
   }
 };
@@ -143,6 +145,13 @@ const executeEffectAsync = async (
   const reconcile = dependencies.effects.reconcileAsync;
   if (reconcile === undefined) throw new Error('FLOW_PROTECTED_EFFECT_RECONCILIATION_REQUIRED');
   const recoveryPermit = await dependencies.security.reconcileAsync(work.securityOperation);
+  const reconciledWithoutSecrets = await reconcileDurableReceiptAsync({
+    effects: dependencies.effects,
+    recoveryPermit,
+    run,
+    work,
+  });
+  if (reconciledWithoutSecrets !== 'unknown') return reconciledWithoutSecrets;
   const reconciled = await recoveryPermit.reconcileAsync((secrets) =>
     reconcile({
       idempotencyKey: work.idempotencyKey ?? work.id,
@@ -171,7 +180,11 @@ const finalizeAsync = (
     now: dependencies.clock.now(),
     run: {
       ...run,
-      checkpoint: completedCheckpoint(effect.checkpoint ?? run.checkpoint, work.stepId),
+      checkpoint: updateDurableCheckpoint({
+        checkpoint: effect.checkpoint ?? run.checkpoint,
+        status: 'completed',
+        stepId: work.stepId,
+      }),
       revision: run.revision + 1,
       status: effect.status ?? 'succeeded',
       updatedAt: dependencies.clock.now().toISOString(),
@@ -212,7 +225,11 @@ const retryOrFailAsync = async (
     const transitioned = await transitionAsync(
       run,
       'failed',
-      failedCheckpoint(run.checkpoint, work.stepId),
+      updateDurableCheckpoint({
+        checkpoint: run.checkpoint,
+        status: 'failed',
+        stepId: work.stepId,
+      }),
       dependencies,
     );
     const completed = await completeAsync(work, input.workerId, dependencies);
@@ -270,34 +287,6 @@ const claimFencingToken = (work: FlowDurableWork): number => {
   return work.lease.fencingToken;
 };
 
-/** Add a successful step exactly once to an immutable checkpoint. */
-const completedCheckpoint = (
-  checkpoint: FlowRunCheckpoint | undefined,
-  stepId: string | undefined,
-): FlowRunCheckpoint => ({
-  completedStepIds: unique([
-    ...(checkpoint?.completedStepIds ?? []),
-    ...(stepId === undefined ? [] : [stepId]),
-  ]),
-  ...(checkpoint?.data === undefined ? {} : { data: checkpoint.data }),
-  failedStepIds: checkpoint?.failedStepIds ?? [],
-  ...(checkpoint?.steps === undefined ? {} : { steps: checkpoint.steps }),
-});
-
-/** Add a terminally failed step to an immutable checkpoint. */
-const failedCheckpoint = (
-  checkpoint: FlowRunCheckpoint | undefined,
-  stepId: string | undefined,
-): FlowRunCheckpoint => ({
-  completedStepIds: checkpoint?.completedStepIds ?? [],
-  ...(checkpoint?.data === undefined ? {} : { data: checkpoint.data }),
-  failedStepIds: unique([
-    ...(checkpoint?.failedStepIds ?? []),
-    ...(stepId === undefined ? [] : [stepId]),
-  ]),
-  ...(checkpoint?.steps === undefined ? {} : { steps: checkpoint.steps }),
-});
-
 /** Check whether a completed checkpoint makes a duplicate delivery a no-op. */
 const isCompleted = (
   checkpoint: FlowRunCheckpoint | undefined,
@@ -317,12 +306,15 @@ const assertWorkerInput = (input: Parameters<typeof runDurableWorkerAsync>[0]): 
 };
 
 /** Identify the canonical pending-approval error without interpreting untrusted error shapes. */
-const isApprovalPending = (error: unknown): boolean =>
+const isPendingApproval = (error: unknown): boolean =>
   error instanceof FlowSecurityError && error.code === 'approval_pending';
 
 /** Preserve a concise, provider-neutral failure signal in the worker result. */
 const errorMessage = (error: unknown): string =>
   error instanceof Error ? error.message : 'FLOW_EFFECT_FAILED';
 
-/** Keep persisted checkpoint arrays deterministic. */
-const unique = (values: readonly string[]): readonly string[] => [...new Set(values)];
+/** Render one durable terminal outcome without retaining provider effect data. */
+const outcomeOf = (
+  work: FlowDurableWork,
+  status: FlowWorkerOutcome['status'],
+): FlowWorkerOutcome => ({ status, workId: work.id });

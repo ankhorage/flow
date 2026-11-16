@@ -41,6 +41,7 @@ const security = (permitted = true): FlowSecurityPort => ({
     };
   },
   reconcileAsync: async () => ({
+    reconcileWithoutSecretsAsync: async (callback) => callback(),
     reconcileAsync: async (callback) =>
       callback({ 'providers/fake': { token: 'SENTINEL_SECRET' } }),
   }),

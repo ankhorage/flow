@@ -55,6 +55,16 @@ export interface FlowNodeOperation {
     /** Server-only credentials supplied only while reconciling a protected delivery. */
     readonly secrets?: FlowResolvedSecrets;
   }) => Promise<FlowNodeOperationResult | 'unknown'>;
+  /**
+   * Reconstruct an already applied result from an operation-bound provider receipt without
+   * resolving a credential. This is reserved for effects whose successful completion removes it.
+   */
+  readonly reconcileWithoutSecretsAsync?: (input: {
+    readonly config: FlowNodeConfig | undefined;
+    readonly effect: FlowNodeEffectIdentity;
+    readonly input: Readonly<Record<FlowPortId, FlowDataRef>>;
+    readonly node: FlowNode;
+  }) => Promise<FlowNodeOperationResult | 'unknown'>;
 }
 export type FlowNodeRegistry = Readonly<Record<string, FlowNodeOperation>>;
 export interface FlowCompiledGraph {

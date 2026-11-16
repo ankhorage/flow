@@ -116,7 +116,9 @@ const reconcileStepAsync = async (
   secrets: FlowResolvedSecrets | undefined,
 ) => {
   if (!reconcile) return undefined;
-  const result = await operation.reconcileAsync?.({
+  const reconcileOperation =
+    secrets === undefined ? operation.reconcileWithoutSecretsAsync : operation.reconcileAsync;
+  const result = await reconcileOperation?.({
     config: node.config,
     effect,
     input: work.input ?? {},

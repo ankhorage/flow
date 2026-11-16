@@ -51,6 +51,7 @@ test('executes the approved Draft to Scheduled to Posted to Analytics mock-provi
         : { platformPostId: 'post-1', publishedAt: '2026-11-14T10:00:00.000Z', status: 'posted' };
     },
     reconcileAsync: async () => ({ kind: 'unknown' }),
+    reconcileRevocationAsync: async () => ({ kind: 'unknown' }),
     renewAsync: async () => credential(),
     revokeAsync: async () => undefined,
     validateMediaAsync: async () => undefined,
@@ -146,6 +147,7 @@ test('runs the persisted headless Draft to Approval to Schedule to Publish to An
         : { platformPostId: 'post-1', scheduledAt: request.scheduledAt, status: 'scheduled' };
     },
     reconcileAsync: async () => ({ kind: 'unknown' }),
+    reconcileRevocationAsync: async () => ({ kind: 'unknown' }),
     renewAsync: async () => credential(),
     revokeAsync: async () => undefined,
     validateMediaAsync: async () => undefined,
@@ -160,6 +162,7 @@ test('runs the persisted headless Draft to Approval to Schedule to Publish to An
       };
     },
     reconcileAsync: async () => ({
+      reconcileWithoutSecretsAsync: async (callback) => callback(),
       reconcileAsync: async (callback) => callback({ 'oauth-ref': credential() }),
     }),
     createSecretAsync: async () => {
@@ -271,6 +274,68 @@ test('recovers a SIGKILL social publication from its provider receipt without a 
   }
 });
 
+test('recovers OAuth revoke SIGKILL windows from an operation-bound receipt without a token replay', async () => {
+  const fixture = new URL('./fixtures/socialDurableRevokeCrashWorker.ts', import.meta.url).pathname;
+  for (const mode of ['crash-after-provider', 'crash-after-secret-remove'] as const) {
+    const directory = await mkdtemp(join(tmpdir(), `flow-social-revoke-${mode}-`));
+    const input = {
+      deliveryPath: join(directory, 'provider-deliveries.json'),
+      durablePath: join(directory, 'durable.json'),
+      permitPath: join(directory, 'security-permits.json'),
+      receiptPath: join(directory, 'provider-receipts.json'),
+      runtimePath: join(directory, 'runtime.json'),
+      secretPath: join(directory, 'secret.json'),
+      secretRemovalPath: join(directory, 'secret-removals.json'),
+    };
+    try {
+      const crashed = Bun.spawnSync([
+        process.execPath,
+        fixture,
+        JSON.stringify({ ...input, mode }),
+      ]);
+      expect(crashed.exitCode).not.toBe(0);
+      const recovered = Bun.spawnSync([
+        process.execPath,
+        fixture,
+        JSON.stringify({ ...input, mode: 'recover' }),
+      ]);
+      const output = `${recovered.stdout.toString()}${recovered.stderr.toString()}`;
+      expect(recovered.exitCode, output).toBe(0);
+      expect(output).not.toContain('SENTINEL_SOCIAL_REVOKE_CRASH_TOKEN');
+      const result = JSON.parse(recovered.stdout.toString()) as {
+        readonly deliveries: readonly string[];
+        readonly events: readonly { readonly type: string }[];
+        readonly permits: readonly string[];
+        readonly receipts: readonly { readonly idempotencyKey: string }[];
+        readonly removals: readonly string[];
+        readonly run: {
+          readonly status: string;
+          readonly steps: readonly { readonly nodeId: string; readonly status: string }[];
+        };
+        readonly secretPresent: boolean;
+      };
+      expect(result.deliveries).toHaveLength(1);
+      expect(result.permits).toHaveLength(1);
+      expect(result.receipts).toEqual([
+        expect.objectContaining({ idempotencyKey: expect.stringMatching(/:step:revoke$/) }),
+      ]);
+      expect(result.removals).toEqual(['removed']);
+      expect(result.secretPresent).toBeFalse();
+      expect(result.run).toMatchObject({ status: 'succeeded' });
+      expect(result.run.steps).toEqual([
+        expect.objectContaining({ nodeId: 'revoke', status: 'succeeded' }),
+      ]);
+      expect(result.events.map((event) => event.type)).toEqual([
+        'run_queued',
+        'run_started',
+        'run_completed',
+      ]);
+    } finally {
+      await rm(directory, { force: true, recursive: true });
+    }
+  }
+});
+
 /** Build the secret-reference-only config accepted by the social graph boundary. */
 const config = (extra: Readonly<Record<string, string>> = {}) => ({
   accountId: { kind: 'inline' as const, value: 'page-1' },
@@ -354,6 +419,7 @@ const approvedSecurity = (events: string[]): FlowSecurityPort => ({
     },
   }),
   reconcileAsync: async () => ({
+    reconcileWithoutSecretsAsync: async (callback) => callback(),
     reconcileAsync: async (callback) => callback({ 'oauth-ref': credential() }),
   }),
   createSecretAsync: async () => {
@@ -584,6 +650,7 @@ const socialFixture = (
       return { platformPostId: 'post-1', status: 'posted' as const };
     },
     reconcileAsync: async () => options.receipt ?? { kind: 'unknown' },
+    reconcileRevocationAsync: async () => ({ kind: 'unknown' }),
     renewAsync: async ({ outboundTransport }) => {
       calls.renew += 1;
       await outboundTransport.fetchAsync({
@@ -620,6 +687,7 @@ const socialFixture = (
       };
     },
     reconcileAsync: async () => ({
+      reconcileWithoutSecretsAsync: async (callback) => callback(),
       reconcileAsync: async (callback) =>
         callback({ 'oauth-ref': options.credential ?? credential() }),
     }),

@@ -76,6 +76,12 @@ export interface FlowDurableEffectPort {
     readonly secrets?: FlowResolvedSecrets;
     readonly work: FlowDurableWork;
   }) => Promise<FlowDurableEffectResult | 'unknown'>;
+  /** Reconcile only an operation-bound receipt that does not need a resolved credential. */
+  readonly reconcileWithoutSecretsAsync?: (input: {
+    readonly idempotencyKey: string;
+    readonly run: FlowDurableRun;
+    readonly work: FlowDurableWork;
+  }) => Promise<FlowDurableEffectResult | 'unknown'>;
 }
 
 /** Observable outcome for every delivery claimed by one bounded worker tick. */

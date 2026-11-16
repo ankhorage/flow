@@ -65,6 +65,7 @@ const reconcileAsync = async (
   if (approval?.status !== 'approved' || !sameIdentity(approval.operation, identity))
     return denyAsync(input.audit, identity, targetHost, 'approval_rejected');
   return {
+    reconcileWithoutSecretsAsync: async (callback) => callback(),
     reconcileAsync: async (callback) =>
       resolveFlowSecretsAsync({
         actor: identity.actor,
@@ -191,7 +192,7 @@ const revokeSecretAsync = async (
     return credentialAudit.denyAsync(actor, request.ref, REVOKE_CAPABILITY);
   await credentialAudit.writeAsync(actor, request.ref, REVOKE_CAPABILITY, 'credential_revoke');
   const result = await input.secretStore.remove({ ref: request.ref, scope: scopeOf(actor) });
-  if (!result.ok)
+  if (!result.ok && result.error.code !== 'not_found')
     throw new FlowSecurityError('secret_unavailable', 'The requested secret is unavailable.');
 };
 
