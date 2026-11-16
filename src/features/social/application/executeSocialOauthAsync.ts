@@ -1,4 +1,5 @@
 import type { FlowNodeEffectIdentity } from '../../../types/execution.js';
+import type { FlowResolvedSecrets } from '../../../types/security.js';
 import type {
   SocialCapability,
   SocialNodeRegistryDependencies,
@@ -19,20 +20,32 @@ export const executeSocialOauthAsync = async (input: {
     readonly credentialRef: string;
     readonly platform: SocialPlatform;
   };
+  /** Supplied by the durable protected-effect permit; direct execution creates that permit here. */
+  readonly secrets?: FlowResolvedSecrets;
 }): Promise<void> => {
-  const { capability, dependencies, effect, nodeId, request } = input;
+  const { capability, dependencies, effect, request } = input;
   const provider = providerOf(dependencies.providers, request.platform);
   if (!provider.allowedCapabilities.includes(capability))
     throw new Error(`SOCIAL_CAPABILITY_UNSUPPORTED:${request.platform}:${capability}`);
-  const permit = await dependencies.security.authorizeAsync({
+  const operation = {
     actor: dependencies.actor,
     capability: `social:${request.platform}:${capability}`,
     idempotencyKey: effect.idempotencyKey,
-    operationId: `social:${nodeId}:${effect.idempotencyKey}`,
+    operationId: effect.idempotencyKey,
     secretRefs: [request.credentialRef],
     target: { allowedHosts: provider.allowedHosts, url: provider.endpoint },
-  });
-  await permit.executeAsync((secrets) =>
+  };
+  if (input.secrets !== undefined)
+    return executeCredentialLifecycleAsync(
+      dependencies,
+      provider,
+      request,
+      capability,
+      input.secrets,
+    );
+  await (
+    await dependencies.security.authorizeAsync(operation)
+  ).executeAsync((secrets) =>
     executeCredentialLifecycleAsync(dependencies, provider, request, capability, secrets),
   );
 };

@@ -144,9 +144,19 @@ export interface FlowSecurityPermit {
   executeAsync<T>(operation: (secrets: FlowResolvedSecrets) => Promise<T>): Promise<T>;
 }
 
+/** Recovery-only credential access for reconstructing an already applied protected effect. */
+export interface FlowSecurityReconciliationPermit {
+  reconcileAsync<T>(operation: (secrets: FlowResolvedSecrets) => Promise<T>): Promise<T>;
+}
+
 /** Public server-side boundary consumed by provider, AI, MCP, and social adapters. */
 export interface FlowSecurityPort {
   authorizeAsync(operation: FlowSecurityOperation): Promise<FlowSecurityPermit>;
+  /**
+   * Revalidate a durable protected operation and expose its secrets only to read a provider
+   * receipt. This intentionally does not claim, consume, or rate-limit a new provider effect.
+   */
+  reconcileAsync(operation: FlowSecurityOperation): Promise<FlowSecurityReconciliationPermit>;
   createSecretAsync(input: FlowSecretCreateInput): Promise<FlowSecretMetadata>;
   getSecretMetadataAsync(input: {
     readonly actor: FlowSecurityActor;

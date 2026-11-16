@@ -638,6 +638,7 @@ const permittedSecurity = (): FlowSecurityPort => ({
     ) => callback({}),
     operation: { ...operation, secretRefs: operation.secretRefs ?? [] },
   }),
+  reconcileAsync: async () => ({ reconcileAsync: async (callback) => callback({}) }),
   createSecretAsync: async () => {
     throw new Error('FLOW_TEST_SECRET_UNUSED');
   },

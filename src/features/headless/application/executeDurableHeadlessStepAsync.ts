@@ -7,6 +7,7 @@ import type {
   FlowDurableWork,
 } from '../../../types/durableExecution.js';
 import type { FlowClock, FlowCompiledGraph, FlowNodeRegistry } from '../../../types/execution.js';
+import type { FlowResolvedSecrets } from '../../../types/security.js';
 import { executeFlowAsync } from '../../execution/application/executeFlowAsync.js';
 import { assertFlowGraphSchemasSupported } from '../../execution/domain/assertFlowGraphSchemasSupported.js';
 import { compileFlowGraph } from '../../execution/domain/compileFlowGraph.js';
@@ -22,6 +23,7 @@ export const executeDurableHeadlessStepAsync = async (
     readonly schemaRegistry?: DataSchemaRegistry;
     readonly work: FlowDurableWork;
     readonly reconcile?: boolean;
+    readonly secrets?: FlowResolvedSecrets;
   },
   clock: FlowClock,
 ): Promise<FlowDurableEffectResult | 'unknown'> => {
@@ -40,6 +42,7 @@ export const executeDurableHeadlessStepAsync = async (
     input.schemaRegistry,
     clock,
     input.reconcile === true,
+    input.secrets,
   );
   if (step === 'unknown') return 'unknown';
   const steps = mergeSteps(input.durableRun.checkpoint?.steps, step);
@@ -72,20 +75,13 @@ const executeStepAsync = async (
   schemaRegistry: DataSchemaRegistry | undefined,
   clock: FlowClock,
   reconcile: boolean,
+  secrets: FlowResolvedSecrets | undefined,
 ): Promise<FlowStepSnapshot | 'unknown'> => {
   const operationId = `${node.capability.providerId}:${node.capability.capabilityId}`;
   const operation = Object.entries(registry).find(([id]) => id === operationId)?.[1];
   if (operation === undefined) throw new Error(`FLOW_OPERATION_UNREGISTERED:${operationId}`);
   const effect = { idempotencyKey: work.idempotencyKey ?? `${work.runId}:step:${node.id}` };
-  const reconciled = reconcile
-    ? await operation.reconcileAsync?.({
-        config: node.config,
-        effect,
-        input: work.input ?? {},
-        node,
-      })
-    : undefined;
-  if (reconcile && reconciled === undefined) return 'unknown';
+  const reconciled = await reconcileStepAsync(reconcile, operation, node, effect, work, secrets);
   if (reconciled === 'unknown') return 'unknown';
   const result = await executeFlowAsync(
     compileFlowGraph({ ...definition, edges: [], nodes: [node] }, registry),
@@ -100,6 +96,7 @@ const executeStepAsync = async (
       input: work.input,
       runId: work.runId,
       schemaRegistry,
+      ...(secrets === undefined ? {} : { secrets }),
       triggerId: work.triggerId ?? definition.triggers[0]?.id ?? '',
     },
     clock,
@@ -107,6 +104,26 @@ const executeStepAsync = async (
   const [step] = result.run.steps;
   if (step === undefined) throw new Error('FLOW_DURABLE_STEP_RESULT_MISSING');
   return step;
+};
+
+/** Ask a provider adapter for a receipt only during recovery; missing receipt support fails closed. */
+const reconcileStepAsync = async (
+  reconcile: boolean,
+  operation: FlowNodeRegistry[string],
+  node: FlowNode,
+  effect: { readonly idempotencyKey: string },
+  work: FlowDurableWork,
+  secrets: FlowResolvedSecrets | undefined,
+) => {
+  if (!reconcile) return undefined;
+  const result = await operation.reconcileAsync?.({
+    config: node.config,
+    effect,
+    input: work.input ?? {},
+    node,
+    ...(secrets === undefined ? {} : { secrets }),
+  });
+  return result ?? 'unknown';
 };
 
 /** Materialize only nodes that the canonical graph policy declares ready. */

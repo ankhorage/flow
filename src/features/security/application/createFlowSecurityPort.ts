@@ -4,7 +4,6 @@ import type {
   FlowApprovalStorePort,
   FlowOperationStorePort,
   FlowRateLimitPort,
-  FlowResolvedSecrets,
   FlowSecretCreateInput,
   FlowSecretMetadata,
   FlowSecretReplaceInput,
@@ -17,11 +16,13 @@ import type {
   FlowSecurityOperationIdentity,
   FlowSecurityPermit,
   FlowSecurityPort,
+  FlowSecurityReconciliationPermit,
   FlowSecurityTarget,
 } from '../../../types/security.js';
 import { validateFlowSecurityTarget } from '../domain/validateFlowSecurityTarget.js';
 import { FlowSecurityError } from '../FlowSecurityError.js';
 import { createCredentialAudit } from './createCredentialAudit.js';
+import { resolveFlowSecretsAsync } from './resolveFlowSecretsAsync.js';
 
 const METADATA_CAPABILITY = 'secrets:metadata';
 const CREATE_CAPABILITY = 'secrets:create';
@@ -42,11 +43,37 @@ export const createFlowSecurityPort = (input: {
   readonly secretStore: SecretStoreAdapter;
 }): FlowSecurityPort => ({
   authorizeAsync: async (operation) => authorizeAsync(input, operation),
+  reconcileAsync: async (operation) => reconcileAsync(input, operation),
   createSecretAsync: async (request) => createSecretAsync(input, request),
   getSecretMetadataAsync: async ({ actor, ref }) => getSecretMetadataAsync(input, actor, ref),
   revokeSecretAsync: async (request) => revokeSecretAsync(input, request),
   replaceSecretAsync: async (request) => replaceSecretAsync(input, request),
 });
+
+/** Revalidate a protected operation before reading a provider receipt without consuming it again. */
+const reconcileAsync = async (
+  input: Parameters<typeof createFlowSecurityPort>[0],
+  operation: FlowSecurityOperation,
+): Promise<FlowSecurityReconciliationPermit> => {
+  const identity = identityOf(operation);
+  const targetHost = validateFlowSecurityTarget(identity.target);
+  if (!isGranted(input.grants, identity.actor, identity.capability))
+    return denyAsync(input.audit, identity, targetHost, 'permission_denied');
+  const approval = await input.approvalStore.getAsync(identity);
+  if (approval?.status === 'pending')
+    return denyAsync(input.audit, identity, targetHost, 'approval_pending');
+  if (approval?.status !== 'approved' || !sameIdentity(approval.operation, identity))
+    return denyAsync(input.audit, identity, targetHost, 'approval_rejected');
+  return {
+    reconcileAsync: async (callback) =>
+      resolveFlowSecretsAsync({
+        actor: identity.actor,
+        callback,
+        secretRefs: identity.secretRefs,
+        secretStore: input.secretStore,
+      }),
+  };
+};
 
 /*** Authorizes and durably claims one exact operation before resolving any secret material. */
 const authorizeAsync = async (
@@ -93,7 +120,12 @@ const createPermit = (
         'idempotency_conflict',
         'The operation permit has already been consumed.',
       );
-    return resolveAndExecuteAsync(input, identity.actor, identity.secretRefs, callback);
+    return resolveFlowSecretsAsync({
+      actor: identity.actor,
+      callback,
+      secretRefs: identity.secretRefs,
+      secretStore: input.secretStore,
+    });
   },
 });
 
@@ -180,33 +212,6 @@ const replaceSecretAsync = async (
   });
   if (!result.ok)
     throw new FlowSecurityError('secret_unavailable', 'The requested secret is unavailable.');
-  return result.data;
-};
-
-/*** Resolves secrets only in the server-side callback after durable consumption succeeds. */
-const resolveAndExecuteAsync = async <T>(
-  input: Parameters<typeof createFlowSecurityPort>[0],
-  actor: FlowSecurityActor,
-  secretRefs: readonly SecretRef[],
-  callback: (secrets: FlowResolvedSecrets) => Promise<T>,
-): Promise<T> => {
-  const resolved = await Promise.all(
-    secretRefs.map(
-      async (ref) => [ref, await resolveSecretAsync(input.secretStore, actor, ref)] as const,
-    ),
-  );
-  return callback(Object.fromEntries(resolved));
-};
-
-/*** Resolves one published secret reference without exposing a provider error or payload in failures. */
-const resolveSecretAsync = async (
-  secretStore: SecretStoreAdapter,
-  actor: FlowSecurityActor,
-  ref: SecretRef,
-) => {
-  const result = await secretStore.resolve({ scope: scopeOf(actor), ref });
-  if (!result.ok)
-    throw new FlowSecurityError('secret_unavailable', 'A required secret is unavailable.');
   return result.data;
 };
 

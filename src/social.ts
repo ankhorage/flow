@@ -10,6 +10,7 @@ export type {
   SocialNodeRegistryDependencies,
   SocialPlatform,
   SocialProviderPort,
+  SocialProviderReceipt,
   SocialPublication,
   SocialPublishRequest,
 } from './types/social.js';

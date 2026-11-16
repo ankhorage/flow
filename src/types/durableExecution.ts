@@ -2,7 +2,7 @@ import type { DataContractValue } from '@ankhorage/contracts/data';
 import type { FlowDataRef, FlowStepSnapshot } from '@ankhorage/contracts/flow';
 
 import type { FlowResourceScope } from './headless.js';
-import type { FlowSecurityOperation } from './security.js';
+import type { FlowResolvedSecrets, FlowSecurityOperation } from './security.js';
 
 export interface FlowDefinitionRef {
   readonly id: string;
@@ -65,11 +65,15 @@ export interface FlowDurableEffectPort {
   readonly executeAsync: (input: {
     readonly idempotencyKey: string;
     readonly run: FlowDurableRun;
+    /** Server-only credentials supplied by the durable protected-effect permit. */
+    readonly secrets?: FlowResolvedSecrets;
     readonly work: FlowDurableWork;
   }) => Promise<FlowDurableEffectResult | void>;
   readonly reconcileAsync?: (input: {
     readonly idempotencyKey: string;
     readonly run: FlowDurableRun;
+    /** Server-only credentials supplied by the recovery permit. */
+    readonly secrets?: FlowResolvedSecrets;
     readonly work: FlowDurableWork;
   }) => Promise<FlowDurableEffectResult | 'unknown'>;
 }

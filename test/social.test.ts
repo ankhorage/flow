@@ -1,5 +1,15 @@
 import { expect, test } from 'bun:test';
+import { mkdtemp, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import type { FlowDefinition } from '@ankhorage/contracts/flow';
 
+import {
+  FlowSecurityError,
+  InMemoryFlowPersistenceAdapter,
+  InMemoryFlowRuntimeStore,
+  createFlowRuntime,
+} from '../src/index.js';
 import { createSocialNodeRegistry, socialCapabilities } from '../src/social.js';
 import type { SocialProviderPort } from '../src/social.js';
 import type { FlowSecurityPort } from '../src/types/security.js';
@@ -40,6 +50,7 @@ test('executes the approved Draft to Scheduled to Posted to Analytics mock-provi
         ? { platformPostId: 'post-1', scheduledAt: request.scheduledAt, status: 'scheduled' }
         : { platformPostId: 'post-1', publishedAt: '2026-11-14T10:00:00.000Z', status: 'posted' };
     },
+    reconcileAsync: async () => ({ kind: 'unknown' }),
     renewAsync: async () => credential(),
     revokeAsync: async () => undefined,
     validateMediaAsync: async () => undefined,
@@ -108,6 +119,158 @@ test('executes the approved Draft to Scheduled to Posted to Analytics mock-provi
   });
 });
 
+test('runs the persisted headless Draft to Approval to Schedule to Publish to Analytics graph', async () => {
+  const published: string[] = [];
+  const approval = { granted: false };
+  const clock = { instant: new Date('2026-11-14T09:00:00.000Z') };
+  const provider: SocialProviderPort = {
+    allowedCapabilities: ['analytics:read', 'oauth:renew', 'oauth:revoke', 'publish', 'schedule'],
+    allowedHosts: ['mock.social.test'],
+    endpoint: 'https://mock.social.test/v1',
+    fetchAnalyticsAsync: async () => ({
+      metrics: { impressions: 7 },
+      observedAt: clock.instant.toISOString(),
+      platformPostId: 'post-1',
+      provenance: {
+        accountId: 'page-1',
+        platform: 'meta-facebook',
+        provider: 'mock',
+        source: 'fake',
+      },
+    }),
+    platform: 'meta-facebook',
+    publishAsync: async ({ request }) => {
+      published.push(request.scheduledAt === undefined ? 'published' : 'scheduled');
+      return request.scheduledAt === undefined
+        ? { platformPostId: 'post-1', publishedAt: clock.instant.toISOString(), status: 'posted' }
+        : { platformPostId: 'post-1', scheduledAt: request.scheduledAt, status: 'scheduled' };
+    },
+    reconcileAsync: async () => ({ kind: 'unknown' }),
+    renewAsync: async () => credential(),
+    revokeAsync: async () => undefined,
+    validateMediaAsync: async () => undefined,
+  };
+  const security: FlowSecurityPort = {
+    authorizeAsync: async (operation) => {
+      if (!approval.granted)
+        throw new FlowSecurityError('approval_pending', 'The Flow approval gate is pending.');
+      return {
+        executeAsync: async (callback) => callback({ 'oauth-ref': credential() }),
+        operation: { ...operation, secretRefs: operation.secretRefs ?? [] },
+      };
+    },
+    reconcileAsync: async () => ({
+      reconcileAsync: async (callback) => callback({ 'oauth-ref': credential() }),
+    }),
+    createSecretAsync: async () => {
+      throw new Error('Not used.');
+    },
+    getSecretMetadataAsync: async () => {
+      throw new Error('Not used.');
+    },
+    replaceSecretAsync: async () => {
+      throw new Error('Not used.');
+    },
+    revokeSecretAsync: async () => {
+      throw new Error('Not used.');
+    },
+  };
+  const runtime = createFlowRuntime({
+    clock: { now: () => clock.instant },
+    nodeRegistry: createSocialNodeRegistry({
+      actor,
+      clock: { now: () => clock.instant },
+      outboundTransport: { fetchAsync: async () => new Response() },
+      providers: [provider],
+      security,
+    }),
+    persistence: InMemoryFlowPersistenceAdapter(),
+    security,
+    store: InMemoryFlowRuntimeStore(),
+  });
+  const definition = socialFlowDefinition();
+  await runtime.createDraftAsync({ projectId: 'project', tenantId: 'tenant' }, definition);
+  await runtime.publishAsync({ projectId: 'project', tenantId: 'tenant' }, definition.id, 1);
+  const run = await runtime.triggerAsync({
+    flowId: definition.id,
+    idempotencyKey: 'social-headless',
+    scope: { projectId: 'project', tenantId: 'tenant' },
+    triggerId: 'manual',
+  });
+  await runtime.runWorkerTickAsync();
+  expect(
+    (await runtime.getRunAsync({ projectId: 'project', tenantId: 'tenant' }, run.id))?.status,
+  ).toBe('waiting_for_approval');
+  approval.granted = true;
+  for (const _ of [1, 2, 3]) {
+    clock.instant = new Date(clock.instant.getTime() + 1_000);
+    await runtime.runWorkerTickAsync();
+  }
+  expect(published).toEqual(['scheduled', 'published']);
+  expect(
+    (await runtime.getRunAsync({ projectId: 'project', tenantId: 'tenant' }, run.id))?.status,
+  ).toBe('succeeded');
+  expect(
+    (await runtime.readEventsAsync({ projectId: 'project', tenantId: 'tenant' }, 0, run.id)).map(
+      (event) => event.type,
+    ),
+  ).toEqual(['run_queued', 'run_started', 'run_progressed', 'run_progressed', 'run_completed']);
+});
+
+test('recovers a SIGKILL social publication from its provider receipt without a second post or permit', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'flow-social-crash-'));
+  const fixture = new URL('./fixtures/socialDurableCrashWorker.ts', import.meta.url).pathname;
+  const input = {
+    deliveryPath: join(directory, 'provider-deliveries.json'),
+    durablePath: join(directory, 'durable.json'),
+    permitPath: join(directory, 'security-permits.json'),
+    receiptPath: join(directory, 'provider-receipts.json'),
+    runtimePath: join(directory, 'runtime.json'),
+  };
+  try {
+    const crashed = Bun.spawnSync([
+      process.execPath,
+      fixture,
+      JSON.stringify({ ...input, mode: 'crash-after-provider' }),
+    ]);
+    expect(crashed.exitCode).not.toBe(0);
+    const recovered = Bun.spawnSync([
+      process.execPath,
+      fixture,
+      JSON.stringify({ ...input, mode: 'recover' }),
+    ]);
+    const output = `${recovered.stdout.toString()}${recovered.stderr.toString()}`;
+    expect(recovered.exitCode, output).toBe(0);
+    expect(output).not.toContain('SENTINEL_SOCIAL_CRASH_TOKEN');
+    const result = JSON.parse(recovered.stdout.toString()) as {
+      readonly deliveries: readonly string[];
+      readonly events: readonly { readonly type: string }[];
+      readonly permits: readonly string[];
+      readonly receipts: readonly { readonly idempotencyKey: string }[];
+      readonly run: {
+        readonly status: string;
+        readonly steps: readonly { readonly nodeId: string; readonly status: string }[];
+      };
+    };
+    expect(result.deliveries).toHaveLength(1);
+    expect(result.permits).toHaveLength(1);
+    expect(result.receipts).toEqual([
+      expect.objectContaining({ idempotencyKey: expect.stringMatching(/:step:publish$/) }),
+    ]);
+    expect(result.run).toMatchObject({ status: 'succeeded' });
+    expect(result.run.steps).toEqual([
+      expect.objectContaining({ nodeId: 'publish', status: 'succeeded' }),
+    ]);
+    expect(result.events.map((event) => event.type)).toEqual([
+      'run_queued',
+      'run_started',
+      'run_completed',
+    ]);
+  } finally {
+    await rm(directory, { force: true, recursive: true });
+  }
+});
+
 /** Build the secret-reference-only config accepted by the social graph boundary. */
 const config = (extra: Readonly<Record<string, string>> = {}) => ({
   accountId: { kind: 'inline' as const, value: 'page-1' },
@@ -118,6 +281,52 @@ const config = (extra: Readonly<Record<string, string>> = {}) => ({
   ...Object.fromEntries(
     Object.entries(extra).map(([key, value]) => [key, { kind: 'inline', value }]),
   ),
+});
+
+/** Build the published graph exercised through the existing headless runtime and durable worker. */
+const socialFlowDefinition = (): FlowDefinition => ({
+  edges: [
+    {
+      id: 'schedule-publish',
+      source: { nodeId: 'schedule', portId: 'publication' },
+      target: { nodeId: 'publish', portId: 'trigger' },
+    },
+    {
+      id: 'publish-analytics',
+      source: { nodeId: 'publish', portId: 'publication' },
+      target: { nodeId: 'analytics', portId: 'trigger' },
+    },
+  ],
+  id: 'social-headless',
+  nodes: [
+    {
+      capability: { capabilityId: 'publish', providerId: 'social' },
+      config: config({ scheduledAt: '2026-11-14T10:00:00.000Z' }),
+      id: 'schedule',
+      ports: [{ direction: 'output', id: 'publication', required: true }],
+    },
+    {
+      capability: { capabilityId: 'publish', providerId: 'social' },
+      config: config(),
+      id: 'publish',
+      ports: [
+        { direction: 'input', id: 'trigger', required: false },
+        { direction: 'output', id: 'publication', required: true },
+      ],
+    },
+    {
+      capability: { capabilityId: 'analytics', providerId: 'social' },
+      config: config({ platformPostId: 'post-1' }),
+      id: 'analytics',
+      ports: [
+        { direction: 'input', id: 'trigger', required: false },
+        { direction: 'output', id: 'analytics', required: true },
+      ],
+    },
+  ],
+  title: 'Headless social acceptance',
+  triggers: [{ id: 'manual', kind: 'manual' as const }],
+  version: 1,
 });
 
 /** Create a graph node identity with no provider SDK or credential material. */
@@ -143,6 +352,9 @@ const approvedSecurity = (events: string[]): FlowSecurityPort => ({
       operationId: 'operation',
       secretRefs: ['oauth-ref'],
     },
+  }),
+  reconcileAsync: async () => ({
+    reconcileAsync: async (callback) => callback({ 'oauth-ref': credential() }),
   }),
   createSecretAsync: async () => {
     throw new Error('Not used.');
@@ -316,6 +528,7 @@ const socialFixture = (
       if (options.publishError) throw new Error(options.publishError);
       return { platformPostId: 'post-1', status: 'posted' as const };
     },
+    reconcileAsync: async () => ({ kind: 'unknown' }),
     renewAsync: async ({ outboundTransport }) => {
       calls.renew += 1;
       await outboundTransport.fetchAsync({
@@ -351,6 +564,10 @@ const socialFixture = (
         },
       };
     },
+    reconcileAsync: async () => ({
+      reconcileAsync: async (callback) =>
+        callback({ 'oauth-ref': options.credential ?? credential() }),
+    }),
     createSecretAsync: async () => {
       throw new Error('Not used.');
     },

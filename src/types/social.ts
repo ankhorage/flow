@@ -55,6 +55,14 @@ export interface SocialAnalytics {
   };
 }
 
+/** Provider-owned durable receipt for a social operation keyed by Flow's stable effect identity. */
+export type SocialProviderReceipt =
+  | { readonly kind: 'analytics'; readonly analytics: SocialAnalytics }
+  | { readonly kind: 'oauth-renew'; readonly credential: Readonly<Record<string, string>> }
+  | { readonly kind: 'oauth-revoke' }
+  | { readonly kind: 'publish'; readonly publication: SocialPublication }
+  | { readonly kind: 'unknown' };
+
 /** Explicit server-only dependencies for the optional social node registry. */
 export interface SocialNodeRegistryDependencies {
   readonly actor: FlowSecurityActor;
@@ -83,6 +91,13 @@ export interface SocialProviderPort {
     readonly request: SocialPublishRequest;
     readonly signal: AbortSignal;
   }): Promise<SocialPublication>;
+  /** Read an already-applied operation by idempotency key without performing it again. */
+  reconcileAsync(input: {
+    readonly authorization: SocialAuthorization;
+    readonly capability: SocialCapability;
+    readonly idempotencyKey: string;
+    readonly outboundTransport: FlowOutboundTransportPort;
+  }): Promise<SocialProviderReceipt>;
   revokeAsync(input: {
     readonly authorization: SocialAuthorization;
     readonly outboundTransport: FlowOutboundTransportPort;

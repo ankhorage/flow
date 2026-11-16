@@ -9,7 +9,7 @@ import type {
   FlowWorkerResult,
 } from '../../../types/durableExecution.js';
 import type { FlowClock } from '../../../types/execution.js';
-import type { FlowSecurityPort } from '../../../types/security.js';
+import type { FlowResolvedSecrets, FlowSecurityPort } from '../../../types/security.js';
 import { FlowSecurityError } from '../../security/FlowSecurityError.js';
 import { createRetryWork } from '../domain/createRetryWork.js';
 import type { FlowPersistencePort } from '../ports/FlowPersistencePort.js';
@@ -125,10 +125,11 @@ const executeEffectAsync = async (
   run: FlowDurableRun,
   dependencies: Parameters<typeof runDurableWorkerAsync>[1],
 ): Promise<FlowDurableEffectResult> => {
-  const execute = () =>
+  const execute = (secrets?: FlowResolvedSecrets) =>
     dependencies.effects.executeAsync({
       idempotencyKey: work.idempotencyKey ?? work.id,
       run,
+      ...(secrets === undefined ? {} : { secrets }),
       work,
     });
   if (work.effectKind === 'internal') {
@@ -139,16 +140,20 @@ const executeEffectAsync = async (
   if (work.securityOperation === undefined)
     throw new Error('FLOW_PROTECTED_EFFECT_SECURITY_OPERATION');
   if (dependencies.security === undefined) throw new Error('FLOW_SECURITY_PORT_REQUIRED');
-  if (dependencies.effects.reconcileAsync === undefined)
-    throw new Error('FLOW_PROTECTED_EFFECT_RECONCILIATION_REQUIRED');
-  const reconciled = await dependencies.effects.reconcileAsync({
-    idempotencyKey: work.idempotencyKey ?? work.id,
-    run,
-    work,
-  });
+  const reconcile = dependencies.effects.reconcileAsync;
+  if (reconcile === undefined) throw new Error('FLOW_PROTECTED_EFFECT_RECONCILIATION_REQUIRED');
+  const recoveryPermit = await dependencies.security.reconcileAsync(work.securityOperation);
+  const reconciled = await recoveryPermit.reconcileAsync((secrets) =>
+    reconcile({
+      idempotencyKey: work.idempotencyKey ?? work.id,
+      run,
+      secrets,
+      work,
+    }),
+  );
   if (reconciled !== 'unknown') return reconciled;
   const permit = await dependencies.security.authorizeAsync(work.securityOperation);
-  return (await permit.executeAsync(async () => execute())) ?? {};
+  return (await permit.executeAsync(async (secrets) => execute(secrets))) ?? {};
 };
 
 /** Commit a completed delivery and all branch-dependent successor work in one fenced transaction. */
