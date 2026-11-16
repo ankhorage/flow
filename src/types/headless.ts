@@ -31,7 +31,12 @@ export interface FlowRunEvent {
   readonly runId: string;
   readonly timestamp: string;
   readonly type:
-    'approval_resolved' | 'run_cancelled' | 'run_completed' | 'run_queued' | 'run_started';
+    | 'approval_resolved'
+    | 'run_cancelled'
+    | 'run_completed'
+    | 'run_progressed'
+    | 'run_queued'
+    | 'run_started';
   readonly trace?: FlowTraceEvent;
 }
 

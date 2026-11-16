@@ -135,6 +135,154 @@ describe('headless Flow runtime', () => {
     ).toContain('/v1/workflows/{flowId}/triggers/{triggerId}');
   });
 
+  it('binds HTTP trigger families to their own permissions, rejects cross-kind calls, and redacts replays', async () => {
+    const runtime = createFlowRuntime({
+      nodeRegistry: createDefaultNodeRegistry(),
+      persistence: InMemoryFlowPersistenceAdapter(),
+      store: InMemoryFlowRuntimeStore(),
+    });
+    await runtime.createDraftAsync(scope, definition);
+    await runtime.publishAsync(scope, definition.id, definition.version);
+    const capabilities: string[] = [];
+    const handler = createFlowHttpHandler({
+      access: {
+        acquireAsync: async ({ capability }) => {
+          capabilities.push(capability);
+          return true;
+        },
+        authorizeAsync: async ({ capability }) => {
+          capabilities.push(capability);
+          return capability === 'trigger:manual';
+        },
+      },
+      authenticator: {
+        authenticateAsync: async () => ({ environment: 'test', id: 'actor', ...scope }),
+      },
+      runtime,
+    });
+    const manual = () =>
+      handler(
+        new Request('http://flow/v1/workflows/demo/triggers/manual', {
+          body: JSON.stringify({
+            idempotencyKey: 'manual-secret',
+            input: { secret: { kind: 'inline', value: 'SENTINEL_TRIGGER_SECRET' } },
+          }),
+          method: 'POST',
+        }),
+      );
+    const first = await manual();
+    const firstBody = await first.text();
+    const replay = await manual();
+    const replayBody = await replay.text();
+    expect(first.status).toBe(202);
+    expect(replay.status).toBe(202);
+    expect(firstBody).not.toContain('SENTINEL_TRIGGER_SECRET');
+    expect(replayBody).not.toContain('SENTINEL_TRIGGER_SECRET');
+    expect(JSON.parse(firstBody)).toMatchObject({ status: 'pending' });
+    expect(JSON.parse(firstBody)).not.toHaveProperty('input');
+    expect(JSON.parse(replayBody).id).toBe(JSON.parse(firstBody).id);
+    expect(capabilities).toEqual([
+      'trigger:manual',
+      'trigger:manual',
+      'trigger:manual',
+      'trigger:manual',
+    ]);
+    expect(
+      (
+        await handler(
+          new Request('http://flow/v1/webhooks/demo/hook', {
+            body: JSON.stringify({ idempotencyKey: 'denied-webhook' }),
+            method: 'POST',
+          }),
+        )
+      ).status,
+    ).toBe(403);
+
+    const crossKindHandler = createFlowHttpHandler({
+      access: { acquireAsync: async () => true, authorizeAsync: async () => true },
+      authenticator: {
+        authenticateAsync: async () => ({ environment: 'test', id: 'actor', ...scope }),
+      },
+      runtime,
+    });
+    expect(
+      (
+        await crossKindHandler(
+          new Request('http://flow/v1/workflows/demo/triggers/hook', {
+            body: JSON.stringify({ idempotencyKey: 'manual-to-hook' }),
+            method: 'POST',
+          }),
+        )
+      ).status,
+    ).toBe(400);
+    expect(
+      (
+        await crossKindHandler(
+          new Request('http://flow/v1/webhooks/demo/manual', {
+            body: JSON.stringify({ idempotencyKey: 'hook-to-manual' }),
+            method: 'POST',
+          }),
+        )
+      ).status,
+    ).toBe(400);
+    expect(await runtime.listRunsAsync(scope)).toHaveLength(1);
+  });
+
+  it('synchronizes each completed node and streams redacted progress before terminal completion', async () => {
+    const fixture = graphFixture('http-progress', 'SENTINEL_STEP_SECRET', [
+      edge('source', 'target'),
+    ]);
+    const runtime = createFlowRuntime({
+      nodeRegistry: fixture.registry,
+      persistence: InMemoryFlowPersistenceAdapter(),
+      store: InMemoryFlowRuntimeStore(),
+    });
+    await runtime.createDraftAsync(scope, fixture.definition);
+    await runtime.publishAsync(scope, fixture.definition.id, fixture.definition.version);
+    const handler = createFlowHttpHandler({
+      access: { acquireAsync: async () => true, authorizeAsync: async () => true },
+      authenticator: {
+        authenticateAsync: async () => ({ environment: 'test', id: 'actor', ...scope }),
+      },
+      runtime,
+    });
+    const triggered = await handler(
+      new Request('http://flow/v1/workflows/http-progress/triggers/manual', {
+        body: JSON.stringify({ idempotencyKey: 'progress' }),
+        method: 'POST',
+      }),
+    );
+    const { id } = (await triggered.json()) as { readonly id: string };
+    await runtime.runWorkerTickAsync();
+    const firstEvents = await handler(
+      new Request(`http://flow/v1/events?runId=${id}`, {
+        headers: { authorization: 'Bearer test' },
+      }),
+    );
+    const firstBody = await firstEvents.text();
+    expect(firstEvents.headers.get('content-type')).toContain('text/event-stream');
+    expect(firstBody).not.toContain('SENTINEL_STEP_SECRET');
+    expect(sseData(firstBody).map((event) => event.type)).toEqual([
+      'run_queued',
+      'run_started',
+      'run_progressed',
+    ]);
+    expect((await runtime.getRunAsync(scope, id))?.steps.map((step) => step.nodeId)).toEqual([
+      'source',
+    ]);
+    await runtime.runWorkerTickAsync();
+    const finalEvents = await handler(
+      new Request(`http://flow/v1/events?after=3&runId=${id}`, {
+        headers: { authorization: 'Bearer test' },
+      }),
+    );
+    expect(sseData(await finalEvents.text()).map((event) => event.type)).toEqual(['run_completed']);
+    expect((await runtime.getRunAsync(scope, id))?.steps.map((step) => step.nodeId)).toEqual([
+      'source',
+      'target',
+    ]);
+  });
+
   it('recovers published workflow and queued run state from the standalone file store', async () => {
     const directory = await mkdtemp(join(tmpdir(), 'flow-runtime-'));
     const path = join(directory, 'runtime.json');
@@ -470,6 +618,15 @@ const drainRuntimeAsync = async (runtime: {
   await runtime.runWorkerTickAsync();
   await runtime.runWorkerTickAsync();
 };
+
+/** Decode the finite HTTP event stream into its canonical JSON event payloads. */
+const sseData = (body: string): readonly { readonly type: string }[] =>
+  body
+    .split('\n\n')
+    .filter(Boolean)
+    .map(
+      (entry) => JSON.parse(entry.replace('event: flow\ndata: ', '')) as { readonly type: string },
+    );
 
 /** Provide the released security port shape for a protected headless provider fixture. */
 const permittedSecurity = (): FlowSecurityPort => ({

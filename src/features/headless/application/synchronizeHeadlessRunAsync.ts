@@ -15,20 +15,27 @@ export const synchronizeHeadlessRunAsync = async (
   const durable = await dependencies.persistence.readRunAsync(runId);
   if (durable?.scope === undefined) return;
   const current = await dependencies.store.getRunAsync(durable.scope, durable.id);
-  if (current === undefined || current.status === durable.status) return;
+  if (current === undefined) return;
+  const status = headlessStatus(durable.status);
+  const steps = durable.checkpoint?.steps ?? current.steps;
+  if (current.status === status && JSON.stringify(current.steps) === JSON.stringify(steps)) return;
   const terminal = durable.status === 'failed' || durable.status === 'succeeded';
   const updated: FlowRunSnapshot = {
     ...current,
     ...(terminal ? { completedAt: clock.now().toISOString() } : {}),
-    status: headlessStatus(durable.status),
-    steps: durable.checkpoint?.steps ?? current.steps,
+    status,
+    steps,
   };
   const transitioned = await dependencies.store.transitionRunAsync({
     event: {
       id: 0,
       runId: current.id,
       timestamp: clock.now().toISOString(),
-      type: terminal ? 'run_completed' : 'run_started',
+      type: terminal
+        ? 'run_completed'
+        : current.status === 'pending'
+          ? 'run_started'
+          : 'run_progressed',
     },
     expectedStatus: current.status,
     run: updated,

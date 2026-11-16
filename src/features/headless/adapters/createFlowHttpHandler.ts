@@ -81,14 +81,16 @@ const routeWorkflowAsync: RouteResponder = async (request, url, segments, runtim
   if (matches(request, url, 'POST', /^\/v1\/workflows\/[^/]+\/\d+\/publish$/u))
     return value(await runtime.publishAsync(scope(actor), segments[2] ?? '', number(segments[3])));
   if (matches(request, url, 'POST', /^\/v1\/workflows\/[^/]+\/triggers\/[^/]+$/u))
-    return json(
+    return redactedValue(
+      await triggerForKindAsync(
+        runtime,
+        actor,
+        segments[2] ?? '',
+        segments[4] ?? '',
+        'manual',
+        await body<TriggerBody>(request),
+      ),
       202,
-      await runtime.triggerAsync({
-        ...(await body<TriggerBody>(request)),
-        flowId: segments[2] ?? '',
-        scope: scope(actor),
-        triggerId: segments[4] ?? '',
-      }),
     );
   return undefined;
 };
@@ -96,14 +98,16 @@ const routeWorkflowAsync: RouteResponder = async (request, url, segments, runtim
 /** Route signed webhook deliveries through the same idempotent runtime command. */
 const routeWebhookAsync: RouteResponder = async (request, _url, segments, runtime, actor) => {
   if (!matches(request, _url, 'POST', /^\/v1\/webhooks\/[^/]+\/[^/]+$/u)) return undefined;
-  return json(
+  return redactedValue(
+    await triggerForKindAsync(
+      runtime,
+      actor,
+      segments[2] ?? '',
+      segments[3] ?? '',
+      'webhook',
+      await body<TriggerBody>(request),
+    ),
     202,
-    await runtime.triggerAsync({
-      ...(await body<TriggerBody>(request)),
-      flowId: segments[2] ?? '',
-      scope: scope(actor),
-      triggerId: segments[3] ?? '',
-    }),
   );
 };
 
@@ -168,6 +172,27 @@ interface TriggerBody {
   readonly input?: Record<string, { readonly kind: 'inline'; readonly value: never }>;
 }
 
+/** Bind one HTTP trigger family to the published trigger kind before it can enter the runtime. */
+const triggerForKindAsync = async (
+  runtime: FlowRuntime,
+  actor: FlowSecurityActor,
+  flowId: string,
+  triggerId: string,
+  kind: 'manual' | 'webhook',
+  request: TriggerBody,
+): Promise<FlowRunSnapshot> => {
+  const revision = (await runtime.listWorkflowRevisionsAsync(scope(actor), flowId))
+    .filter((candidate) => candidate.publishedAt !== undefined)
+    .at(-1);
+  if (
+    revision?.definition.triggers.some(
+      (trigger) => trigger.id === triggerId && trigger.kind === kind,
+    ) !== true
+  )
+    throw new Error('FLOW_TRIGGER_KIND_MISMATCH');
+  return runtime.triggerAsync({ ...request, flowId, scope: scope(actor), triggerId });
+};
+
 /*** Return the canonical redacted run projection; payloads and node I/O never cross this boundary. */
 const redactRun = (run: FlowRunSnapshot) => ({
   ...run,
@@ -202,7 +227,11 @@ const scope = (actor: FlowSecurityActor) => ({
 const capabilityFor = (method: string, pathname: string): string | undefined =>
   pathname === '/health' || pathname === '/openapi.json'
     ? undefined
-    : `${method.toLowerCase()}:${pathname.startsWith('/v1/webhooks') ? 'webhook' : pathname.split('/').slice(1, 3).join(':')}`;
+    : pathname.startsWith('/v1/webhooks')
+      ? 'trigger:webhook'
+      : /^\/v1\/workflows\/[^/]+\/triggers\/[^/]+$/u.test(pathname)
+        ? 'trigger:manual'
+        : `${method.toLowerCase()}:${pathname.split('/').slice(1, 3).join(':')}`;
 
 /*** Parse only JSON request bodies and fail closed on malformed transport data. */
 const body = async <Value>(request: Request): Promise<Value> => request.json() as Promise<Value>;
@@ -229,8 +258,8 @@ const value = (result: unknown): Response =>
   result === undefined ? error(404, 'FLOW_NOT_FOUND') : json(200, result);
 
 /*** Apply the redaction contract before returning a single run. */
-const redactedValue = (run: FlowRunSnapshot | undefined): Response =>
-  run === undefined ? error(404, 'FLOW_NOT_FOUND') : json(200, redactRun(run));
+const redactedValue = (run: FlowRunSnapshot | undefined, status = 200): Response =>
+  run === undefined ? error(404, 'FLOW_NOT_FOUND') : json(status, redactRun(run));
 
 /*** Render a finite polling response as Server-Sent Events for capability-compatible clients. */
 const events = (values: readonly unknown[]): Response =>
