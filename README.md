@@ -3,9 +3,23 @@
 
 # @ankhorage/flow
 
-![license: MIT](././paradox/badges/license.svg) ![npm: v0.6.2](././paradox/badges/npm.svg) ![runtime: bun](././paradox/badges/runtime.svg) ![typescript: strict](././paradox/badges/typescript.svg) ![eslint: checked](././paradox/badges/eslint.svg) ![prettier: checked](././paradox/badges/prettier.svg) ![build: checked](././paradox/badges/build.svg) ![tests: configured](././paradox/badges/tests.svg) ![paradox: warnings](././paradox/badges/docs.svg)
+![license: MIT](././paradox/badges/license.svg) ![npm: v0.7.0](././paradox/badges/npm.svg) ![runtime: bun](././paradox/badges/runtime.svg) ![typescript: strict](././paradox/badges/typescript.svg) ![eslint: checked](././paradox/badges/eslint.svg) ![prettier: checked](././paradox/badges/prettier.svg) ![build: checked](././paradox/badges/build.svg) ![tests: configured](././paradox/badges/tests.svg) ![paradox: warnings](././paradox/badges/docs.svg)
 
 Standalone workflow engine foundation for Ankhorage.
+
+## Usage
+
+### CLI
+
+Ankhorage packages expose their command-line interface through `ankh`. Use `ankh --help` to discover available package commands, or run a package command with `--help` for package-specific usage.
+
+```zsh
+# Install the Ankhorage CLI
+bun add --global @ankhorage/ankh
+
+# Show usage information for flow
+ankh flow --help
+```
 
 ## Generated documentation
 
@@ -16,5 +30,9 @@ Standalone workflow engine foundation for Ankhorage.
 - [Module relationships](././paradox/diagrams/module-relationships.mmd)
 - [Export graph](././paradox/diagrams/export-graph.mmd)
 - [compileFlowGraph sequence](././paradox/diagrams/sequences/compile-flow-graph.mmd)
+- [createFlowRuntime sequence](././paradox/diagrams/sequences/create-flow-runtime.mmd)
 - [createRetryWork sequence](././paradox/diagrams/sequences/create-retry-work.mmd)
+- [FileFlowPersistenceAdapter sequence](././paradox/diagrams/sequences/file-flow-persistence-adapter.mmd)
+- [FileFlowRuntimeStore sequence](././paradox/diagrams/sequences/file-flow-runtime-store.mmd)
+- [InMemoryFlowPersistenceAdapter sequence](././paradox/diagrams/sequences/in-memory-flow-persistence-adapter.mmd)
 - [isCronDueAt sequence](././paradox/diagrams/sequences/is-cron-due-at.mmd)

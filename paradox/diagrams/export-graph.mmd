@@ -1,10 +1,17 @@
 graph LR
+  module_package_json["package.json"]
   module_src_ai_ts["src/ai.ts"]
+  module_src_capabilities_index_ts["src/capabilities/index.ts"]
+  module_src_cli_commands_serve_ts["src/cli/commands/serve.ts"]
+  module_src_cli_index_ts["src/cli/index.ts"]
+  module_src_cli_standalone_ts["src/cli/standalone.ts"]
   module_src_execution_ts["src/execution.ts"]
   module_src_features_ai_application_executeAiNodeAsync_ts["src/features/ai/application/executeAiNodeAsync.ts"]
   module_src_features_ai_application_executeBoundedAgentAsync_ts["src/features/ai/application/executeBoundedAgentAsync.ts"]
   module_src_features_ai_FlowAiError_ts["src/features/ai/FlowAiError.ts"]
+  module_src_features_execution_adapters_createFileFlowPersistenceSupport_ts["src/features/execution/adapters/createFileFlowPersistenceSupport.ts"]
   module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts["src/features/execution/adapters/FileFlowPersistenceAdapter.ts"]
+  module_src_features_execution_adapters_InMemoryFlowPersistenceAdapter_ts["src/features/execution/adapters/InMemoryFlowPersistenceAdapter.ts"]
   module_src_features_execution_application_cancelDurableRunAsync_ts["src/features/execution/application/cancelDurableRunAsync.ts"]
   module_src_features_execution_application_createDurableRunAsync_ts["src/features/execution/application/createDurableRunAsync.ts"]
   module_src_features_execution_application_executeFlowAsync_ts["src/features/execution/application/executeFlowAsync.ts"]
@@ -16,8 +23,22 @@ graph LR
   module_src_features_execution_domain_createDurableRun_ts["src/features/execution/domain/createDurableRun.ts"]
   module_src_features_execution_domain_createRetryWork_ts["src/features/execution/domain/createRetryWork.ts"]
   module_src_features_execution_domain_isCronDueAt_ts["src/features/execution/domain/isCronDueAt.ts"]
+  module_src_features_execution_domain_planFlowNodeInput_ts["src/features/execution/domain/planFlowNodeInput.ts"]
+  module_src_features_execution_domain_structurallyEqual_ts["src/features/execution/domain/structurallyEqual.ts"]
   module_src_features_execution_domain_validateFlowDataSchema_ts["src/features/execution/domain/validateFlowDataSchema.ts"]
   module_src_features_execution_ports_FlowPersistencePort_ts["src/features/execution/ports/FlowPersistencePort.ts"]
+  module_src_features_headless_adapters_createFlowHttpHandler_ts["src/features/headless/adapters/createFlowHttpHandler.ts"]
+  module_src_features_headless_adapters_createFlowOpenApi_ts["src/features/headless/adapters/createFlowOpenApi.ts"]
+  module_src_features_headless_adapters_FileFlowRuntimeStore_ts["src/features/headless/adapters/FileFlowRuntimeStore.ts"]
+  module_src_features_headless_adapters_InMemoryFlowObservability_ts["src/features/headless/adapters/InMemoryFlowObservability.ts"]
+  module_src_features_headless_adapters_InMemoryFlowRuntimeStore_ts["src/features/headless/adapters/InMemoryFlowRuntimeStore.ts"]
+  module_src_features_headless_application_createDurableHeadlessWork_ts["src/features/headless/application/createDurableHeadlessWork.ts"]
+  module_src_features_headless_application_createFlowRuntime_ts["src/features/headless/application/createFlowRuntime.ts"]
+  module_src_features_headless_application_createHeadlessRunControl_ts["src/features/headless/application/createHeadlessRunControl.ts"]
+  module_src_features_headless_application_executeDurableHeadlessStepAsync_ts["src/features/headless/application/executeDurableHeadlessStepAsync.ts"]
+  module_src_features_headless_application_observeFlowRuntimeAsync_ts["src/features/headless/application/observeFlowRuntimeAsync.ts"]
+  module_src_features_headless_application_reconcileDurableHeadlessStepAsync_ts["src/features/headless/application/reconcileDurableHeadlessStepAsync.ts"]
+  module_src_features_headless_application_synchronizeHeadlessRunAsync_ts["src/features/headless/application/synchronizeHeadlessRunAsync.ts"]
   module_src_features_mcp_boundedMcpAsync_ts["src/features/mcp/boundedMcpAsync.ts"]
   module_src_features_mcp_createMcpAgentToolAdapter_ts["src/features/mcp/createMcpAgentToolAdapter.ts"]
   module_src_features_mcp_createMcpRemoteTransport_ts["src/features/mcp/createMcpRemoteTransport.ts"]
@@ -31,10 +52,12 @@ graph LR
   module_src_features_security_FlowSecurityError_ts["src/features/security/FlowSecurityError.ts"]
   module_src_index_ts["src/index.ts"]
   module_src_mcp_ts["src/mcp.ts"]
+  module_src_server_ts["src/server.ts"]
   module_src_social_ts["src/social.ts"]
   module_src_types_ai_ts["src/types/ai.ts"]
   module_src_types_durableExecution_ts["src/types/durableExecution.ts"]
   module_src_types_execution_ts["src/types/execution.ts"]
+  module_src_types_headless_ts["src/types/headless.ts"]
   module_src_types_mcp_ts["src/types/mcp.ts"]
   module_src_types_security_ts["src/types/security.ts"]
   export_calculateRetryDueAt["calculateRetryDueAt"]
@@ -57,6 +80,10 @@ graph LR
   export_createDurableRunAsync -.-> export_FlowDefinitionRef
   export_createDurableRunAsync -.-> export_FlowDurableRun
   export_createDurableRunAsync -.-> export_FlowPersistencePort
+  export_createFlowRuntime["createFlowRuntime"]
+  module_src_features_headless_application_createFlowRuntime_ts --> export_createFlowRuntime
+  export_createFlowRuntime -.-> export_FlowRuntime
+  export_createFlowRuntime -.-> export_FlowRuntimeDependencies
   export_createFlowSecurityPort["createFlowSecurityPort"]
   module_src_features_security_application_createFlowSecurityPort_ts --> export_createFlowSecurityPort
   export_createFlowSecurityPort -.-> export_FlowApprovalStorePort
@@ -76,16 +103,33 @@ graph LR
   export_executeFlowAsync -.-> export_FlowExecutionResult
   export_executeFlowAsync -.-> export_FlowNodeOperation
   export_executeFlowAsync -.-> export_FlowRunRequest
+  export_FileFlowPersistenceAdapter["FileFlowPersistenceAdapter"]
+  module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts --> export_FileFlowPersistenceAdapter
+  export_FileFlowPersistenceAdapter -.-> export_FlowPersistencePort
+  export_FileFlowRuntimeStore["FileFlowRuntimeStore"]
+  module_src_features_headless_adapters_FileFlowRuntimeStore_ts --> export_FileFlowRuntimeStore
+  export_FileFlowRuntimeStore -.-> export_FlowRuntimeStorePort
   export_FlowApprovalStorePort["FlowApprovalStorePort"]
   module_src_types_security_ts --> export_FlowApprovalStorePort
   export_FlowApprovalStorePort -.-> export_FlowSecurityApproval
   export_FlowApprovalStorePort -.-> export_FlowSecurityOperationIdentity
+  export_FlowAuditRecord["FlowAuditRecord"]
+  module_src_types_headless_ts --> export_FlowAuditRecord
   export_FlowClock["FlowClock"]
   module_src_types_execution_ts --> export_FlowClock
   export_FlowCompiledGraph["FlowCompiledGraph"]
   module_src_types_execution_ts --> export_FlowCompiledGraph
   export_FlowDefinitionRef["FlowDefinitionRef"]
   module_src_types_durableExecution_ts --> export_FlowDefinitionRef
+  export_FlowDurableEffectPort["FlowDurableEffectPort"]
+  module_src_types_durableExecution_ts --> export_FlowDurableEffectPort
+  export_FlowDurableEffectPort -.-> export_FlowDurableEffectResult
+  export_FlowDurableEffectPort -.-> export_FlowDurableRun
+  export_FlowDurableEffectPort -.-> export_FlowDurableWork
+  export_FlowDurableEffectResult["FlowDurableEffectResult"]
+  module_src_types_durableExecution_ts --> export_FlowDurableEffectResult
+  export_FlowDurableEffectResult -.-> export_FlowDurableWork
+  export_FlowDurableEffectResult -.-> export_FlowRunCheckpoint
   export_FlowDurableRun["FlowDurableRun"]
   module_src_types_durableExecution_ts --> export_FlowDurableRun
   export_FlowDurableRun -.-> export_FlowDefinitionRef
@@ -96,13 +140,28 @@ graph LR
   export_FlowDurableWork -.-> export_FlowSecurityOperation
   export_FlowExecutionResult["FlowExecutionResult"]
   module_src_types_execution_ts --> export_FlowExecutionResult
+  export_FlowHttpAccessPort["FlowHttpAccessPort"]
+  module_src_types_headless_ts --> export_FlowHttpAccessPort
+  export_FlowHttpAccessPort -.-> export_FlowSecurityActor
+  export_FlowHttpAuthenticatorPort["FlowHttpAuthenticatorPort"]
+  module_src_types_headless_ts --> export_FlowHttpAuthenticatorPort
+  export_FlowHttpAuthenticatorPort -.-> export_FlowSecurityActor
+  export_FlowNodeEffect["FlowNodeEffect"]
+  module_src_types_execution_ts --> export_FlowNodeEffect
+  export_FlowNodeEffectIdentity["FlowNodeEffectIdentity"]
+  module_src_types_execution_ts --> export_FlowNodeEffectIdentity
   export_FlowNodeOperation["FlowNodeOperation"]
   module_src_types_execution_ts --> export_FlowNodeOperation
+  export_FlowNodeOperation -.-> export_FlowNodeEffect
+  export_FlowNodeOperation -.-> export_FlowNodeEffectIdentity
   export_FlowNodeOperation -.-> export_FlowNodeOperationResult
   export_FlowNodeOperationResult["FlowNodeOperationResult"]
   module_src_types_execution_ts --> export_FlowNodeOperationResult
   export_FlowNodeRegistry["FlowNodeRegistry"]
   module_src_types_execution_ts --> export_FlowNodeRegistry
+  export_FlowObservabilityPort["FlowObservabilityPort"]
+  module_src_types_headless_ts --> export_FlowObservabilityPort
+  export_FlowObservabilityPort -.-> export_FlowAuditRecord
   export_FlowOperationStorePort["FlowOperationStorePort"]
   module_src_types_security_ts --> export_FlowOperationStorePort
   export_FlowOperationStorePort -.-> export_FlowSecurityOperationIdentity
@@ -110,8 +169,10 @@ graph LR
   module_src_types_security_ts --> export_FlowOutboundTransportPort
   export_FlowOutboxRecord["FlowOutboxRecord"]
   module_src_types_durableExecution_ts --> export_FlowOutboxRecord
+  export_FlowOutboxRecord -.-> export_FlowDurableEffectResult
   export_FlowPersistencePort["FlowPersistencePort"]
   module_src_features_execution_ports_FlowPersistencePort_ts --> export_FlowPersistencePort
+  export_FlowPersistencePort -.-> export_FlowDurableEffectResult
   export_FlowPersistencePort -.-> export_FlowDurableRun
   export_FlowPersistencePort -.-> export_FlowDurableWork
   export_FlowPersistencePort -.-> export_FlowOutboxRecord
@@ -124,8 +185,27 @@ graph LR
   module_src_types_durableExecution_ts --> export_FlowRetryPolicy
   export_FlowRunCheckpoint["FlowRunCheckpoint"]
   module_src_types_durableExecution_ts --> export_FlowRunCheckpoint
+  export_FlowRunEvent["FlowRunEvent"]
+  module_src_types_headless_ts --> export_FlowRunEvent
   export_FlowRunRequest["FlowRunRequest"]
   module_src_types_execution_ts --> export_FlowRunRequest
+  export_FlowRunRequest -.-> export_FlowNodeEffectIdentity
+  export_FlowRuntime["FlowRuntime"]
+  module_src_types_headless_ts --> export_FlowRuntime
+  export_FlowRuntime -.-> export_FlowRunEvent
+  export_FlowRuntime -.-> export_FlowWorkflowRevision
+  export_FlowRuntimeDependencies["FlowRuntimeDependencies"]
+  module_src_types_headless_ts --> export_FlowRuntimeDependencies
+  export_FlowRuntimeDependencies -.-> export_FlowClock
+  export_FlowRuntimeDependencies -.-> export_FlowNodeOperation
+  export_FlowRuntimeDependencies -.-> export_FlowObservabilityPort
+  export_FlowRuntimeDependencies -.-> export_FlowPersistencePort
+  export_FlowRuntimeDependencies -.-> export_FlowRuntimeStorePort
+  export_FlowRuntimeDependencies -.-> export_FlowSecurityPort
+  export_FlowRuntimeStorePort["FlowRuntimeStorePort"]
+  module_src_types_headless_ts --> export_FlowRuntimeStorePort
+  export_FlowRuntimeStorePort -.-> export_FlowRunEvent
+  export_FlowRuntimeStorePort -.-> export_FlowWorkflowRevision
   export_FlowSecretCreateInput["FlowSecretCreateInput"]
   module_src_types_security_ts --> export_FlowSecretCreateInput
   export_FlowSecretCreateInput -.-> export_FlowSecurityActor
@@ -170,5 +250,21 @@ graph LR
   export_FlowSecurityPort -.-> export_FlowSecurityPermit
   export_FlowSecurityTarget["FlowSecurityTarget"]
   module_src_types_security_ts --> export_FlowSecurityTarget
+  export_FlowWorkerOutcome["FlowWorkerOutcome"]
+  module_src_types_durableExecution_ts --> export_FlowWorkerOutcome
+  export_FlowWorkerResult["FlowWorkerResult"]
+  module_src_types_durableExecution_ts --> export_FlowWorkerResult
+  export_FlowWorkerResult -.-> export_FlowWorkerOutcome
+  export_FlowWorkflowRevision["FlowWorkflowRevision"]
+  module_src_types_headless_ts --> export_FlowWorkflowRevision
+  export_InMemoryFlowObservability["InMemoryFlowObservability"]
+  module_src_features_headless_adapters_InMemoryFlowObservability_ts --> export_InMemoryFlowObservability
+  export_InMemoryFlowObservability -.-> export_FlowObservabilityPort
+  export_InMemoryFlowPersistenceAdapter["InMemoryFlowPersistenceAdapter"]
+  module_src_features_execution_adapters_InMemoryFlowPersistenceAdapter_ts --> export_InMemoryFlowPersistenceAdapter
+  export_InMemoryFlowPersistenceAdapter -.-> export_FlowPersistencePort
+  export_InMemoryFlowRuntimeStore["InMemoryFlowRuntimeStore"]
+  module_src_features_headless_adapters_InMemoryFlowRuntimeStore_ts --> export_InMemoryFlowRuntimeStore
+  export_InMemoryFlowRuntimeStore -.-> export_FlowRuntimeStorePort
   export_isCronDueAt["isCronDueAt"]
   module_src_features_execution_domain_isCronDueAt_ts --> export_isCronDueAt

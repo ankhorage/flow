@@ -1,10 +1,17 @@
 graph LR
+  module_package_json["package.json"]
   module_src_ai_ts["src/ai.ts"]
+  module_src_capabilities_index_ts["src/capabilities/index.ts"]
+  module_src_cli_commands_serve_ts["src/cli/commands/serve.ts"]
+  module_src_cli_index_ts["src/cli/index.ts"]
+  module_src_cli_standalone_ts["src/cli/standalone.ts"]
   module_src_execution_ts["src/execution.ts"]
   module_src_features_ai_application_executeAiNodeAsync_ts["src/features/ai/application/executeAiNodeAsync.ts"]
   module_src_features_ai_application_executeBoundedAgentAsync_ts["src/features/ai/application/executeBoundedAgentAsync.ts"]
   module_src_features_ai_FlowAiError_ts["src/features/ai/FlowAiError.ts"]
+  module_src_features_execution_adapters_createFileFlowPersistenceSupport_ts["src/features/execution/adapters/createFileFlowPersistenceSupport.ts"]
   module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts["src/features/execution/adapters/FileFlowPersistenceAdapter.ts"]
+  module_src_features_execution_adapters_InMemoryFlowPersistenceAdapter_ts["src/features/execution/adapters/InMemoryFlowPersistenceAdapter.ts"]
   module_src_features_execution_application_cancelDurableRunAsync_ts["src/features/execution/application/cancelDurableRunAsync.ts"]
   module_src_features_execution_application_createDurableRunAsync_ts["src/features/execution/application/createDurableRunAsync.ts"]
   module_src_features_execution_application_executeFlowAsync_ts["src/features/execution/application/executeFlowAsync.ts"]
@@ -16,8 +23,22 @@ graph LR
   module_src_features_execution_domain_createDurableRun_ts["src/features/execution/domain/createDurableRun.ts"]
   module_src_features_execution_domain_createRetryWork_ts["src/features/execution/domain/createRetryWork.ts"]
   module_src_features_execution_domain_isCronDueAt_ts["src/features/execution/domain/isCronDueAt.ts"]
+  module_src_features_execution_domain_planFlowNodeInput_ts["src/features/execution/domain/planFlowNodeInput.ts"]
+  module_src_features_execution_domain_structurallyEqual_ts["src/features/execution/domain/structurallyEqual.ts"]
   module_src_features_execution_domain_validateFlowDataSchema_ts["src/features/execution/domain/validateFlowDataSchema.ts"]
   module_src_features_execution_ports_FlowPersistencePort_ts["src/features/execution/ports/FlowPersistencePort.ts"]
+  module_src_features_headless_adapters_createFlowHttpHandler_ts["src/features/headless/adapters/createFlowHttpHandler.ts"]
+  module_src_features_headless_adapters_createFlowOpenApi_ts["src/features/headless/adapters/createFlowOpenApi.ts"]
+  module_src_features_headless_adapters_FileFlowRuntimeStore_ts["src/features/headless/adapters/FileFlowRuntimeStore.ts"]
+  module_src_features_headless_adapters_InMemoryFlowObservability_ts["src/features/headless/adapters/InMemoryFlowObservability.ts"]
+  module_src_features_headless_adapters_InMemoryFlowRuntimeStore_ts["src/features/headless/adapters/InMemoryFlowRuntimeStore.ts"]
+  module_src_features_headless_application_createDurableHeadlessWork_ts["src/features/headless/application/createDurableHeadlessWork.ts"]
+  module_src_features_headless_application_createFlowRuntime_ts["src/features/headless/application/createFlowRuntime.ts"]
+  module_src_features_headless_application_createHeadlessRunControl_ts["src/features/headless/application/createHeadlessRunControl.ts"]
+  module_src_features_headless_application_executeDurableHeadlessStepAsync_ts["src/features/headless/application/executeDurableHeadlessStepAsync.ts"]
+  module_src_features_headless_application_observeFlowRuntimeAsync_ts["src/features/headless/application/observeFlowRuntimeAsync.ts"]
+  module_src_features_headless_application_reconcileDurableHeadlessStepAsync_ts["src/features/headless/application/reconcileDurableHeadlessStepAsync.ts"]
+  module_src_features_headless_application_synchronizeHeadlessRunAsync_ts["src/features/headless/application/synchronizeHeadlessRunAsync.ts"]
   module_src_features_mcp_boundedMcpAsync_ts["src/features/mcp/boundedMcpAsync.ts"]
   module_src_features_mcp_createMcpAgentToolAdapter_ts["src/features/mcp/createMcpAgentToolAdapter.ts"]
   module_src_features_mcp_createMcpRemoteTransport_ts["src/features/mcp/createMcpRemoteTransport.ts"]
@@ -31,19 +52,31 @@ graph LR
   module_src_features_security_FlowSecurityError_ts["src/features/security/FlowSecurityError.ts"]
   module_src_index_ts["src/index.ts"]
   module_src_mcp_ts["src/mcp.ts"]
+  module_src_server_ts["src/server.ts"]
   module_src_social_ts["src/social.ts"]
   module_src_types_ai_ts["src/types/ai.ts"]
   module_src_types_durableExecution_ts["src/types/durableExecution.ts"]
   module_src_types_execution_ts["src/types/execution.ts"]
+  module_src_types_headless_ts["src/types/headless.ts"]
   module_src_types_mcp_ts["src/types/mcp.ts"]
   module_src_types_security_ts["src/types/security.ts"]
+  module_src_cli_commands_serve_ts --> module_src_server_ts
+  module_src_cli_index_ts --> module_package_json
+  module_src_cli_index_ts --> module_src_capabilities_index_ts
+  module_src_cli_index_ts --> module_src_cli_commands_serve_ts
+  module_src_cli_standalone_ts --> module_src_server_ts
   module_src_features_ai_application_executeAiNodeAsync_ts --> module_src_features_ai_FlowAiError_ts
   module_src_features_ai_application_executeAiNodeAsync_ts --> module_src_types_ai_ts
   module_src_features_ai_application_executeAiNodeAsync_ts --> module_src_types_security_ts
   module_src_features_ai_application_executeBoundedAgentAsync_ts --> module_src_features_ai_FlowAiError_ts
   module_src_features_ai_application_executeBoundedAgentAsync_ts --> module_src_types_ai_ts
+  module_src_features_execution_adapters_createFileFlowPersistenceSupport_ts --> module_src_features_execution_ports_FlowPersistencePort_ts
+  module_src_features_execution_adapters_createFileFlowPersistenceSupport_ts --> module_src_types_durableExecution_ts
+  module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts --> module_src_features_execution_adapters_createFileFlowPersistenceSupport_ts
   module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts --> module_src_features_execution_ports_FlowPersistencePort_ts
   module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts --> module_src_types_durableExecution_ts
+  module_src_features_execution_adapters_InMemoryFlowPersistenceAdapter_ts --> module_src_features_execution_ports_FlowPersistencePort_ts
+  module_src_features_execution_adapters_InMemoryFlowPersistenceAdapter_ts --> module_src_types_durableExecution_ts
   module_src_features_execution_application_cancelDurableRunAsync_ts --> module_src_features_execution_ports_FlowPersistencePort_ts
   module_src_features_execution_application_cancelDurableRunAsync_ts --> module_src_types_durableExecution_ts
   module_src_features_execution_application_cancelDurableRunAsync_ts --> module_src_types_execution_ts
@@ -51,7 +84,9 @@ graph LR
   module_src_features_execution_application_createDurableRunAsync_ts --> module_src_features_execution_ports_FlowPersistencePort_ts
   module_src_features_execution_application_createDurableRunAsync_ts --> module_src_types_durableExecution_ts
   module_src_features_execution_application_createDurableRunAsync_ts --> module_src_types_execution_ts
+  module_src_features_execution_application_createDurableRunAsync_ts --> module_src_types_headless_ts
   module_src_features_execution_application_executeFlowAsync_ts --> module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts
+  module_src_features_execution_application_executeFlowAsync_ts --> module_src_features_execution_domain_planFlowNodeInput_ts
   module_src_features_execution_application_executeFlowAsync_ts --> module_src_features_execution_domain_validateFlowDataSchema_ts
   module_src_features_execution_application_executeFlowAsync_ts --> module_src_types_execution_ts
   module_src_features_execution_application_runDurableWorkerAsync_ts --> module_src_features_execution_domain_createRetryWork_ts
@@ -67,7 +102,45 @@ graph LR
   module_src_features_execution_domain_createDurableRun_ts --> module_src_types_durableExecution_ts
   module_src_features_execution_domain_createRetryWork_ts --> module_src_features_execution_domain_calculateRetryDueAt_ts
   module_src_features_execution_domain_createRetryWork_ts --> module_src_types_durableExecution_ts
+  module_src_features_execution_domain_planFlowNodeInput_ts --> module_src_features_execution_domain_structurallyEqual_ts
+  module_src_features_execution_domain_planFlowNodeInput_ts --> module_src_types_execution_ts
   module_src_features_execution_ports_FlowPersistencePort_ts --> module_src_types_durableExecution_ts
+  module_src_features_headless_adapters_createFlowHttpHandler_ts --> module_src_features_headless_adapters_createFlowOpenApi_ts
+  module_src_features_headless_adapters_createFlowHttpHandler_ts --> module_src_types_headless_ts
+  module_src_features_headless_adapters_createFlowHttpHandler_ts --> module_src_types_security_ts
+  module_src_features_headless_adapters_FileFlowRuntimeStore_ts --> module_src_types_headless_ts
+  module_src_features_headless_adapters_InMemoryFlowObservability_ts --> module_src_types_headless_ts
+  module_src_features_headless_adapters_InMemoryFlowRuntimeStore_ts --> module_src_types_headless_ts
+  module_src_features_headless_application_createDurableHeadlessWork_ts --> module_src_types_durableExecution_ts
+  module_src_features_headless_application_createDurableHeadlessWork_ts --> module_src_types_execution_ts
+  module_src_features_headless_application_createFlowRuntime_ts --> module_src_features_execution_application_createDurableRunAsync_ts
+  module_src_features_headless_application_createFlowRuntime_ts --> module_src_features_execution_application_runDurableWorkerAsync_ts
+  module_src_features_headless_application_createFlowRuntime_ts --> module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts
+  module_src_features_headless_application_createFlowRuntime_ts --> module_src_features_execution_domain_compileFlowGraph_ts
+  module_src_features_headless_application_createFlowRuntime_ts --> module_src_features_headless_application_createDurableHeadlessWork_ts
+  module_src_features_headless_application_createFlowRuntime_ts --> module_src_features_headless_application_createHeadlessRunControl_ts
+  module_src_features_headless_application_createFlowRuntime_ts --> module_src_features_headless_application_executeDurableHeadlessStepAsync_ts
+  module_src_features_headless_application_createFlowRuntime_ts --> module_src_features_headless_application_observeFlowRuntimeAsync_ts
+  module_src_features_headless_application_createFlowRuntime_ts --> module_src_features_headless_application_reconcileDurableHeadlessStepAsync_ts
+  module_src_features_headless_application_createFlowRuntime_ts --> module_src_features_headless_application_synchronizeHeadlessRunAsync_ts
+  module_src_features_headless_application_createFlowRuntime_ts --> module_src_types_durableExecution_ts
+  module_src_features_headless_application_createFlowRuntime_ts --> module_src_types_headless_ts
+  module_src_features_headless_application_createHeadlessRunControl_ts --> module_src_features_execution_application_cancelDurableRunAsync_ts
+  module_src_features_headless_application_createHeadlessRunControl_ts --> module_src_types_headless_ts
+  module_src_features_headless_application_executeDurableHeadlessStepAsync_ts --> module_src_features_execution_application_executeFlowAsync_ts
+  module_src_features_headless_application_executeDurableHeadlessStepAsync_ts --> module_src_features_execution_domain_assertFlowGraphSchemasSupported_ts
+  module_src_features_headless_application_executeDurableHeadlessStepAsync_ts --> module_src_features_execution_domain_compileFlowGraph_ts
+  module_src_features_headless_application_executeDurableHeadlessStepAsync_ts --> module_src_features_execution_domain_planFlowNodeInput_ts
+  module_src_features_headless_application_executeDurableHeadlessStepAsync_ts --> module_src_features_headless_application_createDurableHeadlessWork_ts
+  module_src_features_headless_application_executeDurableHeadlessStepAsync_ts --> module_src_types_durableExecution_ts
+  module_src_features_headless_application_executeDurableHeadlessStepAsync_ts --> module_src_types_execution_ts
+  module_src_features_headless_application_observeFlowRuntimeAsync_ts --> module_src_types_headless_ts
+  module_src_features_headless_application_reconcileDurableHeadlessStepAsync_ts --> module_src_features_headless_application_executeDurableHeadlessStepAsync_ts
+  module_src_features_headless_application_reconcileDurableHeadlessStepAsync_ts --> module_src_types_durableExecution_ts
+  module_src_features_headless_application_reconcileDurableHeadlessStepAsync_ts --> module_src_types_headless_ts
+  module_src_features_headless_application_synchronizeHeadlessRunAsync_ts --> module_src_features_headless_application_observeFlowRuntimeAsync_ts
+  module_src_features_headless_application_synchronizeHeadlessRunAsync_ts --> module_src_types_durableExecution_ts
+  module_src_features_headless_application_synchronizeHeadlessRunAsync_ts --> module_src_types_headless_ts
   module_src_features_mcp_boundedMcpAsync_ts --> module_src_features_mcp_McpToolError_ts
   module_src_features_mcp_createMcpAgentToolAdapter_ts --> module_src_types_ai_ts
   module_src_features_mcp_createMcpAgentToolAdapter_ts --> module_src_types_mcp_ts
@@ -92,6 +165,18 @@ graph LR
   module_src_features_security_application_createFlowSecurityPort_ts --> module_src_types_security_ts
   module_src_features_security_domain_validateFlowSecurityTarget_ts --> module_src_features_security_FlowSecurityError_ts
   module_src_features_security_domain_validateFlowSecurityTarget_ts --> module_src_types_security_ts
+  module_src_server_ts --> module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts
+  module_src_server_ts --> module_src_features_execution_domain_createDefaultNodeRegistry_ts
+  module_src_server_ts --> module_src_features_headless_adapters_createFlowHttpHandler_ts
+  module_src_server_ts --> module_src_features_headless_adapters_FileFlowRuntimeStore_ts
+  module_src_server_ts --> module_src_features_headless_adapters_InMemoryFlowRuntimeStore_ts
+  module_src_server_ts --> module_src_features_headless_application_createFlowRuntime_ts
+  module_src_server_ts --> module_src_types_headless_ts
   module_src_types_ai_ts --> module_src_types_security_ts
+  module_src_types_durableExecution_ts --> module_src_types_headless_ts
   module_src_types_durableExecution_ts --> module_src_types_security_ts
+  module_src_types_execution_ts --> module_src_types_security_ts
+  module_src_types_headless_ts --> module_src_features_execution_ports_FlowPersistencePort_ts
+  module_src_types_headless_ts --> module_src_types_execution_ts
+  module_src_types_headless_ts --> module_src_types_security_ts
   module_src_types_mcp_ts --> module_src_types_security_ts

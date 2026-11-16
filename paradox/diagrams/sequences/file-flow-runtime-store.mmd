@@ -1,0 +1,8 @@
+sequenceDiagram
+  participant participant_createSerializedCall as createSerializedCall
+  participant participant_FileFlowRuntimeStore as FileFlowRuntimeStore
+  participant participant_resolve as resolve
+  participant_FileFlowRuntimeStore->>participant_resolve: resolve()
+  participant_resolve-->>participant_FileFlowRuntimeStore: return
+  participant_FileFlowRuntimeStore->>participant_createSerializedCall: createSerializedCall()
+  participant_createSerializedCall-->>participant_FileFlowRuntimeStore: return

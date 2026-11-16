@@ -1,5 +1,11 @@
 # @ankhorage/flow
 
+## 0.7.0
+
+### Minor Changes
+
+- 32dddec: Add the versioned headless workflow runtime, authenticated HTTP/OpenAPI adapter, standalone worker server, event stream, and Ankh provider discovery.
+
 ## 0.6.2
 
 ### Patch Changes
