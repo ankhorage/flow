@@ -29,6 +29,10 @@
       "types": "./dist/server.d.ts",
       "default": "./dist/server.js"
     },
+    "./capabilities": {
+      "types": "./dist/capabilities/index.d.ts",
+      "default": "./dist/capabilities/index.js"
+    },
     "./cli": {
       "types": "./dist/cli/index.d.ts",
       "default": "./dist/cli/index.js"
