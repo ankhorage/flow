@@ -9,7 +9,7 @@ import type {
   FlowRunSnapshot,
 } from '@ankhorage/contracts/flow';
 
-import type { FlowSecurityOperation } from './security.js';
+import type { FlowResolvedSecrets, FlowSecurityOperation } from './security.js';
 
 export interface FlowClock {
   readonly now: () => Date;
@@ -39,6 +39,8 @@ export interface FlowNodeOperation {
     readonly effect: FlowNodeEffectIdentity;
     readonly input: Readonly<Record<FlowPortId, FlowDataRef>>;
     readonly node: FlowNode;
+    /** Server-only credentials supplied by the one canonical protected-effect permit. */
+    readonly secrets?: FlowResolvedSecrets;
     readonly signal: AbortSignal;
   }) => Promise<FlowNodeOperationResult>;
   /**
@@ -46,6 +48,18 @@ export interface FlowNodeOperation {
    * performing the provider effect again. Protected durable operations require this boundary.
    */
   readonly reconcileAsync?: (input: {
+    readonly config: FlowNodeConfig | undefined;
+    readonly effect: FlowNodeEffectIdentity;
+    readonly input: Readonly<Record<FlowPortId, FlowDataRef>>;
+    readonly node: FlowNode;
+    /** Server-only credentials supplied only while reconciling a protected delivery. */
+    readonly secrets?: FlowResolvedSecrets;
+  }) => Promise<FlowNodeOperationResult | 'unknown'>;
+  /**
+   * Reconstruct an already applied result from an operation-bound provider receipt without
+   * resolving a credential. This is reserved for effects whose successful completion removes it.
+   */
+  readonly reconcileWithoutSecretsAsync?: (input: {
     readonly config: FlowNodeConfig | undefined;
     readonly effect: FlowNodeEffectIdentity;
     readonly input: Readonly<Record<FlowPortId, FlowDataRef>>;
@@ -62,6 +76,8 @@ export interface FlowRunRequest {
   readonly effectIdentity?: FlowNodeEffectIdentity;
   readonly input?: Readonly<Record<FlowPortId, FlowDataRef>>;
   readonly runId: string;
+  /** Server-only credentials supplied by a durable protected-effect permit. */
+  readonly secrets?: FlowResolvedSecrets;
   readonly schemaRegistry?: DataSchemaRegistry;
   readonly signal?: AbortSignal;
   readonly triggerId: string;

@@ -116,6 +116,10 @@ const runtime = createFlowRuntime({
       executeAsync: async (callback) => callback({}),
       operation: { ...operation, secretRefs: operation.secretRefs ?? [] },
     }),
+    reconcileAsync: async () => ({
+      reconcileWithoutSecretsAsync: async (callback) => callback(),
+      reconcileAsync: async (callback) => callback({}),
+    }),
     createSecretAsync: async () => {
       throw new Error('FLOW_TEST_SECRET_UNUSED');
     },
@@ -123,6 +127,9 @@ const runtime = createFlowRuntime({
       throw new Error('FLOW_TEST_SECRET_UNUSED');
     },
     revokeSecretAsync: async () => {
+      throw new Error('FLOW_TEST_SECRET_UNUSED');
+    },
+    replaceSecretAsync: async () => {
       throw new Error('FLOW_TEST_SECRET_UNUSED');
     },
   },

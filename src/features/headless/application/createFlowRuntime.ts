@@ -9,6 +9,7 @@ import type {
   FlowRuntimeDependencies,
   FlowWorkflowRevision,
 } from '../../../types/headless.js';
+import type { FlowResolvedSecrets } from '../../../types/security.js';
 import { createDurableRunAsync } from '../../execution/application/createDurableRunAsync.js';
 import { runDurableWorkerAsync } from '../../execution/application/runDurableWorkerAsync.js';
 import { assertFlowGraphSchemasSupported } from '../../execution/domain/assertFlowGraphSchemasSupported.js';
@@ -231,6 +232,8 @@ const runWorkerTickAsync = async (
           return result;
         },
         reconcileAsync: (input) => reconcileDurableHeadlessStepAsync(input, dependencies, clock),
+        reconcileWithoutSecretsAsync: (input) =>
+          reconcileDurableHeadlessStepAsync(input, dependencies, clock),
       },
       persistence: dependencies.persistence,
       ...(dependencies.security === undefined ? {} : { security: dependencies.security }),
@@ -248,7 +251,11 @@ const runWorkerTickAsync = async (
 
 /** Execute one claimed graph step only after an atomically guarded headless pending-to-running claim. */
 const executeDurableHeadlessStepAsync = async (
-  input: { readonly run: FlowDurableRun; readonly work: FlowDurableWork },
+  input: {
+    readonly run: FlowDurableRun;
+    readonly secrets?: FlowResolvedSecrets;
+    readonly work: FlowDurableWork;
+  },
   dependencies: FlowRuntimeDependencies,
   clock: { readonly now: () => Date },
 ) => {
@@ -281,6 +288,7 @@ const executeDurableHeadlessStepAsync = async (
       registry: dependencies.nodeRegistry,
       schemaRegistry: dependencies.schemaRegistry,
       work: input.work,
+      ...(input.secrets === undefined ? {} : { secrets: input.secrets }),
     },
     clock,
   );

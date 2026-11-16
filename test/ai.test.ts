@@ -40,6 +40,11 @@ const security = (permitted = true): FlowSecurityPort => ({
         callback({ 'providers/fake': { token: 'SENTINEL_SECRET' } }),
     };
   },
+  reconcileAsync: async () => ({
+    reconcileWithoutSecretsAsync: async (callback) => callback(),
+    reconcileAsync: async (callback) =>
+      callback({ 'providers/fake': { token: 'SENTINEL_SECRET' } }),
+  }),
   createSecretAsync: async () => {
     throw new Error('unused');
   },
@@ -47,6 +52,9 @@ const security = (permitted = true): FlowSecurityPort => ({
     throw new Error('unused');
   },
   revokeSecretAsync: async () => {
+    throw new Error('unused');
+  },
+  replaceSecretAsync: async () => {
     throw new Error('unused');
   },
 });

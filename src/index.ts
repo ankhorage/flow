@@ -58,6 +58,7 @@ export type {
   FlowResolvedSecrets,
   FlowSecretCreateInput,
   FlowSecretMetadata,
+  FlowSecretReplaceInput,
   FlowSecretRevokeInput,
   FlowSecurityActor,
   FlowSecurityApproval,

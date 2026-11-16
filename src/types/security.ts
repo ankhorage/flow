@@ -102,6 +102,7 @@ export interface FlowSecurityAuditEvent {
     | 'approval_rejected'
     | 'credential_create'
     | 'credential_revoke'
+    | 'credential_replace'
     | 'idempotency_conflict'
     | 'invalid_target'
     | 'permission_denied'
@@ -130,19 +131,39 @@ export interface FlowSecretRevokeInput {
   readonly ref: SecretRef;
 }
 
+/** Protected server-side credential renewal input. Its scope is always derived from the actor. */
+export interface FlowSecretReplaceInput {
+  readonly actor: FlowSecurityActor;
+  readonly payload: SecretPayload;
+  readonly ref: SecretRef;
+}
+
 /** One-use authorization result. Raw secrets stay private to the returned server closure. */
 export interface FlowSecurityPermit {
   readonly operation: FlowSecurityOperationIdentity;
   executeAsync<T>(operation: (secrets: FlowResolvedSecrets) => Promise<T>): Promise<T>;
 }
 
+/** Recovery-only credential access for reconstructing an already applied protected effect. */
+export interface FlowSecurityReconciliationPermit {
+  /** Execute an approved receipt lookup that intentionally requires no credential material. */
+  reconcileWithoutSecretsAsync<T>(operation: () => Promise<T>): Promise<T>;
+  reconcileAsync<T>(operation: (secrets: FlowResolvedSecrets) => Promise<T>): Promise<T>;
+}
+
 /** Public server-side boundary consumed by provider, AI, MCP, and social adapters. */
 export interface FlowSecurityPort {
   authorizeAsync(operation: FlowSecurityOperation): Promise<FlowSecurityPermit>;
+  /**
+   * Revalidate a durable protected operation and expose its secrets only to read a provider
+   * receipt. This intentionally does not claim, consume, or rate-limit a new provider effect.
+   */
+  reconcileAsync(operation: FlowSecurityOperation): Promise<FlowSecurityReconciliationPermit>;
   createSecretAsync(input: FlowSecretCreateInput): Promise<FlowSecretMetadata>;
   getSecretMetadataAsync(input: {
     readonly actor: FlowSecurityActor;
     readonly ref: SecretRef;
   }): Promise<FlowSecretMetadata>;
   revokeSecretAsync(input: FlowSecretRevokeInput): Promise<void>;
+  replaceSecretAsync(input: FlowSecretReplaceInput): Promise<FlowSecretMetadata>;
 }

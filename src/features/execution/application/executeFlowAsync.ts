@@ -91,6 +91,7 @@ const executeAvailableNodeAsync = async (
     registry,
     request.effectIdentity ?? { idempotencyKey: `${request.runId}:step:${node.id}` },
     request.signal,
+    request.secrets,
     clock,
     request.schemaRegistry,
   );
@@ -103,6 +104,7 @@ const executeNodeAsync = async (
   registry: FlowNodeRegistry,
   effect: { readonly idempotencyKey: string },
   signal: AbortSignal | undefined,
+  secrets: FlowRunRequest['secrets'],
   clock: FlowClock,
   schemas: FlowRunRequest['schemaRegistry'],
 ): Promise<{
@@ -112,19 +114,7 @@ const executeNodeAsync = async (
   const startedAt = clock.now().toISOString();
   try {
     assertPortSchemas(node, input, 'input', schemas);
-    const operationId = `${node.capability.providerId}:${node.capability.capabilityId}`;
-    const operation = Object.entries(registry).find(([id]) => id === operationId)?.[1];
-    if (!operation) throw new Error(`FLOW_OPERATION_UNREGISTERED:${operationId}`);
-    const output =
-      (
-        await operation.executeAsync({
-          config: node.config,
-          effect,
-          input,
-          node,
-          signal: signal ?? new AbortController().signal,
-        })
-      ).output ?? {};
+    const output = await executeOperationAsync(node, input, registry, effect, signal, secrets);
     if (signal?.aborted)
       return { output: {}, step: createCancelledStep(node, input, startedAt, clock) };
     assertOutputPorts(node, output);
@@ -146,6 +136,32 @@ const executeNodeAsync = async (
       },
     };
   }
+};
+
+/** Execute the registered node operation while carrying only the already-authorized secret view. */
+const executeOperationAsync = async (
+  node: FlowNode,
+  input: Readonly<Record<FlowPortId, FlowDataRef>>,
+  registry: FlowNodeRegistry,
+  effect: { readonly idempotencyKey: string },
+  signal: AbortSignal | undefined,
+  secrets: FlowRunRequest['secrets'],
+): Promise<Readonly<Record<FlowPortId, FlowDataRef>>> => {
+  const operationId = `${node.capability.providerId}:${node.capability.capabilityId}`;
+  const operation = Object.entries(registry).find(([id]) => id === operationId)?.[1];
+  if (!operation) throw new Error(`FLOW_OPERATION_UNREGISTERED:${operationId}`);
+  return (
+    (
+      await operation.executeAsync({
+        config: node.config,
+        effect,
+        input,
+        node,
+        ...(secrets === undefined ? {} : { secrets }),
+        signal: signal ?? new AbortController().signal,
+      })
+    ).output ?? {}
+  );
 };
 
 /*** Create an immutable successful step snapshot. */
