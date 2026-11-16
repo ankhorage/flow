@@ -1,8 +1,12 @@
 import type {
+  FlowDurableEffectPort,
+  FlowDurableEffectResult,
   FlowDurableRun,
   FlowDurableWork,
   FlowRetryPolicy,
   FlowRunCheckpoint,
+  FlowWorkerOutcome,
+  FlowWorkerResult,
 } from '../../../types/durableExecution.js';
 import type { FlowClock } from '../../../types/execution.js';
 import type { FlowSecurityPort } from '../../../types/security.js';
@@ -60,31 +64,34 @@ const processWorkAsync = async (
     return { status: 'already_completed', workId: work.id };
   }
   try {
+    if (
+      !(await dependencies.persistence.verifyClaimAsync({
+        leaseFencingToken: claimFencingToken(work),
+        now: dependencies.clock.now(),
+        workId: work.id,
+        workerId: input.workerId,
+      }))
+    )
+      return { status: 'lost_lease', workId: work.id };
     const outbox = await prepareOutboxAsync(work, dependencies);
     if (outbox.status === 'delivered') {
-      const transitioned = await transitionAsync(
+      const completed = await finalizeAsync(
+        work,
         run,
-        'succeeded',
-        completedCheckpoint(run.checkpoint, work.stepId),
+        outbox.result ?? {},
+        input.workerId,
         dependencies,
       );
-      const completed = await completeAsync(work, input.workerId, dependencies);
       return {
-        status: transitioned && completed ? 'already_completed' : 'lost_lease',
+        status: completed ? 'already_completed' : 'lost_lease',
         workId: work.id,
       };
     }
-    const effectStatus = await executeEffectAsync(work, run, dependencies);
-    await dependencies.persistence.markOutboxDeliveredAsync(work.id);
-    const transitioned = await transitionAsync(
-      run,
-      'succeeded',
-      completedCheckpoint(run.checkpoint, work.stepId),
-      dependencies,
-    );
-    if (!transitioned || !(await completeAsync(work, input.workerId, dependencies)))
-      return { status: 'lost_lease', workId: work.id };
-    return { status: effectStatus, workId: work.id };
+    const effect = await executeEffectAsync(work, run, dependencies);
+    await dependencies.persistence.markOutboxDeliveredAsync(work.id, effect);
+    const finalized = await finalizeAsync(work, run, effect, input.workerId, dependencies);
+    if (!finalized) return { status: 'lost_lease', workId: work.id };
+    return { status: 'succeeded', workId: work.id };
   } catch (error) {
     if (isApprovalPending(error)) return waitForApprovalAsync(work, run, input, dependencies);
     return retryOrFailAsync(work, run, input, dependencies, error);
@@ -117,7 +124,7 @@ const executeEffectAsync = async (
   work: FlowDurableWork,
   run: FlowDurableRun,
   dependencies: Parameters<typeof runDurableWorkerAsync>[1],
-): Promise<'succeeded'> => {
+): Promise<FlowDurableEffectResult> => {
   const execute = () =>
     dependencies.effects.executeAsync({
       idempotencyKey: work.idempotencyKey ?? work.id,
@@ -127,26 +134,46 @@ const executeEffectAsync = async (
   if (work.effectKind === 'internal') {
     if (work.securityOperation !== undefined)
       throw new Error('FLOW_INTERNAL_EFFECT_SECURITY_OPERATION');
-    await execute();
-    return 'succeeded';
+    return (await execute()) ?? {};
   }
   if (work.securityOperation === undefined)
     throw new Error('FLOW_PROTECTED_EFFECT_SECURITY_OPERATION');
   if (dependencies.security === undefined) throw new Error('FLOW_SECURITY_PORT_REQUIRED');
   if (dependencies.effects.reconcileAsync === undefined)
     throw new Error('FLOW_PROTECTED_EFFECT_RECONCILIATION_REQUIRED');
-  if (
-    (await dependencies.effects.reconcileAsync({
-      idempotencyKey: work.idempotencyKey ?? work.id,
-      run,
-      work,
-    })) === 'delivered'
-  )
-    return 'succeeded';
+  const reconciled = await dependencies.effects.reconcileAsync({
+    idempotencyKey: work.idempotencyKey ?? work.id,
+    run,
+    work,
+  });
+  if (reconciled !== 'unknown') return reconciled;
   const permit = await dependencies.security.authorizeAsync(work.securityOperation);
-  await permit.executeAsync(async () => execute());
-  return 'succeeded';
+  return (await permit.executeAsync(async () => execute())) ?? {};
 };
+
+/** Commit a completed delivery and all branch-dependent successor work in one fenced transaction. */
+const finalizeAsync = (
+  work: FlowDurableWork,
+  run: FlowDurableRun,
+  effect: FlowDurableEffectResult,
+  workerId: string,
+  dependencies: Parameters<typeof runDurableWorkerAsync>[1],
+): Promise<boolean> =>
+  dependencies.persistence.finalizeWorkAsync({
+    expectedRevision: run.revision,
+    leaseFencingToken: claimFencingToken(work),
+    nextWork: effect.nextWork ?? [],
+    now: dependencies.clock.now(),
+    run: {
+      ...run,
+      checkpoint: completedCheckpoint(effect.checkpoint ?? run.checkpoint, work.stepId),
+      revision: run.revision + 1,
+      status: effect.status ?? 'succeeded',
+      updatedAt: dependencies.clock.now().toISOString(),
+    },
+    workId: work.id,
+    workerId,
+  });
 
 /** Persist a waiting approval and defer its at-least-once delivery without consuming the lease. */
 const waitForApprovalAsync = async (
@@ -249,6 +276,7 @@ const completedCheckpoint = (
   ]),
   ...(checkpoint?.data === undefined ? {} : { data: checkpoint.data }),
   failedStepIds: checkpoint?.failedStepIds ?? [],
+  ...(checkpoint?.steps === undefined ? {} : { steps: checkpoint.steps }),
 });
 
 /** Add a terminally failed step to an immutable checkpoint. */
@@ -262,6 +290,7 @@ const failedCheckpoint = (
     ...(checkpoint?.failedStepIds ?? []),
     ...(stepId === undefined ? [] : [stepId]),
   ]),
+  ...(checkpoint?.steps === undefined ? {} : { steps: checkpoint.steps }),
 });
 
 /** Check whether a completed checkpoint makes a duplicate delivery a no-op. */
@@ -292,46 +321,3 @@ const errorMessage = (error: unknown): string =>
 
 /** Keep persisted checkpoint arrays deterministic. */
 const unique = (values: readonly string[]): readonly string[] => [...new Set(values)];
-
-/** Application-owned effect boundary; adapters must apply the supplied idempotency key at their side-effect boundary. */
-export interface FlowDurableEffectPort {
-  readonly compensateAsync?: (input: {
-    readonly run: FlowDurableRun;
-    readonly work: FlowDurableWork;
-  }) => Promise<void>;
-  readonly executeAsync: (input: {
-    readonly idempotencyKey: string;
-    readonly run: FlowDurableRun;
-    readonly work: FlowDurableWork;
-  }) => Promise<void>;
-  /**
-   * Query the provider's idempotency boundary before a protected replay. A provider must return
-   * `delivered` only when the stable key proves that the original effect completed.
-   */
-  readonly reconcileAsync?: (input: {
-    readonly idempotencyKey: string;
-    readonly run: FlowDurableRun;
-    readonly work: FlowDurableWork;
-  }) => Promise<'delivered' | 'unknown'>;
-}
-
-/** Observable outcome for every delivery claimed by one bounded worker tick. */
-export interface FlowWorkerOutcome {
-  readonly error?: string;
-  readonly status:
-    | 'already_completed'
-    | 'cancelled'
-    | 'failed'
-    | 'lost_lease'
-    | 'retry_scheduled'
-    | 'succeeded'
-    | 'waiting_approval';
-  readonly workId: string;
-}
-
-/** Summary of one worker tick; delivery remains at-least-once until fenced completion. */
-export interface FlowWorkerResult {
-  readonly claimedWorkIds: readonly string[];
-  readonly outcomes: readonly FlowWorkerOutcome[];
-  readonly recoveredWorkIds: readonly string[];
-}

@@ -25,6 +25,14 @@
       "types": "./dist/execution.d.ts",
       "default": "./dist/execution.js"
     },
+    "./server": {
+      "types": "./dist/server.d.ts",
+      "default": "./dist/server.js"
+    },
+    "./cli": {
+      "types": "./dist/cli/index.d.ts",
+      "default": "./dist/cli/index.js"
+    },
     "./mcp": {
       "types": "./dist/mcp.d.ts",
       "default": "./dist/mcp.js"
@@ -64,6 +72,7 @@
     "format": "ankhorage-prettier --write .",
     "format:check": "ankhorage-prettier --check .",
     "knip:check": "ankhorage-knip",
+    "serve": "bun src/cli/standalone.ts",
     "test": "bun test src test",
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.node-esm.json && tsc --noEmit -p tsconfig.test.json",
     "version-packages": "ankhorage-changeset version"
@@ -79,7 +88,29 @@
   },
   "packageManager": "bun@1.4.2",
   "dependencies": {
+    "@ankhorage/ankh": "^0.13.5",
     "@ankhorage/contracts": "^26.7.0"
+  },
+  "ankh": {
+    "category": "flow",
+    "provider": "./dist/cli/index.js",
+    "capabilities": [
+      {
+        "id": "flow.serve",
+        "owner": "@ankhorage/flow",
+        "access": [
+          "invoke"
+        ],
+        "binding": {
+          "kind": "action",
+          "bindableAs": [
+            "target"
+          ]
+        },
+        "label": "Start Flow server",
+        "description": "Start an authenticated standalone Flow workflow server."
+      }
+    ]
   },
   "peerDependencies": {
     "@modelcontextprotocol/sdk": "^1.32.2"

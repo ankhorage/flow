@@ -3,38 +3,45 @@ import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 
 import type {
+  FlowDurableEffectResult,
   FlowDurableRun,
   FlowDurableWork,
   FlowOutboxRecord,
 } from '../../../types/durableExecution.js';
 import type { FlowPersistencePort } from '../ports/FlowPersistencePort.js';
+import {
+  claimFileFlowWork,
+  createFileFlowPersistenceSupport,
+  replaceFileFlowOutbox,
+  replaceFileFlowRuns,
+  replaceFileFlowWork,
+} from './createFileFlowPersistenceSupport.js';
 
 /*** Create a self-hostable, single-process JSON persistence adapter for durable Flow state. */
 export const FileFlowPersistenceAdapter = (path: string): FlowPersistencePort => {
   const persistencePath = resolve(path);
-  const serializedCall = getSerializedCall(persistencePath);
+  const support = createFileFlowPersistenceSupport(persistencePath);
   return {
     cancelRunWorkAsync: (runId) =>
-      serializedCall.runAsync(() => cancelRunWorkAsync(persistencePath, runId)),
-    claimDueWorkAsync: (input) =>
-      serializedCall.runAsync(() => claimDueWorkAsync(persistencePath, input)),
-    completeWorkAsync: (input) =>
-      serializedCall.runAsync(() => completeWorkAsync(persistencePath, input)),
+      support.runAsync(() => cancelRunWorkAsync(persistencePath, runId)),
+    claimDueWorkAsync: (input) => support.runAsync(() => claimDueWorkAsync(persistencePath, input)),
+    completeWorkAsync: (input) => support.runAsync(() => completeWorkAsync(persistencePath, input)),
     createOutboxAsync: (record) =>
-      serializedCall.runAsync(() => createOutboxAsync(persistencePath, record)),
-    createRunAsync: (run) => serializedCall.runAsync(() => createRunAsync(persistencePath, run)),
-    enqueueWorkAsync: (work) =>
-      serializedCall.runAsync(() => enqueueWorkAsync(persistencePath, work)),
-    markOutboxDeliveredAsync: (id) =>
-      serializedCall.runAsync(() => markOutboxDeliveredAsync(persistencePath, id)),
-    readOutboxAsync: (id) => serializedCall.runAsync(() => readOutboxAsync(persistencePath, id)),
-    readRunAsync: (id) => serializedCall.runAsync(() => readRunAsync(persistencePath, id)),
+      support.runAsync(() => createOutboxAsync(persistencePath, record)),
+    createRunAsync: (run) => support.runAsync(() => createRunAsync(persistencePath, run)),
+    enqueueWorkAsync: (work) => support.runAsync(() => enqueueWorkAsync(persistencePath, work)),
+    finalizeWorkAsync: (input) => support.runAsync(() => finalizeWorkAsync(persistencePath, input)),
+    markOutboxDeliveredAsync: (id, result) =>
+      support.runAsync(() => markOutboxDeliveredAsync(persistencePath, id, result)),
+    readOutboxAsync: (id) => support.runAsync(() => readOutboxAsync(persistencePath, id)),
+    readRunAsync: (id) => support.runAsync(() => readRunAsync(persistencePath, id)),
+    readWorkAsync: (id) => support.runAsync(() => readWorkAsync(persistencePath, id)),
     recoverExpiredClaimsAsync: (now) =>
-      serializedCall.runAsync(() => recoverExpiredClaimsAsync(persistencePath, now)),
-    releaseWorkAsync: (input) =>
-      serializedCall.runAsync(() => releaseWorkAsync(persistencePath, input)),
+      support.runAsync(() => recoverExpiredClaimsAsync(persistencePath, now)),
+    releaseWorkAsync: (input) => support.runAsync(() => releaseWorkAsync(persistencePath, input)),
     transitionRunAsync: (input) =>
-      serializedCall.runAsync(() => transitionRunAsync(persistencePath, input)),
+      support.runAsync(() => transitionRunAsync(persistencePath, input)),
+    verifyClaimAsync: (input) => support.runAsync(() => verifyClaimAsync(persistencePath, input)),
   };
 };
 
@@ -48,7 +55,7 @@ const cancelRunWorkAsync = async (path: string, runId: string): Promise<readonly
       .map((work) => ({ ...work, lease: undefined, status: 'cancelled' as const }));
     return {
       result: cancelled.map((work) => work.id),
-      store: { ...store, work: replaceWork(store.work, cancelled) },
+      store: { ...store, work: replaceFileFlowWork(store.work, cancelled) },
     };
   });
 
@@ -71,36 +78,6 @@ const createOutboxAsync = async (path: string, record: FlowOutboxRecord): Promis
     };
   });
 
-interface SerializedCall {
-  readonly runAsync: <Result>(operation: () => Promise<Result>) => Promise<Result>;
-}
-
-const serializedCallsByPath = new Map<string, SerializedCall>();
-
-/*** Share serialization for every adapter instance targeting one normalized persistence path. */
-const getSerializedCall = (path: string): SerializedCall => {
-  const existing = serializedCallsByPath.get(path);
-  if (existing !== undefined) return existing;
-  const serializedCall = createSerializedCall();
-  serializedCallsByPath.set(path, serializedCall);
-  return serializedCall;
-};
-
-/*** Serialize one file path so concurrent callbacks cannot claim or overwrite the same state. */
-const createSerializedCall = (): SerializedCall => {
-  let previous = Promise.resolve();
-  return {
-    runAsync: async (operation) => {
-      const current = previous.then(operation, operation);
-      previous = current.then(
-        () => undefined,
-        () => undefined,
-      );
-      return current;
-    },
-  };
-};
-
 /*** Claim due work in stable order and record a lease before it is returned to a worker. */
 const claimDueWorkAsync = async (
   path: string,
@@ -113,13 +90,13 @@ const claimDueWorkAsync = async (
         (left, right) => left.dueAt.localeCompare(right.dueAt) || left.id.localeCompare(right.id),
       )
       .slice(0, input.limit)
-      .map((work, index) => claimWork(work, input, store.nextLeaseFencingToken + index));
+      .map((work, index) => claimFileFlowWork(work, input, store.nextLeaseFencingToken + index));
     return {
       result: claimed,
       store: {
         ...store,
         nextLeaseFencingToken: store.nextLeaseFencingToken + claimed.length,
-        work: replaceWork(store.work, claimed),
+        work: replaceFileFlowWork(store.work, claimed),
       },
     };
   });
@@ -140,28 +117,81 @@ const completeWorkAsync = async (
       return { result: false, store };
     return {
       result: true,
-      store: { ...store, work: replaceWork(store.work, [{ ...work, status: 'completed' }]) },
+      store: {
+        ...store,
+        work: replaceFileFlowWork(store.work, [{ ...work, status: 'completed' }]),
+      },
     };
   });
 
 /*** Persist a new run once, rejecting a duplicate durable identity. */
 const createRunAsync = async (path: string, run: FlowDurableRun): Promise<void> =>
   updateStoreAsync(path, (store) => {
-    if (store.runs.some((candidate) => candidate.id === run.id))
-      throw new Error(`FLOW_RUN_EXISTS:${run.id}`);
-    return { result: undefined, store: { ...store, runs: [...store.runs, copy(run)] } };
+    const existing = store.runs.find((candidate) => candidate.id === run.id);
+    if (existing !== undefined && JSON.stringify(existing) !== JSON.stringify(run))
+      throw new Error(`FLOW_RUN_CONFLICT:${run.id}`);
+    return {
+      result: undefined,
+      store: existing === undefined ? { ...store, runs: [...store.runs, copy(run)] } : store,
+    };
   });
 
 /*** Persist one immutable work identity once, rejecting duplicate delivery records. */
 const enqueueWorkAsync = async (path: string, work: FlowDurableWork): Promise<void> =>
   updateStoreAsync(path, (store) => {
-    if (store.work.some((candidate) => candidate.id === work.id))
-      throw new Error(`FLOW_WORK_EXISTS:${work.id}`);
-    return { result: undefined, store: { ...store, work: [...store.work, copy(work)] } };
+    const existing = store.work.find((candidate) => candidate.id === work.id);
+    if (existing !== undefined && JSON.stringify(existing) !== JSON.stringify(work))
+      throw new Error(`FLOW_WORK_CONFLICT:${work.id}`);
+    return {
+      result: undefined,
+      store: existing === undefined ? { ...store, work: [...store.work, copy(work)] } : store,
+    };
+  });
+
+/** Atomically commit a fenced checkpoint, complete its source lease, and materialize successors. */
+const finalizeWorkAsync = async (
+  path: string,
+  input: Parameters<FlowPersistencePort['finalizeWorkAsync']>[0],
+): Promise<boolean> =>
+  updateStoreAsync(path, (store) => {
+    const work = store.work.find((candidate) => candidate.id === input.workId);
+    const current = store.runs.find((candidate) => candidate.id === input.run.id);
+    if (
+      work?.status !== 'claimed' ||
+      work.lease?.workerId !== input.workerId ||
+      work.lease.fencingToken !== input.leaseFencingToken ||
+      work.lease.expiresAt <= input.now.toISOString() ||
+      current?.revision !== input.expectedRevision ||
+      !sameFlow(current, input.run) ||
+      input.run.revision !== input.expectedRevision + 1
+    )
+      return { result: false, store };
+    const conflicting = input.nextWork.some((next) =>
+      store.work.some((candidate) => candidate.id === next.id && candidate.runId !== next.runId),
+    );
+    if (conflicting) throw new Error('FLOW_WORK_CONFLICT');
+    const newWork = input.nextWork.filter(
+      (next) => !store.work.some((candidate) => candidate.id === next.id),
+    );
+    return {
+      result: true,
+      store: {
+        ...store,
+        runs: replaceFileFlowRuns(store.runs, [copy(input.run)]),
+        work: [
+          ...replaceFileFlowWork(store.work, [{ ...work, lease: undefined, status: 'completed' }]),
+          ...newWork.map(copy),
+        ],
+      },
+    };
   });
 
 /** Mark an effect delivery complete; duplicate marks are harmless and do not rerun the effect. */
-const markOutboxDeliveredAsync = async (path: string, id: string): Promise<boolean> =>
+const markOutboxDeliveredAsync = async (
+  path: string,
+  id: string,
+  result?: FlowDurableEffectResult,
+): Promise<boolean> =>
   updateStoreAsync(path, (store) => {
     const record = store.outbox.find((candidate) => candidate.id === id);
     if (record === undefined) return { result: false, store };
@@ -169,7 +199,9 @@ const markOutboxDeliveredAsync = async (path: string, id: string): Promise<boole
       result: true,
       store: {
         ...store,
-        outbox: replaceOutbox(store.outbox, [{ ...record, status: 'delivered' }]),
+        outbox: replaceFileFlowOutbox(store.outbox, [
+          { ...record, ...(result === undefined ? {} : { result }), status: 'delivered' },
+        ]),
       },
     };
   });
@@ -181,6 +213,10 @@ const readOutboxAsync = async (path: string, id: string): Promise<FlowOutboxReco
 /*** Read a copied run snapshot so callers cannot mutate persisted state in-place. */
 const readRunAsync = async (path: string, id: string): Promise<FlowDurableRun | undefined> =>
   copy((await readStoreAsync(path)).runs.find((run) => run.id === id));
+
+/** Read a copied work snapshot so recovery can resume a torn enqueue without duplicating it. */
+const readWorkAsync = async (path: string, id: string): Promise<FlowDurableWork | undefined> =>
+  copy((await readStoreAsync(path)).work.find((work) => work.id === id));
 
 /*** Make expired claims available for recovery after a worker crash or stop. */
 const recoverExpiredClaimsAsync = async (path: string, now: Date): Promise<readonly string[]> =>
@@ -195,7 +231,7 @@ const recoverExpiredClaimsAsync = async (path: string, now: Date): Promise<reado
       .map((work) => ({ ...work, lease: undefined, status: 'ready' as const }));
     return {
       result: recovered.map((work) => work.id),
-      store: { ...store, work: replaceWork(store.work, recovered) },
+      store: { ...store, work: replaceFileFlowWork(store.work, recovered) },
     };
   });
 
@@ -216,7 +252,7 @@ const releaseWorkAsync = async (
       result: true,
       store: {
         ...store,
-        work: replaceWork(store.work, [
+        work: replaceFileFlowWork(store.work, [
           { ...work, dueAt: input.dueAt, lease: undefined, status: 'ready' },
         ]),
       },
@@ -233,50 +269,26 @@ const transitionRunAsync = async (
     if (!sameFlow(current ?? run, run) || current?.revision !== expectedRevision)
       return { result: false, store };
     if (run.revision !== expectedRevision + 1) throw new Error('FLOW_RUN_REVISION_INVALID');
-    return { result: true, store: { ...store, runs: replaceRuns(store.runs, [copy(run)]) } };
+    return {
+      result: true,
+      store: { ...store, runs: replaceFileFlowRuns(store.runs, [copy(run)]) },
+    };
   });
 
-/*** Build a claimed work record with an explicit bounded lease. */
-const claimWork = (
-  work: FlowDurableWork,
-  input: Parameters<FlowPersistencePort['claimDueWorkAsync']>[0],
-  fencingToken: number,
-): FlowDurableWork => ({
-  ...work,
-  lease: {
-    expiresAt: new Date(input.now.getTime() + input.leaseDurationMs).toISOString(),
-    fencingToken,
-    workerId: input.workerId,
-  },
-  status: 'claimed',
-});
-
-/*** Replace changed work entries by identity without exposing a mutable adapter collection. */
-const replaceWork = (
-  work: readonly FlowDurableWork[],
-  replacements: readonly FlowDurableWork[],
-): readonly FlowDurableWork[] =>
-  work.map(
-    (candidate) => replacements.find((replacement) => replacement.id === candidate.id) ?? candidate,
-  );
-
-/*** Replace changed run entries by identity without exposing a mutable adapter collection. */
-const replaceRuns = (
-  runs: readonly FlowDurableRun[],
-  replacements: readonly FlowDurableRun[],
-): readonly FlowDurableRun[] =>
-  runs.map(
-    (candidate) => replacements.find((replacement) => replacement.id === candidate.id) ?? candidate,
-  );
-
-/** Replace durable outbox records by identity. */
-const replaceOutbox = (
-  records: readonly FlowOutboxRecord[],
-  replacements: readonly FlowOutboxRecord[],
-): readonly FlowOutboxRecord[] =>
-  records.map(
-    (candidate) => replacements.find((replacement) => replacement.id === candidate.id) ?? candidate,
-  );
+/** Verify one unexpired fenced lease immediately before the provider boundary. */
+const verifyClaimAsync = async (
+  path: string,
+  input: Parameters<FlowPersistencePort['verifyClaimAsync']>[0],
+): Promise<boolean> =>
+  updateStoreAsync(path, (store) => {
+    const work = store.work.find((candidate) => candidate.id === input.workId);
+    const valid =
+      work?.status === 'claimed' &&
+      work.lease?.fencingToken === input.leaseFencingToken &&
+      work.lease.workerId === input.workerId &&
+      work.lease.expiresAt > input.now.toISOString();
+    return { result: valid, store };
+  });
 
 /*** Read persisted state or initialize an empty store when it has not yet been created. */
 const readStoreAsync = async (path: string): Promise<FileFlowStore> => {

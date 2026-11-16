@@ -62,6 +62,36 @@ describe('single-process Flow execution', () => {
     });
   });
 
+  test.each([
+    { triggerId: 'manual', kind: 'manual' },
+    { triggerId: 'hook', kind: 'webhook' },
+  ] as const)(
+    'preserves the declared $kind trigger in the exact run snapshot',
+    async ({ triggerId, kind }) => {
+      const definition: FlowDefinition = {
+        edges: [],
+        id: `trigger-${kind}`,
+        nodes: [],
+        title: `Trigger ${kind}`,
+        triggers: [
+          { id: 'manual', kind: 'manual' },
+          { id: 'hook', kind: 'webhook', path: '/hook' },
+        ],
+        version: 1,
+      };
+      const result = await executeFlowAsync(
+        compileFlowGraph(definition, {}),
+        {},
+        {
+          runId: `run-${kind}`,
+          triggerId,
+        },
+      );
+
+      expect(result.run.trigger).toEqual({ kind, triggerId });
+    },
+  );
+
   test('rejects invalid graphs before an operation can run', () => {
     const cyclic = {
       ...branchingDefinition,
@@ -144,6 +174,7 @@ describe('single-process Flow execution', () => {
     };
     const bad = {
       'test:bad': {
+        effect: { kind: 'internal' as const },
         executeAsync: async () => ({
           output: { count: { kind: 'inline' as const, value: 'wrong' } },
         }),
@@ -176,6 +207,7 @@ describe('single-process Flow execution', () => {
     };
     const operations = {
       'test:emit': {
+        effect: { kind: 'internal' as const },
         executeAsync: async () => ({
           output: { value: { kind: 'inline' as const, value: { name: 'Ada', tags: ['flow'] } } },
         }),
@@ -221,6 +253,7 @@ describe('single-process Flow execution', () => {
     };
     const operations = {
       'test:invalid-nested': {
+        effect: { kind: 'internal' as const },
         executeAsync: async () => ({
           output: { value: { kind: 'inline' as const, value: { name: 'Ada', tags: [1] } } },
         }),
@@ -264,6 +297,7 @@ describe('single-process Flow execution', () => {
     };
     const operations = {
       'test:emit': {
+        effect: { kind: 'internal' as const },
         executeAsync: async () => ({
           output: { value: { kind: 'inline' as const, value: 'value' } },
         }),
@@ -320,6 +354,7 @@ describe('single-process Flow execution', () => {
     };
     const operations = {
       'test:emit': {
+        effect: { kind: 'internal' as const },
         executeAsync: async () => {
           calls.push('emit');
           return { output: {} };
@@ -375,6 +410,7 @@ describe('single-process Flow execution', () => {
     };
     const operations = {
       'test:input': {
+        effect: { kind: 'internal' as const },
         executeAsync: async () => {
           calls.push('input');
           return { output: {} };
@@ -478,24 +514,29 @@ describe('single-process Flow execution', () => {
     };
     const operations = {
       'test:required': {
+        effect: { kind: 'internal' as const },
         executeAsync: async () => ({ output: { value: { kind: 'inline' as const, value: {} } } }),
       },
       'test:nested': {
+        effect: { kind: 'internal' as const },
         executeAsync: async () => ({
           output: { value: { kind: 'inline' as const, value: { person: {} } } },
         }),
       },
       'test:additional': {
+        effect: { kind: 'internal' as const },
         executeAsync: async () => ({
           output: { value: { kind: 'inline' as const, value: { extra: true } } },
         }),
       },
       'test:array': {
+        effect: { kind: 'internal' as const },
         executeAsync: async () => ({
           output: { value: { kind: 'inline' as const, value: [1, 'two'] } },
         }),
       },
       'test:composed': {
+        effect: { kind: 'internal' as const },
         executeAsync: async () => ({
           output: { value: { kind: 'inline' as const, value: 'nope' } },
         }),
@@ -535,12 +576,16 @@ describe('single-process Flow execution', () => {
     };
     const operations = {
       'test:first': {
+        effect: { kind: 'internal' as const },
         executeAsync: async () => {
           calls.push('first');
           return { output: {} };
         },
       },
-      'test:invalid': { executeAsync: async () => ({ output: {} }) },
+      'test:invalid': {
+        effect: { kind: 'internal' as const },
+        executeAsync: async () => ({ output: {} }),
+      },
     };
     await expect(
       executeFlowAsync(
@@ -594,11 +639,13 @@ describe('single-process Flow execution', () => {
     };
     const operations = {
       'test:fail': {
+        effect: { kind: 'internal' as const },
         executeAsync: async () => {
           throw new Error('FLOW_OPERATION_FAILED: secret');
         },
       },
       'test:recover': {
+        effect: { kind: 'internal' as const },
         executeAsync: async () => {
           calls.push('recover');
           return {};
@@ -638,6 +685,7 @@ describe('single-process Flow execution', () => {
     };
     const operations = {
       'test:secret': {
+        effect: { kind: 'internal' as const },
         executeAsync: async () => {
           throw new Error('credential top-secret-value');
         },
@@ -671,7 +719,12 @@ describe('single-process Flow execution', () => {
         },
       ],
     };
-    const operations = { 'test:empty': { executeAsync: async () => ({ output: {} }) } };
+    const operations = {
+      'test:empty': {
+        effect: { kind: 'internal' as const },
+        executeAsync: async () => ({ output: {} }),
+      },
+    };
     const result = await executeFlowAsync(
       compileFlowGraph(definition, operations),
       operations,
@@ -696,7 +749,12 @@ describe('single-process Flow execution', () => {
         },
       ],
     };
-    const operations = { 'test:required-input': { executeAsync: async () => ({ output: {} }) } };
+    const operations = {
+      'test:required-input': {
+        effect: { kind: 'internal' as const },
+        executeAsync: async () => ({ output: {} }),
+      },
+    };
     const result = await executeFlowAsync(
       compileFlowGraph(definition, operations),
       operations,
@@ -720,6 +778,7 @@ describe('single-process Flow execution', () => {
     };
     const operations = {
       'test:cancel': {
+        effect: { kind: 'internal' as const },
         executeAsync: async () => {
           controller.abort();
           return {};

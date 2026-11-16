@@ -1,7 +1,5 @@
-import type { DataContractValue } from '@ankhorage/contracts/data';
 import type {
   FlowDataRef,
-  FlowEdge,
   FlowError,
   FlowNode,
   FlowPortId,
@@ -17,8 +15,8 @@ import type {
   FlowRunRequest,
 } from '../../../types/execution.js';
 import { assertFlowGraphSchemasSupported } from '../domain/assertFlowGraphSchemasSupported.js';
+import { planFlowNodeInput } from '../domain/planFlowNodeInput.js';
 import { validateFlowDataSchema } from '../domain/validateFlowDataSchema.js';
-
 /*** Execute a compiled graph in deterministic order within one process. */
 export const executeFlowAsync = async (
   graph: FlowCompiledGraph,
@@ -27,7 +25,8 @@ export const executeFlowAsync = async (
   clock: FlowClock = { now: () => new Date() },
 ): Promise<FlowExecutionResult> => {
   const trigger = graph.definition.triggers.find(({ id }) => id === request.triggerId);
-  if (trigger?.kind !== 'manual') throw new Error('FLOW_TRIGGER_NOT_MANUAL');
+  if (trigger?.kind !== 'manual' && trigger?.kind !== 'webhook')
+    throw new Error('FLOW_TRIGGER_NOT_EXECUTABLE');
   assertFlowGraphSchemasSupported(graph.definition.nodes, request.schemaRegistry);
   const startedAt = clock.now().toISOString();
   const state = await executeNodesAsync(graph, registry, request, clock);
@@ -40,6 +39,7 @@ export const executeFlowAsync = async (
       clock.now().toISOString(),
       state.status ?? 'succeeded',
       state.error,
+      trigger.kind,
     ),
   };
 };
@@ -51,44 +51,29 @@ const executeNodesAsync = async (
   request: FlowRunRequest,
   clock: FlowClock,
 ): Promise<ExecutionState> => {
-  const state: ExecutionState = {
-    activatedNodeIds: new Set(
-      graph.topologicalNodeIds.filter(
-        (nodeId) => !graph.definition.edges.some((edge) => edge.target.nodeId === nodeId),
-      ),
-    ),
-    inputs: {},
-    steps: [],
-  };
+  const state: ExecutionState = { steps: [] };
   for (const nodeId of graph.topologicalNodeIds) {
     if (request.signal?.aborted) return { ...state, status: 'cancelled' };
     const node = graph.definition.nodes.find((candidate) => candidate.id === nodeId);
     if (!node) throw new Error(`FLOW_GRAPH_UNKNOWN_NODE:${nodeId}`);
-    const result = await executeAvailableNodeAsync(node, state, registry, request, clock);
+    const result = await executeAvailableNodeAsync(graph, node, state, registry, request, clock);
     if (!result) continue;
     state.steps.push(result.step);
     if (result.step.status === 'cancelled') return { ...state, status: 'cancelled' };
-    propagateOutput(
-      graph.edgesBySourceNodeId[node.id] ?? [],
-      result.output,
-      result.step.status === 'failed' ? 'failure' : 'success',
-      state,
-    );
   }
   const failedStep = state.steps.find((step) => step.status === 'failed');
   return { ...state, status: failedStep ? 'failed' : 'succeeded', error: failedStep?.error };
 };
 
 interface ExecutionState {
-  readonly activatedNodeIds: Set<string>;
   readonly error?: FlowError;
-  readonly inputs: Record<string, Record<FlowPortId, FlowDataRef>>;
   readonly status?: FlowRunSnapshot['status'];
   readonly steps: FlowStepSnapshot[];
 }
 
 /*** Execute one node only when all of its required inputs were propagated. */
 const executeAvailableNodeAsync = async (
+  graph: FlowCompiledGraph,
   node: FlowNode,
   state: ExecutionState,
   registry: FlowNodeRegistry,
@@ -98,26 +83,25 @@ const executeAvailableNodeAsync = async (
   | { readonly output: Readonly<Record<FlowPortId, FlowDataRef>>; readonly step: FlowStepSnapshot }
   | undefined
 > => {
-  if (!state.activatedNodeIds.has(node.id)) return undefined;
-  const input = state.inputs[node.id] ?? request.input ?? {};
-  if (!hasRequiredInput(node, input)) return undefined;
-  return executeNodeAsync(node, input, registry, request.signal, clock, request.schemaRegistry);
+  const plan = planFlowNodeInput(graph, node.id, state.steps, request.input);
+  if (plan.status !== 'ready') return undefined;
+  return executeNodeAsync(
+    node,
+    plan.input,
+    registry,
+    request.effectIdentity ?? { idempotencyKey: `${request.runId}:step:${node.id}` },
+    request.signal,
+    clock,
+    request.schemaRegistry,
+  );
 };
-
-/*** Determine whether every required input port has a propagated value. */
-const hasRequiredInput = (
-  node: FlowNode,
-  input: Readonly<Record<FlowPortId, FlowDataRef>>,
-): boolean =>
-  node.ports
-    .filter((port) => port.direction === 'input' && port.required)
-    .every((port) => input[port.id] !== undefined);
 
 /*** Execute one node and convert failures to redaction-safe contract errors. */
 const executeNodeAsync = async (
   node: FlowNode,
   input: Readonly<Record<FlowPortId, FlowDataRef>>,
   registry: FlowNodeRegistry,
+  effect: { readonly idempotencyKey: string },
   signal: AbortSignal | undefined,
   clock: FlowClock,
   schemas: FlowRunRequest['schemaRegistry'],
@@ -135,6 +119,7 @@ const executeNodeAsync = async (
       (
         await operation.executeAsync({
           config: node.config,
+          effect,
           input,
           node,
           signal: signal ?? new AbortController().signal,
@@ -229,83 +214,6 @@ const assertPortSchemas = (
   }
 };
 
-/*** Propagate outputs only over edges whose declared condition matches the output value. */
-const propagateOutput = (
-  edges: readonly FlowEdge[],
-  output: Readonly<Record<FlowPortId, FlowDataRef>>,
-  outcome: 'failure' | 'success',
-  state: ExecutionState,
-): void => {
-  for (const edge of edges) {
-    const value = output[edge.source.portId];
-    if (!matchesEdge(edge, value, outcome)) continue;
-    state.activatedNodeIds.add(edge.target.nodeId);
-    if (value)
-      state.inputs[edge.target.nodeId] = {
-        ...state.inputs[edge.target.nodeId],
-        [edge.target.portId]: value,
-      };
-  }
-};
-
-/*** Evaluate an edge condition without executing arbitrary expressions. */
-const matchesEdge = (
-  edge: FlowEdge,
-  value: FlowDataRef | undefined,
-  outcome: 'failure' | 'success',
-): boolean => {
-  const condition = edge.condition ?? { kind: 'always' as const };
-  if (condition.kind === 'always') return outcome === 'success';
-  if (condition.kind === 'outcome') return condition.outcome === outcome;
-  if (value?.kind !== 'inline') return false;
-  const selected = resolvePointer(value.value, condition.path);
-  return selected !== undefined && structurallyEqual(selected, condition.equals);
-};
-
-/*** Resolve an RFC 6901 pointer against serializable inline data. */
-const resolvePointer = (
-  value: DataContractValue,
-  pointer: string,
-): DataContractValue | undefined => {
-  if (pointer === '') return value;
-  if (!pointer.startsWith('/')) return undefined;
-  return pointer
-    .slice(1)
-    .split('/')
-    .reduce<DataContractValue | undefined>((current, segment) => {
-      if (current === undefined || current === null || typeof current !== 'object')
-        return undefined;
-      const key = segment.replaceAll('~1', '/').replaceAll('~0', '~');
-      if (isDataArray(current)) return current.find((_item, index) => index === Number(key));
-      return isDataRecord(current)
-        ? Object.entries(current).find(([candidateKey]) => candidateKey === key)?.[1]
-        : undefined;
-    }, value);
-};
-
-/*** Compare JSON-compatible values with object-key-order independence. */
-const structurallyEqual = (left: DataContractValue, right: DataContractValue): boolean =>
-  JSON.stringify(normalizeValue(left)) === JSON.stringify(normalizeValue(right));
-
-/*** Canonicalize object member ordering for structural equality. */
-const normalizeValue = (value: DataContractValue): DataContractValue => {
-  if (Array.isArray(value)) return value.map(normalizeValue);
-  if (value !== null && typeof value === 'object')
-    return Object.fromEntries(
-      Object.entries(value)
-        .sort(([left], [right]) => left.localeCompare(right))
-        .map(([key, item]) => [key, normalizeValue(item)]),
-    );
-  return value;
-};
-
-/*** Narrow a serializable non-array object to an indexable data record. */
-const isDataRecord = (value: object): value is Readonly<Record<string, DataContractValue>> =>
-  !Array.isArray(value);
-
-/*** Narrow a serializable array without losing its element type. */
-const isDataArray = (value: object): value is readonly DataContractValue[] => Array.isArray(value);
-
 /*** Translate host failures to structured contract errors without exposing arbitrary objects. */
 const asFlowError = (reason: unknown): FlowError => ({
   code:
@@ -324,15 +232,19 @@ const createRun = (
   startedAt: string,
   completedAt: string,
   status: FlowRunSnapshot['status'],
-  error?: FlowError,
+  error: FlowError | undefined,
+  triggerKind: 'manual' | 'webhook',
 ): FlowRunSnapshot => ({
   id: request.runId,
   flow: { id: graph.definition.id, version: graph.definition.version },
   status,
-  trigger: { triggerId: request.triggerId, kind: 'manual' },
+  trigger: {
+    triggerId: request.triggerId,
+    kind: triggerKind,
+  },
   createdAt: startedAt,
   startedAt,
   completedAt,
   steps,
-  error,
+  ...(error === undefined ? {} : { error }),
 });
