@@ -13,3 +13,9 @@ export type {
   SocialPublication,
   SocialPublishRequest,
 } from './types/social.js';
+export type {
+  FlowApiOperationDescriptor,
+  FlowApiOperationOwner,
+  FlowApiOperationOwnerOptions,
+} from '@ankhorage/data-sources';
+export { createFlowApiOperationOwner } from '@ankhorage/data-sources';

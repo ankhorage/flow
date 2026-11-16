@@ -15,13 +15,21 @@ import { executeSocialOauthAsync } from './executeSocialOauthAsync.js';
 export const createSocialNodeRegistry = (
   dependencies: SocialNodeRegistryDependencies,
 ): FlowNodeRegistry => ({
-  'social:analytics': { executeAsync: executeAnalyticsAsync(dependencies) },
-  'social:publish': { executeAsync: executePublishAsync(dependencies) },
+  'social:analytics': {
+    effect: socialOperationEffect,
+    executeAsync: executeAnalyticsAsync(dependencies),
+  },
+  'social:publish': {
+    effect: socialOperationEffect,
+    executeAsync: executePublishAsync(dependencies),
+  },
   'social:oauth-renew': {
-    executeAsync: async ({ config, node }) => {
+    effect: socialOperationEffect,
+    executeAsync: async ({ config, effect, node }) => {
       await executeSocialOauthAsync({
         capability: 'oauth:renew',
         dependencies,
+        effect,
         nodeId: node.id,
         request: readSocialConfig(config),
       });
@@ -29,10 +37,12 @@ export const createSocialNodeRegistry = (
     },
   },
   'social:oauth-revoke': {
-    executeAsync: async ({ config, node }) => {
+    effect: socialOperationEffect,
+    executeAsync: async ({ config, effect, node }) => {
       await executeSocialOauthAsync({
         capability: 'oauth:revoke',
         dependencies,
+        effect,
         nodeId: node.id,
         request: readSocialConfig(config),
       });
@@ -41,18 +51,21 @@ export const createSocialNodeRegistry = (
   },
 });
 
+/** Social operations own their mandatory authorization permit inside the registry boundary. */
+const socialOperationEffect = { kind: 'internal' } as const;
+
 /** Build the protected publishing operation, including media validation and future scheduling. */
 const executePublishAsync =
   (dependencies: SocialNodeRegistryDependencies): FlowNodeOperation['executeAsync'] =>
-  async ({ config, input, node, signal }) => {
+  async ({ config, effect, input, node, signal }) => {
     const request = readPublishConfig(config, input);
     const provider = providerOf(dependencies.providers, request.platform);
     assertCapability(provider, request.platform, request.scheduledAt ? 'schedule' : 'publish');
     const permit = await dependencies.security.authorizeAsync({
       actor: dependencies.actor,
       capability: `social:${request.platform}:${request.scheduledAt ? 'schedule' : 'publish'}`,
-      idempotencyKey: request.idempotencyKey,
-      operationId: `social:${node.id}:${request.idempotencyKey}`,
+      idempotencyKey: effect.idempotencyKey,
+      operationId: `social:${node.id}:${effect.idempotencyKey}`,
       secretRefs: [request.credentialRef],
       target: {
         allowedHosts: provider.allowedHosts,
@@ -72,7 +85,7 @@ const executePublishAsync =
         outboundTransport: dependencies.outboundTransport,
         request: {
           accountId: request.accountId,
-          idempotencyKey: request.idempotencyKey,
+          idempotencyKey: effect.idempotencyKey,
           media: request.media,
           ...(request.scheduledAt ? { scheduledAt: request.scheduledAt } : {}),
           text: request.text,
@@ -86,15 +99,15 @@ const executePublishAsync =
 /** Build the protected analytics operation with source and account provenance intact. */
 const executeAnalyticsAsync =
   (dependencies: SocialNodeRegistryDependencies): FlowNodeOperation['executeAsync'] =>
-  async ({ config, node, signal }) => {
+  async ({ config, effect, node, signal }) => {
     const request = readAnalyticsConfig(config);
     const provider = providerOf(dependencies.providers, request.platform);
     assertCapability(provider, request.platform, 'analytics:read');
     const permit = await dependencies.security.authorizeAsync({
       actor: dependencies.actor,
       capability: `social:${request.platform}:analytics:read`,
-      idempotencyKey: request.idempotencyKey,
-      operationId: `social:${node.id}:${request.idempotencyKey}`,
+      idempotencyKey: effect.idempotencyKey,
+      operationId: `social:${node.id}:${effect.idempotencyKey}`,
       secretRefs: [request.credentialRef],
       target: {
         allowedHosts: provider.allowedHosts,
@@ -122,7 +135,6 @@ interface SocialConfig {
   readonly accountId: string;
   readonly accountType: string;
   readonly credentialRef: string;
-  readonly idempotencyKey: string;
   readonly platform: SocialPlatform;
 }
 
@@ -131,7 +143,6 @@ const readSocialConfig = (config: FlowNodeConfig | undefined): SocialConfig => (
   accountId: stringConfig(config, 'accountId'),
   accountType: stringConfig(config, 'accountType'),
   credentialRef: secretConfig(config, 'credential'),
-  idempotencyKey: stringConfig(config, 'idempotencyKey'),
   platform: platformConfig(config),
 });
 
@@ -264,7 +275,6 @@ type SocialConfigKey =
   | 'accountId'
   | 'accountType'
   | 'credential'
-  | 'idempotencyKey'
   | 'platform'
   | 'platformPostId'
   | 'scheduledAt'
@@ -282,8 +292,6 @@ const configValue = (
       return config?.accountType;
     case 'credential':
       return config?.credential;
-    case 'idempotencyKey':
-      return config?.idempotencyKey;
     case 'platform':
       return config?.platform;
     case 'platformPostId':

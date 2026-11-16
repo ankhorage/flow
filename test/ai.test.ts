@@ -49,6 +49,9 @@ const security = (permitted = true): FlowSecurityPort => ({
   revokeSecretAsync: async () => {
     throw new Error('unused');
   },
+  replaceSecretAsync: async () => {
+    throw new Error('unused');
+  },
 });
 
 const input = (

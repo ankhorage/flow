@@ -1,3 +1,4 @@
+import type { FlowNodeEffectIdentity } from '../../../types/execution.js';
 import type {
   SocialCapability,
   SocialNodeRegistryDependencies,
@@ -10,24 +11,24 @@ import { validateSocialAuthorization } from '../domain/validateSocialAuthorizati
 export const executeSocialOauthAsync = async (input: {
   readonly capability: Extract<SocialCapability, 'oauth:renew' | 'oauth:revoke'>;
   readonly dependencies: SocialNodeRegistryDependencies;
+  readonly effect: FlowNodeEffectIdentity;
   readonly nodeId: string;
   readonly request: {
     readonly accountId: string;
     readonly accountType: string;
     readonly credentialRef: string;
-    readonly idempotencyKey: string;
     readonly platform: SocialPlatform;
   };
 }): Promise<void> => {
-  const { capability, dependencies, nodeId, request } = input;
+  const { capability, dependencies, effect, nodeId, request } = input;
   const provider = providerOf(dependencies.providers, request.platform);
   if (!provider.allowedCapabilities.includes(capability))
     throw new Error(`SOCIAL_CAPABILITY_UNSUPPORTED:${request.platform}:${capability}`);
   const permit = await dependencies.security.authorizeAsync({
     actor: dependencies.actor,
     capability: `social:${request.platform}:${capability}`,
-    idempotencyKey: request.idempotencyKey,
-    operationId: `social:${nodeId}:${request.idempotencyKey}`,
+    idempotencyKey: effect.idempotencyKey,
+    operationId: `social:${nodeId}:${effect.idempotencyKey}`,
     secretRefs: [request.credentialRef],
     target: { allowedHosts: provider.allowedHosts, url: provider.endpoint },
   });

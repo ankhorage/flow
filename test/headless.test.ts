@@ -647,6 +647,9 @@ const permittedSecurity = (): FlowSecurityPort => ({
   revokeSecretAsync: async () => {
     throw new Error('FLOW_TEST_SECRET_UNUSED');
   },
+  replaceSecretAsync: async () => {
+    throw new Error('FLOW_TEST_SECRET_UNUSED');
+  },
 });
 
 /** Supply representative diamond, failure, and key-order-independent conditional graph fixtures. */

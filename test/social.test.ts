@@ -62,18 +62,21 @@ test('executes the approved Draft to Scheduled to Posted to Analytics mock-provi
   if (!publish || !analytics) throw new Error('Expected social operations.');
   await publish.executeAsync({
     config: config({ scheduledAt: '2026-11-14T10:00:00.000Z' }),
+    effect: { idempotencyKey: 'schedule-1' },
     input: { media: { artifactId: 'asset-1', kind: 'artifact', mediaType: 'image/jpeg' } },
     node: node('schedule'),
     signal: new AbortController().signal,
   });
   await publish.executeAsync({
     config: config(),
+    effect: { idempotencyKey: 'publish-1' },
     input: { media: { artifactId: 'asset-1', kind: 'artifact', mediaType: 'image/jpeg' } },
     node: node('post'),
     signal: new AbortController().signal,
   });
   const result = await analytics.executeAsync({
     config: config({ platformPostId: 'post-1' }),
+    effect: { idempotencyKey: 'analytics-1' },
     input: {},
     node: node('analytics'),
     signal: new AbortController().signal,
@@ -110,7 +113,6 @@ const config = (extra: Readonly<Record<string, string>> = {}) => ({
   accountId: { kind: 'inline' as const, value: 'page-1' },
   accountType: { kind: 'inline' as const, value: 'page' },
   credential: { kind: 'secret' as const, ref: 'oauth-ref' },
-  idempotencyKey: { kind: 'inline' as const, value: 'publish-1' },
   platform: { kind: 'inline' as const, value: 'meta-facebook' },
   text: { kind: 'inline' as const, value: 'hello' },
   ...Object.fromEntries(
@@ -232,13 +234,15 @@ test('renews and revokes only through the server-owned secret boundary without r
   const revoke = fixture.registry['social:oauth-revoke'];
   if (!renew || !revoke) throw new Error('Expected lifecycle operations.');
   const renewal = await renew.executeAsync({
-    config: config({ idempotencyKey: 'renew-1' }),
+    config: config(),
+    effect: { idempotencyKey: 'renew-1' },
     input: {},
     node: node('renew'),
     signal: new AbortController().signal,
   });
   const revocation = await revoke.executeAsync({
-    config: config({ idempotencyKey: 'revoke-1' }),
+    config: config(),
+    effect: { idempotencyKey: 'revoke-1' },
     input: {},
     node: node('revoke'),
     signal: new AbortController().signal,
@@ -377,6 +381,7 @@ const publishAsync = async (registry: ReturnType<typeof createSocialNodeRegistry
   if (!publish) throw new Error('Expected a publishing operation.');
   return publish.executeAsync({
     config: config(),
+    effect: { idempotencyKey: 'publish-1' },
     input: { media: { artifactId: 'asset-1', kind: 'artifact', mediaType: 'image/jpeg' } },
     node: node('publish'),
     signal: new AbortController().signal,

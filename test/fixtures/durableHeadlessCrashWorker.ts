@@ -125,6 +125,9 @@ const runtime = createFlowRuntime({
     revokeSecretAsync: async () => {
       throw new Error('FLOW_TEST_SECRET_UNUSED');
     },
+    replaceSecretAsync: async () => {
+      throw new Error('FLOW_TEST_SECRET_UNUSED');
+    },
   },
   store: FileFlowRuntimeStore(input.runtimePath),
 });
