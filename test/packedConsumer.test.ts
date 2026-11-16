@@ -32,12 +32,15 @@ const writeConsumerFiles = (consumerDirectory: string): void => {
     join(consumerDirectory, 'consumer.mjs'),
     [
       "import { createFlowSecurityPort } from '@ankhorage/flow';",
-      "import '@ankhorage/flow/ai';",
+      "import { executeAiNodeAsync } from '@ankhorage/flow/ai';",
       "import '@ankhorage/flow/execution';",
-      "import { createMcpToolRegistry } from '@ankhorage/flow/mcp';",
+      "import { createMcpAgentToolAdapter, createMcpToolRegistry } from '@ankhorage/flow/mcp';",
       "import '@ankhorage/flow/social';",
       "import '@ankhorage/contracts/flow';",
       "const registry = createMcpToolRegistry({ providers: [{ id: 'provider', transport: 'stdio', allowedTools: [{ name: 'safe_echo', grantedScopes: ['tools:invoke'] }], grantedScopes: ['tools:invoke'] }] });",
+      'const security = { authorizeAsync: async (operation) => ({ operation: { ...operation, secretRefs: operation.secretRefs ?? [] }, executeAsync: async (callback) => callback({}) }) };',
+      "const result = await executeAiNodeAsync(security, { budget: { maxCostMicros: 1, maxOutputTokens: 1 }, input: { context: {}, prompt: 'test', settings: { provider: 'fake', model: 'fake' } }, model: { streamAsync: async function* () { yield { type: 'output', value: { answer: 'packed' } }; } }, output: { parse: (value) => value }, security: { actor: { id: 'a', tenantId: 't', projectId: 'p', environment: 'test' }, idempotencyKey: 'key', operationId: 'operation', secretRefs: [] }, timeoutMs: 1000 });",
+      "if (result.output.answer !== 'packed') throw new Error('Expected packed AI consumer to run with its fake provider.');",
       "await registry.discoverAsync().then(() => { throw new Error('Expected MCP discovery to fail.'); }, (error) => { if (!(error instanceof Error) || !error.message.includes(process.env.FLOW_MCP_ERROR ?? '')) throw error; });",
     ].join('\n'),
   );
@@ -45,16 +48,19 @@ const writeConsumerFiles = (consumerDirectory: string): void => {
     join(consumerDirectory, 'consumer.ts'),
     [
       "import { createFlowSecurityPort } from '@ankhorage/flow';",
-      "import '@ankhorage/flow/ai';",
+      "import type { FlowAiModelPort } from '@ankhorage/flow/ai';",
       "import '@ankhorage/flow/execution';",
-      "import { createMcpToolRegistry } from '@ankhorage/flow/mcp';",
+      "import { createMcpAgentToolAdapter, createMcpToolRegistry } from '@ankhorage/flow/mcp';",
       "import '@ankhorage/flow/social';",
       "import '@ankhorage/contracts/flow';",
       "import type { FlowDefinition } from '@ankhorage/contracts/flow';",
       "const definition: FlowDefinition = { id: 'consumer-flow', version: 1, title: 'Consumer flow', nodes: [], edges: [], triggers: [{ id: 'manual', kind: 'manual' }] };",
       'void definition;',
       'void createFlowSecurityPort;',
+      "const fakeModel: FlowAiModelPort = { streamAsync: async function* () { yield { type: 'output', value: { answer: 'typed' } }; } };",
+      'void fakeModel;',
       'void createMcpToolRegistry;',
+      'void createMcpAgentToolAdapter;',
     ].join('\n'),
   );
   writeFileSync(
@@ -62,19 +68,26 @@ const writeConsumerFiles = (consumerDirectory: string): void => {
     [
       "import { Server } from '@modelcontextprotocol/sdk/server/index.js';",
       "import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';",
-      "import { ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';",
+      "import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';",
       "const server = new Server({ name: 'packed-flow-test', version: '1.0.0' }, { capabilities: { tools: {} } });",
       "server.setRequestHandler(ListToolsRequestSchema, () => ({ tools: [{ name: 'safe_echo', inputSchema: { type: 'object', properties: {}, additionalProperties: false } }] }));",
+      "server.setRequestHandler(CallToolRequestSchema, () => ({ content: [{ type: 'text', text: 'packed' }] }));",
       'await server.connect(new StdioServerTransport());',
     ].join('\n'),
   );
   writeFileSync(
     join(consumerDirectory, 'consumer-with-sdk.mjs'),
     [
-      "import { createMcpToolRegistry } from '@ankhorage/flow/mcp';",
-      "const registry = createMcpToolRegistry({ providers: [{ id: 'provider', transport: 'stdio', allowedTools: [{ name: 'safe_echo', grantedScopes: ['tools:invoke'] }], grantedScopes: ['tools:invoke'] }], trustedStdioProviders: { provider: { command: process.execPath, args: [new URL('./mcp-server.mjs', import.meta.url).pathname] } } });",
+      "import { createFlowSecurityPort } from '@ankhorage/flow';",
+      "import { executeBoundedAgentAsync } from '@ankhorage/flow/ai';",
+      "import { createMcpAgentToolAdapter, createMcpToolRegistry } from '@ankhorage/flow/mcp';",
+      "const actor = { id: 'operator', tenantId: 'tenant-a', projectId: 'project-a', environment: 'test' };",
+      "const claimed = new Set(); const consumed = new Set(); const security = createFlowSecurityPort({ approvalStore: { getAsync: async (operation) => ({ operation, status: 'approved' }) }, audit: { writeAsync: async () => undefined }, grants: [{ ...actor, actorId: actor.id, capability: 'ai:tool:provider:safe_echo' }, { ...actor, actorId: actor.id, capability: 'mcp:provider:safe_echo' }], operationStore: { claimAsync: async (operation) => { if (claimed.has(operation.idempotencyKey)) return false; claimed.add(operation.idempotencyKey); return true; }, consumeAsync: async (operation) => { if (!claimed.has(operation.idempotencyKey) || consumed.has(operation.idempotencyKey)) return false; consumed.add(operation.idempotencyKey); return true; }, releaseAsync: async (operation) => { if (!consumed.has(operation.idempotencyKey)) claimed.delete(operation.idempotencyKey); } }, rateLimit: { acquireAsync: async () => true }, secretStore: { create: async () => ({ ok: false, error: { code: 'unavailable', message: 'unused' } }), getMetadata: async () => ({ ok: false, error: { code: 'not_found', message: 'unused' } }), list: async () => ({ ok: true, data: [] }), remove: async () => ({ ok: true }), replace: async () => ({ ok: false, error: { code: 'unavailable', message: 'unused' } }), resolve: async () => ({ ok: true, data: {} }) } });",
+      "const registry = createMcpToolRegistry({ providers: [{ id: 'provider', transport: 'stdio', allowedTools: [{ name: 'safe_echo', grantedScopes: ['tools:invoke'] }], grantedScopes: ['tools:invoke'] }], security, trustedStdioProviders: { provider: { command: process.execPath, args: [new URL('./mcp-server.mjs', import.meta.url).pathname] } } });",
       'const tools = await registry.discoverAsync();',
       "if (tools.length !== 1 || tools[0]?.name !== 'safe_echo') throw new Error('Expected packed MCP discovery to succeed.');",
+      "const tool = tools[0]; if (!tool) throw new Error('Expected the packed tool metadata.'); const adapter = createMcpAgentToolAdapter({ registry, tool }); let step = 0; const result = await executeBoundedAgentAsync({ allowedTools: [adapter.name], maxSteps: 3, output: { parse: (value) => value }, planner: { nextAsync: async () => [{ type: 'tool', name: adapter.name, arguments: {} }, { type: 'tool', name: adapter.name, arguments: {} }, { type: 'final', output: { answer: 'packed' } }][step++] }, security: { actor, idempotencyKey: 'packed-agent', operationId: 'packed-agent', secretRefs: [] }, securityPort: security, tools: [adapter] });",
+      "if (result.answer !== 'packed' || claimed.size !== 4 || consumed.size !== 4) throw new Error('Expected two persistently claimed and consumed packed AI-to-MCP calls.');",
     ].join('\n'),
   );
 };

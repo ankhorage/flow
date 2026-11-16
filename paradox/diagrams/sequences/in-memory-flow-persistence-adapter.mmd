@@ -1,0 +1,5 @@
+sequenceDiagram
+  participant participant_createState as createState
+  participant participant_InMemoryFlowPersistenceAdapter as InMemoryFlowPersistenceAdapter
+  participant_InMemoryFlowPersistenceAdapter->>participant_createState: createState()
+  participant_createState-->>participant_InMemoryFlowPersistenceAdapter: return

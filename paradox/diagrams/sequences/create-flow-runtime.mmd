@@ -1,0 +1,5 @@
+sequenceDiagram
+  participant participant_createFlowRuntime as createFlowRuntime
+  participant participant_createHeadlessRunControl as createHeadlessRunControl
+  participant_createFlowRuntime->>participant_createHeadlessRunControl: createHeadlessRunControl()
+  participant_createHeadlessRunControl-->>participant_createFlowRuntime: return

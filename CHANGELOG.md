@@ -1,5 +1,30 @@
 # @ankhorage/flow
 
+## 0.7.0
+
+### Minor Changes
+
+- 32dddec: Add the versioned headless workflow runtime, authenticated HTTP/OpenAPI adapter, standalone worker server, event stream, and Ankh provider discovery.
+
+## 0.6.2
+
+### Patch Changes
+
+- 9deb25f: Add canonical repository metadata for package discovery and documentation.
+
+## 0.6.1
+
+### Patch Changes
+
+- f32b474: Normalize untrusted MCP transport and provider failures to stable redaction-safe errors while
+  proving approved STDIO and remote tool invocation in isolated consumers.
+
+## 0.6.0
+
+### Minor Changes
+
+- df1785f: Add provider-neutral typed AI execution with secure BYOK, streaming telemetry, budgets, retries, cancellation, and bounded agent tools.
+
 ## 0.5.0
 
 ### Minor Changes

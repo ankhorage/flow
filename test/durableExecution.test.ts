@@ -461,7 +461,7 @@ describe('durable execution state', () => {
       expect(results.flatMap((result) => result.claimedWorkIds)).toEqual([
         'duplicate-run:attempt:1',
       ]);
-      expect(providerKeys).toEqual(['duplicate-run:attempt:1']);
+      expect(providerKeys).toEqual(['duplicate-run:step:step-1']);
       expect(
         (await persistence.readRunAsync('duplicate-run'))?.checkpoint?.completedStepIds,
       ).toEqual(['step-1']);
@@ -497,9 +497,7 @@ describe('durable execution state', () => {
             throw new Error('provider must reconcile instead of redelivering');
           },
           reconcileAsync: async ({ idempotencyKey }) =>
-            (await readFile(providerLog, 'utf8')).includes(`${idempotencyKey}\n`)
-              ? 'delivered'
-              : 'unknown',
+            (await readFile(providerLog, 'utf8')).includes(`${idempotencyKey}\n`) ? {} : 'unknown',
         },
         createWorkerSecurity({ status: 'approved' }),
       );
@@ -640,6 +638,7 @@ const workOf = (runId: string, id: string, dueAt: Date): FlowDurableWork => ({
   effectKind: 'internal',
   flow,
   id,
+  idempotencyKey: `${runId}:step:step-1`,
   runId,
   status: 'ready',
   stepId: 'step-1',
@@ -836,9 +835,16 @@ const createFakePersistence = (): FlowPersistencePort => {
       return Promise.resolve();
     },
     enqueueWorkAsync: () => Promise.resolve(),
+    finalizeWorkAsync: ({ expectedRevision, run }) => {
+      const current = runs.get(run.id);
+      if (!current || current.revision !== expectedRevision) return Promise.resolve(false);
+      runs.set(run.id, structuredClone(run));
+      return Promise.resolve(true);
+    },
     markOutboxDeliveredAsync: () => Promise.resolve(false),
     readOutboxAsync: () => Promise.resolve(undefined),
     readRunAsync: (id) => Promise.resolve(structuredClone(runs.get(id))),
+    readWorkAsync: () => Promise.resolve(undefined),
     recoverExpiredClaimsAsync: () => Promise.resolve([]),
     releaseWorkAsync: () => Promise.resolve(false),
     transitionRunAsync: ({ expectedRevision, run }) => {
@@ -853,5 +859,6 @@ const createFakePersistence = (): FlowPersistencePort => {
       runs.set(run.id, structuredClone(run));
       return Promise.resolve(true);
     },
+    verifyClaimAsync: () => Promise.resolve(true),
   };
 };

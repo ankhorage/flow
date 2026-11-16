@@ -11,6 +11,7 @@ import type {
   McpTrustedStdioProvider,
 } from '../../types/mcp.js';
 import type { FlowOutboundTransportPort, FlowSecurityPort } from '../../types/security.js';
+import { boundedMcpAsync } from './boundedMcpAsync.js';
 import { createMcpRemoteTransportAsync } from './createMcpRemoteTransport.js';
 import { loadMcpSdkAsync } from './loadMcpSdkAsync.js';
 import { McpToolError } from './McpToolError.js';
@@ -76,14 +77,18 @@ const discoverAsync = async (
   outboundTransport: FlowOutboundTransportPort | undefined,
   signal?: AbortSignal,
 ): Promise<readonly McpToolMetadata[]> => {
-  const connection = await connectAsync(provider, trusted, outboundTransport, signal);
   try {
-    const tools = await listToolsAsync(connection.client, timeoutOf(provider), signal);
-    return tools
-      .filter((tool) => permissionFor(provider, tool.name))
-      .map((tool) => toMetadata(provider, tool));
-  } finally {
-    await connection.closeAsync().catch(() => undefined);
+    const connection = await connectAsync(provider, trusted, outboundTransport, signal);
+    try {
+      const tools = await listToolsAsync(connection.client, timeoutOf(provider), signal);
+      return tools
+        .filter((tool) => permissionFor(provider, tool.name))
+        .map((tool) => toMetadata(provider, tool));
+    } finally {
+      await connection.closeAsync().catch(() => undefined);
+    }
+  } catch (error) {
+    throw normalizeMcpFailure(error, 'discovery_failed', 'MCP tool discovery failed.');
   }
 };
 
@@ -142,7 +147,7 @@ const callToolAsync = async (
 ): Promise<McpToolResult> => {
   const connection = await connectAsync(provider, trusted, outboundTransport, invocation.signal);
   try {
-    const result = await boundedAsync(
+    const result = await boundedMcpAsync(
       (signal) =>
         connection.client.callTool(
           { name: invocation.toolName, arguments: invocation.arguments },
@@ -164,6 +169,8 @@ const callToolAsync = async (
         : {}),
       isError: result.isError === true,
     };
+  } catch (error) {
+    throw normalizeMcpFailure(error, 'execution_failed', 'MCP tool execution failed.');
   } finally {
     await connection.closeAsync().catch(() => undefined);
   }
@@ -188,19 +195,23 @@ const connectAsync = async (
   outboundTransport: FlowOutboundTransportPort | undefined,
   signal?: AbortSignal,
 ): Promise<Connection> => {
-  const { Client, StdioClientTransport } = await loadMcpSdkAsync();
-  const client = new Client({ name: '@ankhorage/flow', version: '0.1.0' });
-  const transport =
-    provider.transport === 'stdio'
-      ? stdioTransport(provider, trusted, StdioClientTransport)
-      : await createMcpRemoteTransportAsync(provider, outboundTransport);
-  await boundedAsync(
-    (timeoutSignal) =>
-      client.connect(transport, { signal: timeoutSignal, timeout: timeoutOf(provider) }),
-    timeoutOf(provider),
-    signal,
-  );
-  return { client, closeAsync: () => transport.close() };
+  try {
+    const { Client, StdioClientTransport } = await loadMcpSdkAsync();
+    const client = new Client({ name: '@ankhorage/flow', version: '0.1.0' });
+    const transport =
+      provider.transport === 'stdio'
+        ? stdioTransport(provider, trusted, StdioClientTransport)
+        : await createMcpRemoteTransportAsync(provider, outboundTransport);
+    await boundedMcpAsync(
+      (timeoutSignal) =>
+        client.connect(transport, { signal: timeoutSignal, timeout: timeoutOf(provider) }),
+      timeoutOf(provider),
+      signal,
+    );
+    return { client, closeAsync: () => transport.close() };
+  } catch (error) {
+    throw normalizeMcpFailure(error, 'connection_failed', 'MCP provider connection failed.');
+  }
 };
 
 /*** Resolves executable details exclusively from trusted host configuration. */
@@ -242,7 +253,7 @@ const listToolsAsync = async (
         );
       cursors.add(cursor);
     }
-    const page = await boundedAsync(
+    const page = await boundedMcpAsync(
       (timeoutSignal) =>
         client.listTools(cursor ? { cursor } : undefined, { signal: timeoutSignal }),
       timeoutMs,
@@ -281,28 +292,9 @@ const toMetadata = (provider: McpProviderDefinition, tool: ListedTool): McpToolM
   };
 };
 
-/*** Propagates cancellation and a fixed timeout into an asynchronous SDK operation. */
-const boundedAsync = async <T>(
-  operation: (signal: AbortSignal) => Promise<T>,
-  timeoutMs: number,
-  signal?: AbortSignal,
-): Promise<T> => {
-  const controller = new AbortController();
-  const timer = setTimeout(
-    () => controller.abort(new DOMException('Timeout', 'TimeoutError')),
-    timeoutMs,
-  );
-  const combined = signal ? AbortSignal.any([signal, controller.signal]) : controller.signal;
-  try {
-    return await operation(combined);
-  } catch (error) {
-    if (controller.signal.aborted) throw new McpToolError('timed_out', 'MCP operation timed out.');
-    if (combined.aborted) throw new McpToolError('cancelled', 'MCP operation was cancelled.');
-    throw error;
-  } finally {
-    clearTimeout(timer);
-  }
-};
+/*** Preserves Flow's deliberate failures while redacting untrusted provider and transport details. */
+const normalizeMcpFailure = (error: unknown, code: string, message: string): McpToolError =>
+  error instanceof McpToolError ? error : new McpToolError(code, message);
 /*** Finds one explicit permission for a protocol tool. */
 const permissionFor = (
   provider: McpProviderDefinition,

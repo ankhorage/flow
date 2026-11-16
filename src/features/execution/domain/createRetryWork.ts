@@ -13,10 +13,12 @@ export const createRetryWork = (
   effectKind: completed.effectKind,
   flow: { ...completed.flow },
   id: `${completed.runId}:attempt:${completed.attempt + 1}`,
+  ...(completed.input === undefined ? {} : { input: completed.input }),
   runId: completed.runId,
   ...(completed.securityOperation === undefined
     ? {}
     : { securityOperation: completed.securityOperation }),
   ...(completed.stepId === undefined ? {} : { stepId: completed.stepId }),
+  ...(completed.triggerId === undefined ? {} : { triggerId: completed.triggerId }),
   status: 'ready',
 });
