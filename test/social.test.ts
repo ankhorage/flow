@@ -261,7 +261,8 @@ test('rejects a renewed credential with a different tenant binding before secret
   if (!renew) throw new Error('Expected a renewal operation.');
   await expect(
     renew.executeAsync({
-      config: config({ idempotencyKey: 'renew-unbound' }),
+      config: config(),
+      effect: { idempotencyKey: 'renew-unbound' },
       input: {},
       node: node('renew-unbound'),
       signal: new AbortController().signal,
