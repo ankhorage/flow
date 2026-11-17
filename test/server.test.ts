@@ -80,3 +80,17 @@ test('serializes worker ticks, retains failures, fences shutdown, and restarts c
   await restartStopping;
   expect(maximumConcurrent).toBe(1);
 });
+
+test('redacts worker and shutdown errors before process stderr', () => {
+  const fixture = new URL('./fixtures/processLogRedaction.ts', import.meta.url).pathname;
+  const worker = Bun.spawnSync([process.execPath, fixture, 'worker']);
+  const shutdown = Bun.spawnSync([process.execPath, fixture, 'shutdown']);
+
+  const workerOutput = `${worker.stdout.toString()}${worker.stderr.toString()}`;
+  const shutdownOutput = `${shutdown.stdout.toString()}${shutdown.stderr.toString()}`;
+  expect(worker.exitCode, workerOutput).toBe(0);
+  expect(shutdown.exitCode, shutdownOutput).toBe(1);
+  expect(`${workerOutput}${shutdownOutput}`).not.toContain('SENTINEL_SECRET');
+  expect(workerOutput).toContain('FLOW_WORKER_TICK_FAILED');
+  expect(shutdownOutput).toContain('FLOW_PROCESS_STOP_FAILED');
+});

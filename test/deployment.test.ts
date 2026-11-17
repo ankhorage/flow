@@ -16,9 +16,10 @@ const apiToken = {
 
 const input: FlowDeploymentDescriptorInput = {
   api: {
+    apiToken,
     port: 4318,
     resources: { cpuMillis: 250, memoryMiB: 256 },
-    secretRefs: { FLOW_API_TOKEN: apiToken },
+    secretRefs: {},
   },
   artifactStorage: {
     dependencyId: 'flow-artifact-storage',
@@ -32,6 +33,7 @@ const input: FlowDeploymentDescriptorInput = {
     retention: 'retain',
     sizeGiB: 1,
   },
+  runtime: { module: '@example/flow-runtime' },
   scheduler: {
     dependencyId: 'flow-scheduler',
     environment: { FLOW_SCHEDULER_INGRESS: { kind: 'literal', value: 'configured' } },
@@ -69,6 +71,14 @@ test('composes independent, validated API and worker workloads from exact adapte
     kind: 'secret',
     reference: apiToken,
   });
+  expect(workloads[0]?.environment?.FLOW_RUNTIME_MODULE).toEqual({
+    kind: 'literal',
+    value: '@example/flow-runtime',
+  });
+  expect(workloads[1]?.environment?.FLOW_RUNTIME_MODULE).toEqual({
+    kind: 'literal',
+    value: '@example/flow-runtime',
+  });
 });
 
 test('fails closed before guessing an image, secret reference, artifact storage, or scheduler', () => {
@@ -91,6 +101,15 @@ test('fails closed before guessing an image, secret reference, artifact storage,
   expect(() =>
     createFlowDeploymentDescriptor({
       ...input,
+      api: { ...input.api, apiToken: { ...apiToken, key: '' } },
+    }),
+  ).toThrow('FLOW_DEPLOYMENT_API_TOKEN_REQUIRED');
+  expect(() => createFlowDeploymentDescriptor({ ...input, runtime: { module: ' ' } })).toThrow(
+    'FLOW_DEPLOYMENT_RUNTIME_MODULE_REQUIRED',
+  );
+  expect(() =>
+    createFlowDeploymentDescriptor({
+      ...input,
       artifactStorage: { ...input.artifactStorage, environment: {} },
     }),
   ).toThrow('FLOW_DEPLOYMENT_ARTIFACT_STORAGE_REQUIRED');
@@ -100,4 +119,31 @@ test('fails closed before guessing an image, secret reference, artifact storage,
       scheduler: { ...input.scheduler, environment: {} },
     }),
   ).toThrow('FLOW_DEPLOYMENT_SCHEDULER_REQUIRED');
+});
+
+test('rejects blank and colliding environment or secret keys before composing either process', () => {
+  expect(() =>
+    createFlowDeploymentDescriptor({
+      ...input,
+      artifactStorage: {
+        ...input.artifactStorage,
+        environment: { ' ': { kind: 'literal', value: 'configured' } },
+      },
+    }),
+  ).toThrow('FLOW_DEPLOYMENT_ENVIRONMENT_KEY_REQUIRED');
+  expect(() =>
+    createFlowDeploymentDescriptor({
+      ...input,
+      scheduler: {
+        ...input.scheduler,
+        environment: { FLOW_ARTIFACT_STORAGE_ENDPOINT: { kind: 'literal', value: 'configured' } },
+      },
+    }),
+  ).toThrow('FLOW_DEPLOYMENT_ENVIRONMENT_KEY_COLLISION');
+  expect(() =>
+    createFlowDeploymentDescriptor({
+      ...input,
+      worker: { ...input.worker, secretRefs: { FLOW_API_TOKEN: apiToken } },
+    }),
+  ).toThrow('FLOW_DEPLOYMENT_ENVIRONMENT_KEY_COLLISION');
 });

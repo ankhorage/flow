@@ -4,9 +4,8 @@ export const registerProcessShutdown = (stopAsync: () => Promise<void>): void =>
   const stop = (): void => {
     if (stopping) return;
     stopping = true;
-    void stopAsync().catch((error: unknown) => {
-      const message = error instanceof Error ? error.message : 'FLOW_PROCESS_STOP_FAILED';
-      process.stderr.write(`Flow process stop failed: ${message}\n`);
+    void stopAsync().catch(() => {
+      process.stderr.write('FLOW_PROCESS_STOP_FAILED\n');
       process.exitCode = 1;
     });
   };

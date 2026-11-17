@@ -158,8 +158,8 @@ const createWorkerLoop = (
 
 /** Report a worker failure without leaking a rejected timer promise into the host runtime. */
 const reportWorkerError = (error: unknown): void => {
-  const message = error instanceof Error ? error.message : 'FLOW_WORKER_TICK_FAILED';
-  process.stderr.write(`Flow worker tick failed: ${message}\n`);
+  void error;
+  process.stderr.write('FLOW_WORKER_TICK_FAILED\n');
 };
 
 /*** Provide permissive boundaries only for an explicit loopback local demonstration. */
