@@ -1,11 +1,12 @@
-import type { AnkhCommandHandler } from '@ankhorage/ankh';
-
 import { startFlowServerAsync } from '../../server.js';
+import { validateFlowApiHostname } from '../../utils/validateFlowApiHostname.js';
+import { registerProcessShutdown } from '../registerProcessShutdown.js';
 
 /*** Start the authenticated standalone Flow server through the existing Ankh provider discovery. */
-export const serve: AnkhCommandHandler = ({ argv }) => {
+export const serve = (argv: readonly string[]): Promise<void> => {
   const token = process.env.FLOW_API_TOKEN;
   if (!token) throw new Error('FLOW_API_TOKEN_REQUIRED');
+  const hostname = readHostname();
   const port = readPort(argv);
   const persistencePath = readOption(argv, '--state') ?? '.flow/runtime.json';
   const attempts = new Map<string, number>();
@@ -20,6 +21,7 @@ export const serve: AnkhCommandHandler = ({ argv }) => {
       },
       authorizeAsync: () => Promise.resolve(true),
     },
+    hostname,
     authenticator: {
       authenticateAsync: (request) =>
         Promise.resolve(
@@ -36,7 +38,8 @@ export const serve: AnkhCommandHandler = ({ argv }) => {
     persistencePath,
     port,
   });
-  process.stdout.write(`Flow server listening on http://127.0.0.1:${server.port}\n`);
+  registerProcessShutdown(server.stop);
+  process.stdout.write(`Flow server listening on http://${server.hostname}:${server.port}\n`);
   return Promise.resolve();
 };
 
@@ -57,4 +60,11 @@ const readOption = (argv: readonly string[], name: string): string | undefined =
   const value = argv[index + 1];
   if (!value || value.startsWith('--')) throw new Error(`FLOW_OPTION_VALUE_REQUIRED:${name}`);
   return value;
+};
+
+/** Read and validate the deployment-selected public listener address when it is explicitly set. */
+const readHostname = (): string | undefined => {
+  const hostname = process.env.FLOW_API_HOSTNAME;
+  if (hostname === undefined) return undefined;
+  return validateFlowApiHostname(hostname).hostname;
 };
