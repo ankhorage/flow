@@ -22,6 +22,7 @@ const mainAsync = async (): Promise<void> => {
   if (mode === 'reject-unauthorized-operation') return rejectUnauthorizedOperationAsync();
   if (mode === 'create-publish-trigger') return createPublishAndTriggerAsync();
   if (mode === 'trigger-recovery-run') return triggerRecoveryRunAsync();
+  if (mode === 'worker-unreachable') return assertWorkerUnreachableAsync();
   if (mode === 'wait-for-run') return waitForRunAsync();
   throw new Error('FLOW_CONTAINER_CLIENT_MODE_INVALID');
 };
@@ -69,6 +70,16 @@ const createPublishAndTriggerAsync = async (): Promise<void> => {
 
 /** Queue a second run after a worker shutdown so the restarted worker must recover it durably. */
 const triggerRecoveryRunAsync = async (): Promise<void> => triggerAsync('recovery');
+
+/** Prove the worker cannot receive HTTP traffic from another container on the API listener port. */
+const assertWorkerUnreachableAsync = async (): Promise<void> => {
+  try {
+    await fetch('http://flow-worker:4318/health', { signal: AbortSignal.timeout(1_000) });
+  } catch {
+    return;
+  }
+  throw new Error('FLOW_CONTAINER_WORKER_REACHABLE');
+};
 
 /** Trigger one API-authorized run and emit only its opaque identifier for the CI harness. */
 const triggerAsync = async (idempotencyKey: string): Promise<void> => {

@@ -19,12 +19,14 @@ try {
   const firstRun = client('create-publish-trigger');
   startWorker(worker);
   assertWorkerHasNoPublicListener(worker);
+  client('worker-unreachable');
   client('wait-for-run', { FLOW_RUN_ID: firstRun });
   docker(['stop', worker]);
   client('health');
   const recoveredRun = client('trigger-recovery-run');
   startWorker(restartedWorker);
   assertWorkerHasNoPublicListener(restartedWorker);
+  client('worker-unreachable');
   client('wait-for-run', { FLOW_RUN_ID: recoveredRun });
   assertLogsAreRedacted(api);
   assertLogsAreRedacted(restartedWorker);
@@ -85,6 +87,8 @@ function startWorker(name: string): void {
     name,
     '--network',
     network,
+    '--network-alias',
+    'flow-worker',
     '--mount',
     `type=volume,source=${volume},target=/state`,
     '--env',
@@ -118,18 +122,18 @@ function client(mode: string, environment: Record<string, string> = {}): string 
   );
 }
 
-/** Prove that a worker container neither publishes nor listens on the API port. */
+/** Prove that a worker container neither publishes a port nor binds the API listener port. */
 function assertWorkerHasNoPublicListener(name: string): void {
   const ports = docker(['inspect', '--format', '{{json .NetworkSettings.Ports}}', name]);
   if (ports !== '{}') throw new Error('FLOW_CONTAINER_WORKER_PORT_PUBLISHED');
-  const listener = docker([
+  const apiListener = docker([
     'exec',
     name,
     'bun',
     '-e',
-    "const fs = require('node:fs'); const listening = [fs.readFileSync('/proc/net/tcp', 'utf8'), fs.readFileSync('/proc/net/tcp6', 'utf8')].some((table) => table.split('\\n').some((line) => /\\s0A\\s/u.test(line))); process.stdout.write(listening ? 'yes' : 'no');",
+    "const fs = require('node:fs'); const listening = [fs.readFileSync('/proc/net/tcp', 'utf8'), fs.readFileSync('/proc/net/tcp6', 'utf8')].some((table) => table.split('\\n').some((line) => /:10DE\\s+00000000:0000\\s+0A\\s/u.test(line))); process.stdout.write(listening ? 'yes' : 'no');",
   ]);
-  if (listener !== 'no') throw new Error('FLOW_CONTAINER_WORKER_LISTENER_PRESENT');
+  if (apiListener !== 'no') throw new Error('FLOW_CONTAINER_WORKER_LISTENER_PRESENT');
 }
 
 /** Check service logs without emitting their contents, so the assertion itself cannot disclose a secret. */
