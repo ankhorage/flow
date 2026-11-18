@@ -10,24 +10,15 @@ const volume = `flow-container-state-${identifier}`;
 const api = `flow-container-api-${identifier}`;
 const worker = `flow-container-worker-${identifier}`;
 const restartedWorker = `flow-container-worker-restarted-${identifier}`;
-const runtimeModule =
-  process.env.FLOW_CONTAINER_IMAGE === undefined
-    ? '/app/test/fixtures/fileRuntimeModule.ts'
-    : '/app/test/fixtures/publishedImageRuntimeModule.ts';
-const runtimeMount =
-  process.env.FLOW_CONTAINER_IMAGE === undefined
-    ? []
-    : [
-        '--mount',
-        `type=bind,source=${resolve('test/fixtures')},target=/app/test/fixtures,readonly`,
-      ];
-const clientMount =
-  process.env.FLOW_CONTAINER_IMAGE === undefined
-    ? []
-    : [
-        '--mount',
-        `type=bind,source=${resolve('test/container')},target=/app/test/container,readonly`,
-      ];
+const runtimeModule = '/app/test/fixtures/publishedImageRuntimeModule.ts';
+const runtimeMount = [
+  '--mount',
+  `type=bind,source=${resolve('test/fixtures')},target=/app/test/fixtures,readonly`,
+];
+const clientMount = [
+  '--mount',
+  `type=bind,source=${resolve('test/container')},target=/app/test/container,readonly`,
+];
 
 try {
   prepareImage();
@@ -61,10 +52,21 @@ try {
   removeResource(['volume', 'rm', volume]);
 }
 
-/** Build a checkout-owned fixture image locally or pull only the caller-provided immutable digest. */
+/** Build the production image locally or pull only the caller-provided immutable digest. */
 function prepareImage(): void {
   if (process.env.FLOW_CONTAINER_IMAGE === undefined) {
-    docker(['build', '--file', 'test/container/Dockerfile', '--tag', image, '.']);
+    docker([
+      'build',
+      '--build-arg',
+      `FLOW_VERSION=${Bun.env.npm_package_version}`,
+      '--build-arg',
+      `SOURCE_REPOSITORY=${process.env.FLOW_CONTAINER_SOURCE_REPOSITORY ?? 'local/ankhorage-flow'}`,
+      '--build-arg',
+      `SOURCE_REVISION=${process.env.FLOW_CONTAINER_SOURCE_REVISION ?? `local-${identifier}`}`,
+      '--tag',
+      image,
+      '.',
+    ]);
     return;
   }
   if (!/@sha256:[a-f0-9]{64}$/u.test(image))
@@ -175,6 +177,10 @@ function assertRequiredConfigurationFailsClosed(): void {
 
 /** Check the declared worker health command against the same injected runtime boundary used in production. */
 function assertWorkerReadiness(): void {
+  const healthcheck = docker(['inspect', '--format', '{{json .Config.Healthcheck.Test}}', image]);
+  if (healthcheck !== '["CMD","bun","dist/cli/standalone.js","worker","health"]') {
+    throw new Error('FLOW_CONTAINER_HEALTHCHECK_INVALID');
+  }
   docker([
     'run',
     '--rm',

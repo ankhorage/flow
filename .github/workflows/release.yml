@@ -538,6 +538,13 @@ jobs:
             done < binary-paths.txt
           )
 
+      - name: Build and accept the production OCI image before npm publication
+        if: steps.release.outputs.versioned == 'true'
+        env:
+          FLOW_CONTAINER_SOURCE_REPOSITORY: ${{ github.repository }}
+          FLOW_CONTAINER_SOURCE_REVISION: ${{ steps.release.outputs.release_sha }}
+        run: bun run test:container-acceptance
+
       - name: Publish unpublished packages
         if: hashFiles('.changeset/config.json') != ''
         run: |

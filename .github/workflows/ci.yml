@@ -182,7 +182,7 @@ jobs:
         with:
           bun-version: '1.4.2'
 
-      - name: Build test image and verify container-network acceptance
+      - name: Build production image and verify container-network acceptance
         run: bun run test:container-acceptance
 
   oci-image:
