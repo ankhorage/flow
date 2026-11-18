@@ -1,5 +1,11 @@
 # @ankhorage/flow
 
+## 0.10.0
+
+### Minor Changes
+
+- a874494: Publish a reproducible Flow OCI runtime image with immutable digest verification.
+
 ## 0.9.0
 
 ### Minor Changes
