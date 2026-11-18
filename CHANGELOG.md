@@ -1,5 +1,11 @@
 # @ankhorage/flow
 
+## 0.9.0
+
+### Minor Changes
+
+- 4a85ebe: Expose a capability-gated, scoped approval availability API for exact Flow run revisions.
+
 ## 0.8.0
 
 ### Minor Changes

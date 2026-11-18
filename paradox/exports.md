@@ -78,7 +78,7 @@ Persist a new durable run without executing an operation or provider effect.
 
 Kind: `value`
 Module: `src/features/headless/application/createFlowRuntime.ts`
-Source: `src/features/headless/application/createFlowRuntime.ts:24:14`
+Source: `src/features/headless/application/createFlowRuntime.ts:25:14`
 
 Compose the canonical versioned workflow API and client-independent worker boundary.
 
@@ -153,13 +153,30 @@ Create a self-hostable, single-process JSON persistence adapter for durable Flow
 
 Kind: `value`
 Module: `src/features/headless/adapters/FileFlowRuntimeStore.ts`
-Source: `src/features/headless/adapters/FileFlowRuntimeStore.ts:43:14`
+Source: `src/features/headless/adapters/FileFlowRuntimeStore.ts:45:14`
 
 ### Signatures
 
 - `(path: string) => FlowRuntimeStorePort`
   - path: `string`
   - returns: `FlowRuntimeStorePort`
+
+## FlowApprovalAvailability
+
+Kind: `type`
+Module: `src/types/headless.ts`
+Source: `src/types/headless.ts:30:1`
+
+### Members
+
+| Name | Kind | Type | Required | Description |
+| --- | --- | --- | --- | --- |
+| approvalId | property | `string` | yes |  |
+| expiresAt | property | `string \| undefined` | no |  |
+| flowId | property | `string` | yes |  |
+| flowVersion | property | `number` | yes |  |
+| runId | property | `string` | yes |  |
+| status | property | `"cancelled" \| "pending" \| "approved" \| "expired" \| "rejected"` | yes |  |
 
 ## FlowApprovalStorePort
 
@@ -177,7 +194,7 @@ Source: `src/types/security.ts:53:1`
 
 Kind: `type`
 Module: `src/types/headless.ts`
-Source: `src/types/headless.ts:126:1`
+Source: `src/types/headless.ts:149:1`
 
 ### Members
 
@@ -314,7 +331,7 @@ Source: `src/types/execution.ts:69:1`
 
 Kind: `type`
 Module: `src/types/headless.ts`
-Source: `src/types/headless.ts:102:1`
+Source: `src/types/headless.ts:125:1`
 
 ### Members
 
@@ -327,7 +344,7 @@ Source: `src/types/headless.ts:102:1`
 
 Kind: `type`
 Module: `src/types/headless.ts`
-Source: `src/types/headless.ts:97:1`
+Source: `src/types/headless.ts:120:1`
 
 ### Members
 
@@ -389,7 +406,7 @@ Source: `src/types/execution.ts:55:1`
 
 Kind: `type`
 Module: `src/types/headless.ts`
-Source: `src/types/headless.ts:134:1`
+Source: `src/types/headless.ts:157:1`
 
 ### Members
 
@@ -520,7 +537,7 @@ Source: `src/types/durableExecution.ts:99:1`
 
 Kind: `type`
 Module: `src/types/headless.ts`
-Source: `src/types/headless.ts:29:1`
+Source: `src/types/headless.ts:48:1`
 
 ### Members
 
@@ -553,7 +570,7 @@ Source: `src/types/execution.ts:61:1`
 
 Kind: `type`
 Module: `src/types/headless.ts`
-Source: `src/types/headless.ts:143:1`
+Source: `src/types/headless.ts:166:1`
 
 ### Members
 
@@ -561,6 +578,7 @@ Source: `src/types/headless.ts:143:1`
 | --- | --- | --- | --- | --- |
 | cancelRunAsync | method | `(scope: FlowResourceScope, runId: string) => Promise<FlowRunSnapshot \| undefined>` | yes |  |
 | createDraftAsync | method | `(scope: FlowResourceScope, definition: FlowDefinition) => Promise<FlowWorkflowRevision>` | yes |  |
+| getApprovalAvailabilityAsync | method | `(input: { readonly approvalId: string; readonly flowId: string; readonly flowVersion: number; readonly runId: string; readonly scope: FlowResourceScope; }) => Promise<FlowApprovalAvailability \| undefined>` | yes |  |
 | getRunAsync | method | `(scope: FlowResourceScope, runId: string) => Promise<FlowRunSnapshot \| undefined>` | yes |  |
 | getWorkflowAsync | method | `(scope: FlowResourceScope, flowId: string, version?: number) => Promise<FlowWorkflowRevision \| undefined>` | yes |  |
 | listRunsAsync | method | `(scope: FlowResourceScope, flowId?: string) => Promise<readonly FlowRunSnapshot[]>` | yes |  |
@@ -577,7 +595,7 @@ Source: `src/types/headless.ts:143:1`
 
 Kind: `type`
 Module: `src/types/headless.ts`
-Source: `src/types/headless.ts:114:1`
+Source: `src/types/headless.ts:137:1`
 
 ### Members
 
@@ -595,13 +613,14 @@ Source: `src/types/headless.ts:114:1`
 
 Kind: `type`
 Module: `src/types/headless.ts`
-Source: `src/types/headless.ts:44:1`
+Source: `src/types/headless.ts:63:1`
 
 ### Members
 
 | Name | Kind | Type | Required | Description |
 | --- | --- | --- | --- | --- |
 | createDraftAsync | method | `(scope: FlowResourceScope, definition: FlowDefinition) => Promise<FlowWorkflowRevision>` | yes |  |
+| getApprovalAsync | method | `(scope: FlowResourceScope, approvalId: string) => Promise<FlowApprovalAvailabilityRecord \| undefined>` | yes |  |
 | getRunAsync | method | `(scope: FlowResourceScope, runId: string) => Promise<FlowRunSnapshot \| undefined>` | yes |  |
 | getWorkflowAsync | method | `(scope: FlowResourceScope, flowId: string, version?: number) => Promise<FlowWorkflowRevision \| undefined>` | yes |  |
 | listPendingRunsAsync | method | `() => Promise<readonly { readonly run: FlowRunSnapshot; readonly scope: FlowResourceScope; }[]>` | yes |  |
@@ -838,7 +857,7 @@ Source: `src/types/durableExecution.ts:92:1`
 
 Kind: `type`
 Module: `src/types/headless.ts`
-Source: `src/types/headless.ts:22:1`
+Source: `src/types/headless.ts:23:1`
 
 ### Members
 
@@ -877,7 +896,7 @@ Provide the canonical durable persistence contract for embedded tests and local 
 
 Kind: `value`
 Module: `src/features/headless/adapters/InMemoryFlowRuntimeStore.ts`
-Source: `src/features/headless/adapters/InMemoryFlowRuntimeStore.ts:15:14`
+Source: `src/features/headless/adapters/InMemoryFlowRuntimeStore.ts:16:14`
 
 Create a deterministic in-memory store for embedded hosts and boundary tests.
 

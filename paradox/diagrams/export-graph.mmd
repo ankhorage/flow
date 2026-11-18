@@ -38,6 +38,7 @@ graph LR
   module_src_features_headless_adapters_FileFlowRuntimeStore_ts["src/features/headless/adapters/FileFlowRuntimeStore.ts"]
   module_src_features_headless_adapters_InMemoryFlowObservability_ts["src/features/headless/adapters/InMemoryFlowObservability.ts"]
   module_src_features_headless_adapters_InMemoryFlowRuntimeStore_ts["src/features/headless/adapters/InMemoryFlowRuntimeStore.ts"]
+  module_src_features_headless_adapters_toApprovalAvailabilityRecord_ts["src/features/headless/adapters/toApprovalAvailabilityRecord.ts"]
   module_src_features_headless_application_createDurableHeadlessWork_ts["src/features/headless/application/createDurableHeadlessWork.ts"]
   module_src_features_headless_application_createFlowRuntime_ts["src/features/headless/application/createFlowRuntime.ts"]
   module_src_features_headless_application_createHeadlessRunControl_ts["src/features/headless/application/createHeadlessRunControl.ts"]
@@ -117,6 +118,8 @@ graph LR
   export_FileFlowRuntimeStore["FileFlowRuntimeStore"]
   module_src_features_headless_adapters_FileFlowRuntimeStore_ts --> export_FileFlowRuntimeStore
   export_FileFlowRuntimeStore -.-> export_FlowRuntimeStorePort
+  export_FlowApprovalAvailability["FlowApprovalAvailability"]
+  module_src_types_headless_ts --> export_FlowApprovalAvailability
   export_FlowApprovalStorePort["FlowApprovalStorePort"]
   module_src_types_security_ts --> export_FlowApprovalStorePort
   export_FlowApprovalStorePort -.-> export_FlowSecurityApproval
@@ -200,6 +203,7 @@ graph LR
   export_FlowRunRequest -.-> export_FlowNodeEffectIdentity
   export_FlowRuntime["FlowRuntime"]
   module_src_types_headless_ts --> export_FlowRuntime
+  export_FlowRuntime -.-> export_FlowApprovalAvailability
   export_FlowRuntime -.-> export_FlowRunEvent
   export_FlowRuntime -.-> export_FlowWorkflowRevision
   export_FlowRuntimeDependencies["FlowRuntimeDependencies"]

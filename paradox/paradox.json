@@ -14,7 +14,7 @@
     {
       "id": "npm",
       "label": "npm",
-      "value": "v0.8.0",
+      "value": "v0.9.0",
       "color": "cb3837"
     },
     {
@@ -79,7 +79,7 @@
       "severity": "warning",
       "message": "Exported function FileFlowRuntimeStore has no documentation description.",
       "sourcePath": "src/features/headless/adapters/FileFlowRuntimeStore.ts",
-      "line": 43
+      "line": 45
     },
     {
       "ruleId": "documentation.public-function.description",
@@ -500,6 +500,8 @@
       "path": "src/features/headless/adapters/FileFlowRuntimeStore.ts",
       "isEntrypoint": false,
       "dependencies": [
+        "src/features/execution/adapters/createFileFlowPersistenceSupport.ts",
+        "src/features/headless/adapters/toApprovalAvailabilityRecord.ts",
         "src/types/headless.ts"
       ],
       "exports": [
@@ -520,10 +522,19 @@
       "path": "src/features/headless/adapters/InMemoryFlowRuntimeStore.ts",
       "isEntrypoint": false,
       "dependencies": [
+        "src/features/headless/adapters/toApprovalAvailabilityRecord.ts",
         "src/types/headless.ts"
       ],
       "exports": [
         "InMemoryFlowRuntimeStore"
+      ]
+    },
+    {
+      "path": "src/features/headless/adapters/toApprovalAvailabilityRecord.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": [
+        "toApprovalAvailabilityRecord"
       ]
     },
     {
@@ -756,6 +767,7 @@
         "executeFlowAsync",
         "FileFlowPersistenceAdapter",
         "FileFlowRuntimeStore",
+        "FlowApprovalAvailability",
         "FlowApprovalStorePort",
         "FlowAuditRecord",
         "FlowClock",
@@ -931,6 +943,7 @@
         "src/types/security.ts"
       ],
       "exports": [
+        "FlowApprovalAvailability",
         "FlowAuditRecord",
         "FlowHttpAccessPort",
         "FlowHttpAuthenticatorPort",
@@ -1223,7 +1236,7 @@
       "modulePath": "src/features/headless/application/createFlowRuntime.ts",
       "sourceLocation": {
         "filePath": "src/features/headless/application/createFlowRuntime.ts",
-        "line": 24,
+        "line": 25,
         "column": 14
       },
       "exportPaths": [
@@ -1454,7 +1467,7 @@
       "modulePath": "src/features/headless/adapters/FileFlowRuntimeStore.ts",
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/FileFlowRuntimeStore.ts",
-        "line": 43,
+        "line": 45,
         "column": 14
       },
       "exportPaths": [
@@ -1479,6 +1492,71 @@
         }
       ],
       "members": [],
+      "structuredRows": []
+    },
+    {
+      "name": "FlowApprovalAvailability",
+      "title": null,
+      "description": null,
+      "isReadme": false,
+      "see": [],
+      "security": [],
+      "kind": "type",
+      "modulePath": "src/types/headless.ts",
+      "sourceLocation": {
+        "filePath": "src/types/headless.ts",
+        "line": 30,
+        "column": 1
+      },
+      "exportPaths": [
+        "src/index.ts"
+      ],
+      "relatedSymbols": [],
+      "signatures": [],
+      "members": [
+        {
+          "name": "approvalId",
+          "kind": "property",
+          "type": "string",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "expiresAt",
+          "kind": "property",
+          "type": "string | undefined",
+          "required": false,
+          "description": null
+        },
+        {
+          "name": "flowId",
+          "kind": "property",
+          "type": "string",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "flowVersion",
+          "kind": "property",
+          "type": "number",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "runId",
+          "kind": "property",
+          "type": "string",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "status",
+          "kind": "property",
+          "type": "\"cancelled\" | \"pending\" | \"approved\" | \"expired\" | \"rejected\"",
+          "required": true,
+          "description": null
+        }
+      ],
       "structuredRows": []
     },
     {
@@ -1525,7 +1603,7 @@
       "modulePath": "src/types/headless.ts",
       "sourceLocation": {
         "filePath": "src/types/headless.ts",
-        "line": 126,
+        "line": 149,
         "column": 1
       },
       "exportPaths": [
@@ -2011,7 +2089,7 @@
       "modulePath": "src/types/headless.ts",
       "sourceLocation": {
         "filePath": "src/types/headless.ts",
-        "line": 102,
+        "line": 125,
         "column": 1
       },
       "exportPaths": [
@@ -2050,7 +2128,7 @@
       "modulePath": "src/types/headless.ts",
       "sourceLocation": {
         "filePath": "src/types/headless.ts",
-        "line": 97,
+        "line": 120,
         "column": 1
       },
       "exportPaths": [
@@ -2234,7 +2312,7 @@
       "modulePath": "src/types/headless.ts",
       "sourceLocation": {
         "filePath": "src/types/headless.ts",
-        "line": 134,
+        "line": 157,
         "column": 1
       },
       "exportPaths": [
@@ -2712,7 +2790,7 @@
       "modulePath": "src/types/headless.ts",
       "sourceLocation": {
         "filePath": "src/types/headless.ts",
-        "line": 29,
+        "line": 48,
         "column": 1
       },
       "exportPaths": [
@@ -2837,13 +2915,14 @@
       "modulePath": "src/types/headless.ts",
       "sourceLocation": {
         "filePath": "src/types/headless.ts",
-        "line": 143,
+        "line": 166,
         "column": 1
       },
       "exportPaths": [
         "src/index.ts"
       ],
       "relatedSymbols": [
+        "FlowApprovalAvailability",
         "FlowRunEvent",
         "FlowWorkflowRevision"
       ],
@@ -2860,6 +2939,13 @@
           "name": "createDraftAsync",
           "kind": "method",
           "type": "(scope: FlowResourceScope, definition: FlowDefinition) => Promise<FlowWorkflowRevision>",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "getApprovalAvailabilityAsync",
+          "kind": "method",
+          "type": "(input: { readonly approvalId: string; readonly flowId: string; readonly flowVersion: number; readonly runId: string; readonly scope: FlowResourceScope; }) => Promise<FlowApprovalAvailability | undefined>",
           "required": true,
           "description": null
         },
@@ -2954,7 +3040,7 @@
       "modulePath": "src/types/headless.ts",
       "sourceLocation": {
         "filePath": "src/types/headless.ts",
-        "line": 114,
+        "line": 137,
         "column": 1
       },
       "exportPaths": [
@@ -3033,7 +3119,7 @@
       "modulePath": "src/types/headless.ts",
       "sourceLocation": {
         "filePath": "src/types/headless.ts",
-        "line": 44,
+        "line": 63,
         "column": 1
       },
       "exportPaths": [
@@ -3049,6 +3135,13 @@
           "name": "createDraftAsync",
           "kind": "method",
           "type": "(scope: FlowResourceScope, definition: FlowDefinition) => Promise<FlowWorkflowRevision>",
+          "required": true,
+          "description": null
+        },
+        {
+          "name": "getApprovalAsync",
+          "kind": "method",
+          "type": "(scope: FlowResourceScope, approvalId: string) => Promise<FlowApprovalAvailabilityRecord | undefined>",
           "required": true,
           "description": null
         },
@@ -3899,7 +3992,7 @@
       "modulePath": "src/types/headless.ts",
       "sourceLocation": {
         "filePath": "src/types/headless.ts",
-        "line": 22,
+        "line": 23,
         "column": 1
       },
       "exportPaths": [
@@ -4012,7 +4105,7 @@
       "modulePath": "src/features/headless/adapters/InMemoryFlowRuntimeStore.ts",
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/InMemoryFlowRuntimeStore.ts",
-        "line": 15,
+        "line": 16,
         "column": 14
       },
       "exportPaths": [
@@ -6041,13 +6134,24 @@
       }
     },
     {
+      "name": "routeApprovalAvailabilityAsync",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/headless/adapters/createFlowHttpHandler.ts",
+        "line": 62,
+        "column": 7
+      }
+    },
+    {
       "name": "routeWorkflowAsync",
       "description": null,
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/createFlowHttpHandler.ts",
-        "line": 69,
+        "line": 93,
         "column": 7
       }
     },
@@ -6058,7 +6162,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/createFlowHttpHandler.ts",
-        "line": 99,
+        "line": 123,
         "column": 7
       }
     },
@@ -6069,7 +6173,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/createFlowHttpHandler.ts",
-        "line": 115,
+        "line": 139,
         "column": 7
       }
     },
@@ -6080,7 +6184,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/createFlowHttpHandler.ts",
-        "line": 133,
+        "line": 157,
         "column": 7
       }
     },
@@ -6091,7 +6195,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/createFlowHttpHandler.ts",
-        "line": 147,
+        "line": 171,
         "column": 7
       }
     },
@@ -6102,7 +6206,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/createFlowHttpHandler.ts",
-        "line": 166,
+        "line": 190,
         "column": 7
       }
     },
@@ -6113,7 +6217,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/createFlowHttpHandler.ts",
-        "line": 176,
+        "line": 200,
         "column": 7
       }
     },
@@ -6124,7 +6228,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/createFlowHttpHandler.ts",
-        "line": 197,
+        "line": 221,
         "column": 7
       }
     },
@@ -6135,7 +6239,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/createFlowHttpHandler.ts",
-        "line": 211,
+        "line": 235,
         "column": 7
       }
     },
@@ -6146,7 +6250,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/createFlowHttpHandler.ts",
-        "line": 214,
+        "line": 238,
         "column": 7
       }
     },
@@ -6157,7 +6261,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/createFlowHttpHandler.ts",
-        "line": 221,
+        "line": 245,
         "column": 7
       }
     },
@@ -6168,7 +6272,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/createFlowHttpHandler.ts",
-        "line": 227,
+        "line": 251,
         "column": 7
       }
     },
@@ -6179,7 +6283,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/createFlowHttpHandler.ts",
-        "line": 237,
+        "line": 264,
         "column": 7
       }
     },
@@ -6190,7 +6294,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/createFlowHttpHandler.ts",
-        "line": 240,
+        "line": 267,
         "column": 7
       }
     },
@@ -6201,7 +6305,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/createFlowHttpHandler.ts",
-        "line": 247,
+        "line": 274,
         "column": 7
       }
     },
@@ -6212,7 +6316,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/createFlowHttpHandler.ts",
-        "line": 254,
+        "line": 281,
         "column": 7
       }
     },
@@ -6223,7 +6327,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/createFlowHttpHandler.ts",
-        "line": 257,
+        "line": 284,
         "column": 7
       }
     },
@@ -6234,7 +6338,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/createFlowHttpHandler.ts",
-        "line": 261,
+        "line": 288,
         "column": 7
       }
     },
@@ -6245,7 +6349,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/createFlowHttpHandler.ts",
-        "line": 265,
+        "line": 292,
         "column": 7
       }
     },
@@ -6272,13 +6376,46 @@
       }
     },
     {
+      "name": "approvalAvailabilitySchema",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/headless/adapters/createFlowOpenApi.ts",
+        "line": 61,
+        "column": 7
+      }
+    },
+    {
       "name": "paths",
       "description": "Map each supported route to an explicit operation identifier and response contract.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/createFlowOpenApi.ts",
-        "line": 60,
+        "line": 76,
+        "column": 7
+      }
+    },
+    {
+      "name": "approvalAvailabilityOperation",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/headless/adapters/createFlowOpenApi.ts",
+        "line": 105,
+        "column": 7
+      }
+    },
+    {
+      "name": "pathParameter",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/headless/adapters/createFlowOpenApi.ts",
+        "line": 116,
         "column": 7
       }
     },
@@ -6289,7 +6426,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/createFlowOpenApi.ts",
-        "line": 86,
+        "line": 124,
         "column": 7
       }
     },
@@ -6300,7 +6437,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/createFlowOpenApi.ts",
-        "line": 115,
+        "line": 153,
         "column": 7
       }
     },
@@ -6311,7 +6448,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/createFlowOpenApi.ts",
-        "line": 129,
+        "line": 167,
         "column": 7
       }
     },
@@ -6322,7 +6459,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/createFlowOpenApi.ts",
-        "line": 131,
+        "line": 169,
         "column": 7
       }
     },
@@ -6333,7 +6470,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/FileFlowRuntimeStore.ts",
-        "line": 34,
+        "line": 36,
         "column": 7
       }
     },
@@ -6344,19 +6481,8 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/FileFlowRuntimeStore.ts",
-        "line": 43,
+        "line": 45,
         "column": 14
-      }
-    },
-    {
-      "name": "createSerializedCall",
-      "description": null,
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/headless/adapters/FileFlowRuntimeStore.ts",
-        "line": 75,
-        "column": 7
       }
     },
     {
@@ -6366,7 +6492,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/FileFlowRuntimeStore.ts",
-        "line": 90,
+        "line": 86,
         "column": 7
       }
     },
@@ -6377,7 +6503,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/FileFlowRuntimeStore.ts",
-        "line": 106,
+        "line": 102,
         "column": 7
       }
     },
@@ -6388,7 +6514,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/FileFlowRuntimeStore.ts",
-        "line": 123,
+        "line": 119,
         "column": 7
       }
     },
@@ -6399,7 +6525,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/FileFlowRuntimeStore.ts",
-        "line": 136,
+        "line": 132,
         "column": 7
       }
     },
@@ -6410,7 +6536,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/FileFlowRuntimeStore.ts",
-        "line": 160,
+        "line": 156,
         "column": 7
       }
     },
@@ -6421,7 +6547,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/FileFlowRuntimeStore.ts",
-        "line": 188,
+        "line": 183,
         "column": 7
       }
     },
@@ -6432,7 +6558,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/FileFlowRuntimeStore.ts",
-        "line": 211,
+        "line": 206,
         "column": 7
       }
     },
@@ -6443,7 +6569,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/FileFlowRuntimeStore.ts",
-        "line": 220,
+        "line": 215,
         "column": 7
       }
     },
@@ -6454,7 +6580,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/FileFlowRuntimeStore.ts",
-        "line": 235,
+        "line": 230,
         "column": 7
       }
     },
@@ -6465,7 +6591,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/FileFlowRuntimeStore.ts",
-        "line": 241,
+        "line": 236,
         "column": 7
       }
     },
@@ -6476,7 +6602,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/FileFlowRuntimeStore.ts",
-        "line": 243,
+        "line": 238,
         "column": 7
       }
     },
@@ -6487,7 +6613,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/FileFlowRuntimeStore.ts",
-        "line": 254,
+        "line": 249,
         "column": 7
       }
     },
@@ -6498,7 +6624,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/FileFlowRuntimeStore.ts",
-        "line": 266,
+        "line": 260,
         "column": 7
       }
     },
@@ -6509,7 +6635,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/FileFlowRuntimeStore.ts",
-        "line": 272,
+        "line": 266,
         "column": 7
       }
     },
@@ -6520,7 +6646,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/FileFlowRuntimeStore.ts",
-        "line": 282,
+        "line": 276,
         "column": 7
       }
     },
@@ -6531,7 +6657,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/FileFlowRuntimeStore.ts",
-        "line": 294,
+        "line": 288,
         "column": 7
       }
     },
@@ -6542,29 +6668,29 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/FileFlowRuntimeStore.ts",
-        "line": 302,
+        "line": 296,
         "column": 7
       }
     },
     {
-      "name": "sameScope",
+      "name": "same",
       "description": null,
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/FileFlowRuntimeStore.ts",
-        "line": 310,
+        "line": 304,
         "column": 7
       }
     },
     {
-      "name": "workflowKey",
+      "name": "flowKey",
       "description": null,
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/FileFlowRuntimeStore.ts",
-        "line": 312,
+        "line": 306,
         "column": 7
       }
     },
@@ -6586,7 +6712,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/InMemoryFlowRuntimeStore.ts",
-        "line": 15,
+        "line": 16,
         "column": 14
       }
     },
@@ -6597,7 +6723,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/InMemoryFlowRuntimeStore.ts",
-        "line": 61,
+        "line": 64,
         "column": 7
       }
     },
@@ -6608,7 +6734,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/InMemoryFlowRuntimeStore.ts",
-        "line": 73,
+        "line": 76,
         "column": 7
       }
     },
@@ -6619,7 +6745,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/InMemoryFlowRuntimeStore.ts",
-        "line": 88,
+        "line": 91,
         "column": 7
       }
     },
@@ -6630,7 +6756,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/InMemoryFlowRuntimeStore.ts",
-        "line": 101,
+        "line": 104,
         "column": 7
       }
     },
@@ -6641,7 +6767,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/InMemoryFlowRuntimeStore.ts",
-        "line": 121,
+        "line": 124,
         "column": 7
       }
     },
@@ -6652,7 +6778,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/InMemoryFlowRuntimeStore.ts",
-        "line": 140,
+        "line": 143,
         "column": 7
       }
     },
@@ -6663,7 +6789,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/InMemoryFlowRuntimeStore.ts",
-        "line": 158,
+        "line": 161,
         "column": 7
       }
     },
@@ -6674,7 +6800,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/InMemoryFlowRuntimeStore.ts",
-        "line": 174,
+        "line": 177,
         "column": 7
       }
     },
@@ -6685,7 +6811,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/InMemoryFlowRuntimeStore.ts",
-        "line": 175,
+        "line": 178,
         "column": 7
       }
     },
@@ -6696,7 +6822,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/InMemoryFlowRuntimeStore.ts",
-        "line": 177,
+        "line": 180,
         "column": 7
       }
     },
@@ -6707,7 +6833,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/InMemoryFlowRuntimeStore.ts",
-        "line": 178,
+        "line": 181,
         "column": 7
       }
     },
@@ -6718,8 +6844,19 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/adapters/InMemoryFlowRuntimeStore.ts",
-        "line": 180,
+        "line": 183,
         "column": 7
+      }
+    },
+    {
+      "name": "toApprovalAvailabilityRecord",
+      "description": "Project one persisted approval record before it can cross the headless store read port.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/headless/adapters/toApprovalAvailabilityRecord.ts",
+        "line": 4,
+        "column": 14
       }
     },
     {
@@ -6751,8 +6888,30 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/application/createFlowRuntime.ts",
-        "line": 24,
+        "line": 25,
         "column": 14
+      }
+    },
+    {
+      "name": "getApprovalAvailabilityAsync",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/headless/application/createFlowRuntime.ts",
+        "line": 71,
+        "column": 7
+      }
+    },
+    {
+      "name": "approvalStatus",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/headless/application/createFlowRuntime.ts",
+        "line": 93,
+        "column": 7
       }
     },
     {
@@ -6762,7 +6921,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/application/createFlowRuntime.ts",
-        "line": 68,
+        "line": 103,
         "column": 7
       }
     },
@@ -6773,7 +6932,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/application/createFlowRuntime.ts",
-        "line": 78,
+        "line": 113,
         "column": 7
       }
     },
@@ -6784,7 +6943,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/application/createFlowRuntime.ts",
-        "line": 115,
+        "line": 150,
         "column": 7
       }
     },
@@ -6795,7 +6954,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/application/createFlowRuntime.ts",
-        "line": 132,
+        "line": 167,
         "column": 7
       }
     },
@@ -6806,7 +6965,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/application/createFlowRuntime.ts",
-        "line": 158,
+        "line": 193,
         "column": 7
       }
     },
@@ -6817,7 +6976,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/application/createFlowRuntime.ts",
-        "line": 198,
+        "line": 233,
         "column": 7
       }
     },
@@ -6828,7 +6987,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/application/createFlowRuntime.ts",
-        "line": 207,
+        "line": 242,
         "column": 7
       }
     },
@@ -6839,7 +6998,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/headless/application/createFlowRuntime.ts",
-        "line": 250,
+        "line": 285,
         "column": 7
       }
     },
@@ -8717,6 +8876,16 @@
         "sourcePath": "src/features/headless/adapters/FileFlowRuntimeStore.ts"
       },
       {
+        "fromPath": "src/features/headless/adapters/FileFlowRuntimeStore.ts",
+        "toPath": "src/features/execution/adapters/createFileFlowPersistenceSupport.ts",
+        "sourcePath": "src/features/headless/adapters/FileFlowRuntimeStore.ts"
+      },
+      {
+        "fromPath": "src/features/headless/adapters/FileFlowRuntimeStore.ts",
+        "toPath": "src/features/headless/adapters/toApprovalAvailabilityRecord.ts",
+        "sourcePath": "src/features/headless/adapters/FileFlowRuntimeStore.ts"
+      },
+      {
         "fromPath": "src/features/headless/adapters/InMemoryFlowObservability.ts",
         "toPath": "src/types/headless.ts",
         "sourcePath": "src/features/headless/adapters/InMemoryFlowObservability.ts"
@@ -8724,6 +8893,11 @@
       {
         "fromPath": "src/features/headless/adapters/InMemoryFlowRuntimeStore.ts",
         "toPath": "src/types/headless.ts",
+        "sourcePath": "src/features/headless/adapters/InMemoryFlowRuntimeStore.ts"
+      },
+      {
+        "fromPath": "src/features/headless/adapters/InMemoryFlowRuntimeStore.ts",
+        "toPath": "src/features/headless/adapters/toApprovalAvailabilityRecord.ts",
         "sourcePath": "src/features/headless/adapters/InMemoryFlowRuntimeStore.ts"
       },
       {
@@ -11448,6 +11622,36 @@
         "sourcePath": "src/features/headless/adapters/createFlowHttpHandler.ts"
       },
       {
+        "fromSymbol": "routeApprovalAvailabilityAsync",
+        "toSymbol": "matches",
+        "callExpression": "matches",
+        "sourcePath": "src/features/headless/adapters/createFlowHttpHandler.ts"
+      },
+      {
+        "fromSymbol": "routeApprovalAvailabilityAsync",
+        "toSymbol": "value",
+        "callExpression": "value",
+        "sourcePath": "src/features/headless/adapters/createFlowHttpHandler.ts"
+      },
+      {
+        "fromSymbol": "routeApprovalAvailabilityAsync",
+        "toSymbol": "getApprovalAvailabilityAsync",
+        "callExpression": "runtime.getApprovalAvailabilityAsync",
+        "sourcePath": "src/features/headless/adapters/createFlowHttpHandler.ts"
+      },
+      {
+        "fromSymbol": "routeApprovalAvailabilityAsync",
+        "toSymbol": "number",
+        "callExpression": "number",
+        "sourcePath": "src/features/headless/adapters/createFlowHttpHandler.ts"
+      },
+      {
+        "fromSymbol": "routeApprovalAvailabilityAsync",
+        "toSymbol": "scope",
+        "callExpression": "scope",
+        "sourcePath": "src/features/headless/adapters/createFlowHttpHandler.ts"
+      },
+      {
         "fromSymbol": "routeWorkflowAsync",
         "toSymbol": "matches",
         "callExpression": "matches",
@@ -11706,9 +11910,33 @@
         "sourcePath": "src/features/headless/adapters/createFlowOpenApi.ts"
       },
       {
+        "fromSymbol": "schemas",
+        "toSymbol": "approvalAvailabilitySchema",
+        "callExpression": "approvalAvailabilitySchema",
+        "sourcePath": "src/features/headless/adapters/createFlowOpenApi.ts"
+      },
+      {
         "fromSymbol": "paths",
         "toSymbol": "operation",
         "callExpression": "operation",
+        "sourcePath": "src/features/headless/adapters/createFlowOpenApi.ts"
+      },
+      {
+        "fromSymbol": "paths",
+        "toSymbol": "approvalAvailabilityOperation",
+        "callExpression": "approvalAvailabilityOperation",
+        "sourcePath": "src/features/headless/adapters/createFlowOpenApi.ts"
+      },
+      {
+        "fromSymbol": "approvalAvailabilityOperation",
+        "toSymbol": "operation",
+        "callExpression": "operation",
+        "sourcePath": "src/features/headless/adapters/createFlowOpenApi.ts"
+      },
+      {
+        "fromSymbol": "approvalAvailabilityOperation",
+        "toSymbol": "pathParameter",
+        "callExpression": "pathParameter",
         "sourcePath": "src/features/headless/adapters/createFlowOpenApi.ts"
       },
       {
@@ -11749,8 +11977,8 @@
       },
       {
         "fromSymbol": "FileFlowRuntimeStore",
-        "toSymbol": "createSerializedCall",
-        "callExpression": "createSerializedCall",
+        "toSymbol": "createFileFlowPersistenceSupport",
+        "callExpression": "createFileFlowPersistenceSupport",
         "sourcePath": "src/features/headless/adapters/FileFlowRuntimeStore.ts"
       },
       {
@@ -11781,6 +12009,24 @@
         "fromSymbol": "src/features/headless/adapters/FileFlowRuntimeStore.ts",
         "toSymbol": "readAsync",
         "callExpression": "readAsync",
+        "sourcePath": "src/features/headless/adapters/FileFlowRuntimeStore.ts"
+      },
+      {
+        "fromSymbol": "getApprovalAsync",
+        "toSymbol": "runAsync",
+        "callExpression": "calls.runAsync",
+        "sourcePath": "src/features/headless/adapters/FileFlowRuntimeStore.ts"
+      },
+      {
+        "fromSymbol": "src/features/headless/adapters/FileFlowRuntimeStore.ts",
+        "toSymbol": "toApprovalAvailabilityRecord",
+        "callExpression": "toApprovalAvailabilityRecord",
+        "sourcePath": "src/features/headless/adapters/FileFlowRuntimeStore.ts"
+      },
+      {
+        "fromSymbol": "src/features/headless/adapters/FileFlowRuntimeStore.ts",
+        "toSymbol": "same",
+        "callExpression": "same",
         "sourcePath": "src/features/headless/adapters/FileFlowRuntimeStore.ts"
       },
       {
@@ -11940,12 +12186,6 @@
         "sourcePath": "src/features/headless/adapters/FileFlowRuntimeStore.ts"
       },
       {
-        "fromSymbol": "src/features/headless/adapters/FileFlowRuntimeStore.ts",
-        "toSymbol": "sameScope",
-        "callExpression": "sameScope",
-        "sourcePath": "src/features/headless/adapters/FileFlowRuntimeStore.ts"
-      },
-      {
         "fromSymbol": "saveRunAsync",
         "toSymbol": "updateAsync",
         "callExpression": "updateAsync",
@@ -12013,8 +12253,8 @@
       },
       {
         "fromSymbol": "src/features/headless/adapters/FileFlowRuntimeStore.ts",
-        "toSymbol": "workflowKey",
-        "callExpression": "workflowKey",
+        "toSymbol": "flowKey",
+        "callExpression": "flowKey",
         "sourcePath": "src/features/headless/adapters/FileFlowRuntimeStore.ts"
       },
       {
@@ -12025,8 +12265,8 @@
       },
       {
         "fromSymbol": "replaceWorkflow",
-        "toSymbol": "workflowKey",
-        "callExpression": "workflowKey",
+        "toSymbol": "flowKey",
+        "callExpression": "flowKey",
         "sourcePath": "src/features/headless/adapters/FileFlowRuntimeStore.ts"
       },
       {
@@ -12039,6 +12279,18 @@
         "fromSymbol": "getRunAsync",
         "toSymbol": "runKey",
         "callExpression": "runKey",
+        "sourcePath": "src/features/headless/adapters/InMemoryFlowRuntimeStore.ts"
+      },
+      {
+        "fromSymbol": "getApprovalAsync",
+        "toSymbol": "toApprovalAvailabilityRecord",
+        "callExpression": "toApprovalAvailabilityRecord",
+        "sourcePath": "src/features/headless/adapters/InMemoryFlowRuntimeStore.ts"
+      },
+      {
+        "fromSymbol": "getApprovalAsync",
+        "toSymbol": "approvalKey",
+        "callExpression": "approvalKey",
         "sourcePath": "src/features/headless/adapters/InMemoryFlowRuntimeStore.ts"
       },
       {
@@ -12222,6 +12474,12 @@
         "sourcePath": "src/features/headless/application/createFlowRuntime.ts"
       },
       {
+        "fromSymbol": "getApprovalAvailabilityAsync",
+        "toSymbol": "getApprovalAvailabilityAsync",
+        "callExpression": "getApprovalAvailabilityAsync",
+        "sourcePath": "src/features/headless/application/createFlowRuntime.ts"
+      },
+      {
         "fromSymbol": "getWorkflowAsync",
         "toSymbol": "getWorkflowAsync",
         "callExpression": "dependencies.store.getWorkflowAsync",
@@ -12303,6 +12561,30 @@
         "fromSymbol": "triggerAsync",
         "toSymbol": "triggerAsync",
         "callExpression": "triggerAsync",
+        "sourcePath": "src/features/headless/application/createFlowRuntime.ts"
+      },
+      {
+        "fromSymbol": "getApprovalAvailabilityAsync",
+        "toSymbol": "getRunAsync",
+        "callExpression": "store.getRunAsync",
+        "sourcePath": "src/features/headless/application/createFlowRuntime.ts"
+      },
+      {
+        "fromSymbol": "getApprovalAvailabilityAsync",
+        "toSymbol": "getApprovalAsync",
+        "callExpression": "store.getApprovalAsync",
+        "sourcePath": "src/features/headless/application/createFlowRuntime.ts"
+      },
+      {
+        "fromSymbol": "getApprovalAvailabilityAsync",
+        "toSymbol": "approvalStatus",
+        "callExpression": "approvalStatus",
+        "sourcePath": "src/features/headless/application/createFlowRuntime.ts"
+      },
+      {
+        "fromSymbol": "getApprovalAvailabilityAsync",
+        "toSymbol": "now",
+        "callExpression": "clock.now",
         "sourcePath": "src/features/headless/application/createFlowRuntime.ts"
       },
       {
@@ -13431,6 +13713,11 @@
       },
       {
         "fromSymbol": "FlowRuntime",
+        "toType": "FlowApprovalAvailability",
+        "sourcePath": "src/types/headless.ts"
+      },
+      {
+        "fromSymbol": "FlowRuntime",
         "toType": "FlowApprovalRequest",
         "sourcePath": "src/types/headless.ts"
       },
@@ -13502,6 +13789,11 @@
       {
         "fromSymbol": "FlowRuntimeDependencies",
         "toType": "Readonly",
+        "sourcePath": "src/types/headless.ts"
+      },
+      {
+        "fromSymbol": "FlowRuntimeStorePort",
+        "toType": "FlowApprovalAvailabilityRecord",
         "sourcePath": "src/types/headless.ts"
       },
       {
