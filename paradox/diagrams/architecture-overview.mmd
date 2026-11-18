@@ -8,17 +8,41 @@ graph TD
   package__ankhorage_flow -.-> module_src_ai_ts
   module_src_capabilities_index_ts["src/capabilities/index.ts"]
   package__ankhorage_flow -.-> module_src_capabilities_index_ts
+  module_src_cli_commands_api_ts["src/cli/commands/api.ts"]
+  package__ankhorage_flow -.-> module_src_cli_commands_api_ts
+  module_src_cli_commands_api_ts --> module_src_cli_loadFlowRuntimeAsync_ts
+  module_src_cli_commands_api_ts --> module_src_cli_registerProcessShutdown_ts
+  module_src_cli_commands_api_ts --> module_src_server_ts
+  module_src_cli_commands_api_ts --> module_src_utils_validateFlowApiHostname_ts
   module_src_cli_commands_serve_ts["src/cli/commands/serve.ts"]
   package__ankhorage_flow -.-> module_src_cli_commands_serve_ts
+  module_src_cli_commands_serve_ts --> module_src_cli_registerProcessShutdown_ts
   module_src_cli_commands_serve_ts --> module_src_server_ts
+  module_src_cli_commands_serve_ts --> module_src_utils_validateFlowApiHostname_ts
+  module_src_cli_commands_worker_ts["src/cli/commands/worker.ts"]
+  package__ankhorage_flow -.-> module_src_cli_commands_worker_ts
+  module_src_cli_commands_worker_ts --> module_src_cli_loadFlowRuntimeAsync_ts
+  module_src_cli_commands_worker_ts --> module_src_cli_registerProcessShutdown_ts
+  module_src_cli_commands_worker_ts --> module_src_server_ts
   module_src_cli_index_ts["src/cli/index.ts"]
   package__ankhorage_flow -.-> module_src_cli_index_ts
   module_src_cli_index_ts --> module_package_json
   module_src_cli_index_ts --> module_src_capabilities_index_ts
+  module_src_cli_index_ts --> module_src_cli_commands_api_ts
   module_src_cli_index_ts --> module_src_cli_commands_serve_ts
+  module_src_cli_index_ts --> module_src_cli_commands_worker_ts
+  module_src_cli_loadFlowRuntimeAsync_ts["src/cli/loadFlowRuntimeAsync.ts"]
+  package__ankhorage_flow -.-> module_src_cli_loadFlowRuntimeAsync_ts
+  module_src_cli_loadFlowRuntimeAsync_ts --> module_src_types_headless_ts
+  module_src_cli_registerProcessShutdown_ts["src/cli/registerProcessShutdown.ts"]
+  package__ankhorage_flow -.-> module_src_cli_registerProcessShutdown_ts
   module_src_cli_standalone_ts["src/cli/standalone.ts"]
   package__ankhorage_flow -.-> module_src_cli_standalone_ts
-  module_src_cli_standalone_ts --> module_src_server_ts
+  module_src_cli_standalone_ts --> module_src_cli_commands_api_ts
+  module_src_cli_standalone_ts --> module_src_cli_commands_serve_ts
+  module_src_cli_standalone_ts --> module_src_cli_commands_worker_ts
+  module_src_deployment_ts["src/deployment.ts"]
+  package__ankhorage_flow -.-> module_src_deployment_ts
   module_src_execution_ts["src/execution.ts"]
   package__ankhorage_flow -.-> module_src_execution_ts
   module_src_features_ai_application_executeAiNodeAsync_ts["src/features/ai/application/executeAiNodeAsync.ts"]
@@ -32,6 +56,10 @@ graph TD
   module_src_features_ai_application_executeBoundedAgentAsync_ts --> module_src_types_ai_ts
   module_src_features_ai_FlowAiError_ts["src/features/ai/FlowAiError.ts"]
   package__ankhorage_flow -.-> module_src_features_ai_FlowAiError_ts
+  module_src_features_deployment_createFlowDeploymentDescriptor_ts["src/features/deployment/createFlowDeploymentDescriptor.ts"]
+  package__ankhorage_flow -.-> module_src_features_deployment_createFlowDeploymentDescriptor_ts
+  module_src_features_deployment_createFlowDeploymentDescriptor_ts --> module_src_types_deployment_ts
+  module_src_features_deployment_createFlowDeploymentDescriptor_ts --> module_src_utils_validateFlowApiHostname_ts
   module_src_features_execution_adapters_createFileFlowPersistenceSupport_ts["src/features/execution/adapters/createFileFlowPersistenceSupport.ts"]
   package__ankhorage_flow -.-> module_src_features_execution_adapters_createFileFlowPersistenceSupport_ts
   module_src_features_execution_adapters_createFileFlowPersistenceSupport_ts --> module_src_features_execution_ports_FlowPersistencePort_ts
@@ -221,11 +249,14 @@ graph TD
   module_src_server_ts --> module_src_features_headless_adapters_InMemoryFlowRuntimeStore_ts
   module_src_server_ts --> module_src_features_headless_application_createFlowRuntime_ts
   module_src_server_ts --> module_src_types_headless_ts
+  module_src_server_ts --> module_src_utils_validateFlowApiHostname_ts
   module_src_social_ts["src/social.ts"]
   package__ankhorage_flow -.-> module_src_social_ts
   module_src_types_ai_ts["src/types/ai.ts"]
   package__ankhorage_flow -.-> module_src_types_ai_ts
   module_src_types_ai_ts --> module_src_types_security_ts
+  module_src_types_deployment_ts["src/types/deployment.ts"]
+  package__ankhorage_flow -.-> module_src_types_deployment_ts
   module_src_types_durableExecution_ts["src/types/durableExecution.ts"]
   package__ankhorage_flow -.-> module_src_types_durableExecution_ts
   module_src_types_durableExecution_ts --> module_src_types_headless_ts
@@ -243,3 +274,5 @@ graph TD
   module_src_types_mcp_ts --> module_src_types_security_ts
   module_src_types_security_ts["src/types/security.ts"]
   package__ankhorage_flow -.-> module_src_types_security_ts
+  module_src_utils_validateFlowApiHostname_ts["src/utils/validateFlowApiHostname.ts"]
+  package__ankhorage_flow -.-> module_src_utils_validateFlowApiHostname_ts

@@ -14,7 +14,7 @@
     {
       "id": "npm",
       "label": "npm",
-      "value": "v0.7.0",
+      "value": "v0.8.0",
       "color": "cb3837"
     },
     {
@@ -135,13 +135,40 @@
       ]
     },
     {
+      "path": "src/cli/commands/api.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/cli/loadFlowRuntimeAsync.ts",
+        "src/cli/registerProcessShutdown.ts",
+        "src/server.ts",
+        "src/utils/validateFlowApiHostname.ts"
+      ],
+      "exports": [
+        "api"
+      ]
+    },
+    {
       "path": "src/cli/commands/serve.ts",
       "isEntrypoint": false,
       "dependencies": [
-        "src/server.ts"
+        "src/cli/registerProcessShutdown.ts",
+        "src/server.ts",
+        "src/utils/validateFlowApiHostname.ts"
       ],
       "exports": [
         "serve"
+      ]
+    },
+    {
+      "path": "src/cli/commands/worker.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/cli/loadFlowRuntimeAsync.ts",
+        "src/cli/registerProcessShutdown.ts",
+        "src/server.ts"
+      ],
+      "exports": [
+        "worker"
       ]
     },
     {
@@ -150,19 +177,50 @@
       "dependencies": [
         "package.json",
         "src/capabilities/index.ts",
-        "src/cli/commands/serve.ts"
+        "src/cli/commands/api.ts",
+        "src/cli/commands/serve.ts",
+        "src/cli/commands/worker.ts"
       ],
       "exports": [
         "default"
       ]
     },
     {
+      "path": "src/cli/loadFlowRuntimeAsync.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/types/headless.ts"
+      ],
+      "exports": [
+        "loadFlowRuntimeAsync"
+      ]
+    },
+    {
+      "path": "src/cli/registerProcessShutdown.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": [
+        "registerProcessShutdown"
+      ]
+    },
+    {
       "path": "src/cli/standalone.ts",
       "isEntrypoint": false,
       "dependencies": [
-        "src/server.ts"
+        "src/cli/commands/api.ts",
+        "src/cli/commands/serve.ts",
+        "src/cli/commands/worker.ts"
       ],
       "exports": []
+    },
+    {
+      "path": "src/deployment.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": [
+        "createFlowDeploymentDescriptor",
+        "FlowDeploymentDescriptorInput"
+      ]
     },
     {
       "path": "src/execution.ts",
@@ -206,6 +264,17 @@
       "dependencies": [],
       "exports": [
         "FlowAiError"
+      ]
+    },
+    {
+      "path": "src/features/deployment/createFlowDeploymentDescriptor.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/types/deployment.ts",
+        "src/utils/validateFlowApiHostname.ts"
+      ],
+      "exports": [
+        "createFlowDeploymentDescriptor"
       ]
     },
     {
@@ -767,10 +836,13 @@
         "src/features/headless/adapters/FileFlowRuntimeStore.ts",
         "src/features/headless/adapters/InMemoryFlowRuntimeStore.ts",
         "src/features/headless/application/createFlowRuntime.ts",
-        "src/types/headless.ts"
+        "src/types/headless.ts",
+        "src/utils/validateFlowApiHostname.ts"
       ],
       "exports": [
-        "startFlowServerAsync"
+        "startFlowApiServerAsync",
+        "startFlowServerAsync",
+        "startFlowWorkerAsync"
       ]
     },
     {
@@ -802,6 +874,14 @@
         "FlowAiSchema",
         "FlowAiSecurityContext",
         "FlowAiTelemetry"
+      ]
+    },
+    {
+      "path": "src/types/deployment.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": [
+        "FlowDeploymentDescriptorInput"
       ]
     },
     {
@@ -902,6 +982,14 @@
         "FlowSecurityPermit",
         "FlowSecurityPort",
         "FlowSecurityTarget"
+      ]
+    },
+    {
+      "path": "src/utils/validateFlowApiHostname.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": [
+        "validateFlowApiHostname"
       ]
     }
   ],
@@ -3984,6 +4072,72 @@
   "components": [],
   "sourceFunctions": [
     {
+      "name": "api",
+      "description": "Start only the authenticated Flow API against an explicitly composed shared runtime.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/cli/commands/api.ts",
+        "line": 7,
+        "column": 14
+      }
+    },
+    {
+      "name": "requireApiToken",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/cli/commands/api.ts",
+        "line": 22,
+        "column": 7
+      }
+    },
+    {
+      "name": "createAccess",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/cli/commands/api.ts",
+        "line": 29,
+        "column": 7
+      }
+    },
+    {
+      "name": "createAuthenticator",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/cli/commands/api.ts",
+        "line": 44,
+        "column": 7
+      }
+    },
+    {
+      "name": "readPort",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/cli/commands/api.ts",
+        "line": 59,
+        "column": 7
+      }
+    },
+    {
+      "name": "readHostname",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/cli/commands/api.ts",
+        "line": 70,
+        "column": 7
+      }
+    },
+    {
       "name": "serve",
       "description": "Start the authenticated standalone Flow server through the existing Ankh provider discovery.",
       "see": [],
@@ -4001,7 +4155,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/cli/commands/serve.ts",
-        "line": 44,
+        "line": 47,
         "column": 7
       }
     },
@@ -4012,8 +4166,85 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/cli/commands/serve.ts",
-        "line": 54,
+        "line": 57,
         "column": 7
+      }
+    },
+    {
+      "name": "readHostname",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/cli/commands/serve.ts",
+        "line": 66,
+        "column": 7
+      }
+    },
+    {
+      "name": "worker",
+      "description": "Start only the durable Flow worker against an explicitly composed shared runtime.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/cli/commands/worker.ts",
+        "line": 6,
+        "column": 14
+      }
+    },
+    {
+      "name": "loadFlowRuntimeAsync",
+      "description": "Load the deployment-selected runtime composition that owns a shared durable backend.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/cli/loadFlowRuntimeAsync.ts",
+        "line": 7,
+        "column": 14
+      }
+    },
+    {
+      "name": "runtimeModuleSpecifier",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/cli/loadFlowRuntimeAsync.ts",
+        "line": 17,
+        "column": 7
+      }
+    },
+    {
+      "name": "isFlowRuntimeFactoryModule",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/cli/loadFlowRuntimeAsync.ts",
+        "line": 21,
+        "column": 7
+      }
+    },
+    {
+      "name": "registerProcessShutdown",
+      "description": "Stop a Flow process exactly once when its host requests graceful termination.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/cli/registerProcessShutdown.ts",
+        "line": 2,
+        "column": 14
+      }
+    },
+    {
+      "name": "stop",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/cli/registerProcessShutdown.ts",
+        "line": 4,
+        "column": 9
       }
     },
     {
@@ -4023,7 +4254,18 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/cli/standalone.ts",
-        "line": 4,
+        "line": 8,
+        "column": 7
+      }
+    },
+    {
+      "name": "commandFor",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/cli/standalone.ts",
+        "line": 11,
         "column": 7
       }
     },
@@ -4245,6 +4487,171 @@
         "filePath": "src/features/ai/application/executeBoundedAgentAsync.ts",
         "line": 5,
         "column": 14
+      }
+    },
+    {
+      "name": "createFlowDeploymentDescriptor",
+      "description": "Compose exactly one public Flow API and one independent worker workload from explicit portable inputs.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/deployment/createFlowDeploymentDescriptor.ts",
+        "line": 12,
+        "column": 14
+      }
+    },
+    {
+      "name": "apiWorkloadFor",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/deployment/createFlowDeploymentDescriptor.ts",
+        "line": 38,
+        "column": 7
+      }
+    },
+    {
+      "name": "workerWorkloadFor",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/deployment/createFlowDeploymentDescriptor.ts",
+        "line": 63,
+        "column": 7
+      }
+    },
+    {
+      "name": "assertDeploymentInput",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/deployment/createFlowDeploymentDescriptor.ts",
+        "line": 81,
+        "column": 7
+      }
+    },
+    {
+      "name": "secretEnvironment",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/deployment/createFlowDeploymentDescriptor.ts",
+        "line": 99,
+        "column": 7
+      }
+    },
+    {
+      "name": "mergeEnvironment",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/deployment/createFlowDeploymentDescriptor.ts",
+        "line": 107,
+        "column": 7
+      }
+    },
+    {
+      "name": "assertEnvironmentKeys",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/deployment/createFlowDeploymentDescriptor.ts",
+        "line": 113,
+        "column": 7
+      }
+    },
+    {
+      "name": "assertNoEnvironmentKeyCollisions",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/deployment/createFlowDeploymentDescriptor.ts",
+        "line": 125,
+        "column": 7
+      }
+    },
+    {
+      "name": "dependenciesOf",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/deployment/createFlowDeploymentDescriptor.ts",
+        "line": 140,
+        "column": 7
+      }
+    },
+    {
+      "name": "isImmutableImage",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/deployment/createFlowDeploymentDescriptor.ts",
+        "line": 146,
+        "column": 7
+      }
+    },
+    {
+      "name": "isPositivePort",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/deployment/createFlowDeploymentDescriptor.ts",
+        "line": 152,
+        "column": 7
+      }
+    },
+    {
+      "name": "isNonEmptyRecord",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/deployment/createFlowDeploymentDescriptor.ts",
+        "line": 156,
+        "column": 7
+      }
+    },
+    {
+      "name": "isText",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/deployment/createFlowDeploymentDescriptor.ts",
+        "line": 160,
+        "column": 7
+      }
+    },
+    {
+      "name": "isSecretReference",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/deployment/createFlowDeploymentDescriptor.ts",
+        "line": 163,
+        "column": 7
+      }
+    },
+    {
+      "name": "isUnknownText",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/deployment/createFlowDeploymentDescriptor.ts",
+        "line": 178,
+        "column": 7
       }
     },
     {
@@ -7361,13 +7768,35 @@
       }
     },
     {
-      "name": "startFlowServerAsync",
-      "description": "Start a standalone Bun HTTP server and a client-independent Flow worker loop.",
+      "name": "startFlowApiServerAsync",
+      "description": "Start the authenticated HTTP API without starting a durable worker.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/server.ts",
-        "line": 14,
+        "line": 15,
+        "column": 14
+      }
+    },
+    {
+      "name": "startFlowWorkerAsync",
+      "description": "Run one client-independent durable Flow worker loop without opening an HTTP listener.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/server.ts",
+        "line": 48,
+        "column": 14
+      }
+    },
+    {
+      "name": "startFlowServerAsync",
+      "description": "Start the historical combined API and worker process through the separated canonical boundaries.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/server.ts",
+        "line": 67,
         "column": 14
       }
     },
@@ -7378,7 +7807,18 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/server.ts",
-        "line": 49,
+        "line": 93,
+        "column": 7
+      }
+    },
+    {
+      "name": "assertWorkerInput",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/server.ts",
+        "line": 101,
         "column": 7
       }
     },
@@ -7389,7 +7829,51 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/server.ts",
-        "line": 59,
+        "line": 114,
+        "column": 7
+      }
+    },
+    {
+      "name": "createWorkerLoop",
+      "description": "Serialize worker ticks, retain failures at the process edge, and fence shutdown from rescheduling.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/server.ts",
+        "line": 125,
+        "column": 7
+      }
+    },
+    {
+      "name": "isStopped",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/server.ts",
+        "line": 133,
+        "column": 9
+      }
+    },
+    {
+      "name": "runAsync",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/server.ts",
+        "line": 134,
+        "column": 9
+      }
+    },
+    {
+      "name": "reportWorkerError",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/server.ts",
+        "line": 162,
         "column": 7
       }
     },
@@ -7400,7 +7884,40 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/server.ts",
-        "line": 70,
+        "line": 168,
+        "column": 7
+      }
+    },
+    {
+      "name": "validateFlowApiHostname",
+      "description": "Validate an explicit numeric listener address without allowing DNS-dependent bind behavior.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/utils/validateFlowApiHostname.ts",
+        "line": 4,
+        "column": 14
+      }
+    },
+    {
+      "name": "isIpv6LoopbackAddress",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/utils/validateFlowApiHostname.ts",
+        "line": 16,
+        "column": 7
+      }
+    },
+    {
+      "name": "isIpv4MappedIpv6Loopback",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/utils/validateFlowApiHostname.ts",
+        "line": 20,
         "column": 7
       }
     }
@@ -7548,6 +8065,16 @@
         "fromPath": "src/ai.ts",
         "toPath": "src/types/ai.ts",
         "sourcePath": "src/ai.ts"
+      },
+      {
+        "fromPath": "src/deployment.ts",
+        "toPath": "src/features/deployment/createFlowDeploymentDescriptor.ts",
+        "sourcePath": "src/deployment.ts"
+      },
+      {
+        "fromPath": "src/deployment.ts",
+        "toPath": "src/types/deployment.ts",
+        "sourcePath": "src/deployment.ts"
       },
       {
         "fromPath": "src/execution.ts",
@@ -7725,6 +8252,11 @@
         "sourcePath": "src/server.ts"
       },
       {
+        "fromPath": "src/server.ts",
+        "toPath": "src/utils/validateFlowApiHostname.ts",
+        "sourcePath": "src/server.ts"
+      },
+      {
         "fromPath": "src/cli/index.ts",
         "toPath": "package.json",
         "sourcePath": "src/cli/index.ts"
@@ -7736,12 +8268,37 @@
       },
       {
         "fromPath": "src/cli/index.ts",
+        "toPath": "src/cli/commands/api.ts",
+        "sourcePath": "src/cli/index.ts"
+      },
+      {
+        "fromPath": "src/cli/index.ts",
         "toPath": "src/cli/commands/serve.ts",
         "sourcePath": "src/cli/index.ts"
       },
       {
+        "fromPath": "src/cli/index.ts",
+        "toPath": "src/cli/commands/worker.ts",
+        "sourcePath": "src/cli/index.ts"
+      },
+      {
+        "fromPath": "src/cli/loadFlowRuntimeAsync.ts",
+        "toPath": "src/types/headless.ts",
+        "sourcePath": "src/cli/loadFlowRuntimeAsync.ts"
+      },
+      {
         "fromPath": "src/cli/standalone.ts",
-        "toPath": "src/server.ts",
+        "toPath": "src/cli/commands/api.ts",
+        "sourcePath": "src/cli/standalone.ts"
+      },
+      {
+        "fromPath": "src/cli/standalone.ts",
+        "toPath": "src/cli/commands/serve.ts",
+        "sourcePath": "src/cli/standalone.ts"
+      },
+      {
+        "fromPath": "src/cli/standalone.ts",
+        "toPath": "src/cli/commands/worker.ts",
         "sourcePath": "src/cli/standalone.ts"
       },
       {
@@ -7785,9 +8342,64 @@
         "sourcePath": "src/types/mcp.ts"
       },
       {
+        "fromPath": "src/cli/commands/api.ts",
+        "toPath": "src/server.ts",
+        "sourcePath": "src/cli/commands/api.ts"
+      },
+      {
+        "fromPath": "src/cli/commands/api.ts",
+        "toPath": "src/utils/validateFlowApiHostname.ts",
+        "sourcePath": "src/cli/commands/api.ts"
+      },
+      {
+        "fromPath": "src/cli/commands/api.ts",
+        "toPath": "src/cli/loadFlowRuntimeAsync.ts",
+        "sourcePath": "src/cli/commands/api.ts"
+      },
+      {
+        "fromPath": "src/cli/commands/api.ts",
+        "toPath": "src/cli/registerProcessShutdown.ts",
+        "sourcePath": "src/cli/commands/api.ts"
+      },
+      {
         "fromPath": "src/cli/commands/serve.ts",
         "toPath": "src/server.ts",
         "sourcePath": "src/cli/commands/serve.ts"
+      },
+      {
+        "fromPath": "src/cli/commands/serve.ts",
+        "toPath": "src/utils/validateFlowApiHostname.ts",
+        "sourcePath": "src/cli/commands/serve.ts"
+      },
+      {
+        "fromPath": "src/cli/commands/serve.ts",
+        "toPath": "src/cli/registerProcessShutdown.ts",
+        "sourcePath": "src/cli/commands/serve.ts"
+      },
+      {
+        "fromPath": "src/cli/commands/worker.ts",
+        "toPath": "src/server.ts",
+        "sourcePath": "src/cli/commands/worker.ts"
+      },
+      {
+        "fromPath": "src/cli/commands/worker.ts",
+        "toPath": "src/cli/loadFlowRuntimeAsync.ts",
+        "sourcePath": "src/cli/commands/worker.ts"
+      },
+      {
+        "fromPath": "src/cli/commands/worker.ts",
+        "toPath": "src/cli/registerProcessShutdown.ts",
+        "sourcePath": "src/cli/commands/worker.ts"
+      },
+      {
+        "fromPath": "src/features/deployment/createFlowDeploymentDescriptor.ts",
+        "toPath": "src/types/deployment.ts",
+        "sourcePath": "src/features/deployment/createFlowDeploymentDescriptor.ts"
+      },
+      {
+        "fromPath": "src/features/deployment/createFlowDeploymentDescriptor.ts",
+        "toPath": "src/utils/validateFlowApiHostname.ts",
+        "sourcePath": "src/features/deployment/createFlowDeploymentDescriptor.ts"
       },
       {
         "fromPath": "src/features/mcp/boundedMcpAsync.ts",
@@ -8292,33 +8904,81 @@
     ],
     "calls": [
       {
-        "fromSymbol": "startFlowServerAsync",
+        "fromSymbol": "startFlowApiServerAsync",
         "toSymbol": "assertServerInput",
         "callExpression": "assertServerInput",
         "sourcePath": "src/server.ts"
       },
       {
-        "fromSymbol": "startFlowServerAsync",
+        "fromSymbol": "startFlowApiServerAsync",
+        "toSymbol": "validateFlowApiHostname",
+        "callExpression": "validateFlowApiHostname",
+        "sourcePath": "src/server.ts"
+      },
+      {
+        "fromSymbol": "startFlowApiServerAsync",
         "toSymbol": "runtimeFor",
         "callExpression": "runtimeFor",
         "sourcePath": "src/server.ts"
       },
       {
-        "fromSymbol": "startFlowServerAsync",
+        "fromSymbol": "startFlowApiServerAsync",
         "toSymbol": "securityFor",
         "callExpression": "securityFor",
         "sourcePath": "src/server.ts"
       },
       {
-        "fromSymbol": "startFlowServerAsync",
+        "fromSymbol": "startFlowApiServerAsync",
         "toSymbol": "createFlowHttpHandler",
         "callExpression": "createFlowHttpHandler",
         "sourcePath": "src/server.ts"
       },
       {
-        "fromSymbol": "src/server.ts",
-        "toSymbol": "runWorkerTickAsync",
-        "callExpression": "runtime.runWorkerTickAsync",
+        "fromSymbol": "startFlowWorkerAsync",
+        "toSymbol": "assertWorkerInput",
+        "callExpression": "assertWorkerInput",
+        "sourcePath": "src/server.ts"
+      },
+      {
+        "fromSymbol": "startFlowWorkerAsync",
+        "toSymbol": "runtimeFor",
+        "callExpression": "runtimeFor",
+        "sourcePath": "src/server.ts"
+      },
+      {
+        "fromSymbol": "startFlowWorkerAsync",
+        "toSymbol": "createWorkerLoop",
+        "callExpression": "createWorkerLoop",
+        "sourcePath": "src/server.ts"
+      },
+      {
+        "fromSymbol": "startFlowWorkerAsync",
+        "toSymbol": "start",
+        "callExpression": "loop.start",
+        "sourcePath": "src/server.ts"
+      },
+      {
+        "fromSymbol": "startFlowServerAsync",
+        "toSymbol": "startFlowApiServerAsync",
+        "callExpression": "startFlowApiServerAsync",
+        "sourcePath": "src/server.ts"
+      },
+      {
+        "fromSymbol": "startFlowServerAsync",
+        "toSymbol": "startFlowWorkerAsync",
+        "callExpression": "startFlowWorkerAsync",
+        "sourcePath": "src/server.ts"
+      },
+      {
+        "fromSymbol": "stop",
+        "toSymbol": "stop",
+        "callExpression": "worker.stop",
+        "sourcePath": "src/server.ts"
+      },
+      {
+        "fromSymbol": "stop",
+        "toSymbol": "stop",
+        "callExpression": "api.stop",
         "sourcePath": "src/server.ts"
       },
       {
@@ -8352,9 +9012,105 @@
         "sourcePath": "src/server.ts"
       },
       {
+        "fromSymbol": "runAsync",
+        "toSymbol": "__function",
+        "callExpression": "(async () => {\n      if (isStopped()) return;\n      try {\n        await runtime.runWorkerTickAsync();\n      } catch (error) {\n        try {\n          onError(error);\n        } catch (reportingError) {\n          reportWorkerError(reportingError);\n        }\n      }\n      if (!isStopped()) timer = setTimeout(runAsync, intervalMs);\n    })",
+        "sourcePath": "src/server.ts"
+      },
+      {
+        "fromSymbol": "src/server.ts",
+        "toSymbol": "isStopped",
+        "callExpression": "isStopped",
+        "sourcePath": "src/server.ts"
+      },
+      {
+        "fromSymbol": "src/server.ts",
+        "toSymbol": "runWorkerTickAsync",
+        "callExpression": "runtime.runWorkerTickAsync",
+        "sourcePath": "src/server.ts"
+      },
+      {
+        "fromSymbol": "src/server.ts",
+        "toSymbol": "onError",
+        "callExpression": "onError",
+        "sourcePath": "src/server.ts"
+      },
+      {
+        "fromSymbol": "src/server.ts",
+        "toSymbol": "reportWorkerError",
+        "callExpression": "reportWorkerError",
+        "sourcePath": "src/server.ts"
+      },
+      {
+        "fromSymbol": "start",
+        "toSymbol": "runAsync",
+        "callExpression": "runAsync",
+        "sourcePath": "src/server.ts"
+      },
+      {
+        "fromSymbol": "handler",
+        "toSymbol": "api",
+        "callExpression": "api",
+        "sourcePath": "src/cli/index.ts"
+      },
+      {
+        "fromSymbol": "handler",
+        "toSymbol": "serve",
+        "callExpression": "serve",
+        "sourcePath": "src/cli/index.ts"
+      },
+      {
+        "fromSymbol": "handler",
+        "toSymbol": "worker",
+        "callExpression": "worker",
+        "sourcePath": "src/cli/index.ts"
+      },
+      {
+        "fromSymbol": "loadFlowRuntimeAsync",
+        "toSymbol": "runtimeModuleSpecifier",
+        "callExpression": "runtimeModuleSpecifier",
+        "sourcePath": "src/cli/loadFlowRuntimeAsync.ts"
+      },
+      {
+        "fromSymbol": "loadFlowRuntimeAsync",
+        "toSymbol": "isFlowRuntimeFactoryModule",
+        "callExpression": "isFlowRuntimeFactoryModule",
+        "sourcePath": "src/cli/loadFlowRuntimeAsync.ts"
+      },
+      {
+        "fromSymbol": "loadFlowRuntimeAsync",
+        "toSymbol": "createFlowRuntimeAsync",
+        "callExpression": "module.createFlowRuntimeAsync",
+        "sourcePath": "src/cli/loadFlowRuntimeAsync.ts"
+      },
+      {
+        "fromSymbol": "runtimeModuleSpecifier",
+        "toSymbol": "pathToFileURL",
+        "callExpression": "pathToFileURL",
+        "sourcePath": "src/cli/loadFlowRuntimeAsync.ts"
+      },
+      {
+        "fromSymbol": "runtimeModuleSpecifier",
+        "toSymbol": "resolve",
+        "callExpression": "resolve",
+        "sourcePath": "src/cli/loadFlowRuntimeAsync.ts"
+      },
+      {
+        "fromSymbol": "stop",
+        "toSymbol": "stopAsync",
+        "callExpression": "stopAsync",
+        "sourcePath": "src/cli/registerProcessShutdown.ts"
+      },
+      {
         "fromSymbol": "startAsync",
-        "toSymbol": "startFlowServerAsync",
-        "callExpression": "startFlowServerAsync",
+        "toSymbol": "__function",
+        "callExpression": "commandFor(process.argv.slice(2))",
+        "sourcePath": "src/cli/standalone.ts"
+      },
+      {
+        "fromSymbol": "startAsync",
+        "toSymbol": "commandFor",
+        "callExpression": "commandFor",
         "sourcePath": "src/cli/standalone.ts"
       },
       {
@@ -8362,6 +9118,84 @@
         "toSymbol": "startAsync",
         "callExpression": "startAsync",
         "sourcePath": "src/cli/standalone.ts"
+      },
+      {
+        "fromSymbol": "validateFlowApiHostname",
+        "toSymbol": "isIP",
+        "callExpression": "isIP",
+        "sourcePath": "src/utils/validateFlowApiHostname.ts"
+      },
+      {
+        "fromSymbol": "validateFlowApiHostname",
+        "toSymbol": "isIpv6LoopbackAddress",
+        "callExpression": "isIpv6LoopbackAddress",
+        "sourcePath": "src/utils/validateFlowApiHostname.ts"
+      },
+      {
+        "fromSymbol": "isIpv6LoopbackAddress",
+        "toSymbol": "isIpv4MappedIpv6Loopback",
+        "callExpression": "isIpv4MappedIpv6Loopback",
+        "sourcePath": "src/utils/validateFlowApiHostname.ts"
+      },
+      {
+        "fromSymbol": "api",
+        "toSymbol": "requireApiToken",
+        "callExpression": "requireApiToken",
+        "sourcePath": "src/cli/commands/api.ts"
+      },
+      {
+        "fromSymbol": "api",
+        "toSymbol": "readHostname",
+        "callExpression": "readHostname",
+        "sourcePath": "src/cli/commands/api.ts"
+      },
+      {
+        "fromSymbol": "api",
+        "toSymbol": "startFlowApiServerAsync",
+        "callExpression": "startFlowApiServerAsync",
+        "sourcePath": "src/cli/commands/api.ts"
+      },
+      {
+        "fromSymbol": "api",
+        "toSymbol": "createAccess",
+        "callExpression": "createAccess",
+        "sourcePath": "src/cli/commands/api.ts"
+      },
+      {
+        "fromSymbol": "api",
+        "toSymbol": "createAuthenticator",
+        "callExpression": "createAuthenticator",
+        "sourcePath": "src/cli/commands/api.ts"
+      },
+      {
+        "fromSymbol": "api",
+        "toSymbol": "readPort",
+        "callExpression": "readPort",
+        "sourcePath": "src/cli/commands/api.ts"
+      },
+      {
+        "fromSymbol": "api",
+        "toSymbol": "loadFlowRuntimeAsync",
+        "callExpression": "loadFlowRuntimeAsync",
+        "sourcePath": "src/cli/commands/api.ts"
+      },
+      {
+        "fromSymbol": "api",
+        "toSymbol": "registerProcessShutdown",
+        "callExpression": "registerProcessShutdown",
+        "sourcePath": "src/cli/commands/api.ts"
+      },
+      {
+        "fromSymbol": "readHostname",
+        "toSymbol": "validateFlowApiHostname",
+        "callExpression": "validateFlowApiHostname",
+        "sourcePath": "src/cli/commands/api.ts"
+      },
+      {
+        "fromSymbol": "serve",
+        "toSymbol": "readHostname",
+        "callExpression": "readHostname",
+        "sourcePath": "src/cli/commands/serve.ts"
       },
       {
         "fromSymbol": "serve",
@@ -8382,10 +9216,160 @@
         "sourcePath": "src/cli/commands/serve.ts"
       },
       {
+        "fromSymbol": "serve",
+        "toSymbol": "registerProcessShutdown",
+        "callExpression": "registerProcessShutdown",
+        "sourcePath": "src/cli/commands/serve.ts"
+      },
+      {
         "fromSymbol": "readPort",
         "toSymbol": "readOption",
         "callExpression": "readOption",
         "sourcePath": "src/cli/commands/serve.ts"
+      },
+      {
+        "fromSymbol": "readHostname",
+        "toSymbol": "validateFlowApiHostname",
+        "callExpression": "validateFlowApiHostname",
+        "sourcePath": "src/cli/commands/serve.ts"
+      },
+      {
+        "fromSymbol": "worker",
+        "toSymbol": "loadFlowRuntimeAsync",
+        "callExpression": "loadFlowRuntimeAsync",
+        "sourcePath": "src/cli/commands/worker.ts"
+      },
+      {
+        "fromSymbol": "worker",
+        "toSymbol": "startFlowWorkerAsync",
+        "callExpression": "startFlowWorkerAsync",
+        "sourcePath": "src/cli/commands/worker.ts"
+      },
+      {
+        "fromSymbol": "worker",
+        "toSymbol": "registerProcessShutdown",
+        "callExpression": "registerProcessShutdown",
+        "sourcePath": "src/cli/commands/worker.ts"
+      },
+      {
+        "fromSymbol": "createFlowDeploymentDescriptor",
+        "toSymbol": "assertDeploymentInput",
+        "callExpression": "assertDeploymentInput",
+        "sourcePath": "src/features/deployment/createFlowDeploymentDescriptor.ts"
+      },
+      {
+        "fromSymbol": "createFlowDeploymentDescriptor",
+        "toSymbol": "assertEnvironmentKeys",
+        "callExpression": "assertEnvironmentKeys",
+        "sourcePath": "src/features/deployment/createFlowDeploymentDescriptor.ts"
+      },
+      {
+        "fromSymbol": "createFlowDeploymentDescriptor",
+        "toSymbol": "assertNoEnvironmentKeyCollisions",
+        "callExpression": "assertNoEnvironmentKeyCollisions",
+        "sourcePath": "src/features/deployment/createFlowDeploymentDescriptor.ts"
+      },
+      {
+        "fromSymbol": "createFlowDeploymentDescriptor",
+        "toSymbol": "mergeEnvironment",
+        "callExpression": "mergeEnvironment",
+        "sourcePath": "src/features/deployment/createFlowDeploymentDescriptor.ts"
+      },
+      {
+        "fromSymbol": "createFlowDeploymentDescriptor",
+        "toSymbol": "apiWorkloadFor",
+        "callExpression": "apiWorkloadFor",
+        "sourcePath": "src/features/deployment/createFlowDeploymentDescriptor.ts"
+      },
+      {
+        "fromSymbol": "createFlowDeploymentDescriptor",
+        "toSymbol": "workerWorkloadFor",
+        "callExpression": "workerWorkloadFor",
+        "sourcePath": "src/features/deployment/createFlowDeploymentDescriptor.ts"
+      },
+      {
+        "fromSymbol": "apiWorkloadFor",
+        "toSymbol": "dependenciesOf",
+        "callExpression": "dependenciesOf",
+        "sourcePath": "src/features/deployment/createFlowDeploymentDescriptor.ts"
+      },
+      {
+        "fromSymbol": "apiWorkloadFor",
+        "toSymbol": "mergeEnvironment",
+        "callExpression": "mergeEnvironment",
+        "sourcePath": "src/features/deployment/createFlowDeploymentDescriptor.ts"
+      },
+      {
+        "fromSymbol": "apiWorkloadFor",
+        "toSymbol": "secretEnvironment",
+        "callExpression": "secretEnvironment",
+        "sourcePath": "src/features/deployment/createFlowDeploymentDescriptor.ts"
+      },
+      {
+        "fromSymbol": "workerWorkloadFor",
+        "toSymbol": "dependenciesOf",
+        "callExpression": "dependenciesOf",
+        "sourcePath": "src/features/deployment/createFlowDeploymentDescriptor.ts"
+      },
+      {
+        "fromSymbol": "workerWorkloadFor",
+        "toSymbol": "mergeEnvironment",
+        "callExpression": "mergeEnvironment",
+        "sourcePath": "src/features/deployment/createFlowDeploymentDescriptor.ts"
+      },
+      {
+        "fromSymbol": "workerWorkloadFor",
+        "toSymbol": "secretEnvironment",
+        "callExpression": "secretEnvironment",
+        "sourcePath": "src/features/deployment/createFlowDeploymentDescriptor.ts"
+      },
+      {
+        "fromSymbol": "assertDeploymentInput",
+        "toSymbol": "isImmutableImage",
+        "callExpression": "isImmutableImage",
+        "sourcePath": "src/features/deployment/createFlowDeploymentDescriptor.ts"
+      },
+      {
+        "fromSymbol": "assertDeploymentInput",
+        "toSymbol": "isPositivePort",
+        "callExpression": "isPositivePort",
+        "sourcePath": "src/features/deployment/createFlowDeploymentDescriptor.ts"
+      },
+      {
+        "fromSymbol": "assertDeploymentInput",
+        "toSymbol": "validateFlowApiHostname",
+        "callExpression": "validateFlowApiHostname",
+        "sourcePath": "src/features/deployment/createFlowDeploymentDescriptor.ts"
+      },
+      {
+        "fromSymbol": "assertDeploymentInput",
+        "toSymbol": "isSecretReference",
+        "callExpression": "isSecretReference",
+        "sourcePath": "src/features/deployment/createFlowDeploymentDescriptor.ts"
+      },
+      {
+        "fromSymbol": "assertDeploymentInput",
+        "toSymbol": "isNonEmptyRecord",
+        "callExpression": "isNonEmptyRecord",
+        "sourcePath": "src/features/deployment/createFlowDeploymentDescriptor.ts"
+      },
+      {
+        "fromSymbol": "assertDeploymentInput",
+        "toSymbol": "isText",
+        "callExpression": "isText",
+        "sourcePath": "src/features/deployment/createFlowDeploymentDescriptor.ts"
+      },
+      {
+        "fromSymbol": "isSecretReference",
+        "toSymbol": "isUnknownText",
+        "callExpression": "isUnknownText",
+        "sourcePath": "src/features/deployment/createFlowDeploymentDescriptor.ts"
+      },
+      {
+        "fromSymbol": "isUnknownText",
+        "toSymbol": "isText",
+        "callExpression": "isText",
+        "sourcePath": "src/features/deployment/createFlowDeploymentDescriptor.ts"
       },
       {
         "fromSymbol": "boundedMcpAsync",

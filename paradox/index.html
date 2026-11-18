@@ -127,14 +127,34 @@
               </button>
             </li>
             <li>
+    <button class="nav-button" type="button" data-target="src/cli/commands/api.ts">
+      src/cli/commands/api.ts
+      <small>6 functions</small>
+    </button>
+  </li><li>
     <button class="nav-button" type="button" data-target="src/cli/commands/serve.ts">
       src/cli/commands/serve.ts
+      <small>4 functions</small>
+    </button>
+  </li><li>
+    <button class="nav-button" type="button" data-target="src/cli/commands/worker.ts">
+      src/cli/commands/worker.ts
+      <small>1 function</small>
+    </button>
+  </li><li>
+    <button class="nav-button" type="button" data-target="src/cli/loadFlowRuntimeAsync.ts">
+      src/cli/loadFlowRuntimeAsync.ts
       <small>3 functions</small>
+    </button>
+  </li><li>
+    <button class="nav-button" type="button" data-target="src/cli/registerProcessShutdown.ts">
+      src/cli/registerProcessShutdown.ts
+      <small>2 functions</small>
     </button>
   </li><li>
     <button class="nav-button" type="button" data-target="src/cli/standalone.ts">
       src/cli/standalone.ts
-      <small>1 function</small>
+      <small>2 functions</small>
     </button>
   </li><li>
     <button class="nav-button" type="button" data-target="src/features/ai/application/executeAiNodeAsync.ts">
@@ -145,6 +165,11 @@
     <button class="nav-button" type="button" data-target="src/features/ai/application/executeBoundedAgentAsync.ts">
       src/features/ai/application/executeBoundedAgentAsync.ts
       <small>1 function</small>
+    </button>
+  </li><li>
+    <button class="nav-button" type="button" data-target="src/features/deployment/createFlowDeploymentDescriptor.ts">
+      src/features/deployment/createFlowDeploymentDescriptor.ts
+      <small>15 functions</small>
     </button>
   </li><li>
     <button class="nav-button" type="button" data-target="src/features/execution/adapters/createFileFlowPersistenceSupport.ts">
@@ -339,7 +364,12 @@
   </li><li>
     <button class="nav-button" type="button" data-target="src/server.ts">
       src/server.ts
-      <small>4 functions</small>
+      <small>11 functions</small>
+    </button>
+  </li><li>
+    <button class="nav-button" type="button" data-target="src/utils/validateFlowApiHostname.ts">
+      src/utils/validateFlowApiHostname.ts
+      <small>3 functions</small>
     </button>
   </li>
           </ul>
@@ -353,7 +383,7 @@
       <div class="summary">
         <div><strong>63</strong><span class="muted">public exports</span></div>
         <div><strong>0</strong><span class="muted">components</span></div>
-        <div><strong>61</strong><span class="muted">modules</span></div>
+        <div><strong>69</strong><span class="muted">modules</span></div>
         <div><strong>1</strong><span class="muted">entrypoints</span></div>
       </div>
       <h3>Entrypoints</h3>
@@ -402,21 +432,46 @@
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
     <p><strong>Exports:</strong> <code>CAPABILITIES</code></p>
-  </article><article class="item" data-search="src/cli/commands/serve.ts src/server.ts serve">
+  </article><article class="item" data-search="src/cli/commands/api.ts src/cli/loadFlowRuntimeAsync.ts src/cli/registerProcessShutdown.ts src/server.ts src/utils/validateFlowApiHostname.ts api">
+    <h3>src/cli/commands/api.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/cli/loadFlowRuntimeAsync.ts</code>, <code>src/cli/registerProcessShutdown.ts</code>, <code>src/server.ts</code>, <code>src/utils/validateFlowApiHostname.ts</code></p>
+    <p><strong>Exports:</strong> <code>api</code></p>
+  </article><article class="item" data-search="src/cli/commands/serve.ts src/cli/registerProcessShutdown.ts src/server.ts src/utils/validateFlowApiHostname.ts serve">
     <h3>src/cli/commands/serve.ts</h3>
     <p class="muted">Referenced module</p>
-    <p><strong>Dependencies:</strong> <code>src/server.ts</code></p>
+    <p><strong>Dependencies:</strong> <code>src/cli/registerProcessShutdown.ts</code>, <code>src/server.ts</code>, <code>src/utils/validateFlowApiHostname.ts</code></p>
     <p><strong>Exports:</strong> <code>serve</code></p>
-  </article><article class="item" data-search="src/cli/index.ts package.json src/capabilities/index.ts src/cli/commands/serve.ts default">
+  </article><article class="item" data-search="src/cli/commands/worker.ts src/cli/loadFlowRuntimeAsync.ts src/cli/registerProcessShutdown.ts src/server.ts worker">
+    <h3>src/cli/commands/worker.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/cli/loadFlowRuntimeAsync.ts</code>, <code>src/cli/registerProcessShutdown.ts</code>, <code>src/server.ts</code></p>
+    <p><strong>Exports:</strong> <code>worker</code></p>
+  </article><article class="item" data-search="src/cli/index.ts package.json src/capabilities/index.ts src/cli/commands/api.ts src/cli/commands/serve.ts src/cli/commands/worker.ts default">
     <h3>src/cli/index.ts</h3>
     <p class="muted">Referenced module</p>
-    <p><strong>Dependencies:</strong> <code>package.json</code>, <code>src/capabilities/index.ts</code>, <code>src/cli/commands/serve.ts</code></p>
+    <p><strong>Dependencies:</strong> <code>package.json</code>, <code>src/capabilities/index.ts</code>, <code>src/cli/commands/api.ts</code>, <code>src/cli/commands/serve.ts</code>, <code>src/cli/commands/worker.ts</code></p>
     <p><strong>Exports:</strong> <code>default</code></p>
-  </article><article class="item" data-search="src/cli/standalone.ts src/server.ts">
+  </article><article class="item" data-search="src/cli/loadFlowRuntimeAsync.ts src/types/headless.ts loadFlowRuntimeAsync">
+    <h3>src/cli/loadFlowRuntimeAsync.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/types/headless.ts</code></p>
+    <p><strong>Exports:</strong> <code>loadFlowRuntimeAsync</code></p>
+  </article><article class="item" data-search="src/cli/registerProcessShutdown.ts registerProcessShutdown">
+    <h3>src/cli/registerProcessShutdown.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
+    <p><strong>Exports:</strong> <code>registerProcessShutdown</code></p>
+  </article><article class="item" data-search="src/cli/standalone.ts src/cli/commands/api.ts src/cli/commands/serve.ts src/cli/commands/worker.ts">
     <h3>src/cli/standalone.ts</h3>
     <p class="muted">Referenced module</p>
-    <p><strong>Dependencies:</strong> <code>src/server.ts</code></p>
+    <p><strong>Dependencies:</strong> <code>src/cli/commands/api.ts</code>, <code>src/cli/commands/serve.ts</code>, <code>src/cli/commands/worker.ts</code></p>
     <p><strong>Exports:</strong> <span class="empty">None</span></p>
+  </article><article class="item" data-search="src/deployment.ts createFlowDeploymentDescriptor FlowDeploymentDescriptorInput">
+    <h3>src/deployment.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
+    <p><strong>Exports:</strong> <code>createFlowDeploymentDescriptor</code>, <code>FlowDeploymentDescriptorInput</code></p>
   </article><article class="item" data-search="src/execution.ts cancelDurableRunAsync FileFlowPersistenceAdapter FlowDurableEffectPort FlowWorkerOutcome FlowWorkerResult runDurableWorkerAsync">
     <h3>src/execution.ts</h3>
     <p class="muted">Referenced module</p>
@@ -437,6 +492,11 @@
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
     <p><strong>Exports:</strong> <code>FlowAiError</code></p>
+  </article><article class="item" data-search="src/features/deployment/createFlowDeploymentDescriptor.ts src/types/deployment.ts src/utils/validateFlowApiHostname.ts createFlowDeploymentDescriptor">
+    <h3>src/features/deployment/createFlowDeploymentDescriptor.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/types/deployment.ts</code>, <code>src/utils/validateFlowApiHostname.ts</code></p>
+    <p><strong>Exports:</strong> <code>createFlowDeploymentDescriptor</code></p>
   </article><article class="item" data-search="src/features/execution/adapters/createFileFlowPersistenceSupport.ts src/features/execution/ports/FlowPersistencePort.ts src/types/durableExecution.ts claimFileFlowWork createFileFlowPersistenceSupport replaceFileFlowOutbox replaceFileFlowRuns replaceFileFlowWork">
     <h3>src/features/execution/adapters/createFileFlowPersistenceSupport.ts</h3>
     <p class="muted">Referenced module</p>
@@ -652,11 +712,11 @@
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
     <p><strong>Exports:</strong> <code>createMcpAgentToolAdapter</code>, <code>createMcpToolRegistry</code>, <code>McpProviderDefinition</code>, <code>McpToolInvocation</code>, <code>McpToolMetadata</code>, <code>McpToolPermission</code>, <code>McpToolRegistry</code>, <code>McpToolResult</code>, <code>McpTrustedStdioProvider</code></p>
-  </article><article class="item" data-search="src/server.ts src/features/execution/adapters/FileFlowPersistenceAdapter.ts src/features/execution/domain/createDefaultNodeRegistry.ts src/features/headless/adapters/createFlowHttpHandler.ts src/features/headless/adapters/FileFlowRuntimeStore.ts src/features/headless/adapters/InMemoryFlowRuntimeStore.ts src/features/headless/application/createFlowRuntime.ts src/types/headless.ts startFlowServerAsync">
+  </article><article class="item" data-search="src/server.ts src/features/execution/adapters/FileFlowPersistenceAdapter.ts src/features/execution/domain/createDefaultNodeRegistry.ts src/features/headless/adapters/createFlowHttpHandler.ts src/features/headless/adapters/FileFlowRuntimeStore.ts src/features/headless/adapters/InMemoryFlowRuntimeStore.ts src/features/headless/application/createFlowRuntime.ts src/types/headless.ts src/utils/validateFlowApiHostname.ts startFlowApiServerAsync startFlowServerAsync startFlowWorkerAsync">
     <h3>src/server.ts</h3>
     <p class="muted">Referenced module</p>
-    <p><strong>Dependencies:</strong> <code>src/features/execution/adapters/FileFlowPersistenceAdapter.ts</code>, <code>src/features/execution/domain/createDefaultNodeRegistry.ts</code>, <code>src/features/headless/adapters/createFlowHttpHandler.ts</code>, <code>src/features/headless/adapters/FileFlowRuntimeStore.ts</code>, <code>src/features/headless/adapters/InMemoryFlowRuntimeStore.ts</code>, <code>src/features/headless/application/createFlowRuntime.ts</code>, <code>src/types/headless.ts</code></p>
-    <p><strong>Exports:</strong> <code>startFlowServerAsync</code></p>
+    <p><strong>Dependencies:</strong> <code>src/features/execution/adapters/FileFlowPersistenceAdapter.ts</code>, <code>src/features/execution/domain/createDefaultNodeRegistry.ts</code>, <code>src/features/headless/adapters/createFlowHttpHandler.ts</code>, <code>src/features/headless/adapters/FileFlowRuntimeStore.ts</code>, <code>src/features/headless/adapters/InMemoryFlowRuntimeStore.ts</code>, <code>src/features/headless/application/createFlowRuntime.ts</code>, <code>src/types/headless.ts</code>, <code>src/utils/validateFlowApiHostname.ts</code></p>
+    <p><strong>Exports:</strong> <code>startFlowApiServerAsync</code>, <code>startFlowServerAsync</code>, <code>startFlowWorkerAsync</code></p>
   </article><article class="item" data-search="src/social.ts">
     <h3>src/social.ts</h3>
     <p class="muted">Referenced module</p>
@@ -667,6 +727,11 @@
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <code>src/types/security.ts</code></p>
     <p><strong>Exports:</strong> <code>FlowAiAgentExecutionInput</code>, <code>FlowAiAgentPlannerPort</code>, <code>FlowAiAgentStep</code>, <code>FlowAiAgentToolPort</code>, <code>FlowAiBudget</code>, <code>FlowAiExecutionInput</code>, <code>FlowAiInput</code>, <code>FlowAiModelEvent</code>, <code>FlowAiModelPort</code>, <code>FlowAiModelSettings</code>, <code>FlowAiProgress</code>, <code>FlowAiResult</code>, <code>FlowAiRetryPolicy</code>, <code>FlowAiSchema</code>, <code>FlowAiSecurityContext</code>, <code>FlowAiTelemetry</code></p>
+  </article><article class="item" data-search="src/types/deployment.ts FlowDeploymentDescriptorInput">
+    <h3>src/types/deployment.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
+    <p><strong>Exports:</strong> <code>FlowDeploymentDescriptorInput</code></p>
   </article><article class="item" data-search="src/types/durableExecution.ts src/types/headless.ts src/types/security.ts FlowDefinitionRef FlowDurableEffectPort FlowDurableEffectResult FlowDurableRun FlowDurableWork FlowOutboxRecord FlowRetryPolicy FlowRunCheckpoint FlowWorkerOutcome FlowWorkerResult">
     <h3>src/types/durableExecution.ts</h3>
     <p class="muted">Referenced module</p>
@@ -692,6 +757,11 @@
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
     <p><strong>Exports:</strong> <code>FlowApprovalStorePort</code>, <code>FlowOperationStorePort</code>, <code>FlowOutboundTransportPort</code>, <code>FlowRateLimitPort</code>, <code>FlowResolvedSecrets</code>, <code>FlowSecretCreateInput</code>, <code>FlowSecretMetadata</code>, <code>FlowSecretRevokeInput</code>, <code>FlowSecurityActor</code>, <code>FlowSecurityApproval</code>, <code>FlowSecurityAuditEvent</code>, <code>FlowSecurityAuditPort</code>, <code>FlowSecurityGrant</code>, <code>FlowSecurityOperation</code>, <code>FlowSecurityOperationIdentity</code>, <code>FlowSecurityPermit</code>, <code>FlowSecurityPort</code>, <code>FlowSecurityTarget</code></p>
+  </article><article class="item" data-search="src/utils/validateFlowApiHostname.ts validateFlowApiHostname">
+    <h3>src/utils/validateFlowApiHostname.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
+    <p><strong>Exports:</strong> <code>validateFlowApiHostname</code></p>
   </article>
     </section>
     <section class="panel">
@@ -2983,17 +3053,41 @@
   package__ankhorage_flow -.-&gt; module_src_ai_ts
   module_src_capabilities_index_ts[&quot;src/capabilities/index.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_capabilities_index_ts
+  module_src_cli_commands_api_ts[&quot;src/cli/commands/api.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_cli_commands_api_ts
+  module_src_cli_commands_api_ts --&gt; module_src_cli_loadFlowRuntimeAsync_ts
+  module_src_cli_commands_api_ts --&gt; module_src_cli_registerProcessShutdown_ts
+  module_src_cli_commands_api_ts --&gt; module_src_server_ts
+  module_src_cli_commands_api_ts --&gt; module_src_utils_validateFlowApiHostname_ts
   module_src_cli_commands_serve_ts[&quot;src/cli/commands/serve.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_cli_commands_serve_ts
+  module_src_cli_commands_serve_ts --&gt; module_src_cli_registerProcessShutdown_ts
   module_src_cli_commands_serve_ts --&gt; module_src_server_ts
+  module_src_cli_commands_serve_ts --&gt; module_src_utils_validateFlowApiHostname_ts
+  module_src_cli_commands_worker_ts[&quot;src/cli/commands/worker.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_cli_commands_worker_ts
+  module_src_cli_commands_worker_ts --&gt; module_src_cli_loadFlowRuntimeAsync_ts
+  module_src_cli_commands_worker_ts --&gt; module_src_cli_registerProcessShutdown_ts
+  module_src_cli_commands_worker_ts --&gt; module_src_server_ts
   module_src_cli_index_ts[&quot;src/cli/index.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_cli_index_ts
   module_src_cli_index_ts --&gt; module_package_json
   module_src_cli_index_ts --&gt; module_src_capabilities_index_ts
+  module_src_cli_index_ts --&gt; module_src_cli_commands_api_ts
   module_src_cli_index_ts --&gt; module_src_cli_commands_serve_ts
+  module_src_cli_index_ts --&gt; module_src_cli_commands_worker_ts
+  module_src_cli_loadFlowRuntimeAsync_ts[&quot;src/cli/loadFlowRuntimeAsync.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_cli_loadFlowRuntimeAsync_ts
+  module_src_cli_loadFlowRuntimeAsync_ts --&gt; module_src_types_headless_ts
+  module_src_cli_registerProcessShutdown_ts[&quot;src/cli/registerProcessShutdown.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_cli_registerProcessShutdown_ts
   module_src_cli_standalone_ts[&quot;src/cli/standalone.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_cli_standalone_ts
-  module_src_cli_standalone_ts --&gt; module_src_server_ts
+  module_src_cli_standalone_ts --&gt; module_src_cli_commands_api_ts
+  module_src_cli_standalone_ts --&gt; module_src_cli_commands_serve_ts
+  module_src_cli_standalone_ts --&gt; module_src_cli_commands_worker_ts
+  module_src_deployment_ts[&quot;src/deployment.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_deployment_ts
   module_src_execution_ts[&quot;src/execution.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_execution_ts
   module_src_features_ai_application_executeAiNodeAsync_ts[&quot;src/features/ai/application/executeAiNodeAsync.ts&quot;]
@@ -3007,6 +3101,10 @@
   module_src_features_ai_application_executeBoundedAgentAsync_ts --&gt; module_src_types_ai_ts
   module_src_features_ai_FlowAiError_ts[&quot;src/features/ai/FlowAiError.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_features_ai_FlowAiError_ts
+  module_src_features_deployment_createFlowDeploymentDescriptor_ts[&quot;src/features/deployment/createFlowDeploymentDescriptor.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_deployment_createFlowDeploymentDescriptor_ts
+  module_src_features_deployment_createFlowDeploymentDescriptor_ts --&gt; module_src_types_deployment_ts
+  module_src_features_deployment_createFlowDeploymentDescriptor_ts --&gt; module_src_utils_validateFlowApiHostname_ts
   module_src_features_execution_adapters_createFileFlowPersistenceSupport_ts[&quot;src/features/execution/adapters/createFileFlowPersistenceSupport.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_features_execution_adapters_createFileFlowPersistenceSupport_ts
   module_src_features_execution_adapters_createFileFlowPersistenceSupport_ts --&gt; module_src_features_execution_ports_FlowPersistencePort_ts
@@ -3196,11 +3294,14 @@
   module_src_server_ts --&gt; module_src_features_headless_adapters_InMemoryFlowRuntimeStore_ts
   module_src_server_ts --&gt; module_src_features_headless_application_createFlowRuntime_ts
   module_src_server_ts --&gt; module_src_types_headless_ts
+  module_src_server_ts --&gt; module_src_utils_validateFlowApiHostname_ts
   module_src_social_ts[&quot;src/social.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_social_ts
   module_src_types_ai_ts[&quot;src/types/ai.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_types_ai_ts
   module_src_types_ai_ts --&gt; module_src_types_security_ts
+  module_src_types_deployment_ts[&quot;src/types/deployment.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_types_deployment_ts
   module_src_types_durableExecution_ts[&quot;src/types/durableExecution.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_types_durableExecution_ts
   module_src_types_durableExecution_ts --&gt; module_src_types_headless_ts
@@ -3218,6 +3319,8 @@
   module_src_types_mcp_ts --&gt; module_src_types_security_ts
   module_src_types_security_ts[&quot;src/types/security.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_types_security_ts
+  module_src_utils_validateFlowApiHostname_ts[&quot;src/utils/validateFlowApiHostname.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_utils_validateFlowApiHostname_ts
 </div>
     <details>
       <summary>View Mermaid source</summary>
@@ -3231,17 +3334,41 @@
   package__ankhorage_flow -.-&gt; module_src_ai_ts
   module_src_capabilities_index_ts[&quot;src/capabilities/index.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_capabilities_index_ts
+  module_src_cli_commands_api_ts[&quot;src/cli/commands/api.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_cli_commands_api_ts
+  module_src_cli_commands_api_ts --&gt; module_src_cli_loadFlowRuntimeAsync_ts
+  module_src_cli_commands_api_ts --&gt; module_src_cli_registerProcessShutdown_ts
+  module_src_cli_commands_api_ts --&gt; module_src_server_ts
+  module_src_cli_commands_api_ts --&gt; module_src_utils_validateFlowApiHostname_ts
   module_src_cli_commands_serve_ts[&quot;src/cli/commands/serve.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_cli_commands_serve_ts
+  module_src_cli_commands_serve_ts --&gt; module_src_cli_registerProcessShutdown_ts
   module_src_cli_commands_serve_ts --&gt; module_src_server_ts
+  module_src_cli_commands_serve_ts --&gt; module_src_utils_validateFlowApiHostname_ts
+  module_src_cli_commands_worker_ts[&quot;src/cli/commands/worker.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_cli_commands_worker_ts
+  module_src_cli_commands_worker_ts --&gt; module_src_cli_loadFlowRuntimeAsync_ts
+  module_src_cli_commands_worker_ts --&gt; module_src_cli_registerProcessShutdown_ts
+  module_src_cli_commands_worker_ts --&gt; module_src_server_ts
   module_src_cli_index_ts[&quot;src/cli/index.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_cli_index_ts
   module_src_cli_index_ts --&gt; module_package_json
   module_src_cli_index_ts --&gt; module_src_capabilities_index_ts
+  module_src_cli_index_ts --&gt; module_src_cli_commands_api_ts
   module_src_cli_index_ts --&gt; module_src_cli_commands_serve_ts
+  module_src_cli_index_ts --&gt; module_src_cli_commands_worker_ts
+  module_src_cli_loadFlowRuntimeAsync_ts[&quot;src/cli/loadFlowRuntimeAsync.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_cli_loadFlowRuntimeAsync_ts
+  module_src_cli_loadFlowRuntimeAsync_ts --&gt; module_src_types_headless_ts
+  module_src_cli_registerProcessShutdown_ts[&quot;src/cli/registerProcessShutdown.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_cli_registerProcessShutdown_ts
   module_src_cli_standalone_ts[&quot;src/cli/standalone.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_cli_standalone_ts
-  module_src_cli_standalone_ts --&gt; module_src_server_ts
+  module_src_cli_standalone_ts --&gt; module_src_cli_commands_api_ts
+  module_src_cli_standalone_ts --&gt; module_src_cli_commands_serve_ts
+  module_src_cli_standalone_ts --&gt; module_src_cli_commands_worker_ts
+  module_src_deployment_ts[&quot;src/deployment.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_deployment_ts
   module_src_execution_ts[&quot;src/execution.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_execution_ts
   module_src_features_ai_application_executeAiNodeAsync_ts[&quot;src/features/ai/application/executeAiNodeAsync.ts&quot;]
@@ -3255,6 +3382,10 @@
   module_src_features_ai_application_executeBoundedAgentAsync_ts --&gt; module_src_types_ai_ts
   module_src_features_ai_FlowAiError_ts[&quot;src/features/ai/FlowAiError.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_features_ai_FlowAiError_ts
+  module_src_features_deployment_createFlowDeploymentDescriptor_ts[&quot;src/features/deployment/createFlowDeploymentDescriptor.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_features_deployment_createFlowDeploymentDescriptor_ts
+  module_src_features_deployment_createFlowDeploymentDescriptor_ts --&gt; module_src_types_deployment_ts
+  module_src_features_deployment_createFlowDeploymentDescriptor_ts --&gt; module_src_utils_validateFlowApiHostname_ts
   module_src_features_execution_adapters_createFileFlowPersistenceSupport_ts[&quot;src/features/execution/adapters/createFileFlowPersistenceSupport.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_features_execution_adapters_createFileFlowPersistenceSupport_ts
   module_src_features_execution_adapters_createFileFlowPersistenceSupport_ts --&gt; module_src_features_execution_ports_FlowPersistencePort_ts
@@ -3444,11 +3575,14 @@
   module_src_server_ts --&gt; module_src_features_headless_adapters_InMemoryFlowRuntimeStore_ts
   module_src_server_ts --&gt; module_src_features_headless_application_createFlowRuntime_ts
   module_src_server_ts --&gt; module_src_types_headless_ts
+  module_src_server_ts --&gt; module_src_utils_validateFlowApiHostname_ts
   module_src_social_ts[&quot;src/social.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_social_ts
   module_src_types_ai_ts[&quot;src/types/ai.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_types_ai_ts
   module_src_types_ai_ts --&gt; module_src_types_security_ts
+  module_src_types_deployment_ts[&quot;src/types/deployment.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_types_deployment_ts
   module_src_types_durableExecution_ts[&quot;src/types/durableExecution.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_types_durableExecution_ts
   module_src_types_durableExecution_ts --&gt; module_src_types_headless_ts
@@ -3466,6 +3600,8 @@
   module_src_types_mcp_ts --&gt; module_src_types_security_ts
   module_src_types_security_ts[&quot;src/types/security.ts&quot;]
   package__ankhorage_flow -.-&gt; module_src_types_security_ts
+  module_src_utils_validateFlowApiHostname_ts[&quot;src/utils/validateFlowApiHostname.ts&quot;]
+  package__ankhorage_flow -.-&gt; module_src_utils_validateFlowApiHostname_ts
 </pre>
     </details>
   </article><article class="item" data-search="Module relationships diagrams/module-relationships.mmd">
@@ -3475,13 +3611,19 @@
   module_package_json[&quot;package.json&quot;]
   module_src_ai_ts[&quot;src/ai.ts&quot;]
   module_src_capabilities_index_ts[&quot;src/capabilities/index.ts&quot;]
+  module_src_cli_commands_api_ts[&quot;src/cli/commands/api.ts&quot;]
   module_src_cli_commands_serve_ts[&quot;src/cli/commands/serve.ts&quot;]
+  module_src_cli_commands_worker_ts[&quot;src/cli/commands/worker.ts&quot;]
   module_src_cli_index_ts[&quot;src/cli/index.ts&quot;]
+  module_src_cli_loadFlowRuntimeAsync_ts[&quot;src/cli/loadFlowRuntimeAsync.ts&quot;]
+  module_src_cli_registerProcessShutdown_ts[&quot;src/cli/registerProcessShutdown.ts&quot;]
   module_src_cli_standalone_ts[&quot;src/cli/standalone.ts&quot;]
+  module_src_deployment_ts[&quot;src/deployment.ts&quot;]
   module_src_execution_ts[&quot;src/execution.ts&quot;]
   module_src_features_ai_application_executeAiNodeAsync_ts[&quot;src/features/ai/application/executeAiNodeAsync.ts&quot;]
   module_src_features_ai_application_executeBoundedAgentAsync_ts[&quot;src/features/ai/application/executeBoundedAgentAsync.ts&quot;]
   module_src_features_ai_FlowAiError_ts[&quot;src/features/ai/FlowAiError.ts&quot;]
+  module_src_features_deployment_createFlowDeploymentDescriptor_ts[&quot;src/features/deployment/createFlowDeploymentDescriptor.ts&quot;]
   module_src_features_execution_adapters_createFileFlowPersistenceSupport_ts[&quot;src/features/execution/adapters/createFileFlowPersistenceSupport.ts&quot;]
   module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts[&quot;src/features/execution/adapters/FileFlowPersistenceAdapter.ts&quot;]
   module_src_features_execution_adapters_InMemoryFlowPersistenceAdapter_ts[&quot;src/features/execution/adapters/InMemoryFlowPersistenceAdapter.ts&quot;]
@@ -3528,21 +3670,39 @@
   module_src_server_ts[&quot;src/server.ts&quot;]
   module_src_social_ts[&quot;src/social.ts&quot;]
   module_src_types_ai_ts[&quot;src/types/ai.ts&quot;]
+  module_src_types_deployment_ts[&quot;src/types/deployment.ts&quot;]
   module_src_types_durableExecution_ts[&quot;src/types/durableExecution.ts&quot;]
   module_src_types_execution_ts[&quot;src/types/execution.ts&quot;]
   module_src_types_headless_ts[&quot;src/types/headless.ts&quot;]
   module_src_types_mcp_ts[&quot;src/types/mcp.ts&quot;]
   module_src_types_security_ts[&quot;src/types/security.ts&quot;]
+  module_src_utils_validateFlowApiHostname_ts[&quot;src/utils/validateFlowApiHostname.ts&quot;]
+  module_src_cli_commands_api_ts --&gt; module_src_cli_loadFlowRuntimeAsync_ts
+  module_src_cli_commands_api_ts --&gt; module_src_cli_registerProcessShutdown_ts
+  module_src_cli_commands_api_ts --&gt; module_src_server_ts
+  module_src_cli_commands_api_ts --&gt; module_src_utils_validateFlowApiHostname_ts
+  module_src_cli_commands_serve_ts --&gt; module_src_cli_registerProcessShutdown_ts
   module_src_cli_commands_serve_ts --&gt; module_src_server_ts
+  module_src_cli_commands_serve_ts --&gt; module_src_utils_validateFlowApiHostname_ts
+  module_src_cli_commands_worker_ts --&gt; module_src_cli_loadFlowRuntimeAsync_ts
+  module_src_cli_commands_worker_ts --&gt; module_src_cli_registerProcessShutdown_ts
+  module_src_cli_commands_worker_ts --&gt; module_src_server_ts
   module_src_cli_index_ts --&gt; module_package_json
   module_src_cli_index_ts --&gt; module_src_capabilities_index_ts
+  module_src_cli_index_ts --&gt; module_src_cli_commands_api_ts
   module_src_cli_index_ts --&gt; module_src_cli_commands_serve_ts
-  module_src_cli_standalone_ts --&gt; module_src_server_ts
+  module_src_cli_index_ts --&gt; module_src_cli_commands_worker_ts
+  module_src_cli_loadFlowRuntimeAsync_ts --&gt; module_src_types_headless_ts
+  module_src_cli_standalone_ts --&gt; module_src_cli_commands_api_ts
+  module_src_cli_standalone_ts --&gt; module_src_cli_commands_serve_ts
+  module_src_cli_standalone_ts --&gt; module_src_cli_commands_worker_ts
   module_src_features_ai_application_executeAiNodeAsync_ts --&gt; module_src_features_ai_FlowAiError_ts
   module_src_features_ai_application_executeAiNodeAsync_ts --&gt; module_src_types_ai_ts
   module_src_features_ai_application_executeAiNodeAsync_ts --&gt; module_src_types_security_ts
   module_src_features_ai_application_executeBoundedAgentAsync_ts --&gt; module_src_features_ai_FlowAiError_ts
   module_src_features_ai_application_executeBoundedAgentAsync_ts --&gt; module_src_types_ai_ts
+  module_src_features_deployment_createFlowDeploymentDescriptor_ts --&gt; module_src_types_deployment_ts
+  module_src_features_deployment_createFlowDeploymentDescriptor_ts --&gt; module_src_utils_validateFlowApiHostname_ts
   module_src_features_execution_adapters_createFileFlowPersistenceSupport_ts --&gt; module_src_features_execution_ports_FlowPersistencePort_ts
   module_src_features_execution_adapters_createFileFlowPersistenceSupport_ts --&gt; module_src_types_durableExecution_ts
   module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts --&gt; module_src_features_execution_adapters_createFileFlowPersistenceSupport_ts
@@ -3645,6 +3805,7 @@
   module_src_server_ts --&gt; module_src_features_headless_adapters_InMemoryFlowRuntimeStore_ts
   module_src_server_ts --&gt; module_src_features_headless_application_createFlowRuntime_ts
   module_src_server_ts --&gt; module_src_types_headless_ts
+  module_src_server_ts --&gt; module_src_utils_validateFlowApiHostname_ts
   module_src_types_ai_ts --&gt; module_src_types_security_ts
   module_src_types_durableExecution_ts --&gt; module_src_types_headless_ts
   module_src_types_durableExecution_ts --&gt; module_src_types_security_ts
@@ -3660,13 +3821,19 @@
   module_package_json[&quot;package.json&quot;]
   module_src_ai_ts[&quot;src/ai.ts&quot;]
   module_src_capabilities_index_ts[&quot;src/capabilities/index.ts&quot;]
+  module_src_cli_commands_api_ts[&quot;src/cli/commands/api.ts&quot;]
   module_src_cli_commands_serve_ts[&quot;src/cli/commands/serve.ts&quot;]
+  module_src_cli_commands_worker_ts[&quot;src/cli/commands/worker.ts&quot;]
   module_src_cli_index_ts[&quot;src/cli/index.ts&quot;]
+  module_src_cli_loadFlowRuntimeAsync_ts[&quot;src/cli/loadFlowRuntimeAsync.ts&quot;]
+  module_src_cli_registerProcessShutdown_ts[&quot;src/cli/registerProcessShutdown.ts&quot;]
   module_src_cli_standalone_ts[&quot;src/cli/standalone.ts&quot;]
+  module_src_deployment_ts[&quot;src/deployment.ts&quot;]
   module_src_execution_ts[&quot;src/execution.ts&quot;]
   module_src_features_ai_application_executeAiNodeAsync_ts[&quot;src/features/ai/application/executeAiNodeAsync.ts&quot;]
   module_src_features_ai_application_executeBoundedAgentAsync_ts[&quot;src/features/ai/application/executeBoundedAgentAsync.ts&quot;]
   module_src_features_ai_FlowAiError_ts[&quot;src/features/ai/FlowAiError.ts&quot;]
+  module_src_features_deployment_createFlowDeploymentDescriptor_ts[&quot;src/features/deployment/createFlowDeploymentDescriptor.ts&quot;]
   module_src_features_execution_adapters_createFileFlowPersistenceSupport_ts[&quot;src/features/execution/adapters/createFileFlowPersistenceSupport.ts&quot;]
   module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts[&quot;src/features/execution/adapters/FileFlowPersistenceAdapter.ts&quot;]
   module_src_features_execution_adapters_InMemoryFlowPersistenceAdapter_ts[&quot;src/features/execution/adapters/InMemoryFlowPersistenceAdapter.ts&quot;]
@@ -3713,21 +3880,39 @@
   module_src_server_ts[&quot;src/server.ts&quot;]
   module_src_social_ts[&quot;src/social.ts&quot;]
   module_src_types_ai_ts[&quot;src/types/ai.ts&quot;]
+  module_src_types_deployment_ts[&quot;src/types/deployment.ts&quot;]
   module_src_types_durableExecution_ts[&quot;src/types/durableExecution.ts&quot;]
   module_src_types_execution_ts[&quot;src/types/execution.ts&quot;]
   module_src_types_headless_ts[&quot;src/types/headless.ts&quot;]
   module_src_types_mcp_ts[&quot;src/types/mcp.ts&quot;]
   module_src_types_security_ts[&quot;src/types/security.ts&quot;]
+  module_src_utils_validateFlowApiHostname_ts[&quot;src/utils/validateFlowApiHostname.ts&quot;]
+  module_src_cli_commands_api_ts --&gt; module_src_cli_loadFlowRuntimeAsync_ts
+  module_src_cli_commands_api_ts --&gt; module_src_cli_registerProcessShutdown_ts
+  module_src_cli_commands_api_ts --&gt; module_src_server_ts
+  module_src_cli_commands_api_ts --&gt; module_src_utils_validateFlowApiHostname_ts
+  module_src_cli_commands_serve_ts --&gt; module_src_cli_registerProcessShutdown_ts
   module_src_cli_commands_serve_ts --&gt; module_src_server_ts
+  module_src_cli_commands_serve_ts --&gt; module_src_utils_validateFlowApiHostname_ts
+  module_src_cli_commands_worker_ts --&gt; module_src_cli_loadFlowRuntimeAsync_ts
+  module_src_cli_commands_worker_ts --&gt; module_src_cli_registerProcessShutdown_ts
+  module_src_cli_commands_worker_ts --&gt; module_src_server_ts
   module_src_cli_index_ts --&gt; module_package_json
   module_src_cli_index_ts --&gt; module_src_capabilities_index_ts
+  module_src_cli_index_ts --&gt; module_src_cli_commands_api_ts
   module_src_cli_index_ts --&gt; module_src_cli_commands_serve_ts
-  module_src_cli_standalone_ts --&gt; module_src_server_ts
+  module_src_cli_index_ts --&gt; module_src_cli_commands_worker_ts
+  module_src_cli_loadFlowRuntimeAsync_ts --&gt; module_src_types_headless_ts
+  module_src_cli_standalone_ts --&gt; module_src_cli_commands_api_ts
+  module_src_cli_standalone_ts --&gt; module_src_cli_commands_serve_ts
+  module_src_cli_standalone_ts --&gt; module_src_cli_commands_worker_ts
   module_src_features_ai_application_executeAiNodeAsync_ts --&gt; module_src_features_ai_FlowAiError_ts
   module_src_features_ai_application_executeAiNodeAsync_ts --&gt; module_src_types_ai_ts
   module_src_features_ai_application_executeAiNodeAsync_ts --&gt; module_src_types_security_ts
   module_src_features_ai_application_executeBoundedAgentAsync_ts --&gt; module_src_features_ai_FlowAiError_ts
   module_src_features_ai_application_executeBoundedAgentAsync_ts --&gt; module_src_types_ai_ts
+  module_src_features_deployment_createFlowDeploymentDescriptor_ts --&gt; module_src_types_deployment_ts
+  module_src_features_deployment_createFlowDeploymentDescriptor_ts --&gt; module_src_utils_validateFlowApiHostname_ts
   module_src_features_execution_adapters_createFileFlowPersistenceSupport_ts --&gt; module_src_features_execution_ports_FlowPersistencePort_ts
   module_src_features_execution_adapters_createFileFlowPersistenceSupport_ts --&gt; module_src_types_durableExecution_ts
   module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts --&gt; module_src_features_execution_adapters_createFileFlowPersistenceSupport_ts
@@ -3830,6 +4015,7 @@
   module_src_server_ts --&gt; module_src_features_headless_adapters_InMemoryFlowRuntimeStore_ts
   module_src_server_ts --&gt; module_src_features_headless_application_createFlowRuntime_ts
   module_src_server_ts --&gt; module_src_types_headless_ts
+  module_src_server_ts --&gt; module_src_utils_validateFlowApiHostname_ts
   module_src_types_ai_ts --&gt; module_src_types_security_ts
   module_src_types_durableExecution_ts --&gt; module_src_types_headless_ts
   module_src_types_durableExecution_ts --&gt; module_src_types_security_ts
@@ -3847,13 +4033,19 @@
   module_package_json[&quot;package.json&quot;]
   module_src_ai_ts[&quot;src/ai.ts&quot;]
   module_src_capabilities_index_ts[&quot;src/capabilities/index.ts&quot;]
+  module_src_cli_commands_api_ts[&quot;src/cli/commands/api.ts&quot;]
   module_src_cli_commands_serve_ts[&quot;src/cli/commands/serve.ts&quot;]
+  module_src_cli_commands_worker_ts[&quot;src/cli/commands/worker.ts&quot;]
   module_src_cli_index_ts[&quot;src/cli/index.ts&quot;]
+  module_src_cli_loadFlowRuntimeAsync_ts[&quot;src/cli/loadFlowRuntimeAsync.ts&quot;]
+  module_src_cli_registerProcessShutdown_ts[&quot;src/cli/registerProcessShutdown.ts&quot;]
   module_src_cli_standalone_ts[&quot;src/cli/standalone.ts&quot;]
+  module_src_deployment_ts[&quot;src/deployment.ts&quot;]
   module_src_execution_ts[&quot;src/execution.ts&quot;]
   module_src_features_ai_application_executeAiNodeAsync_ts[&quot;src/features/ai/application/executeAiNodeAsync.ts&quot;]
   module_src_features_ai_application_executeBoundedAgentAsync_ts[&quot;src/features/ai/application/executeBoundedAgentAsync.ts&quot;]
   module_src_features_ai_FlowAiError_ts[&quot;src/features/ai/FlowAiError.ts&quot;]
+  module_src_features_deployment_createFlowDeploymentDescriptor_ts[&quot;src/features/deployment/createFlowDeploymentDescriptor.ts&quot;]
   module_src_features_execution_adapters_createFileFlowPersistenceSupport_ts[&quot;src/features/execution/adapters/createFileFlowPersistenceSupport.ts&quot;]
   module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts[&quot;src/features/execution/adapters/FileFlowPersistenceAdapter.ts&quot;]
   module_src_features_execution_adapters_InMemoryFlowPersistenceAdapter_ts[&quot;src/features/execution/adapters/InMemoryFlowPersistenceAdapter.ts&quot;]
@@ -3900,11 +4092,13 @@
   module_src_server_ts[&quot;src/server.ts&quot;]
   module_src_social_ts[&quot;src/social.ts&quot;]
   module_src_types_ai_ts[&quot;src/types/ai.ts&quot;]
+  module_src_types_deployment_ts[&quot;src/types/deployment.ts&quot;]
   module_src_types_durableExecution_ts[&quot;src/types/durableExecution.ts&quot;]
   module_src_types_execution_ts[&quot;src/types/execution.ts&quot;]
   module_src_types_headless_ts[&quot;src/types/headless.ts&quot;]
   module_src_types_mcp_ts[&quot;src/types/mcp.ts&quot;]
   module_src_types_security_ts[&quot;src/types/security.ts&quot;]
+  module_src_utils_validateFlowApiHostname_ts[&quot;src/utils/validateFlowApiHostname.ts&quot;]
   export_calculateRetryDueAt[&quot;calculateRetryDueAt&quot;]
   module_src_features_execution_domain_calculateRetryDueAt_ts --&gt; export_calculateRetryDueAt
   export_calculateRetryDueAt -.-&gt; export_FlowRetryPolicy
@@ -4120,13 +4314,19 @@
   module_package_json[&quot;package.json&quot;]
   module_src_ai_ts[&quot;src/ai.ts&quot;]
   module_src_capabilities_index_ts[&quot;src/capabilities/index.ts&quot;]
+  module_src_cli_commands_api_ts[&quot;src/cli/commands/api.ts&quot;]
   module_src_cli_commands_serve_ts[&quot;src/cli/commands/serve.ts&quot;]
+  module_src_cli_commands_worker_ts[&quot;src/cli/commands/worker.ts&quot;]
   module_src_cli_index_ts[&quot;src/cli/index.ts&quot;]
+  module_src_cli_loadFlowRuntimeAsync_ts[&quot;src/cli/loadFlowRuntimeAsync.ts&quot;]
+  module_src_cli_registerProcessShutdown_ts[&quot;src/cli/registerProcessShutdown.ts&quot;]
   module_src_cli_standalone_ts[&quot;src/cli/standalone.ts&quot;]
+  module_src_deployment_ts[&quot;src/deployment.ts&quot;]
   module_src_execution_ts[&quot;src/execution.ts&quot;]
   module_src_features_ai_application_executeAiNodeAsync_ts[&quot;src/features/ai/application/executeAiNodeAsync.ts&quot;]
   module_src_features_ai_application_executeBoundedAgentAsync_ts[&quot;src/features/ai/application/executeBoundedAgentAsync.ts&quot;]
   module_src_features_ai_FlowAiError_ts[&quot;src/features/ai/FlowAiError.ts&quot;]
+  module_src_features_deployment_createFlowDeploymentDescriptor_ts[&quot;src/features/deployment/createFlowDeploymentDescriptor.ts&quot;]
   module_src_features_execution_adapters_createFileFlowPersistenceSupport_ts[&quot;src/features/execution/adapters/createFileFlowPersistenceSupport.ts&quot;]
   module_src_features_execution_adapters_FileFlowPersistenceAdapter_ts[&quot;src/features/execution/adapters/FileFlowPersistenceAdapter.ts&quot;]
   module_src_features_execution_adapters_InMemoryFlowPersistenceAdapter_ts[&quot;src/features/execution/adapters/InMemoryFlowPersistenceAdapter.ts&quot;]
@@ -4173,11 +4373,13 @@
   module_src_server_ts[&quot;src/server.ts&quot;]
   module_src_social_ts[&quot;src/social.ts&quot;]
   module_src_types_ai_ts[&quot;src/types/ai.ts&quot;]
+  module_src_types_deployment_ts[&quot;src/types/deployment.ts&quot;]
   module_src_types_durableExecution_ts[&quot;src/types/durableExecution.ts&quot;]
   module_src_types_execution_ts[&quot;src/types/execution.ts&quot;]
   module_src_types_headless_ts[&quot;src/types/headless.ts&quot;]
   module_src_types_mcp_ts[&quot;src/types/mcp.ts&quot;]
   module_src_types_security_ts[&quot;src/types/security.ts&quot;]
+  module_src_utils_validateFlowApiHostname_ts[&quot;src/utils/validateFlowApiHostname.ts&quot;]
   export_calculateRetryDueAt[&quot;calculateRetryDueAt&quot;]
   module_src_features_execution_domain_calculateRetryDueAt_ts --&gt; export_calculateRetryDueAt
   export_calculateRetryDueAt -.-&gt; export_FlowRetryPolicy
@@ -4593,7 +4795,42 @@
   </article>
     </section>
         </section>
-        <section id="view-src-cli-commands-serve-ts" class="view" data-view="src/cli/commands/serve.ts" hidden>
+        <section id="view-src-cli-commands-api-ts" class="view" data-view="src/cli/commands/api.ts" hidden>
+    <section class="panel">
+      <h2>src/cli/commands/api.ts</h2>
+      <article class="item" data-search="api src/cli/commands/api.ts Start only the authenticated Flow API against an explicitly composed shared runtime.">
+    <h3>api</h3>
+    <p class="muted"><code>src/cli/commands/api.ts:7:14</code></p>
+    <p>Start only the authenticated Flow API against an explicitly composed shared runtime.</p>
+    
+  </article><article class="item" data-search="requireApiToken src/cli/commands/api.ts ">
+    <h3>requireApiToken</h3>
+    <p class="muted"><code>src/cli/commands/api.ts:22:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="createAccess src/cli/commands/api.ts ">
+    <h3>createAccess</h3>
+    <p class="muted"><code>src/cli/commands/api.ts:29:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="createAuthenticator src/cli/commands/api.ts ">
+    <h3>createAuthenticator</h3>
+    <p class="muted"><code>src/cli/commands/api.ts:44:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="readPort src/cli/commands/api.ts ">
+    <h3>readPort</h3>
+    <p class="muted"><code>src/cli/commands/api.ts:59:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="readHostname src/cli/commands/api.ts ">
+    <h3>readHostname</h3>
+    <p class="muted"><code>src/cli/commands/api.ts:70:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article>
+    </section>
+  </section><section id="view-src-cli-commands-serve-ts" class="view" data-view="src/cli/commands/serve.ts" hidden>
     <section class="panel">
       <h2>src/cli/commands/serve.ts</h2>
       <article class="item" data-search="serve src/cli/commands/serve.ts Start the authenticated standalone Flow server through the existing Ankh provider discovery.">
@@ -4603,13 +4840,63 @@
     
   </article><article class="item" data-search="readPort src/cli/commands/serve.ts Read one optional server port without accepting invalid network configuration.">
     <h3>readPort</h3>
-    <p class="muted"><code>src/cli/commands/serve.ts:44:7</code></p>
+    <p class="muted"><code>src/cli/commands/serve.ts:47:7</code></p>
     <p>Read one optional server port without accepting invalid network configuration.</p>
     
   </article><article class="item" data-search="readOption src/cli/commands/serve.ts Read one exact command option without interpreting unrelated Ankh arguments.">
     <h3>readOption</h3>
-    <p class="muted"><code>src/cli/commands/serve.ts:54:7</code></p>
+    <p class="muted"><code>src/cli/commands/serve.ts:57:7</code></p>
     <p>Read one exact command option without interpreting unrelated Ankh arguments.</p>
+    
+  </article><article class="item" data-search="readHostname src/cli/commands/serve.ts ">
+    <h3>readHostname</h3>
+    <p class="muted"><code>src/cli/commands/serve.ts:66:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article>
+    </section>
+  </section><section id="view-src-cli-commands-worker-ts" class="view" data-view="src/cli/commands/worker.ts" hidden>
+    <section class="panel">
+      <h2>src/cli/commands/worker.ts</h2>
+      <article class="item" data-search="worker src/cli/commands/worker.ts Start only the durable Flow worker against an explicitly composed shared runtime.">
+    <h3>worker</h3>
+    <p class="muted"><code>src/cli/commands/worker.ts:6:14</code></p>
+    <p>Start only the durable Flow worker against an explicitly composed shared runtime.</p>
+    
+  </article>
+    </section>
+  </section><section id="view-src-cli-loadflowruntimeasync-ts" class="view" data-view="src/cli/loadFlowRuntimeAsync.ts" hidden>
+    <section class="panel">
+      <h2>src/cli/loadFlowRuntimeAsync.ts</h2>
+      <article class="item" data-search="loadFlowRuntimeAsync src/cli/loadFlowRuntimeAsync.ts Load the deployment-selected runtime composition that owns a shared durable backend.">
+    <h3>loadFlowRuntimeAsync</h3>
+    <p class="muted"><code>src/cli/loadFlowRuntimeAsync.ts:7:14</code></p>
+    <p>Load the deployment-selected runtime composition that owns a shared durable backend.</p>
+    
+  </article><article class="item" data-search="runtimeModuleSpecifier src/cli/loadFlowRuntimeAsync.ts ">
+    <h3>runtimeModuleSpecifier</h3>
+    <p class="muted"><code>src/cli/loadFlowRuntimeAsync.ts:17:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="isFlowRuntimeFactoryModule src/cli/loadFlowRuntimeAsync.ts ">
+    <h3>isFlowRuntimeFactoryModule</h3>
+    <p class="muted"><code>src/cli/loadFlowRuntimeAsync.ts:21:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article>
+    </section>
+  </section><section id="view-src-cli-registerprocessshutdown-ts" class="view" data-view="src/cli/registerProcessShutdown.ts" hidden>
+    <section class="panel">
+      <h2>src/cli/registerProcessShutdown.ts</h2>
+      <article class="item" data-search="registerProcessShutdown src/cli/registerProcessShutdown.ts Stop a Flow process exactly once when its host requests graceful termination.">
+    <h3>registerProcessShutdown</h3>
+    <p class="muted"><code>src/cli/registerProcessShutdown.ts:2:14</code></p>
+    <p>Stop a Flow process exactly once when its host requests graceful termination.</p>
+    
+  </article><article class="item" data-search="stop src/cli/registerProcessShutdown.ts ">
+    <h3>stop</h3>
+    <p class="muted"><code>src/cli/registerProcessShutdown.ts:4:9</code></p>
+    <p class="empty">No description available.</p>
     
   </article>
     </section>
@@ -4618,8 +4905,13 @@
       <h2>src/cli/standalone.ts</h2>
       <article class="item" data-search="startAsync src/cli/standalone.ts Start Flow directly for local standalone operation without changing Ankh command semantics.">
     <h3>startAsync</h3>
-    <p class="muted"><code>src/cli/standalone.ts:4:7</code></p>
+    <p class="muted"><code>src/cli/standalone.ts:8:7</code></p>
     <p>Start Flow directly for local standalone operation without changing Ankh command semantics.</p>
+    
+  </article><article class="item" data-search="commandFor src/cli/standalone.ts ">
+    <h3>commandFor</h3>
+    <p class="muted"><code>src/cli/standalone.ts:11:7</code></p>
+    <p class="empty">No description available.</p>
     
   </article>
     </section>
@@ -4729,6 +5021,86 @@
       <article class="item" data-search="executeBoundedAgentAsync src/features/ai/application/executeBoundedAgentAsync.ts ">
     <h3>executeBoundedAgentAsync</h3>
     <p class="muted"><code>src/features/ai/application/executeBoundedAgentAsync.ts:5:14</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article>
+    </section>
+  </section><section id="view-src-features-deployment-createflowdeploymentdescriptor-ts" class="view" data-view="src/features/deployment/createFlowDeploymentDescriptor.ts" hidden>
+    <section class="panel">
+      <h2>src/features/deployment/createFlowDeploymentDescriptor.ts</h2>
+      <article class="item" data-search="createFlowDeploymentDescriptor src/features/deployment/createFlowDeploymentDescriptor.ts Compose exactly one public Flow API and one independent worker workload from explicit portable inputs.">
+    <h3>createFlowDeploymentDescriptor</h3>
+    <p class="muted"><code>src/features/deployment/createFlowDeploymentDescriptor.ts:12:14</code></p>
+    <p>Compose exactly one public Flow API and one independent worker workload from explicit portable inputs.</p>
+    
+  </article><article class="item" data-search="apiWorkloadFor src/features/deployment/createFlowDeploymentDescriptor.ts ">
+    <h3>apiWorkloadFor</h3>
+    <p class="muted"><code>src/features/deployment/createFlowDeploymentDescriptor.ts:38:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="workerWorkloadFor src/features/deployment/createFlowDeploymentDescriptor.ts ">
+    <h3>workerWorkloadFor</h3>
+    <p class="muted"><code>src/features/deployment/createFlowDeploymentDescriptor.ts:63:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="assertDeploymentInput src/features/deployment/createFlowDeploymentDescriptor.ts ">
+    <h3>assertDeploymentInput</h3>
+    <p class="muted"><code>src/features/deployment/createFlowDeploymentDescriptor.ts:81:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="secretEnvironment src/features/deployment/createFlowDeploymentDescriptor.ts ">
+    <h3>secretEnvironment</h3>
+    <p class="muted"><code>src/features/deployment/createFlowDeploymentDescriptor.ts:99:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="mergeEnvironment src/features/deployment/createFlowDeploymentDescriptor.ts ">
+    <h3>mergeEnvironment</h3>
+    <p class="muted"><code>src/features/deployment/createFlowDeploymentDescriptor.ts:107:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="assertEnvironmentKeys src/features/deployment/createFlowDeploymentDescriptor.ts ">
+    <h3>assertEnvironmentKeys</h3>
+    <p class="muted"><code>src/features/deployment/createFlowDeploymentDescriptor.ts:113:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="assertNoEnvironmentKeyCollisions src/features/deployment/createFlowDeploymentDescriptor.ts ">
+    <h3>assertNoEnvironmentKeyCollisions</h3>
+    <p class="muted"><code>src/features/deployment/createFlowDeploymentDescriptor.ts:125:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="dependenciesOf src/features/deployment/createFlowDeploymentDescriptor.ts ">
+    <h3>dependenciesOf</h3>
+    <p class="muted"><code>src/features/deployment/createFlowDeploymentDescriptor.ts:140:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="isImmutableImage src/features/deployment/createFlowDeploymentDescriptor.ts ">
+    <h3>isImmutableImage</h3>
+    <p class="muted"><code>src/features/deployment/createFlowDeploymentDescriptor.ts:146:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="isPositivePort src/features/deployment/createFlowDeploymentDescriptor.ts ">
+    <h3>isPositivePort</h3>
+    <p class="muted"><code>src/features/deployment/createFlowDeploymentDescriptor.ts:152:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="isNonEmptyRecord src/features/deployment/createFlowDeploymentDescriptor.ts ">
+    <h3>isNonEmptyRecord</h3>
+    <p class="muted"><code>src/features/deployment/createFlowDeploymentDescriptor.ts:156:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="isText src/features/deployment/createFlowDeploymentDescriptor.ts ">
+    <h3>isText</h3>
+    <p class="muted"><code>src/features/deployment/createFlowDeploymentDescriptor.ts:160:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="isSecretReference src/features/deployment/createFlowDeploymentDescriptor.ts ">
+    <h3>isSecretReference</h3>
+    <p class="muted"><code>src/features/deployment/createFlowDeploymentDescriptor.ts:163:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="isUnknownText src/features/deployment/createFlowDeploymentDescriptor.ts ">
+    <h3>isUnknownText</h3>
+    <p class="muted"><code>src/features/deployment/createFlowDeploymentDescriptor.ts:178:7</code></p>
     <p class="empty">No description available.</p>
     
   </article>
@@ -6341,25 +6713,80 @@
   </section><section id="view-src-server-ts" class="view" data-view="src/server.ts" hidden>
     <section class="panel">
       <h2>src/server.ts</h2>
-      <article class="item" data-search="startFlowServerAsync src/server.ts Start a standalone Bun HTTP server and a client-independent Flow worker loop.">
+      <article class="item" data-search="startFlowApiServerAsync src/server.ts Start the authenticated HTTP API without starting a durable worker.">
+    <h3>startFlowApiServerAsync</h3>
+    <p class="muted"><code>src/server.ts:15:14</code></p>
+    <p>Start the authenticated HTTP API without starting a durable worker.</p>
+    
+  </article><article class="item" data-search="startFlowWorkerAsync src/server.ts Run one client-independent durable Flow worker loop without opening an HTTP listener.">
+    <h3>startFlowWorkerAsync</h3>
+    <p class="muted"><code>src/server.ts:48:14</code></p>
+    <p>Run one client-independent durable Flow worker loop without opening an HTTP listener.</p>
+    
+  </article><article class="item" data-search="startFlowServerAsync src/server.ts Start the historical combined API and worker process through the separated canonical boundaries.">
     <h3>startFlowServerAsync</h3>
-    <p class="muted"><code>src/server.ts:14:14</code></p>
-    <p>Start a standalone Bun HTTP server and a client-independent Flow worker loop.</p>
+    <p class="muted"><code>src/server.ts:67:14</code></p>
+    <p>Start the historical combined API and worker process through the separated canonical boundaries.</p>
     
   </article><article class="item" data-search="assertServerInput src/server.ts Reject insecure host composition before opening a network listener.">
     <h3>assertServerInput</h3>
-    <p class="muted"><code>src/server.ts:49:7</code></p>
+    <p class="muted"><code>src/server.ts:93:7</code></p>
     <p>Reject insecure host composition before opening a network listener.</p>
+    
+  </article><article class="item" data-search="assertWorkerInput src/server.ts ">
+    <h3>assertWorkerInput</h3>
+    <p class="muted"><code>src/server.ts:101:7</code></p>
+    <p class="empty">No description available.</p>
     
   </article><article class="item" data-search="runtimeFor src/server.ts Compose a persistent runtime unless an embedding host owns it directly.">
     <h3>runtimeFor</h3>
-    <p class="muted"><code>src/server.ts:59:7</code></p>
+    <p class="muted"><code>src/server.ts:114:7</code></p>
     <p>Compose a persistent runtime unless an embedding host owns it directly.</p>
+    
+  </article><article class="item" data-search="createWorkerLoop src/server.ts Serialize worker ticks, retain failures at the process edge, and fence shutdown from rescheduling.">
+    <h3>createWorkerLoop</h3>
+    <p class="muted"><code>src/server.ts:125:7</code></p>
+    <p>Serialize worker ticks, retain failures at the process edge, and fence shutdown from rescheduling.</p>
+    
+  </article><article class="item" data-search="isStopped src/server.ts ">
+    <h3>isStopped</h3>
+    <p class="muted"><code>src/server.ts:133:9</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="runAsync src/server.ts ">
+    <h3>runAsync</h3>
+    <p class="muted"><code>src/server.ts:134:9</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="reportWorkerError src/server.ts ">
+    <h3>reportWorkerError</h3>
+    <p class="muted"><code>src/server.ts:162:7</code></p>
+    <p class="empty">No description available.</p>
     
   </article><article class="item" data-search="securityFor src/server.ts Provide permissive boundaries only for an explicit loopback local demonstration.">
     <h3>securityFor</h3>
-    <p class="muted"><code>src/server.ts:70:7</code></p>
+    <p class="muted"><code>src/server.ts:168:7</code></p>
     <p>Provide permissive boundaries only for an explicit loopback local demonstration.</p>
+    
+  </article>
+    </section>
+  </section><section id="view-src-utils-validateflowapihostname-ts" class="view" data-view="src/utils/validateFlowApiHostname.ts" hidden>
+    <section class="panel">
+      <h2>src/utils/validateFlowApiHostname.ts</h2>
+      <article class="item" data-search="validateFlowApiHostname src/utils/validateFlowApiHostname.ts Validate an explicit numeric listener address without allowing DNS-dependent bind behavior.">
+    <h3>validateFlowApiHostname</h3>
+    <p class="muted"><code>src/utils/validateFlowApiHostname.ts:4:14</code></p>
+    <p>Validate an explicit numeric listener address without allowing DNS-dependent bind behavior.</p>
+    
+  </article><article class="item" data-search="isIpv6LoopbackAddress src/utils/validateFlowApiHostname.ts ">
+    <h3>isIpv6LoopbackAddress</h3>
+    <p class="muted"><code>src/utils/validateFlowApiHostname.ts:16:7</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="isIpv4MappedIpv6Loopback src/utils/validateFlowApiHostname.ts ">
+    <h3>isIpv4MappedIpv6Loopback</h3>
+    <p class="muted"><code>src/utils/validateFlowApiHostname.ts:20:7</code></p>
+    <p class="empty">No description available.</p>
     
   </article>
     </section>
