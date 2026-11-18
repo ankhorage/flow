@@ -35,6 +35,6 @@ COPY package.json bun.lock ./
 RUN bun install --frozen-lockfile --production
 COPY --from=build /app/dist ./dist
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 CMD ["./node_modules/.bin/flow", "worker", "health"]
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 CMD ["bun", "dist/cli/standalone.js", "worker", "health"]
 
-ENTRYPOINT ["./node_modules/.bin/flow"]
+ENTRYPOINT ["bun", "dist/cli/standalone.js"]
