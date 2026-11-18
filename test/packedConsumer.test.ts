@@ -53,6 +53,7 @@ const writeConsumerFiles = (consumerDirectory: string): void => {
     join(consumerDirectory, 'consumer.ts'),
     [
       "import { createFlowSecurityPort } from '@ankhorage/flow';",
+      "import type { FlowApprovalAvailability } from '@ankhorage/flow';",
       "import type { FlowAiModelPort } from '@ankhorage/flow/ai';",
       "import type { FlowDeploymentDescriptorInput } from '@ankhorage/flow/deployment';",
       "import '@ankhorage/flow/execution';",
@@ -61,7 +62,9 @@ const writeConsumerFiles = (consumerDirectory: string): void => {
       "import '@ankhorage/contracts/flow';",
       "import type { FlowDefinition } from '@ankhorage/contracts/flow';",
       "const definition: FlowDefinition = { id: 'consumer-flow', version: 1, title: 'Consumer flow', nodes: [], edges: [], triggers: [{ id: 'manual', kind: 'manual' }] };",
+      "const approval: FlowApprovalAvailability = { approvalId: 'approval', flowId: definition.id, flowVersion: definition.version, runId: 'run', status: 'pending' };",
       'void definition;',
+      'void approval;',
       'void createFlowSecurityPort;',
       "const fakeModel: FlowAiModelPort = { streamAsync: async function* () { yield { type: 'output', value: { answer: 'typed' } }; } };",
       'void fakeModel;',

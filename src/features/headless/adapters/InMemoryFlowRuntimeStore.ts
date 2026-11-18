@@ -10,6 +10,7 @@ import type {
   FlowRuntimeStorePort,
   FlowWorkflowRevision,
 } from '../../../types/headless.js';
+import { toApprovalAvailabilityRecord } from './toApprovalAvailabilityRecord.js';
 
 /*** Create a deterministic in-memory store for embedded hosts and boundary tests. */
 export const InMemoryFlowRuntimeStore = (): FlowRuntimeStorePort => {
@@ -23,6 +24,8 @@ export const InMemoryFlowRuntimeStore = (): FlowRuntimeStorePort => {
     createDraftAsync: (scope, definition) =>
       Promise.resolve(createDraft(workflows, scope, definition)),
     getRunAsync: (scope, runId) => Promise.resolve(runs.get(runKey(scope, runId))),
+    getApprovalAsync: (scope, approvalId) =>
+      Promise.resolve(toApprovalAvailabilityRecord(approvals.get(approvalKey(scope, approvalId)))),
     getWorkflowAsync: (scope, flowId, version) =>
       Promise.resolve(getWorkflow(workflows, scope, flowId, version)),
     listRunsAsync: (scope, flowId) =>

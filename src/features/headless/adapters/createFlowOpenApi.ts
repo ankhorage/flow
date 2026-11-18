@@ -19,6 +19,7 @@ const schemas = () => ({
     required: ['error'],
     type: 'object',
   },
+  ApprovalAvailability: approvalAvailabilitySchema(),
   FlowDefinition: {
     additionalProperties: false,
     properties: {
@@ -56,12 +57,30 @@ const schemas = () => ({
   },
 });
 
+/** Describe the only approval fields safe for an untrusted client to observe. */
+const approvalAvailabilitySchema = () => ({
+  additionalProperties: false,
+  properties: {
+    approvalId: { type: 'string' },
+    expiresAt: { format: 'date-time', type: 'string' },
+    flowId: { type: 'string' },
+    flowVersion: { minimum: 1, type: 'integer' },
+    runId: { type: 'string' },
+    status: { enum: ['pending', 'approved', 'rejected', 'expired', 'cancelled'], type: 'string' },
+  },
+  required: ['approvalId', 'flowId', 'flowVersion', 'runId', 'status'],
+  type: 'object',
+});
+
 /*** Map each supported route to an explicit operation identifier and response contract. */
 const paths = () => ({
   '/health': { get: operation('health', 'OpenApi') },
   '/openapi.json': { get: operation('openApi', 'OpenApi') },
   '/v1/approvals/{approvalId}/{decision}': {
     post: operation('resolveApproval', 'WorkflowRevision'),
+  },
+  '/v1/workflows/{flowId}/{version}/runs/{runId}/approvals/{approvalId}': {
+    get: approvalAvailabilityOperation(),
   },
   '/v1/events': { get: operation('readEvents', 'Run', undefined, 200, true, 'text/event-stream') },
   '/v1/runs': { get: operation('listRuns', 'Run', undefined, 200, true) },
@@ -80,6 +99,25 @@ const paths = () => ({
   '/v1/workflows/{flowId}/triggers/{triggerId}': {
     post: operation('triggerWorkflow', 'Run', 'TriggerRequest', 202),
   },
+});
+
+/** Describe the scoped identity required to read one approval availability projection. */
+const approvalAvailabilityOperation = () => ({
+  ...operation('getApprovalAvailability', 'ApprovalAvailability'),
+  parameters: [
+    pathParameter('flowId', 'string'),
+    pathParameter('version', 'integer'),
+    pathParameter('runId', 'string'),
+    pathParameter('approvalId', 'string'),
+  ],
+});
+
+/** Declare one OpenAPI path parameter as required by the concrete availability route. */
+const pathParameter = (name: string, type: 'integer' | 'string') => ({
+  in: 'path',
+  name,
+  required: true,
+  schema: { type },
 });
 
 /*** Describe one authenticated operation including all stable error envelopes. */

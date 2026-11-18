@@ -40,6 +40,7 @@ export type {
   FlowRunRequest,
 } from './types/execution.js';
 export type {
+  FlowApprovalAvailability,
   FlowAuditRecord,
   FlowHttpAccessPort,
   FlowHttpAuthenticatorPort,

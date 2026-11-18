@@ -48,6 +48,7 @@ const routeAsync = async (
     routeWebhookAsync,
     routeRunAsync,
     routeEventsAsync,
+    routeApprovalAvailabilityAsync,
     routeApprovalAsync,
   ];
   for (const respondAsync of responders) {
@@ -55,6 +56,29 @@ const routeAsync = async (
     if (response !== undefined) return response;
   }
   return error(404, 'FLOW_ROUTE_NOT_FOUND');
+};
+
+/** Route one scoped, revision-bound approval availability projection without exposing the request. */
+const routeApprovalAvailabilityAsync: RouteResponder = async (
+  request,
+  url,
+  segments,
+  runtime,
+  actor,
+) => {
+  if (
+    !matches(request, url, 'GET', /^\/v1\/workflows\/[^/]+\/\d+\/runs\/[^/]+\/approvals\/[^/]+$/u)
+  )
+    return undefined;
+  return value(
+    await runtime.getApprovalAvailabilityAsync({
+      approvalId: segments[7] ?? '',
+      flowId: segments[2] ?? '',
+      flowVersion: number(segments[3]),
+      runId: segments[5] ?? '',
+      scope: scope(actor),
+    }),
+  );
 };
 
 type RouteResponder = (
@@ -229,9 +253,12 @@ const capabilityFor = (method: string, pathname: string): string | undefined =>
     ? undefined
     : pathname.startsWith('/v1/webhooks')
       ? 'trigger:webhook'
-      : /^\/v1\/workflows\/[^/]+\/triggers\/[^/]+$/u.test(pathname)
-        ? 'trigger:manual'
-        : `${method.toLowerCase()}:${pathname.split('/').slice(1, 3).join(':')}`;
+      : method === 'GET' &&
+          /^\/v1\/workflows\/[^/]+\/\d+\/runs\/[^/]+\/approvals\/[^/]+$/u.test(pathname)
+        ? 'approval:read'
+        : /^\/v1\/workflows\/[^/]+\/triggers\/[^/]+$/u.test(pathname)
+          ? 'trigger:manual'
+          : `${method.toLowerCase()}:${pathname.split('/').slice(1, 3).join(':')}`;
 
 /*** Parse only JSON request bodies and fail closed on malformed transport data. */
 const body = async <Value>(request: Request): Promise<Value> => request.json() as Promise<Value>;

@@ -13,6 +13,8 @@ import type {
   FlowRuntimeStorePort,
   FlowWorkflowRevision,
 } from '../../../types/headless.js';
+import { createFileFlowPersistenceSupport } from '../../execution/adapters/createFileFlowPersistenceSupport.js';
+import { toApprovalAvailabilityRecord } from './toApprovalAvailabilityRecord.js';
 
 interface FileRuntimeState {
   readonly approvals: readonly {
@@ -42,12 +44,21 @@ const emptyState = (): FileRuntimeState => ({
 /** Create a self-hostable JSON runtime store with serialized, atomic state transitions. */
 export const FileFlowRuntimeStore = (path: string): FlowRuntimeStorePort => {
   const storePath = resolve(path);
-  const calls = createSerializedCall();
+  const calls = createFileFlowPersistenceSupport(storePath);
   return {
     createDraftAsync: (scope, definition) =>
       calls.runAsync(() => createDraftAsync(storePath, scope, definition)),
     getRunAsync: (scope, runId) =>
       calls.runAsync(async () => findRun(await readAsync(storePath), scope, runId)),
+    getApprovalAsync: (scope, approvalId) =>
+      calls.runAsync(async () =>
+        toApprovalAvailabilityRecord(
+          (await readAsync(storePath)).approvals.find(
+            ({ approval, scope: approvalScope }) =>
+              same(approvalScope, scope) && approval.id === approvalId,
+          )?.approval,
+        ),
+      ),
     getWorkflowAsync: (scope, flowId, version) =>
       calls.runAsync(async () => findWorkflow(await readAsync(storePath), scope, flowId, version)),
     listRunsAsync: (scope, flowId) =>
@@ -68,21 +79,6 @@ export const FileFlowRuntimeStore = (path: string): FlowRuntimeStorePort => {
     saveRunAsync: (scope, run, key) =>
       calls.runAsync(() => saveRunAsync(storePath, scope, run, key)),
     transitionRunAsync: (input) => calls.runAsync(() => transitionRunAsync(storePath, input)),
-  };
-};
-
-/** Serialize local file mutations so a worker cannot lose a completed transition. */
-const createSerializedCall = () => {
-  let previous: Promise<void> = Promise.resolve();
-  return {
-    runAsync: async <Result>(operation: () => Promise<Result>): Promise<Result> => {
-      const current = previous.then(operation, operation);
-      previous = current.then(
-        () => undefined,
-        () => undefined,
-      );
-      return current;
-    },
   };
 };
 
@@ -139,7 +135,7 @@ const resolveApprovalAsync = async (
 ): Promise<FlowApprovalRequest | undefined> =>
   updateAsync(path, (state) => {
     const current = state.approvals.find(
-      (entry) => sameScope(entry.scope, input.scope) && entry.approval.id === input.approvalId,
+      (entry) => same(entry.scope, input.scope) && entry.approval.id === input.approvalId,
     )?.approval;
     if (current?.status !== 'pending') return { result: undefined, state };
     const approval = {
@@ -167,8 +163,7 @@ const saveRunAsync = async (
     const runId =
       key === undefined
         ? undefined
-        : state.idempotency.find((entry) => sameScope(entry.scope, scope) && entry.key === key)
-            ?.runId;
+        : state.idempotency.find((entry) => same(entry.scope, scope) && entry.key === key)?.runId;
     const existing = runId === undefined ? undefined : findRun(state, scope, runId);
     if (existing !== undefined) return { result: existing, state };
     if (findRun(state, scope, run.id) !== undefined) throw new Error('FLOW_RUN_EXISTS');
@@ -237,9 +232,9 @@ const findRun = (
   scope: FlowResourceScope,
   runId: string,
 ): FlowRunSnapshot | undefined =>
-  state.runs.find((entry) => sameScope(entry.scope, scope) && entry.run.id === runId)?.run;
+  state.runs.find((entry) => same(entry.scope, scope) && entry.run.id === runId)?.run;
 const findWorkflowEntry = (state: FileRuntimeState, scope: FlowResourceScope, flowId: string) =>
-  state.workflows.find((entry) => entry.flowId === workflowKey(scope, flowId));
+  state.workflows.find((entry) => entry.flowId === flowKey(scope, flowId));
 const findWorkflow = (
   state: FileRuntimeState,
   scope: FlowResourceScope,
@@ -258,8 +253,7 @@ const listRuns = (
 ): readonly FlowRunSnapshot[] =>
   state.runs
     .filter(
-      (entry) =>
-        sameScope(entry.scope, scope) && (flowId === undefined || entry.run.flow.id === flowId),
+      (entry) => same(entry.scope, scope) && (flowId === undefined || entry.run.flow.id === flowId),
     )
     .map((entry) => entry.run);
 /** Return only accepted work that needs durable handoff repair after a process interruption. */
@@ -276,7 +270,7 @@ const listEvents = (
   runId?: string,
 ): readonly FlowRunEvent[] =>
   state.events
-    .filter((entry) => sameScope(entry.scope, scope))
+    .filter((entry) => same(entry.scope, scope))
     .map((entry) => entry.event)
     .filter((event) => event.id > afterId && (runId === undefined || event.runId === runId));
 const replaceWorkflow = (
@@ -287,8 +281,8 @@ const replaceWorkflow = (
 ): FileRuntimeState => ({
   ...state,
   workflows: [
-    ...state.workflows.filter((entry) => entry.flowId !== workflowKey(scope, flowId)),
-    { flowId: workflowKey(scope, flowId), revisions },
+    ...state.workflows.filter((entry) => entry.flowId !== flowKey(scope, flowId)),
+    { flowId: flowKey(scope, flowId), revisions },
   ],
 });
 const replaceApproval = (
@@ -296,7 +290,7 @@ const replaceApproval = (
   scope: FlowResourceScope,
   approval: FlowApprovalRequest,
 ): FileRuntimeState['approvals'] => [
-  ...values.filter((value) => !sameScope(value.scope, scope) || value.approval.id !== approval.id),
+  ...values.filter((value) => !same(value.scope, scope) || value.approval.id !== approval.id),
   { approval, scope },
 ];
 const replaceRun = (
@@ -304,10 +298,10 @@ const replaceRun = (
   scope: FlowResourceScope,
   run: FlowRunSnapshot,
 ): FileRuntimeState['runs'] => [
-  ...values.filter((value) => !sameScope(value.scope, scope) || value.run.id !== run.id),
+  ...values.filter((value) => !same(value.scope, scope) || value.run.id !== run.id),
   { run, scope },
 ];
-const sameScope = (left: FlowResourceScope, right: FlowResourceScope): boolean =>
+const same = (left: FlowResourceScope, right: FlowResourceScope): boolean =>
   left.tenantId === right.tenantId && left.projectId === right.projectId;
-const workflowKey = (scope: FlowResourceScope, flowId: string): string =>
+const flowKey = (scope: FlowResourceScope, flowId: string): string =>
   `${scope.tenantId}:${scope.projectId}:${flowId}`;

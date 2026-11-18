@@ -1,6 +1,7 @@
 import type { DataContractValue, DataSchemaRegistry } from '@ankhorage/contracts/data';
 import type {
   FlowApprovalRequest,
+  FlowApprovalStatus,
   FlowDefinition,
   FlowExecutionStatus,
   FlowRunSnapshot,
@@ -25,6 +26,24 @@ export interface FlowWorkflowRevision {
   readonly scope: FlowResourceScope;
 }
 
+/** A redaction-safe, server-authoritative approval state for one exact Flow run revision. */
+export interface FlowApprovalAvailability {
+  readonly approvalId: string;
+  readonly expiresAt?: string;
+  readonly flowId: string;
+  readonly flowVersion: number;
+  readonly runId: string;
+  readonly status: 'approved' | 'cancelled' | 'expired' | 'pending' | 'rejected';
+}
+
+/** Internal store projection that prevents approval context and identities crossing the read port. */
+interface FlowApprovalAvailabilityRecord {
+  readonly expiresAt?: string;
+  readonly id: string;
+  readonly runId: string;
+  readonly status: FlowApprovalStatus;
+}
+
 /** A redaction-safe event emitted whenever a run changes state. */
 export interface FlowRunEvent {
   readonly id: number;
@@ -47,6 +66,10 @@ export interface FlowRuntimeStorePort {
     definition: FlowDefinition,
   ): Promise<FlowWorkflowRevision>;
   getRunAsync(scope: FlowResourceScope, runId: string): Promise<FlowRunSnapshot | undefined>;
+  getApprovalAsync(
+    scope: FlowResourceScope,
+    approvalId: string,
+  ): Promise<FlowApprovalAvailabilityRecord | undefined>;
   getWorkflowAsync(
     scope: FlowResourceScope,
     flowId: string,
@@ -147,6 +170,13 @@ export interface FlowRuntime {
     definition: FlowDefinition,
   ): Promise<FlowWorkflowRevision>;
   getRunAsync(scope: FlowResourceScope, runId: string): Promise<FlowRunSnapshot | undefined>;
+  getApprovalAvailabilityAsync(input: {
+    readonly approvalId: string;
+    readonly flowId: string;
+    readonly flowVersion: number;
+    readonly runId: string;
+    readonly scope: FlowResourceScope;
+  }): Promise<FlowApprovalAvailability | undefined>;
   getWorkflowAsync(
     scope: FlowResourceScope,
     flowId: string,
