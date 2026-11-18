@@ -135,6 +135,223 @@ describe('headless Flow runtime', () => {
     ).toContain('/v1/workflows/{flowId}/triggers/{triggerId}');
   });
 
+  it('returns only a capability-gated, run-and-revision-bound approval availability projection', async () => {
+    const clock = { now: () => new Date('2026-11-18T10:00:00.000Z') };
+    const runtime = createFlowRuntime({
+      clock,
+      nodeRegistry: createDefaultNodeRegistry(),
+      persistence: InMemoryFlowPersistenceAdapter(),
+      store: InMemoryFlowRuntimeStore(),
+    });
+    await runtime.createDraftAsync(scope, definition);
+    await runtime.publishAsync(scope, definition.id, definition.version);
+    const run = await runtime.triggerAsync({
+      flowId: definition.id,
+      idempotencyKey: 'approval-availability',
+      scope,
+      triggerId: 'manual',
+    });
+    await runtime.requestApprovalAsync({
+      approval: {
+        context: { kind: 'inline', value: 'SENTINEL_APPROVAL_CONTEXT' },
+        expiresAt: '2026-11-18T11:00:00.000Z',
+        id: 'approval-availability',
+        message: 'SENTINEL_APPROVAL_MESSAGE',
+        requestedAt: '2026-11-18T09:00:00.000Z',
+        requestedBy: 'SENTINEL_REQUESTED_BY',
+        runId: run.id,
+        status: 'pending',
+      },
+      scope,
+    });
+    const capabilities: string[] = [];
+    const handler = createFlowHttpHandler({
+      access: {
+        acquireAsync: async ({ capability }) => {
+          capabilities.push(capability);
+          return true;
+        },
+        authorizeAsync: async ({ capability }) => {
+          capabilities.push(capability);
+          return capability === 'approval:read';
+        },
+      },
+      authenticator: {
+        authenticateAsync: async (request) =>
+          request.headers.get('authorization') === 'Bearer reader'
+            ? { environment: 'test', id: 'reader', ...scope }
+            : request.headers.get('authorization') === 'Bearer other-tenant'
+              ? { environment: 'test', id: 'reader', projectId: 'project', tenantId: 'other' }
+              : undefined,
+      },
+      runtime,
+    });
+    const path = `/v1/workflows/${definition.id}/${definition.version}/runs/${run.id}/approvals/approval-availability`;
+    const unauthenticated = await handler(new Request(`http://flow${path}`));
+    expect(unauthenticated.status).toBe(401);
+    const response = await handler(
+      new Request(`http://flow${path}`, { headers: { authorization: 'Bearer reader' } }),
+    );
+    const text = await response.text();
+    expect(response.status).toBe(200);
+    expect(JSON.parse(text)).toEqual({
+      approvalId: 'approval-availability',
+      expiresAt: '2026-11-18T11:00:00.000Z',
+      flowId: definition.id,
+      flowVersion: definition.version,
+      runId: run.id,
+      status: 'pending',
+    });
+    expect(text).not.toContain('SENTINEL');
+    expect(capabilities).toEqual(['approval:read', 'approval:read']);
+    expect(
+      (
+        await handler(
+          new Request(`http://flow${path}`, { headers: { authorization: 'Bearer other-tenant' } }),
+        )
+      ).status,
+    ).toBe(404);
+    const openApi = (await (await handler(new Request('http://flow/openapi.json'))).json()) as {
+      readonly paths: Record<
+        string,
+        { readonly get?: { readonly parameters?: readonly { readonly name: string }[] } }
+      >;
+    };
+    expect(
+      openApi.paths[
+        '/v1/workflows/{flowId}/{version}/runs/{runId}/approvals/{approvalId}'
+      ]?.get?.parameters?.map(({ name }) => name),
+    ).toEqual(['flowId', 'version', 'runId', 'approvalId']);
+    expect(
+      (
+        await handler(
+          new Request(
+            `http://flow/v1/workflows/${definition.id}/2/runs/${run.id}/approvals/approval-availability`,
+            { headers: { authorization: 'Bearer reader' } },
+          ),
+        )
+      ).status,
+    ).toBe(404);
+    expect(
+      (
+        await handler(
+          new Request(
+            `http://flow/v1/workflows/${definition.id}/${definition.version}/runs/${run.id}/approvals/missing`,
+            { headers: { authorization: 'Bearer reader' } },
+          ),
+        )
+      ).status,
+    ).toBe(404);
+  });
+
+  it('projects expired approval availability without changing the stored approval state', async () => {
+    const clock = { now: () => new Date('2026-11-18T12:00:00.000Z') };
+    const runtime = createFlowRuntime({
+      clock,
+      nodeRegistry: createDefaultNodeRegistry(),
+      persistence: InMemoryFlowPersistenceAdapter(),
+      store: InMemoryFlowRuntimeStore(),
+    });
+    await runtime.createDraftAsync(scope, definition);
+    await runtime.publishAsync(scope, definition.id, definition.version);
+    const run = await runtime.triggerAsync({
+      flowId: definition.id,
+      idempotencyKey: 'expired-approval-availability',
+      scope,
+      triggerId: 'manual',
+    });
+    await runtime.requestApprovalAsync({
+      approval: {
+        expiresAt: '2026-11-18T11:00:00.000Z',
+        id: 'expired-approval',
+        requestedAt: '2026-11-18T09:00:00.000Z',
+        runId: run.id,
+        status: 'pending',
+      },
+      scope,
+    });
+    expect(
+      await runtime.getApprovalAvailabilityAsync({
+        approvalId: 'expired-approval',
+        flowId: definition.id,
+        flowVersion: definition.version,
+        runId: run.id,
+        scope,
+      }),
+    ).toMatchObject({ status: 'expired' });
+  });
+
+  it('preserves each owner-recorded terminal approval status', async () => {
+    const runtime = createFlowRuntime({
+      nodeRegistry: createDefaultNodeRegistry(),
+      persistence: InMemoryFlowPersistenceAdapter(),
+      store: InMemoryFlowRuntimeStore(),
+    });
+    await runtime.createDraftAsync(scope, definition);
+    await runtime.publishAsync(scope, definition.id, definition.version);
+    const run = await runtime.triggerAsync({
+      flowId: definition.id,
+      idempotencyKey: 'terminal-approval-availability',
+      scope,
+      triggerId: 'manual',
+    });
+    for (const status of ['approved', 'rejected', 'cancelled', 'expired'] as const) {
+      await runtime.requestApprovalAsync({
+        approval: {
+          id: 'terminal-approval',
+          requestedAt: '2026-11-18T09:00:00.000Z',
+          runId: run.id,
+          status,
+        },
+        scope,
+      });
+      expect(
+        await runtime.getApprovalAvailabilityAsync({
+          approvalId: 'terminal-approval',
+          flowId: definition.id,
+          flowVersion: definition.version,
+          runId: run.id,
+          scope,
+        }),
+      ).toMatchObject({ status });
+    }
+  });
+
+  it('fails closed when owner approval expiry data is malformed', async () => {
+    const runtime = createFlowRuntime({
+      nodeRegistry: createDefaultNodeRegistry(),
+      persistence: InMemoryFlowPersistenceAdapter(),
+      store: InMemoryFlowRuntimeStore(),
+    });
+    await runtime.createDraftAsync(scope, definition);
+    await runtime.publishAsync(scope, definition.id, definition.version);
+    const run = await runtime.triggerAsync({
+      flowId: definition.id,
+      idempotencyKey: 'malformed-approval-availability',
+      scope,
+      triggerId: 'manual',
+    });
+    await runtime.requestApprovalAsync({
+      approval: {
+        expiresAt: 'not-a-timestamp',
+        id: 'malformed-approval',
+        requestedAt: '2026-11-18T09:00:00.000Z',
+        runId: run.id,
+        status: 'pending',
+      },
+      scope,
+    });
+    expect(
+      await runtime.getApprovalAvailabilityAsync({
+        approvalId: 'malformed-approval',
+        flowId: definition.id,
+        flowVersion: definition.version,
+        runId: run.id,
+        scope,
+      }),
+    ).toBeUndefined();
+  });
+
   it('binds HTTP trigger families to their own permissions, rejects cross-kind calls, and redacts replays', async () => {
     const runtime = createFlowRuntime({
       nodeRegistry: createDefaultNodeRegistry(),

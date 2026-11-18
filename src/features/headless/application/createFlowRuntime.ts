@@ -4,6 +4,7 @@ import type { FlowDefinition, FlowRunSnapshot } from '@ankhorage/contracts/flow'
 
 import type { FlowDurableRun, FlowDurableWork } from '../../../types/durableExecution.js';
 import type {
+  FlowApprovalAvailability,
   FlowResourceScope,
   FlowRuntime,
   FlowRuntimeDependencies,
@@ -40,6 +41,8 @@ export const createFlowRuntime = (dependencies: FlowRuntimeDependencies): FlowRu
     createDraftAsync: async (scope, definition) =>
       createDraftAsync(scope, definition, dependencies),
     getRunAsync: async (scope, runId) => dependencies.store.getRunAsync(scope, runId),
+    getApprovalAvailabilityAsync: async (input) =>
+      getApprovalAvailabilityAsync(input, dependencies.store, clock),
     getWorkflowAsync: async (scope, flowId, version) =>
       dependencies.store.getWorkflowAsync(scope, flowId, version),
     listRunsAsync: async (scope, flowId) => dependencies.store.listRunsAsync(scope, flowId),
@@ -63,6 +66,38 @@ export const createFlowRuntime = (dependencies: FlowRuntimeDependencies): FlowRu
     triggerAsync: async (input) => triggerAsync(input, dependencies, clock),
   };
 };
+
+/** Return the minimal approval state only when it belongs to one exact scoped Flow run revision. */
+const getApprovalAvailabilityAsync = async (
+  input: Parameters<FlowRuntime['getApprovalAvailabilityAsync']>[0],
+  store: FlowRuntimeDependencies['store'],
+  clock: { readonly now: () => Date },
+): Promise<FlowApprovalAvailability | undefined> => {
+  const run = await store.getRunAsync(input.scope, input.runId);
+  if (run?.flow.id !== input.flowId || run.flow.version !== input.flowVersion) return undefined;
+  const approval = await store.getApprovalAsync(input.scope, input.approvalId);
+  if (approval?.runId !== run.id) return undefined;
+  if (approval.expiresAt !== undefined && !Number.isFinite(Date.parse(approval.expiresAt)))
+    return undefined;
+  return {
+    approvalId: approval.id,
+    ...(approval.expiresAt === undefined ? {} : { expiresAt: approval.expiresAt }),
+    flowId: run.flow.id,
+    flowVersion: run.flow.version,
+    runId: run.id,
+    status: approvalStatus(approval.status, approval.expiresAt, clock.now()),
+  };
+};
+
+/** Expose expiration as a read projection without mutating the owner record during a GET. */
+const approvalStatus = (
+  status: FlowApprovalAvailability['status'],
+  expiresAt: string | undefined,
+  now: Date,
+): FlowApprovalAvailability['status'] =>
+  status === 'pending' && expiresAt !== undefined && Date.parse(expiresAt) <= now.getTime()
+    ? 'expired'
+    : status;
 
 /*** Validate graph invariants before persisting an immutable draft revision. */
 const createDraftAsync = async (
