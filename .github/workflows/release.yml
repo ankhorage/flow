@@ -686,11 +686,138 @@ jobs:
           echo "::error title=npm publication propagation timeout::${package_spec} did not become independently retrievable after ${max_attempts} attempts."
           exit 1
 
-  finalize:
+  publish-image:
     needs:
       - release
       - verify-publication
     if: needs.release.outputs.versioned == 'true' && needs.verify-publication.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
+
+    outputs:
+      image: ${{ steps.identity.outputs.image }}
+      digest: ${{ steps.build.outputs.digest }}
+
+    steps:
+      - name: Checkout exact release commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.release.outputs.release_sha }}
+
+      - name: Define immutable Flow OCI identity
+        id: identity
+        env:
+          PACKAGE_VERSION: ${{ needs.release.outputs.package_version }}
+        run: |
+          set -euo pipefail
+          case "$PACKAGE_VERSION" in
+            [0-9]*.[0-9]*.[0-9]*) ;;
+            *) echo "Expected a stable Flow package version." >&2; exit 1 ;;
+          esac
+          echo "image=ghcr.io/${GITHUB_REPOSITORY}" >> "$GITHUB_OUTPUT"
+
+      - name: Set up QEMU for supported image platforms
+        uses: docker/setup-qemu-action@29109295f81e9208d7d86ff1c6c12d2833863392 # v3.6.0
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3.11.1
+
+      - name: Authenticate the release job to GitHub Container Registry
+        uses: docker/login-action@184bdaa0721073962dff0199f1fb9940f07167d1 # v3.5.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - name: Publish reproducible Flow OCI image with SBOM and provenance
+        id: build
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          platforms: linux/amd64,linux/arm64
+          provenance: mode=max
+          sbom: true
+          build-args: |
+            FLOW_VERSION=${{ needs.release.outputs.package_version }}
+            SOURCE_REPOSITORY=${{ github.repository }}
+            SOURCE_REVISION=${{ needs.release.outputs.release_sha }}
+          tags: |
+            ${{ steps.identity.outputs.image }}:${{ needs.release.outputs.package_version }}
+            ${{ steps.identity.outputs.image }}:sha-${{ needs.release.outputs.release_sha }}
+
+      - name: Verify the pushed immutable manifest, platforms, provenance, and SBOM
+        env:
+          IMAGE: ${{ steps.identity.outputs.image }}
+          DIGEST: ${{ steps.build.outputs.digest }}
+        run: |
+          set -euo pipefail
+          case "$DIGEST" in sha256:[a-f0-9][a-f0-9]*) ;; *) exit 1 ;; esac
+          manifest="$(docker buildx imagetools inspect "${IMAGE}@${DIGEST}")"
+          printf '%s\n' "$manifest"
+          printf '%s\n' "$manifest" | grep -Fq 'linux/amd64'
+          printf '%s\n' "$manifest" | grep -Fq 'linux/arm64'
+          printf '%s\n' "$manifest" | grep -Fq 'attestation-manifest'
+
+  verify-image:
+    needs:
+      - release
+      - publish-image
+    if: needs.release.result == 'success' && needs.publish-image.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: read
+
+    steps:
+      - name: Checkout acceptance fixtures on a fresh runner
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.4.2'
+
+      - name: Authenticate the fresh runner to GitHub Container Registry
+        uses: docker/login-action@184bdaa0721073962dff0199f1fb9940f07167d1 # v3.5.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - name: Pull and inspect the exact published image digest
+        env:
+          IMAGE: ${{ needs.publish-image.outputs.image }}
+          DIGEST: ${{ needs.publish-image.outputs.digest }}
+          PACKAGE_VERSION: ${{ needs.release.outputs.package_version }}
+          RELEASE_SHA: ${{ needs.release.outputs.release_sha }}
+        run: |
+          set -euo pipefail
+          reference="${IMAGE}@${DIGEST}"
+          docker pull "$reference"
+          test "$(docker image inspect --format '{{ index .Config.Labels "org.opencontainers.image.version" }}' "$reference")" = "$PACKAGE_VERSION"
+          test "$(docker image inspect --format '{{ index .Config.Labels "org.opencontainers.image.revision" }}' "$reference")" = "$RELEASE_SHA"
+          test "$(docker image inspect --format '{{json .Config.Env}}' "$reference")" != *FLOW_API_TOKEN=*
+          ! docker history --no-trunc "$reference" | grep -Eiq '(token|secret|credential)='
+
+      - name: Run API and worker acceptance from the published immutable digest
+        env:
+          FLOW_CONTAINER_IMAGE: ${{ needs.publish-image.outputs.image }}@${{ needs.publish-image.outputs.digest }}
+        run: bun run test:container-acceptance
+
+  finalize:
+    needs:
+      - release
+      - verify-publication
+      - publish-image
+      - verify-image
+    if: needs.release.outputs.versioned == 'true' && needs.verify-publication.result == 'success' && needs.publish-image.result == 'success' && needs.verify-image.result == 'success'
     runs-on: ubuntu-latest
 
     steps:
@@ -717,6 +844,8 @@ jobs:
           GH_TOKEN: ${{ steps.release-token.outputs.token }}
           PUBLISHED_PACKAGE_VERSION: ${{ needs.release.outputs.package_version }}
           RELEASE_SHA: ${{ needs.release.outputs.release_sha }}
+          OCI_IMAGE: ${{ needs.publish-image.outputs.image }}
+          OCI_DIGEST: ${{ needs.publish-image.outputs.digest }}
         run: |
           set -euo pipefail
           tag="v${PUBLISHED_PACKAGE_VERSION}"
@@ -732,8 +861,13 @@ jobs:
             git push origin "refs/tags/$tag"
           fi
 
+          oci_notes="$(printf '## OCI image\n\n`%s@%s`\n\nThis multi-platform Flow runtime image was built from `%s`, contains `@ankhorage/flow@%s`, and was independently pulled and accepted by digest from a fresh runner. SBOM and build provenance attestations are attached to the OCI manifest. Deploy workloads only by this digest.' "$OCI_IMAGE" "$OCI_DIGEST" "$RELEASE_SHA" "$PUBLISHED_PACKAGE_VERSION")"
           if ! gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            gh release create "$tag" --repo "$GITHUB_REPOSITORY" --generate-notes --target "$RELEASE_SHA"
+            gh release create "$tag" --repo "$GITHUB_REPOSITORY" --generate-notes --notes-start "$oci_notes" --target "$RELEASE_SHA"
+          elif ! gh release view "$tag" --repo "$GITHUB_REPOSITORY" --json body --jq .body | grep -Fq "$OCI_DIGEST"; then
+            existing_notes="$(gh release view "$tag" --repo "$GITHUB_REPOSITORY" --json body --jq .body)"
+            printf -v all_notes '%s\n\n%s' "$oci_notes" "$existing_notes"
+            gh release edit "$tag" --repo "$GITHUB_REPOSITORY" --notes "$all_notes"
           fi
 
       - name: Create the scoped rollout token

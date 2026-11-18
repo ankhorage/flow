@@ -184,3 +184,23 @@ jobs:
 
       - name: Build test image and verify container-network acceptance
         run: bun run test:container-acceptance
+
+  oci-image:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build the release OCI image from the published package baseline
+        env:
+          SOURCE_REVISION: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          package_version="$(node -p "require('./package.json').version")"
+          docker build \
+            --build-arg "FLOW_VERSION=${package_version}" \
+            --build-arg "SOURCE_REPOSITORY=${GITHUB_REPOSITORY}" \
+            --build-arg "SOURCE_REVISION=${SOURCE_REVISION}" \
+            --tag flow-oci-ci \
+            .

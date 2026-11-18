@@ -1,0 +1,8 @@
+.agents
+.changeset
+.git
+.github
+.env
+.env.*
+dist
+node_modules

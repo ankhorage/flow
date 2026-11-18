@@ -1,18 +1,40 @@
 import { randomUUID } from 'node:crypto';
+import { resolve } from 'node:path';
 
 const token = `flow-container-token-${randomUUID()}`;
 const identifier = randomUUID().replaceAll('-', '');
-const image = `flow-container-acceptance:${identifier}`;
+const localImage = `flow-container-acceptance:${identifier}`;
+const image = process.env.FLOW_CONTAINER_IMAGE ?? localImage;
 const network = `flow-container-network-${identifier}`;
 const volume = `flow-container-state-${identifier}`;
 const api = `flow-container-api-${identifier}`;
 const worker = `flow-container-worker-${identifier}`;
 const restartedWorker = `flow-container-worker-restarted-${identifier}`;
+const runtimeModule =
+  process.env.FLOW_CONTAINER_IMAGE === undefined
+    ? '/app/test/fixtures/fileRuntimeModule.ts'
+    : '/app/test/fixtures/publishedImageRuntimeModule.ts';
+const runtimeMount =
+  process.env.FLOW_CONTAINER_IMAGE === undefined
+    ? []
+    : [
+        '--mount',
+        `type=bind,source=${resolve('test/fixtures')},target=/app/test/fixtures,readonly`,
+      ];
+const clientMount =
+  process.env.FLOW_CONTAINER_IMAGE === undefined
+    ? []
+    : [
+        '--mount',
+        `type=bind,source=${resolve('test/container')},target=/app/test/container,readonly`,
+      ];
 
 try {
-  docker(['build', '--file', 'test/container/Dockerfile', '--tag', image, '.']);
+  prepareImage();
   docker(['network', 'create', network]);
   docker(['volume', 'create', volume]);
+  assertRequiredConfigurationFailsClosed();
+  assertWorkerReadiness();
   startApi();
   client('health');
   client('reject-unauthorized-operation');
@@ -37,6 +59,17 @@ try {
   removeContainer(api);
   removeResource(['network', 'rm', network]);
   removeResource(['volume', 'rm', volume]);
+}
+
+/** Build a checkout-owned fixture image locally or pull only the caller-provided immutable digest. */
+function prepareImage(): void {
+  if (process.env.FLOW_CONTAINER_IMAGE === undefined) {
+    docker(['build', '--file', 'test/container/Dockerfile', '--tag', image, '.']);
+    return;
+  }
+  if (!/@sha256:[a-f0-9]{64}$/u.test(image))
+    throw new Error('FLOW_CONTAINER_IMAGE_DIGEST_REQUIRED');
+  docker(['pull', image]);
 }
 
 /** Build and execute the test image through Docker without passing the token in command arguments. */
@@ -68,9 +101,10 @@ function startApi(): void {
     '--env',
     'FLOW_API_TOKEN',
     '--env',
-    'FLOW_RUNTIME_MODULE=/app/test/fixtures/fileRuntimeModule.ts',
+    `FLOW_RUNTIME_MODULE=${runtimeModule}`,
     '--env',
     'FLOW_TEST_STATE_DIRECTORY=/state',
+    ...runtimeMount,
     image,
     'api',
     '--port',
@@ -92,9 +126,10 @@ function startWorker(name: string): void {
     '--mount',
     `type=volume,source=${volume},target=/state`,
     '--env',
-    'FLOW_RUNTIME_MODULE=/app/test/fixtures/fileRuntimeModule.ts',
+    `FLOW_RUNTIME_MODULE=${runtimeModule}`,
     '--env',
     'FLOW_TEST_STATE_DIRECTORY=/state',
+    ...runtimeMount,
     image,
     'worker',
   ]);
@@ -115,11 +150,53 @@ function client(mode: string, environment: Record<string, string> = {}): string 
       ...Object.entries(environment).flatMap(([key, value]) => ['--env', `${key}=${value}`]),
       '--entrypoint',
       'bun',
+      ...runtimeMount,
+      ...clientMount,
       image,
       'test/container/client.ts',
     ],
     environment,
   );
+}
+
+/** Prove the image refuses to create an unauthenticated API or a worker without an explicit runtime. */
+function assertRequiredConfigurationFailsClosed(): void {
+  assertDockerFails(['run', '--rm', image, 'worker', 'health']);
+  assertDockerFails([
+    'run',
+    '--rm',
+    ...runtimeMount,
+    '--env',
+    `FLOW_RUNTIME_MODULE=${runtimeModule}`,
+    image,
+    'api',
+  ]);
+}
+
+/** Check the declared worker health command against the same injected runtime boundary used in production. */
+function assertWorkerReadiness(): void {
+  docker([
+    'run',
+    '--rm',
+    ...runtimeMount,
+    '--env',
+    `FLOW_RUNTIME_MODULE=${runtimeModule}`,
+    '--env',
+    'FLOW_TEST_STATE_DIRECTORY=/tmp/flow-health',
+    image,
+    'worker',
+    'health',
+  ]);
+}
+
+/** Expect a negative container invocation to fail without forwarding any process output. */
+function assertDockerFails(arguments_: readonly string[]): void {
+  const result = Bun.spawnSync(['docker', ...arguments_], {
+    env: { ...process.env, FLOW_API_TOKEN: token },
+    stderr: 'pipe',
+    stdout: 'pipe',
+  });
+  if (result.exitCode === 0) throw new Error('FLOW_CONTAINER_REQUIRED_CONFIGURATION_ACCEPTED');
 }
 
 /** Prove that a worker container neither publishes a port nor binds the API listener port. */
