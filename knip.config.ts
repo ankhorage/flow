@@ -1,7 +1,7 @@
 import { createKnipConfig } from '@ankhorage/devtools/knip';
 
 export default createKnipConfig({
-  entry: ['test/container/client.ts'],
+  entry: ['test/container/client.ts', 'test/fixtures/publishedImageRuntimeModule.ts'],
   ignoreFiles: [
     '.prettierrc.js',
     'eslint.config.mjs',
