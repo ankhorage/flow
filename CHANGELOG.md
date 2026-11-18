@@ -1,5 +1,11 @@
 # @ankhorage/flow
 
+## 0.10.1
+
+### Patch Changes
+
+- d6f944f: Execute the root Flow CLI directly in the production OCI image and accept the built image before publication.
+
 ## 0.10.0
 
 ### Minor Changes
