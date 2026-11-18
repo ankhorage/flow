@@ -169,3 +169,18 @@ jobs:
         with:
           name: atlas-audit
           path: src/atlas-audit.json
+
+  container-acceptance:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.4.2'
+
+      - name: Build test image and verify container-network acceptance
+        run: bun run test:container-acceptance

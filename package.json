@@ -85,6 +85,7 @@
     "knip:check": "ankhorage-knip",
     "serve": "bun src/cli/standalone.ts",
     "test": "bun test src test",
+    "test:container-acceptance": "bun .github/scripts/container-acceptance.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.node-esm.json && tsc --noEmit -p tsconfig.test.json",
     "version-packages": "ankhorage-changeset version"
   },

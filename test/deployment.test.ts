@@ -119,6 +119,11 @@ test('fails closed before guessing an image, secret reference, artifact storage,
   expect(() =>
     createFlowDeploymentDescriptor({ ...input, api: { ...input.api, hostname: '127.0.0.1' } }),
   ).toThrow('FLOW_DEPLOYMENT_API_HOSTNAME_PUBLIC_REQUIRED');
+  for (const hostname of ['::1', '::ffff:127.0.0.1', '::ffff:7f00:1']) {
+    expect(() =>
+      createFlowDeploymentDescriptor({ ...input, api: { ...input.api, hostname } }),
+    ).toThrow('FLOW_DEPLOYMENT_API_HOSTNAME_PUBLIC_REQUIRED');
+  }
   expect(() =>
     createFlowDeploymentDescriptor({
       ...input,
@@ -131,6 +136,13 @@ test('fails closed before guessing an image, secret reference, artifact storage,
       scheduler: { ...input.scheduler, environment: {} },
     }),
   ).toThrow('FLOW_DEPLOYMENT_SCHEDULER_REQUIRED');
+});
+
+test('retains explicit non-loopback IPv4 and IPv6 public listener bindings', () => {
+  for (const hostname of ['0.0.0.0', '::', '2001:db8::1']) {
+    const [api] = createFlowDeploymentDescriptor({ ...input, api: { ...input.api, hostname } });
+    expect(api?.environment?.FLOW_API_HOSTNAME).toEqual({ kind: 'literal', value: hostname });
+  }
 });
 
 test('rejects blank and colliding environment or secret keys before composing either process', () => {
