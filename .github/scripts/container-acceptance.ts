@@ -122,13 +122,14 @@ function client(mode: string, environment: Record<string, string> = {}): string 
 function assertWorkerHasNoPublicListener(name: string): void {
   const ports = docker(['inspect', '--format', '{{json .NetworkSettings.Ports}}', name]);
   if (ports !== '{}') throw new Error('FLOW_CONTAINER_WORKER_PORT_PUBLISHED');
-  docker([
+  const listener = docker([
     'exec',
     name,
     'bun',
     '-e',
-    "const fs = require('node:fs'); const listening = [fs.readFileSync('/proc/net/tcp', 'utf8'), fs.readFileSync('/proc/net/tcp6', 'utf8')].some((table) => table.split('\\n').some((line) => /\\s0A\\s/u.test(line))); if (listening) throw new Error('FLOW_CONTAINER_WORKER_LISTENER_PRESENT');",
+    "const fs = require('node:fs'); const listening = [fs.readFileSync('/proc/net/tcp', 'utf8'), fs.readFileSync('/proc/net/tcp6', 'utf8')].some((table) => table.split('\\n').some((line) => /\\s0A\\s/u.test(line))); process.stdout.write(listening ? 'yes' : 'no');",
   ]);
+  if (listener !== 'no') throw new Error('FLOW_CONTAINER_WORKER_LISTENER_PRESENT');
 }
 
 /** Check service logs without emitting their contents, so the assertion itself cannot disclose a secret. */
