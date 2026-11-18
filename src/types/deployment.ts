@@ -10,6 +10,8 @@ export interface FlowDeploymentDescriptorInput {
   readonly api: {
     /** Dedicated bootstrap reference for the token required by `flow api`. */
     readonly apiToken: InfraSecretReference;
+    /** Explicit non-loopback listener address for the public API workload. */
+    readonly hostname: string;
     readonly port: number;
     readonly resources: InfraWorkloadResourceSpec;
     readonly secretRefs: Readonly<Record<string, InfraSecretReference>>;

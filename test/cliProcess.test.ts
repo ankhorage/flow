@@ -48,6 +48,23 @@ test('runs API and worker as separate processes through one durable runtime, shu
   }
 }, 30_000);
 
+test('rejects an invalid explicit API hostname before opening the CLI listener', () => {
+  const fixture = new URL('./fixtures/fileRuntimeModule.ts', import.meta.url).pathname;
+  const result = Bun.spawnSync([process.execPath, 'src/cli/standalone.ts', 'api'], {
+    cwd: process.cwd(),
+    env: {
+      ...process.env,
+      FLOW_API_HOSTNAME: 'localhost',
+      FLOW_API_TOKEN: 'test-token',
+      FLOW_RUNTIME_MODULE: fixture,
+    },
+  });
+  expect(result.exitCode).not.toBe(0);
+  expect(`${result.stdout.toString()}${result.stderr.toString()}`).toContain(
+    'FLOW_API_HOSTNAME_INVALID',
+  );
+});
+
 /** Reserve a currently available local port for the short-lived API test process. */
 const availablePort = (): number => {
   const probe = Bun.serve({ fetch: () => new Response(), port: 0 });

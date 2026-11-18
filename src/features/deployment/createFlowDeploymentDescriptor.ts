@@ -6,6 +6,7 @@ import {
 } from '@ankhorage/contracts/infra';
 
 import type { FlowDeploymentDescriptorInput } from '../../types/deployment.js';
+import { validateFlowApiHostname } from '../../utils/validateFlowApiHostname.js';
 
 /*** Compose exactly one public Flow API and one independent worker workload from explicit portable inputs. */
 export const createFlowDeploymentDescriptor = (
@@ -17,51 +18,71 @@ export const createFlowDeploymentDescriptor = (
   const runtimeEnvironment = {
     FLOW_RUNTIME_MODULE: { kind: 'literal', value: input.runtime.module },
   } as const;
+  const apiEnvironment = {
+    FLOW_API_HOSTNAME: { kind: 'literal', value: input.api.hostname },
+  } as const;
   const sharedEnvironment = mergeEnvironment(
     runtimeEnvironment,
     input.artifactStorage.environment,
     input.scheduler.environment,
   );
-  const apiSecrets = secretEnvironment({ FLOW_API_TOKEN: input.api.apiToken });
   const workloads = [
-    {
-      artifact: { image: input.image, kind: 'image' },
-      command: ['flow', 'api'],
-      dependsOn: dependenciesOf(input),
-      environment: mergeEnvironment(
-        sharedEnvironment,
-        apiSecrets,
-        secretEnvironment(input.api.secretRefs),
-      ),
-      exposure: 'public',
-      health: { kind: 'http', path: '/health', port: input.api.port },
-      id: 'flow-api',
-      persistence: { [input.persistence.id]: input.persistence },
-      ports: { http: { port: input.api.port, protocol: 'tcp' } },
-      replicas: 1,
-      resources: input.api.resources,
-    },
-    {
-      artifact: { image: input.image, kind: 'image' },
-      command: ['flow', 'worker'],
-      dependsOn: dependenciesOf(input),
-      environment: mergeEnvironment(sharedEnvironment, secretEnvironment(input.worker.secretRefs)),
-      exposure: 'internal',
-      health: { command: ['flow', 'worker', 'health'], kind: 'command' },
-      id: 'flow-worker',
-      persistence: { [input.persistence.id]: input.persistence },
-      replicas: 1,
-      resources: input.worker.resources,
-    },
+    apiWorkloadFor(input, sharedEnvironment, apiEnvironment),
+    workerWorkloadFor(input, sharedEnvironment),
   ] as const;
   if (!workloads.every(isInfraWorkloadSpec)) throw new Error('FLOW_DEPLOYMENT_WORKLOAD_INVALID');
   return workloads;
 };
 
+/** Compose the only public Flow workload, including its explicit authenticated listener binding. */
+const apiWorkloadFor = (
+  input: FlowDeploymentDescriptorInput,
+  sharedEnvironment: Readonly<Record<string, InfraWorkloadValue>>,
+  apiEnvironment: Readonly<Record<string, InfraWorkloadValue>>,
+) =>
+  ({
+    artifact: { image: input.image, kind: 'image' },
+    command: ['flow', 'api'],
+    dependsOn: dependenciesOf(input),
+    environment: mergeEnvironment(
+      sharedEnvironment,
+      apiEnvironment,
+      secretEnvironment({ FLOW_API_TOKEN: input.api.apiToken }),
+      secretEnvironment(input.api.secretRefs),
+    ),
+    exposure: 'public',
+    health: { kind: 'http', path: '/health', port: input.api.port },
+    id: 'flow-api',
+    persistence: { [input.persistence.id]: input.persistence },
+    ports: { http: { port: input.api.port, protocol: 'tcp' } },
+    replicas: 1,
+    resources: input.api.resources,
+  }) satisfies InfraWorkloadSpec;
+
+/** Compose the listener-free Flow worker that consumes the same durable runtime configuration. */
+const workerWorkloadFor = (
+  input: FlowDeploymentDescriptorInput,
+  sharedEnvironment: Readonly<Record<string, InfraWorkloadValue>>,
+) =>
+  ({
+    artifact: { image: input.image, kind: 'image' },
+    command: ['flow', 'worker'],
+    dependsOn: dependenciesOf(input),
+    environment: mergeEnvironment(sharedEnvironment, secretEnvironment(input.worker.secretRefs)),
+    exposure: 'internal',
+    health: { command: ['flow', 'worker', 'health'], kind: 'command' },
+    id: 'flow-worker',
+    persistence: { [input.persistence.id]: input.persistence },
+    replicas: 1,
+    resources: input.worker.resources,
+  }) satisfies InfraWorkloadSpec;
+
 /** Reject incomplete composition rather than guessing images, credentials, storage, or scheduler behavior. */
 const assertDeploymentInput = (input: FlowDeploymentDescriptorInput): void => {
   if (!isImmutableImage(input.image)) throw new Error('FLOW_DEPLOYMENT_IMAGE_DIGEST_REQUIRED');
   if (!isPositivePort(input.api.port)) throw new Error('FLOW_DEPLOYMENT_API_PORT_REQUIRED');
+  const apiHostname = validateFlowApiHostname(input.api.hostname);
+  if (apiHostname.loopback) throw new Error('FLOW_DEPLOYMENT_API_HOSTNAME_PUBLIC_REQUIRED');
   if (!isSecretReference(input.api.apiToken)) throw new Error('FLOW_DEPLOYMENT_API_TOKEN_REQUIRED');
   if (!isNonEmptyRecord(input.worker.secretRefs))
     throw new Error('FLOW_DEPLOYMENT_SECRET_REFS_REQUIRED');
@@ -104,6 +125,7 @@ const assertEnvironmentKeys = (input: FlowDeploymentDescriptorInput): void => {
 const assertNoEnvironmentKeyCollisions = (input: FlowDeploymentDescriptorInput): void => {
   const names = [
     'FLOW_RUNTIME_MODULE',
+    'FLOW_API_HOSTNAME',
     'FLOW_API_TOKEN',
     ...Object.keys(input.api.secretRefs),
     ...Object.keys(input.artifactStorage.environment),

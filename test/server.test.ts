@@ -31,6 +31,26 @@ test('refuses to start an uncomposed worker', () => {
   expect(() => startFlowWorkerAsync()).toThrow('FLOW_PERSISTENCE_PATH_REQUIRED');
 });
 
+test('defaults local API binding to loopback and rejects unsafe or invalid explicit bindings', async () => {
+  const runtime = createFlowRuntime({
+    nodeRegistry: createDefaultNodeRegistry(),
+    persistence: InMemoryFlowPersistenceAdapter(),
+    store: InMemoryFlowRuntimeStore(),
+  });
+  const api = startFlowApiServerAsync({ localDemo: true, port: 0, runtime });
+  try {
+    expect(api.hostname).toBe('127.0.0.1');
+  } finally {
+    await api.stop();
+  }
+  expect(() =>
+    startFlowApiServerAsync({ hostname: 'localhost', localDemo: true, runtime }),
+  ).toThrow('FLOW_API_HOSTNAME_INVALID');
+  expect(() => startFlowApiServerAsync({ hostname: '0.0.0.0', localDemo: true, runtime })).toThrow(
+    'FLOW_LOCAL_DEMO_LOOPBACK_REQUIRED',
+  );
+});
+
 test('serializes worker ticks, retains failures, fences shutdown, and restarts cleanly', async () => {
   let calls = 0;
   let concurrent = 0;

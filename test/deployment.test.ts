@@ -17,6 +17,7 @@ const apiToken = {
 const input: FlowDeploymentDescriptorInput = {
   api: {
     apiToken,
+    hostname: '0.0.0.0',
     port: 4318,
     resources: { cpuMillis: 250, memoryMiB: 256 },
     secretRefs: {},
@@ -75,6 +76,11 @@ test('composes independent, validated API and worker workloads from exact adapte
     kind: 'literal',
     value: '@example/flow-runtime',
   });
+  expect(workloads[0]?.environment?.FLOW_API_HOSTNAME).toEqual({
+    kind: 'literal',
+    value: '0.0.0.0',
+  });
+  expect(workloads[1]?.environment?.FLOW_API_HOSTNAME).toBeUndefined();
   expect(workloads[1]?.environment?.FLOW_RUNTIME_MODULE).toEqual({
     kind: 'literal',
     value: '@example/flow-runtime',
@@ -107,6 +113,12 @@ test('fails closed before guessing an image, secret reference, artifact storage,
   expect(() => createFlowDeploymentDescriptor({ ...input, runtime: { module: ' ' } })).toThrow(
     'FLOW_DEPLOYMENT_RUNTIME_MODULE_REQUIRED',
   );
+  expect(() =>
+    createFlowDeploymentDescriptor({ ...input, api: { ...input.api, hostname: 'localhost' } }),
+  ).toThrow('FLOW_API_HOSTNAME_INVALID');
+  expect(() =>
+    createFlowDeploymentDescriptor({ ...input, api: { ...input.api, hostname: '127.0.0.1' } }),
+  ).toThrow('FLOW_DEPLOYMENT_API_HOSTNAME_PUBLIC_REQUIRED');
   expect(() =>
     createFlowDeploymentDescriptor({
       ...input,

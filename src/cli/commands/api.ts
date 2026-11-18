@@ -1,18 +1,21 @@
 import { startFlowApiServerAsync } from '../../server.js';
+import { validateFlowApiHostname } from '../../utils/validateFlowApiHostname.js';
 import { loadFlowRuntimeAsync } from '../loadFlowRuntimeAsync.js';
 import { registerProcessShutdown } from '../registerProcessShutdown.js';
 
 /*** Start only the authenticated Flow API against an explicitly composed shared runtime. */
 export const api = async (argv: readonly string[]): Promise<void> => {
   const token = requireApiToken();
+  const hostname = readHostname();
   const server = startFlowApiServerAsync({
     access: createAccess(),
     authenticator: createAuthenticator(token),
+    hostname,
     port: readPort(argv),
     runtime: await loadFlowRuntimeAsync(),
   });
   registerProcessShutdown(server.stop);
-  process.stdout.write(`Flow API listening on http://127.0.0.1:${server.port}\n`);
+  process.stdout.write(`Flow API listening on http://${server.hostname}:${server.port}\n`);
 };
 
 /** Read the API token at the process edge without making a local deployment insecure by default. */
@@ -61,4 +64,11 @@ const readPort = (argv: readonly string[]): number | undefined => {
   if (!value || value.startsWith('--') || !Number.isSafeInteger(port) || port < 1 || port > 65_535)
     throw new Error('FLOW_PORT_INVALID');
   return port;
+};
+
+/** Read and validate the deployment-selected public listener address when it is explicitly set. */
+const readHostname = (): string | undefined => {
+  const hostname = process.env.FLOW_API_HOSTNAME;
+  if (hostname === undefined) return undefined;
+  return validateFlowApiHostname(hostname).hostname;
 };

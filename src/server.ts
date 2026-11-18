@@ -9,6 +9,7 @@ import type {
   FlowHttpAuthenticatorPort,
   FlowRuntime,
 } from './types/headless.js';
+import { validateFlowApiHostname } from './utils/validateFlowApiHostname.js';
 
 /*** Start the authenticated HTTP API without starting a durable worker. */
 export const startFlowApiServerAsync = (
@@ -23,14 +24,17 @@ export const startFlowApiServerAsync = (
   } = {},
 ) => {
   assertServerInput(input);
+  const binding = validateFlowApiHostname(input.hostname ?? '127.0.0.1');
+  if (input.localDemo && !binding.loopback) throw new Error('FLOW_LOCAL_DEMO_LOOPBACK_REQUIRED');
   const runtime = runtimeFor(input);
   const { access, authenticator } = securityFor(input);
   const server = Bun.serve({
     fetch: createFlowHttpHandler({ access, authenticator, runtime }),
-    hostname: input.hostname ?? '127.0.0.1',
+    hostname: binding.hostname,
     port: input.port ?? 4318,
   });
   return {
+    hostname: binding.hostname,
     port: server.port,
     runtime,
     stop: () => {
@@ -89,8 +93,6 @@ type ServerInput = NonNullable<Parameters<typeof startFlowApiServerAsync>[0]>;
 const assertServerInput = (input: ServerInput): void => {
   if (!input.localDemo && (input.access === undefined || input.authenticator === undefined))
     throw new Error('FLOW_SERVER_SECURITY_CONFIG_REQUIRED');
-  if (input.localDemo && input.hostname !== undefined && input.hostname !== '127.0.0.1')
-    throw new Error('FLOW_LOCAL_DEMO_LOOPBACK_REQUIRED');
   if (input.runtime === undefined && input.persistencePath === undefined)
     throw new Error('FLOW_PERSISTENCE_PATH_REQUIRED');
 };
