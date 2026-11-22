@@ -90,7 +90,7 @@
     "version-packages": "ankhorage-changeset version"
   },
   "devDependencies": {
-    "@ankhorage/devtools": "^2.4.3",
+    "@ankhorage/devtools": "^2.10.2",
     "@ankhorage/paradox": "^0.3.6",
     "@ankhorage/secrets-supabase-vault": "^1.0.0",
     "@modelcontextprotocol/sdk": "^1.32.2",
